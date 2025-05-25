@@ -17,7 +17,7 @@ interface GeneralContextProps {
   setSystemId: (value: number) => void;
   chartId: number;
   setChartId: (value: number) => void;
-  defaultRowsPerPage: number;
+  defaultRowsPerPage: number; 
   setDefaultRowsPerPage: (value: number) => void;
   pageNumbers: number[];
   isModalOpen: boolean;
@@ -53,7 +53,7 @@ export const GeneralProvider: React.FC<{ children: ReactNode }> = ({
   const [defaultRowsPerPage, setDefaultRowsPerPage] = useState<number>(() =>
     getInitial("defaultRowsPerPage", pageNumbers[1])
   );
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);  
 
   useEffect(() => {
     localStorage.setItem("isMenuOpened", JSON.stringify(isMenuOpened));

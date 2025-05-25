@@ -36,9 +36,8 @@ const headerGroups: HeaderGroup[] = [
   { label: "آفر", colSpan: 1 },
 ];
 
-export default function InventoryListForm() {
+export default function ProviderListForm() {
   const { providerList, error, isLoading } = useProviderList();
-  console.log(providerList.rpProviders);
 
   const { systemId, yearId } = useGeneralContext();
 
@@ -144,8 +143,8 @@ export default function InventoryListForm() {
               name="DateCheckbox"
               onChange={handleCheckboxChange}
               value={hasDate}
-              label="تاریخ:"
             />
+            <label className="text-sm md:text-base w-10 text-left">تاریخ:</label>
             <PersianDatePicker
               name="startDate"
               label="از:"
@@ -155,7 +154,7 @@ export default function InventoryListForm() {
             />
           </div>
           <div className="w-full flex items-center gap-2">
-            <label className="text-sm md:text-base">تا:</label>
+            <label className="text-sm md:text-base w-24 text-left">تا:</label>
             <PersianDatePicker
               name="endDate"
               label="تا:"
@@ -167,7 +166,7 @@ export default function InventoryListForm() {
         </div>
         <div className="w-full flex flex-col lg:flex-row gap-2">
           <div className="w-full flex items-center gap-2">
-            <label htmlFor="type" className="">
+            <label htmlFor="type" className="text-sm md:text-base w-24 text-left">
               نوع:
             </label>
             <AutoComplete
@@ -182,7 +181,7 @@ export default function InventoryListForm() {
             />
           </div>
           <div className="w-full flex items-center gap-2">
-            <label htmlFor="brand" className="">
+            <label htmlFor="brand" className="text-sm md:text-base w-24 text-left">
               برند:
             </label>
             <AutoComplete

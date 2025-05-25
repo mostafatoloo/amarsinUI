@@ -39,14 +39,16 @@ const SideMenu = () => {
   }, [isMenuOpened]);
 
   const openLogin = () => {
-    console.log(search)
+    console.log(search);
     logout();
   };
 
   useEffect(() => {
-    if (chart?.id !== undefined && chart.id !== 0) {
-      setChartId(Number(chart.id));
+    if (chart?.id === undefined || chart.id === 0) {
+      logout();
+      return;
     }
+    setChartId(Number(chart.id));
   }, [chart]);
 
   const formatted = formatPersianDate(

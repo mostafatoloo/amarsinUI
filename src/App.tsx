@@ -7,7 +7,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import Layout from './components/layout/Layout'
 import User from './pages/User'
 import InventoryGoodList from './pages/reports/InventoryGoodList'
-import InventoryList from './pages/reports/InventoryList'
+import ProviderList from './pages/reports/ProviderList'
 
 
 const queryClient = new QueryClient()
@@ -53,7 +53,7 @@ function App() {
               path="/admin/RpProviders"
               element={
                 <PrivateRoute>
-                  <InventoryList />
+                  <ProviderList />
                 </PrivateRoute>
               }
             />

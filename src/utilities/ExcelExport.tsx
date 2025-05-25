@@ -2,9 +2,8 @@ import * as XLSX from "xlsx";
 
 import ExcelIcon from "../assets/images/GrayThem/excel24.png";
 import Modal from "../components/layout/Modal";
-import {  useEffect } from "react";
+import {  useEffect, useState } from "react";
 import { HeadCell } from "../hooks/useTable";
-import { useGeneralContext } from "../context/GeneralContext";
 
 interface ExportToExcelProps<T> {
   headCells: HeadCell<T>[];
@@ -15,7 +14,7 @@ const ExcelExport = <T extends object>({
   data,
   headCells,
 }: ExportToExcelProps<T>) => {
-  const { isModalOpen, setIsModalOpen } = useGeneralContext();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const fileName = "data_export.xlsx";
 
   useEffect(() => {

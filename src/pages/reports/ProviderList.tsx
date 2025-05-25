@@ -1,15 +1,15 @@
 import PageTitle from "../../components/layout/PageTitle";
-import   { headCells } from "../../components/inventory/InventoryGoodListForm";
 import ExcelExport from "../../utilities/ExcelExport";
 import { useBrandStore } from "../../store/brandStore";
 import { useEffect } from "react";
 import { useGeneralContext } from "../../context/GeneralContext";
-import { useInventoryGoodList } from "../../hooks/useInventoryGoodList";
-import InventoryListForm from "../../components/inventory/InventoryListForm";
+import { useProviderList } from "../../hooks/useProviderList";
+import ProviderListForm, { headCells } from "../../components/inventory/ProviderListForm";
 
-export default function InventoryList() {
 
-  const {inventoryList} = useInventoryGoodList()
+export default function ProviderList() {
+
+  const {providerList} = useProviderList()
   const {setField}=useBrandStore()
   const {systemId}=useGeneralContext()
 
@@ -23,13 +23,13 @@ export default function InventoryList() {
       {/* Top header */}
       <header className="flex items-center justify-between border-gray-300">
         <PageTitle />
-        <ExcelExport data={inventoryList.rpProviderInventories} headCells={headCells} />
+        <ExcelExport data={providerList.rpProviders} headCells={headCells} />
       </header>
       {/* Sub-header */}
 
       {/* Main content */}
       <main className="flex flex-col items-center justify-center px-2">
-        <InventoryListForm/>
+        <ProviderListForm/>
       </main>
 
       {/* Footer */}
