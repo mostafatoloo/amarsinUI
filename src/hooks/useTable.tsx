@@ -26,6 +26,8 @@ export type HeadCell<T> = {
   disableSorting?: boolean;
   isNumber?: boolean;
   isCurrency?: boolean;
+  icon?: string;
+  path?: string;
 };
 
 export type HeaderGroup = {

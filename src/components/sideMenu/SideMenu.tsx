@@ -13,7 +13,7 @@ import { useDefinitionInvironment } from "../../hooks/useDefinitionInvironment";
 import { colors } from "../../utilities/color";
 
 const SideMenu = () => {
-  const { isMenuOpened, setChartId } = useGeneralContext();
+  const { isMenuOpened, setChartId,chartId } = useGeneralContext();
   const { definitionInvironment } = useDefinitionInvironment();
   const { authApiResponse, logout } = useAuthStore();
 
@@ -44,12 +44,18 @@ const SideMenu = () => {
   };
 
   useEffect(() => {
-    if (chart?.id === undefined || chart.id === 0) {
+    if (chart?.id !== undefined && chart.id !== 0) {
+      setChartId(Number(chart.id));
+    }
+  }, [chart]);
+
+  useEffect(() => {
+    console.log(chartId, "chartId");
+    if (chartId === undefined || chartId === 0) {
       logout();
       return;
     }
-    setChartId(Number(chart.id));
-  }, [chart]);
+  }, []);
 
   const formatted = formatPersianDate(
     definitionInvironment.curDay,

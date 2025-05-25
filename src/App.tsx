@@ -17,6 +17,7 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" />
 }
 
+
 function App() {
 
   return (
@@ -57,6 +58,15 @@ function App() {
                 </PrivateRoute>
               }
             />
+            <Route
+              path="/admin/RpProviders/:id"
+              element={
+                <PrivateRoute>
+                  <ProviderList />
+                </PrivateRoute>
+              }
+            />
+            
             <Route path="/" element={<Navigate to="/dashboard" />} />
           </Routes>
         </Layout>  

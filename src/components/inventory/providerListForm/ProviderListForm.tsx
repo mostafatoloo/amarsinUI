@@ -1,21 +1,33 @@
 import { useEffect, useState } from "react";
 import { Paper } from "@mui/material";
 
-import { useBrandStore } from "../../store/brandStore";
-import { useBrand } from "../../hooks/useBrands";
-import Skeleton from "../layout/Skeleton";
+import { useBrandStore } from "../../../store/brandStore";
+import { useBrand } from "../../../hooks/useBrands";
+import Skeleton from "../../layout/Skeleton";
 import { useNavigate } from "react-router-dom";
-import AutoComplete from "../controls/AutoComplete";
-import { Table } from "../controls/Table";
-import { useGeneralContext } from "../../context/GeneralContext";
-import PersianDatePicker from "../controls/PersianDatePicker";
-import Checkbox from "../controls/Checkbox";
-import { HeadCell, HeaderGroup } from "../../hooks/useTable";
-import Modal from "../layout/Modal";
-import { useProviderList } from "../../hooks/useProviderList";
-import { ProviderItem } from "../../types/provider";
-import { useProviderStore } from "../../store/providerStore";
-import { convertPersianDate } from "../../utilities/general";
+import AutoComplete from "../../controls/AutoComplete";
+import { Table } from "../../controls/Table";
+import { useGeneralContext } from "../../../context/GeneralContext";
+import PersianDatePicker from "../../controls/PersianDatePicker";
+import Checkbox from "../../controls/Checkbox";
+import { HeadCell, HeaderGroup } from "../../../hooks/useTable";
+import Modal from "../../layout/Modal";
+import { useProviderList } from "../../../hooks/useProviderList";
+import { ProviderItem } from "../../../types/provider";
+import { useProviderStore } from "../../../store/providerStore";
+import { convertPersianDate } from "../../../utilities/general";
+import ReportIcon from "../../../assets/images/GrayThem/report16.png";
+
+type ProviderListFormProps = {
+  brand: { id: string; title: string } | null;
+  setBrand: (brand: { id: string; title: string } | null) => void;
+  sanadKind: { id: string; title: string } | null;
+  setSanadKind: (sanadKind: { id: string; title: string } | null) => void;
+  startDate: Date | null;
+  setStartDate: (date: Date | null) => void;
+  endDate: Date | null;
+  setEndDate: (date: Date | null) => void;
+};
 
 export const headCells: HeadCell<ProviderItem>[] = [
   {
@@ -27,6 +39,7 @@ export const headCells: HeadCell<ProviderItem>[] = [
   { id: "cnt", label: "تعداد", isNumber: true },
   { id: "total", label: "مبلغ", isNumber: true, isCurrency: true },
   { id: "offerCnt", label: "تعداد", isNumber: true },
+  { id: "id", label: "...", icon: ReportIcon, path: "/admin/RpProviders" },
 ];
 
 const headerGroups: HeaderGroup[] = [
@@ -34,34 +47,25 @@ const headerGroups: HeaderGroup[] = [
   { label: "", colSpan: 1 },
   { label: "ریالی", colSpan: 2 },
   { label: "آفر", colSpan: 1 },
+  { label: "", colSpan: 1 },
 ];
 
-export default function ProviderListForm() {
+export default function ProviderListForm({
+  brand,
+  setBrand,
+  sanadKind,
+  setSanadKind,
+  startDate,
+  setStartDate,
+  endDate,
+  setEndDate,
+}: ProviderListFormProps) {
   const { providerList, error, isLoading } = useProviderList();
 
   const { systemId, yearId } = useGeneralContext();
 
   const [search, setSearch] = useState<string>("");
 
-  //set params
-  const [brand, setBrand] = useState<{ id: string; title: string } | null>({
-    id: "0",
-    title: "",
-  });
-  const [sanadKind, setSanadKind] = useState<{
-    id: string;
-    title: string;
-  } | null>({
-    id: "1",
-    title: "",
-  });
-  const type = [
-    { id: "1", title: "فروش" },
-    { id: "2", title: "برگشت از فروش" },
-  ];
-
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
   const [hasDate, setHasDate] = useState<boolean>(false);
 
   const { setField: setBrandField } = useBrandStore();
@@ -133,6 +137,11 @@ export default function ProviderListForm() {
     setField("tDate", endDate === null || !endDate ? '' : convertPersianDate(endDate.toLocaleDateString('fa-IR')));
   }, [systemId, yearId, brand?.id, sanadKind?.id, startDate, endDate]);
   if (error) return <div>Error: {error.message} </div>;
+
+  const type = [
+    { id: "1", title: "فروش" },
+    { id: "2", title: "برگشت از فروش" },
+  ];
 
   return (
     <Paper className="p-2 m-2 w-full">

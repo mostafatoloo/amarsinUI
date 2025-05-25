@@ -41,7 +41,7 @@ const ExcelExport = <T extends object>({
       const row: Record<string, any> = {};
       headCells.forEach((cell) => {
         if (cell.id === "index") {
-          row[cell.label] = rowIndex + 1; // Use rowIndex here!
+          row[cell.label] = (rowIndex + 1); // Use rowIndex here!
         } else {
           row[cell.label] = (item as any)[cell.id];
         }

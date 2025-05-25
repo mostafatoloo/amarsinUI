@@ -1,8 +1,12 @@
 import { TableBody, TableCell, TableRow } from "@mui/material";
 
-import { convertToFarsiDigits, formatNumberWithCommas } from "../../utilities/general";
-import { useState } from "react";
+import {
+  convertToFarsiDigits,
+  formatNumberWithCommas,
+} from "../../utilities/general";
+import React, { useState } from "react";
 import useTable, { HeadCell, HeaderGroup } from "../../hooks/useTable";
+import { useNavigate } from "react-router-dom";
 
 type TableProps<T> = {
   data: T[];
@@ -31,8 +35,8 @@ export function Table<T>({
     isMobile,
     mobileMainColumns,
     mobileRestColumns,
-    page,           
-    rowsPerPage,    
+    page,
+    rowsPerPage,
   } = useTable<T>(
     data,
     headCells,
@@ -40,6 +44,9 @@ export function Table<T>({
     filterFn,
     resetPageSignal
   );
+  
+  const navigate = useNavigate();
+  
   return (
     <div style={{ height: "70vh", overflowY: "auto" }}>
       <TblContainer>
@@ -50,13 +57,18 @@ export function Table<T>({
               {(isMobile ? mobileMainColumns : headCells).map(
                 (cell: HeadCell<T>) => {
                   let displayValue;
-                  if (cell.id === "index") {
-                    displayValue = page * rowsPerPage + idx + 1; 
+                  if (cell.icon !== undefined) {
+                    console.log(cell.icon, "cell.icon");
+                    displayValue = <img src={'/src/assets/images/GrayThem/report16.png'} alt={cell.label} />;
                   } 
-                  else if(cell.isCurrency){
-                    displayValue = convertToFarsiDigits(formatNumberWithCommas(item[cell.id] as number));
-                  }
-                  else {
+                  else if (cell.id === "index") {
+                    displayValue = convertToFarsiDigits(page * rowsPerPage + idx + 1);
+                  } 
+                  else if (cell.isCurrency) {
+                    displayValue = convertToFarsiDigits(
+                      formatNumberWithCommas(item[cell.id] as number)
+                    );
+                  } else {
                     const value = item[cell.id];
                     displayValue =
                       cell.isNumber && value !== undefined && value !== null
@@ -69,10 +81,17 @@ export function Table<T>({
                     <TableCell
                       key={String(cell.id)}
                       className={isMobile ? "text-xs" : ""}
+                      onClick={() => {
+                        if (cell.path) {
+                          navigate(`${cell.path}/${item[cell.id as keyof T]}`);
+                        }
+                      }}
                     >
-                      {displayValue !== undefined && displayValue !== null
-                        ? String(displayValue)
-                        : ""}
+                      {typeof displayValue === "string" || typeof displayValue === "number" || React.isValidElement(displayValue)
+                        ? displayValue
+                        : displayValue !== undefined && displayValue !== null
+                          ? String(displayValue)
+                          : ""}
                     </TableCell>
                   );
                 }
@@ -80,27 +99,39 @@ export function Table<T>({
               {isMobile && mobileRestColumns.length > 0 && (
                 <TableCell className="text-xs">
                   {mobileRestColumns.map((cell: HeadCell<T>) => {
-                  let displayValue;
-                  if (cell.id === "index") {
-                    displayValue = page * rowsPerPage + idx + 1; 
-                  } else if(cell.isCurrency){
-                    displayValue = convertToFarsiDigits(formatNumberWithCommas(item[cell.id] as number));
-                  }
-                  else {
-                    const value = item[cell.id];
-                    displayValue =
-                      cell.isNumber && value !== undefined && value !== null
-                        ? convertToFarsiDigits(
-                            value as string | number | null | undefined
-                          )
-                        : value;
-                  }
+                    let displayValue;
+                    console.log(cell, "cell.icon");
+                    if (cell.icon !== undefined) {
+                      displayValue = <img src={cell.icon} alt={cell.label} />;
+                    } else if (cell.id === "index") {
+                      displayValue = convertToFarsiDigits(page * rowsPerPage + idx + 1);
+                    } else if (cell.isCurrency) {
+                      displayValue = convertToFarsiDigits(
+                        formatNumberWithCommas(item[cell.id] as number)
+                      );
+                    } else {
+                      const value = item[cell.id];
+                      displayValue =
+                        cell.isNumber && value !== undefined && value !== null
+                          ? convertToFarsiDigits(
+                              value as string | number | null | undefined
+                            )
+                          : value;
+                    }
                     return (
-                      <div key={String(cell.id)}>
+                      <div key={String(cell.id)}
+                        onClick={() => {
+                          if (cell.path) {
+                            navigate(cell.path);
+                          }
+                        }}
+                      >
                         <strong>{cell.label}:</strong>
-                        {displayValue !== undefined && displayValue !== null
-                          ? String(displayValue)
-                          : ""}
+                        {typeof displayValue === "string" || typeof displayValue === "number" || React.isValidElement(displayValue)
+                          ? displayValue
+                          : displayValue !== undefined && displayValue !== null
+                            ? String(displayValue)
+                            : ""}
                       </div>
                     );
                   })}

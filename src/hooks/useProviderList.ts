@@ -1,7 +1,7 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import api from "../api/axios";
-import { useProviderStore } from "../store/providerStore";
-import { ProviderList, ProviderListRequest } from "../types/provider";
+import {  useProviderDetailStore, useProviderStore } from "../store/providerStore";
+import { ProviderDetailList, ProviderList, ProviderListRequest, ProvidertDetailListRequest } from "../types/provider";
 
 
 export function useProviderList() {
@@ -40,4 +40,45 @@ export function useProviderList() {
     error: query.error,
     providerList: query.data ?? { err: 0, msg: "", rpProviders: [] },
   };
+}
+
+export function useProviderDetailList() {
+
+  console.log('something')
+  const {setProviderDetailList,productId,accSystem,accYear,brandId,sanadKind,fDate,tDate} = useProviderDetailStore()
+console.log(productId,"productId")
+  const query = useQuery<ProviderDetailList, Error, ProviderDetailList, unknown[]>({
+    queryKey: ["providerDetailList",productId, accSystem, accYear, brandId,sanadKind,fDate,tDate],
+    queryFn: async () => {
+      const params: ProvidertDetailListRequest = {
+        accSystem,
+        accYear,
+        brandId,
+        sanadKind,
+        fDate,
+        tDate,
+        productId,
+      };
+console.log(params,"params")
+      const url:string = `http://apitest.dotis.ir/api/ProviderReport/details?productId=${params.productId}&accSystem=${params.accSystem}&accYear=${params.accYear}&brandId=${params.brandId}&sanadKind=${params.sanadKind}&fDate=${encodeURIComponent(params.fDate)}&tDate=${encodeURIComponent(params.tDate)}`
+
+      console.log('url',url)
+      const response = await api.get(url);
+      return response.data;
+    },
+    enabled: !!accSystem && !!accYear && !!brandId && !!sanadKind && !!productId,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    onSuccess: (data: any) => {
+      setProviderDetailList(data);
+    },
+  } as UseQueryOptions<ProviderDetailList, Error, ProviderDetailList, unknown[]>);
+
+  return {
+    //getInventoryList: () => query.refetch(), // Optional manual trigger
+    isLoading: query.isLoading,
+    error: query.error,
+    providerDetailList: query.data ?? { err: 0, msg: "", rpProviderDetails: [] },
+  };
+  
 }
