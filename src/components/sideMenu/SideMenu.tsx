@@ -11,9 +11,12 @@ import {
 } from "../../utilities/general";
 import { useDefinitionInvironment } from "../../hooks/useDefinitionInvironment";
 import { colors } from "../../utilities/color";
+//import { useLocation } from "react-router-dom";
 
 const SideMenu = () => {
-  const { isMenuOpened, setChartId,chartId } = useGeneralContext();
+  const { isMenuOpened, setChartId
+  //  , chartId
+   } = useGeneralContext();
   const { definitionInvironment } = useDefinitionInvironment();
   const { authApiResponse, logout } = useAuthStore();
 
@@ -29,6 +32,8 @@ const SideMenu = () => {
     title: convertToFarsiDigits(initData?.chartTitle) ?? "",
   });
   // Delay unmounting inner content for smooth transition
+
+  //const location = useLocation();
   useEffect(() => {
     if (isMenuOpened) {
       setVisible(true);
@@ -49,13 +54,14 @@ const SideMenu = () => {
     }
   }, [chart]);
 
-  useEffect(() => {
-    console.log(chartId, "chartId");
-    if (chartId === undefined || chartId === 0) {
-      logout();
-      return;
-    }
-  }, []);
+  // useEffect(() => {
+  //   console.log(chartId, "chartId");
+  //   if (location.pathname != "/")
+  //     if (chartId === undefined || chartId === 0) {
+  //       logout();
+  //       return;
+  //     }
+  // }, []);
 
   const formatted = formatPersianDate(
     definitionInvironment.curDay,

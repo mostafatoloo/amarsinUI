@@ -58,8 +58,7 @@ export function Table<T>({
                 (cell: HeadCell<T>) => {
                   let displayValue;
                   if (cell.icon !== undefined) {
-                    console.log(cell.icon, "cell.icon");
-                    displayValue = <img src={'/src/assets/images/GrayThem/report16.png'} alt={cell.label} />;
+                    displayValue = <img src={cell.icon} alt={cell.label} />;
                   } 
                   else if (cell.id === "index") {
                     displayValue = convertToFarsiDigits(page * rowsPerPage + idx + 1);
@@ -97,7 +96,8 @@ export function Table<T>({
                 }
               )}
               {isMobile && mobileRestColumns.length > 0 && (
-                <TableCell className="text-xs">
+                <TableCell className="text-xs"
+                >
                   {mobileRestColumns.map((cell: HeadCell<T>) => {
                     let displayValue;
                     console.log(cell, "cell.icon");
@@ -120,11 +120,11 @@ export function Table<T>({
                     }
                     return (
                       <div key={String(cell.id)}
-                        onClick={() => {
-                          if (cell.path) {
-                            navigate(cell.path);
-                          }
-                        }}
+                      onClick={() => {
+                        if (cell.path) {
+                          navigate(`${cell.path}/${item[cell.id as keyof T]}`);
+                        }
+                      }}
                       >
                         <strong>{cell.label}:</strong>
                         {typeof displayValue === "string" || typeof displayValue === "number" || React.isValidElement(displayValue)
