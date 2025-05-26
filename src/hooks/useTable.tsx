@@ -28,6 +28,7 @@ export type HeadCell<T> = {
   isCurrency?: boolean;
   icon?: string;
   path?: string;
+  hasDetails?: boolean;
 };
 
 export type HeaderGroup = {

@@ -1,22 +1,21 @@
 import { useEffect, useState } from "react";
 import { Paper } from "@mui/material";
-
-import { useBrandStore } from "../../../store/brandStore";
-import { useBrand } from "../../../hooks/useBrands";
-import Skeleton from "../../layout/Skeleton";
+import { useBrandStore } from "../../store/brandStore";
+import { useBrand } from "../../hooks/useBrands";
+import Skeleton from "../layout/Skeleton";
 import { useNavigate } from "react-router-dom";
-import AutoComplete from "../../controls/AutoComplete";
-import { Table } from "../../controls/Table";
-import { useGeneralContext } from "../../../context/GeneralContext";
-import PersianDatePicker from "../../controls/PersianDatePicker";
-import Checkbox from "../../controls/Checkbox";
-import { HeadCell, HeaderGroup } from "../../../hooks/useTable";
-import Modal from "../../layout/Modal";
-import { useProviderList } from "../../../hooks/useProviderList";
-import { ProviderItem } from "../../../types/provider";
-import { useProviderStore } from "../../../store/providerStore";
-import { convertPersianDate } from "../../../utilities/general";
-import ReportIcon from "../../../assets/images/GrayThem/report16.png";
+import AutoComplete from "../controls/AutoComplete";
+import { Table } from "../controls/Table";
+import { useGeneralContext } from "../../context/GeneralContext";
+import PersianDatePicker from "../controls/PersianDatePicker";
+import Checkbox from "../controls/Checkbox";
+import { HeadCell, HeaderGroup } from "../../hooks/useTable";
+import Modal from "../layout/Modal";
+import { useProviderList } from "../../hooks/useProviderList";
+import { ProviderItem } from "../../types/provider";
+import { useProviderStore } from "../../store/providerStore";
+import { convertPersianDate } from "../../utilities/general";
+import ReportIcon from "../../assets/images/GrayThem/report16.png";
 
 type ProviderListFormProps = {
   brand: { id: string; title: string } | null;
@@ -27,6 +26,7 @@ type ProviderListFormProps = {
   setStartDate: (date: Date | null) => void;
   endDate: Date | null;
   setEndDate: (date: Date | null) => void;
+  onShowDetails: (providerId: string) => void;
 };
 
 export const headCells: HeadCell<ProviderItem>[] = [
@@ -39,7 +39,7 @@ export const headCells: HeadCell<ProviderItem>[] = [
   { id: "cnt", label: "تعداد", isNumber: true },
   { id: "total", label: "مبلغ", isNumber: true, isCurrency: true },
   { id: "offerCnt", label: "تعداد", isNumber: true },
-  { id: "id", label: "...", icon: ReportIcon, path: "/admin/RpProviders" },
+  { id: "id", label: "...", icon: ReportIcon, hasDetails: true },
 ];
 
 const headerGroups: HeaderGroup[] = [
@@ -59,6 +59,7 @@ export default function ProviderListForm({
   setStartDate,
   endDate,
   setEndDate,
+  onShowDetails,
 }: ProviderListFormProps) {
   const { providerList, error, isLoading } = useProviderList();
 
@@ -133,8 +134,18 @@ export default function ProviderListForm({
     setField("accYear", yearId);
     setField("brandId", brand === null || !brand ? 0 : brand.id);
     setField("sanadKind", sanadKind?.id);
-    setField("fDate", startDate === null || !startDate ? '' : convertPersianDate(startDate.toLocaleDateString('fa-IR')));
-    setField("tDate", endDate === null || !endDate ? '' : convertPersianDate(endDate.toLocaleDateString('fa-IR')));
+    setField(
+      "fDate",
+      startDate === null || !startDate
+        ? ""
+        : convertPersianDate(startDate.toLocaleDateString("fa-IR"))
+    );
+    setField(
+      "tDate",
+      endDate === null || !endDate
+        ? ""
+        : convertPersianDate(endDate.toLocaleDateString("fa-IR"))
+    );
   }, [systemId, yearId, brand?.id, sanadKind?.id, startDate, endDate]);
   if (error) return <div>Error: {error.message} </div>;
 
@@ -143,8 +154,20 @@ export default function ProviderListForm({
     { id: "2", title: "برگشت از فروش" },
   ];
 
+  // Custom cell click handler for Table
+  const handleCellClick = (
+    cell: HeadCell<ProviderItem>,
+    item: ProviderItem
+  ) => {
+    if (cell.hasDetails && cell.id === "id" && onShowDetails) {
+      onShowDetails(item.id.toString());
+    } else if (cell.path) {
+      navigate(`${cell.path}/${item[cell.id as keyof ProviderItem]}`);
+    }
+  };
+
   return (
-    <Paper className="p-2 m-2 w-full">
+    <Paper className="p-2 m-2 w-full h-full">
       <div className="w-full flex flex-col 2xl:flex-row justify-between items-center gap-2">
         <div className="w-full flex flex-col lg:flex-row gap-2">
           <div className="w-full flex items-center gap-2  ">
@@ -153,7 +176,9 @@ export default function ProviderListForm({
               onChange={handleCheckboxChange}
               value={hasDate}
             />
-            <label className="text-sm md:text-base w-10 text-left">تاریخ:</label>
+            <label className="text-sm md:text-base w-10 text-left">
+              تاریخ:
+            </label>
             <PersianDatePicker
               name="startDate"
               label="از:"
@@ -175,7 +200,10 @@ export default function ProviderListForm({
         </div>
         <div className="w-full flex flex-col lg:flex-row gap-2">
           <div className="w-full flex items-center gap-2">
-            <label htmlFor="type" className="text-sm md:text-base w-24 text-left">
+            <label
+              htmlFor="type"
+              className="text-sm md:text-base w-24 text-left"
+            >
               نوع:
             </label>
             <AutoComplete
@@ -190,7 +218,10 @@ export default function ProviderListForm({
             />
           </div>
           <div className="w-full flex items-center gap-2">
-            <label htmlFor="brand" className="text-sm md:text-base w-24 text-left">
+            <label
+              htmlFor="brand"
+              className="text-sm md:text-base w-24 text-left"
+            >
               برند:
             </label>
             <AutoComplete
@@ -213,12 +244,16 @@ export default function ProviderListForm({
       {isLoading ? (
         <div className="text-center">{<Skeleton />}</div>
       ) : providerList.rpProviders.length > 0 ? (
-        <Table
-          data={providerList.rpProviders}
-          headCells={headCells}
-          resetPageSignal={brand?.id}
-          headerGroups={headerGroups}
-        />
+        <div className="h-screen-minus-350 lg:h-screen-minus-200 overflow-y-auto">
+          <Table
+            data={providerList.rpProviders}
+            headCells={headCells}
+            resetPageSignal={brand?.id}
+            headerGroups={headerGroups}
+            // Pass custom cell click handler
+            cellClickHandler={handleCellClick}
+          />
+        </div>
       ) : (
         <p className="p-6 text-red-400 text-sm md:text-base font-bold">
           هیچ کالایی یافت نشد.

@@ -1,13 +1,13 @@
 import { useEffect } from "react";
-import { useGeneralContext } from "../../../context/GeneralContext";
-import { useProviderDetailList } from "../../../hooks/useProviderList";
-import { HeadCell } from "../../../hooks/useTable";
-import { convertPersianDate } from "../../../utilities/general";
-import { useProviderDetailStore } from "../../../store/providerStore";
+import { useGeneralContext } from "../../context/GeneralContext";
+import { useProviderDetailList } from "../../hooks/useProviderList";
+import { HeadCell } from "../../hooks/useTable";
+import { convertPersianDate } from "../../utilities/general";
+import { useProviderDetailStore } from "../../store/providerStore";
 import { Paper } from "@mui/material";
-import { ProviderDetail } from "../../../types/provider";
-import Skeleton from "../../layout/Skeleton";
-import { Table } from "../../controls/Table";
+import { ProviderDetail } from "../../types/provider";
+import Skeleton from "../layout/Skeleton";
+import { Table } from "../controls/Table";
 
 type ProviderListDetailsProps = {
   productId: string;
@@ -79,15 +79,17 @@ export default function ProviderListDetails({
   if (error) return <div>Error: {error.message} </div>;
 
   return (
-    <Paper className="p-2 m-2 w-full">
+    <Paper className="p-2 m-2 w-full h-full">
       {isLoading ? (
         <div className="text-center">{<Skeleton />}</div>
       ) : providerDetailList.rpProviderDetails.length > 0 ? (
-        <Table
-          data={providerDetailList.rpProviderDetails}
-          headCells={headCells}
-          resetPageSignal={brand?.id}
-        />
+        <div className="h-screen-minus-350 lg:h-screen-minus-200 overflow-y-auto">
+          <Table
+            data={providerDetailList.rpProviderDetails}
+            headCells={headCells}
+            resetPageSignal={brand?.id}
+          />
+        </div>
       ) : (
         <p className="p-6 text-red-400 text-sm md:text-base font-bold">
           هیچ اطلاعاتی یافت نشد.

@@ -6,11 +6,10 @@ import { useGeneralContext } from "../../context/GeneralContext";
 import { useProviderList } from "../../hooks/useProviderList";
 import ProviderListForm, {
   headCells,
-} from "../../components/inventory/providerListForm/ProviderListForm";
-import ProviderListDetails from "../../components/inventory/providerListForm/ProviderListDetails";
-import { useNavigate, useParams } from "react-router-dom";
-import { colors } from "../../utilities/color";
-import { ArrowBack } from "@mui/icons-material";
+} from "../../components/provider/ProviderListForm";
+import ProviderListDetails from "../../components/provider/ProviderListDetails";
+import {  useParams } from "react-router-dom";
+import ModalForm from "../../components/layout/ModalForm";
 
 export default function ProviderList() {
   const { providerList } = useProviderList();
@@ -18,7 +17,6 @@ export default function ProviderList() {
   const { systemId } = useGeneralContext();
   const { id } = useParams();
 
-  const navigate = useNavigate();
 
   const [brand, setBrand] = useState<{ id: string; title: string } | null>({
     id: "0",
@@ -39,11 +37,20 @@ export default function ProviderList() {
     setField("accSystem", systemId);
   }, []);
 
-  const handleExitClick = () => {
-    navigate(-1);
-  };
   console.log(id, "id");
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
 
+  const handleShowDetails = (productId: string) => {
+    setSelectedProductId(productId);
+    setDetailsOpen(true);
+  };
+
+  const handleCloseDetails = () => {
+    setDetailsOpen(false);
+    setSelectedProductId(null);
+  };
+  const hasDetails = true;
   return (
     <div
       className={`h-[calc(100vh-72px)] flex flex-col bg-gray-200  ${
@@ -58,46 +65,43 @@ export default function ProviderList() {
         </header>
       ) : null}
       {/* Sub-header */}
-      {id ? (
+      {/* {id ? (
         <header
           className={`w-full flex items-center justify-between border-gray-300 ${colors.cyan}`}
         >
           <span className="text-center text-white font-bold text-sm md:text-base w-full ">
             گردش
           </span>
-          <button
-            className="text-white px-4 py-2 rounded-md w-20"
-            onClick={handleExitClick}
-          >
-            <ArrowBack />
-            {/* <img src={ExitBtn} alt="exit" className="w-8 h-8" /> */}
-          </button>
         </header>
-      ) : null}
+      ) : null} */}
 
       {/* Main content */}
-      <main className="flex flex-col items-center justify-center px-2">
-        {id ? (
-          <ProviderListDetails
-            productId={id}
-            brand={brand}
-            sanadKind={sanadKind}
-            startDate={startDate}
-            endDate={endDate}
-          />
-        ) : (
-          <ProviderListForm
-            brand={brand}
-            setBrand={setBrand}
-            sanadKind={sanadKind}
-            setSanadKind={setSanadKind}
-            startDate={startDate}
-            setStartDate={setStartDate}
-            endDate={endDate}
-            setEndDate={setEndDate}
-          />
-        )}
+      <main className="h-full flex flex-col items-center justify-center px-2">
+        <ProviderListForm
+          brand={brand}
+          setBrand={setBrand}
+          sanadKind={sanadKind}
+          setSanadKind={setSanadKind}
+          startDate={startDate}
+          setStartDate={setStartDate}
+          endDate={endDate}
+          setEndDate={setEndDate}
+          onShowDetails={handleShowDetails}
+        />
       </main>
+      {hasDetails && (
+        <ModalForm isOpen={detailsOpen} onClose={handleCloseDetails} title="جزئیات گردش">
+          {selectedProductId && (
+            <ProviderListDetails
+              productId={selectedProductId}
+              brand={brand}
+              sanadKind={sanadKind}
+              startDate={startDate}
+              endDate={endDate}
+            />
+          )}
+        </ModalForm>
+      )}
 
       {/* Footer */}
       <footer className="border-t border-gray-200 text-xs text-gray-500 px-4 py-1 flex justify-between"></footer>

@@ -70,7 +70,7 @@ export default function InventoryGoodListForm() {
 
   return (
     <>
-      <Paper className="p-2 m-2 w-full">
+      <Paper className="p-2 m-2 w-full h-full">
         <div className="flex xl:w-1/4 justify-center items-center gap-2">
           <label htmlFor="year" className="">
             برند:
@@ -93,11 +93,13 @@ export default function InventoryGoodListForm() {
         {isLoading ? (
           <div className="text-center">{<Skeleton />}</div>
         ) : inventoryList.rpProviderInventories.length > 0 ? (
-          <Table
-            data={inventoryList.rpProviderInventories}
-            headCells={headCells}
-            resetPageSignal={brand?.id}
-          />
+          <div className="h-screen-minus-350 lg:h-screen-minus-200 overflow-y-auto">
+            <Table
+              data={inventoryList.rpProviderInventories}
+              headCells={headCells}
+              resetPageSignal={brand?.id}
+            />
+          </div>
         ) : (
           <p className="p-6 text-red-400 text-sm md:text-base font-bold">
             هیچ کالایی یافت نشد.

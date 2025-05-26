@@ -15,10 +15,23 @@ api.interceptors.request.use((config) => {
   // Retrieve the token from localStorage
   const token = localStorage.getItem('token');
   if (token) {
-    config.headers['Authorization'] = token; // No 'Bearer '
+    config.headers['Authorization'] = token; 
   }
 
   return config;
 });
+
+// Add a response interceptor to handle 401 Unauthorized
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response && error.response.status === 401) {
+      // Clear localStorage and redirect to login
+      //localStorage.clear();
+      window.location.href = '/login'; // Adjust if your login route is different
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default api;

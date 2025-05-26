@@ -13,6 +13,8 @@ type TableProps<T> = {
   headCells: HeadCell<T>[];
   headerGroups?: HeaderGroup[];
   resetPageSignal: string | undefined;
+  pagination?: boolean;
+  cellClickHandler?: (cell: HeadCell<T>, item: T) => void;
 };
 
 export function Table<T>({
@@ -20,6 +22,8 @@ export function Table<T>({
   headCells,
   headerGroups,
   resetPageSignal,
+  pagination = false,
+  cellClickHandler,
 }: TableProps<T>) {
   const [filterFn] = useState<{
     fn: (items: T[]) => T[];
@@ -44,67 +48,26 @@ export function Table<T>({
     filterFn,
     resetPageSignal
   );
-  
+
   const navigate = useNavigate();
-  
+
   return (
-    <div style={{ height: "70vh", overflowY: "auto" }}>
+    <div className="h-full">
       <TblContainer>
         <TblHead />
         <TableBody>
-          {recordsAfterPagingAndSorting().map((item, idx) => (
-            <TableRow key={idx}>
-              {(isMobile ? mobileMainColumns : headCells).map(
-                (cell: HeadCell<T>) => {
-                  let displayValue;
-                  if (cell.icon !== undefined) {
-                    displayValue = <img src={cell.icon} alt={cell.label} />;
-                  } 
-                  else if (cell.id === "index") {
-                    displayValue = convertToFarsiDigits(page * rowsPerPage + idx + 1);
-                  } 
-                  else if (cell.isCurrency) {
-                    displayValue = convertToFarsiDigits(
-                      formatNumberWithCommas(item[cell.id] as number)
-                    );
-                  } else {
-                    const value = item[cell.id];
-                    displayValue =
-                      cell.isNumber && value !== undefined && value !== null
-                        ? convertToFarsiDigits(
-                            value as string | number | null | undefined
-                          )
-                        : value;
-                  }
-                  return (
-                    <TableCell
-                      key={String(cell.id)}
-                      className={isMobile ? "text-xs" : ""}
-                      onClick={() => {
-                        if (cell.path) {
-                          navigate(`${cell.path}/${item[cell.id as keyof T]}`);
-                        }
-                      }}
-                    >
-                      {typeof displayValue === "string" || typeof displayValue === "number" || React.isValidElement(displayValue)
-                        ? displayValue
-                        : displayValue !== undefined && displayValue !== null
-                          ? String(displayValue)
-                          : ""}
-                    </TableCell>
-                  );
-                }
-              )}
-              {isMobile && mobileRestColumns.length > 0 && (
-                <TableCell className="text-xs"
-                >
-                  {mobileRestColumns.map((cell: HeadCell<T>) => {
+          {(pagination ? recordsAfterPagingAndSorting() : data).map(
+            (item, idx) => (
+              <TableRow key={idx}>
+                {(isMobile ? mobileMainColumns : headCells).map(
+                  (cell: HeadCell<T>) => {
                     let displayValue;
-                    console.log(cell, "cell.icon");
                     if (cell.icon !== undefined) {
                       displayValue = <img src={cell.icon} alt={cell.label} />;
                     } else if (cell.id === "index") {
-                      displayValue = convertToFarsiDigits(page * rowsPerPage + idx + 1);
+                      displayValue = convertToFarsiDigits(
+                        pagination ? page * rowsPerPage + idx + 1 : idx + 1
+                      );
                     } else if (cell.isCurrency) {
                       displayValue = convertToFarsiDigits(
                         formatNumberWithCommas(item[cell.id] as number)
@@ -119,29 +82,87 @@ export function Table<T>({
                           : value;
                     }
                     return (
-                      <div key={String(cell.id)}
-                      onClick={() => {
-                        if (cell.path) {
-                          navigate(`${cell.path}/${item[cell.id as keyof T]}`);
-                        }
-                      }}
+                      <TableCell
+                        key={String(cell.id)}
+                        className={isMobile ? "text-xs" : ""}
+                        onClick={() => {
+                          if (cellClickHandler) {
+                            cellClickHandler(cell, item);
+                          } else if (cell.path) {
+                            navigate(
+                              `${cell.path}/${item[cell.id as keyof T]}`
+                            );
+                          }
+                        }}
                       >
-                        <strong>{cell.label}:</strong>
-                        {typeof displayValue === "string" || typeof displayValue === "number" || React.isValidElement(displayValue)
+                        {typeof displayValue === "string" ||
+                        typeof displayValue === "number" ||
+                        React.isValidElement(displayValue)
                           ? displayValue
                           : displayValue !== undefined && displayValue !== null
+                          ? String(displayValue)
+                          : ""}
+                      </TableCell>
+                    );
+                  }
+                )}
+                {isMobile && mobileRestColumns.length > 0 && (
+                  <TableCell className="text-xs">
+                    {mobileRestColumns.map((cell: HeadCell<T>) => {
+                      let displayValue;
+                      console.log(cell, "cell.icon");
+                      if (cell.icon !== undefined) {
+                        displayValue = <img src={cell.icon} alt={cell.label} />;
+                      } else if (cell.id === "index") {
+                        displayValue = convertToFarsiDigits(
+                          pagination ? page * rowsPerPage + idx + 1 : idx + 1
+                        );
+                      } else if (cell.isCurrency) {
+                        displayValue = convertToFarsiDigits(
+                          formatNumberWithCommas(item[cell.id] as number)
+                        );
+                      } else {
+                        const value = item[cell.id];
+                        displayValue =
+                          cell.isNumber && value !== undefined && value !== null
+                            ? convertToFarsiDigits(
+                                value as string | number | null | undefined
+                              )
+                            : value;
+                      }
+                      return (
+                        <div
+                          key={String(cell.id)}
+                          onClick={() => {
+                            if (cellClickHandler) {
+                              cellClickHandler(cell, item);
+                            } else if (cell.path) {
+                              navigate(
+                                `${cell.path}/${item[cell.id as keyof T]}`
+                              );
+                            }
+                          }}
+                        >
+                          <strong>{cell.label}:</strong>
+                          {typeof displayValue === "string" ||
+                          typeof displayValue === "number" ||
+                          React.isValidElement(displayValue)
+                            ? displayValue
+                            : displayValue !== undefined &&
+                              displayValue !== null
                             ? String(displayValue)
                             : ""}
-                      </div>
-                    );
-                  })}
-                </TableCell>
-              )}
-            </TableRow>
-          ))}
+                        </div>
+                      );
+                    })}
+                  </TableCell>
+                )}
+              </TableRow>
+            )
+          )}
         </TableBody>
       </TblContainer>
-      <TblPagination />
+      {pagination && <TblPagination />}
     </div>
   );
 }
