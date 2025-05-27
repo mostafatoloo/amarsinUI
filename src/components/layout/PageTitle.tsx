@@ -84,6 +84,7 @@ const PageTitle = () => {
           outlinedInputPadding="0"
           inputPadding="0 !important"
           showBold={true}
+          showPopupIcon={false}
         />
 
       </div>
