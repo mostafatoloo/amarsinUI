@@ -1,9 +1,9 @@
 import * as XLSX from "xlsx";
 
 import ExcelIcon from "../assets/images/GrayThem/excel24.png";
-import Modal from "../components/layout/Modal";
 import {  useEffect, useState } from "react";
 import { HeadCell } from "../hooks/useTable";
+import ModalMessage from "../components/layout/ModalMessage";
 
 interface ExportToExcelProps<T> {
   headCells: HeadCell<T>[];
@@ -62,7 +62,7 @@ const ExcelExport = <T extends object>({
         <img src={ExcelIcon} />
         <p className="text-xs">اکسل</p>
       </div>
-      <Modal
+      <ModalMessage
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         message="اطلاعاتی برای انتقال به اکسل وجود ندارد."

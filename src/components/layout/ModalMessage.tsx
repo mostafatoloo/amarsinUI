@@ -4,7 +4,7 @@ type Props ={
     message:string
   }
   
-  const Modal = ({ isOpen, onClose, message }:Props) => {  
+  const ModalMessage = ({ isOpen, onClose, message }:Props) => {  
     if (!isOpen) return null;  
   
     return (  
@@ -22,4 +22,4 @@ type Props ={
     );  
   };  
   
-  export default Modal;  
+  export default ModalMessage;  

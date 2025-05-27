@@ -18,15 +18,16 @@ export const headCells: HeadCell<InventoryItem>[] = [
     id: "index",
     label: "ردیف",
     disableSorting: true,
+    cellWidth: "10%",
   },
-  { id: "bn", label: "برند" },
-  { id: "fn", label: "نام کالا" },
-  { id: "s", label: "قابل فروش", isNumber: true },
-  { id: "ns", label: "غیر قابل فروش", isNumber: true },
-  { id: "c", label: "بچ", isNumber: true },
-  { id: "uid", label: "UID", isNumber: true },
-  { id: "gtin", label: "GTIN", isNumber: true },
-  { id: "ed", label: "انقضاء", isNumber: true },
+  { id: "bn", label: "برند" ,cellWidth: "10%"},
+  { id: "fn", label: "نام کالا" ,cellWidth: "20%"},
+  { id: "s", label: "قابل فروش", isNumber: true ,cellWidth: "10%"},
+  { id: "ns", label: "غیر قابل فروش", isNumber: true ,cellWidth: "10%"},
+  { id: "c", label: "بچ", isNumber: true ,cellWidth: "10%"},
+  { id: "uid", label: "UID", isNumber: true ,cellWidth: "10%"},
+  { id: "gtin", label: "GTIN", isNumber: true ,cellWidth: "10%"},
+  { id: "ed", label: "انقضاء", isNumber: true ,cellWidth: "10%"},
 ];
 
 export default function InventoryGoodListForm() {
@@ -93,7 +94,7 @@ export default function InventoryGoodListForm() {
         {isLoading ? (
           <div className="text-center">{<Skeleton />}</div>
         ) : inventoryList.rpProviderInventories.length > 0 ? (
-          <div className="h-screen-minus-350 lg:h-screen-minus-200 overflow-y-auto">
+          <div className="h-screen-minus-350 lg:h-screen-minus-200 mt-2">
             <Table
               data={inventoryList.rpProviderInventories}
               headCells={headCells}

@@ -10,12 +10,12 @@ import { useGeneralContext } from "../../context/GeneralContext";
 import PersianDatePicker from "../controls/PersianDatePicker";
 import Checkbox from "../controls/Checkbox";
 import { HeadCell, HeaderGroup } from "../../hooks/useTable";
-import Modal from "../layout/Modal";
 import { useProviderList } from "../../hooks/useProviderList";
 import { ProviderItem } from "../../types/provider";
 import { useProviderStore } from "../../store/providerStore";
 import { convertPersianDate } from "../../utilities/general";
 import ReportIcon from "../../assets/images/GrayThem/report16.png";
+import ModalMessage from "../layout/ModalMessage";
 
 type ProviderListFormProps = {
   brand: { id: string; title: string } | null;
@@ -34,12 +34,13 @@ export const headCells: HeadCell<ProviderItem>[] = [
     id: "index",
     label: "ردیف",
     disableSorting: true,
+    cellWidth: "10%",
   },
-  { id: "name", label: "نام کالا" },
-  { id: "cnt", label: "تعداد", isNumber: true },
-  { id: "total", label: "مبلغ", isNumber: true, isCurrency: true },
-  { id: "offerCnt", label: "تعداد", isNumber: true },
-  { id: "id", label: "...", icon: ReportIcon, hasDetails: true },
+  { id: "name", label: "نام کالا" ,cellWidth: "55%"},
+  { id: "cnt", label: "تعداد", isNumber: true ,cellWidth: "10%"},
+  { id: "total", label: "مبلغ", isNumber: true, isCurrency: true ,cellWidth: "10%"},
+  { id: "offerCnt", label: "تعداد", isNumber: true ,cellWidth: "10%"},
+  { id: "id", label: "...", icon: ReportIcon, hasDetails: true ,cellWidth: "5%"},
 ];
 
 const headerGroups: HeaderGroup[] = [
@@ -170,7 +171,7 @@ export default function ProviderListForm({
     <Paper className="p-2 m-2 w-full h-full">
       <div className="w-full flex flex-col 2xl:flex-row justify-between items-center gap-2">
         <div className="w-full flex flex-col lg:flex-row gap-2">
-          <div className="w-full flex items-center gap-2  ">
+          <div className="w-full flex items-center gap-2">
             <Checkbox
               name="DateCheckbox"
               onChange={handleCheckboxChange}
@@ -244,7 +245,7 @@ export default function ProviderListForm({
       {isLoading ? (
         <div className="text-center">{<Skeleton />}</div>
       ) : providerList.rpProviders.length > 0 ? (
-        <div className="h-screen-minus-350 lg:h-screen-minus-200 overflow-y-auto">
+        <div className="h-screen-minus-350 lg:h-screen-minus-200 mt-2">
           <Table
             data={providerList.rpProviders}
             headCells={headCells}
@@ -252,6 +253,7 @@ export default function ProviderListForm({
             headerGroups={headerGroups}
             // Pass custom cell click handler
             cellClickHandler={handleCellClick}
+            hasSumRow={true}
           />
         </div>
       ) : (
@@ -259,7 +261,7 @@ export default function ProviderListForm({
           هیچ کالایی یافت نشد.
         </p>
       )}
-      <Modal
+      <ModalMessage
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         message="تاریخ انتخابی باید بیشتر از تاریخ شروع باشد."

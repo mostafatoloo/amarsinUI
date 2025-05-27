@@ -21,6 +21,12 @@ export interface ProviderListRequest {
   tDate: string;
 }
 
+type CupInfo = {
+  iocId: number;
+  code: string;
+  expDate: string;
+};
+
 interface ProviderDetail {
   id: number;
   kind: string;
@@ -39,7 +45,7 @@ interface ProviderDetail {
   total: number;
   shRId: number;
   shRDate: string; // date in "YYYY/MM/DD" format
-  cupInfoes: any[]; // assuming array of any, can be refined if more info is provided
+  cupInfoes: CupInfo[];
 }
 
 export type ProviderDetailList = {

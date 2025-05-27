@@ -27,7 +27,7 @@ export default function ProviderList() {
     title: string;
   } | null>({
     id: "1",
-    title: "",
+    title: "فروش",
   });
 
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -37,7 +37,6 @@ export default function ProviderList() {
     setField("accSystem", systemId);
   }, []);
 
-  console.log(id, "id");
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
 

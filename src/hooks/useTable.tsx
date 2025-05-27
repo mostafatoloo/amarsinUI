@@ -29,6 +29,9 @@ export type HeadCell<T> = {
   icon?: string;
   path?: string;
   hasDetails?: boolean;
+  cellWidth?: string;
+  arrayFieldNames?: string[];
+
 };
 
 export type HeaderGroup = {
@@ -48,8 +51,8 @@ type UseTableReturn<T> = {
   isMobile: boolean;
   mobileMainColumns: HeadCell<T>[];
   mobileRestColumns: HeadCell<T>[];
-  page:number,          
-  rowsPerPage:number,    
+  page: number;
+  rowsPerPage: number;
 };
 
 export default function useTable<T>(
@@ -57,7 +60,7 @@ export default function useTable<T>(
   headCells: HeadCell<T>[],
   headerGroups: HeaderGroup[],
   filterFn: FilterFn<T>,
-  resetPageSignal?: any
+  resetPageSignal?: any,
 ): UseTableReturn<T> {
   const theme = useTheme();
   const isMobile = useMediaQuery("(max-width: 600px)");
@@ -65,9 +68,9 @@ export default function useTable<T>(
   const mobileMainColumns = headCells.slice(0, 3);
   const mobileRestColumns = headCells.slice(3);
 
-
   const [page, setPage] = useState<number>(0);
-  const {setDefaultRowsPerPage,defaultRowsPerPage,pageNumbers}=useGeneralContext()
+  const { setDefaultRowsPerPage, defaultRowsPerPage, pageNumbers } =
+    useGeneralContext();
   const [rowsPerPage, setRowsPerPage] = useState<number>(defaultRowsPerPage);
   const pages = pageNumbers.map((num) => ({
     label: convertToFarsiDigits(num),
@@ -81,23 +84,42 @@ export default function useTable<T>(
   }, [resetPageSignal]);
 
   const tableStyles: SxProps = {
-    mt: 3,
     "& thead th": {
-      fontWeight: 600,
-      color: theme.palette.grey[600],
+      position: "sticky",
+      top: 0,
+      zIndex: 1,
+      padding: "4px 8px",
+      fontWeight: "bold",
+      color: "gray",
       backgroundColor: theme.palette.grey[300],
+      borderRight: "1px solid lightgray",
+      borderTop: "1px solid lightgray",
+      borderBottom: "1px solid lightgray",
+      "&:last-child": {
+        borderRight: "none",
+      },
     },
+
     "& tbody td": {
+      padding: "4px 8px",
       fontWeight: 300,
+      borderRight: "1px solid lightgray",
+      "&:last-child": {
+        borderRight: "none",
+      },
+      color: theme.palette.grey[700]
     },
     "& tbody tr:hover": {
       backgroundColor: "#fffbf2",
       cursor: "pointer",
     },
+
   };
 
   const TblContainer: React.FC<{ children: ReactNode }> = ({ children }) => (
-    <Table sx={tableStyles}>{children}</Table>
+    <div style={{ maxHeight: "calc(100vh - 200px)", overflow: "auto" }}>
+      <Table sx={tableStyles}>{children}</Table>
+    </div>
   );
 
   const TblHead: React.FC = () => {
@@ -115,8 +137,6 @@ export default function useTable<T>(
                 key={idx}
                 colSpan={group.colSpan}
                 align="center"
-                style={{ fontWeight: "bold" }}
-                sx={{ padding: "4px 8px", borderBottom: "1px solid lightgray" }} // Adjust as needed
               >
                 {group.label}
               </TableCell>
@@ -127,8 +147,9 @@ export default function useTable<T>(
           {(isMobile ? mobileMainColumns : headCells).map((headCell) => (
             <TableCell
               key={String(headCell.id)}
-              sx={{ padding: "4px 8px" }} // Adjust as needed
+              align="center"
               sortDirection={orderBy === headCell.id ? order : false}
+              sx={{ width: headCell.icon ? "50px" : headCell.cellWidth || "auto" }}
             >
               {headCell.disableSorting ? (
                 headCell.label
@@ -154,7 +175,7 @@ export default function useTable<T>(
   // Custom Pagination Actions
   function TablePaginationActions(props: any) {
     const { count, page, rowsPerPage, onPageChange } = props;
-    setDefaultRowsPerPage(rowsPerPage)
+    setDefaultRowsPerPage(rowsPerPage);
     const lastPage = Math.max(0, Math.ceil(count / rowsPerPage) - 1);
 
     return (
@@ -267,6 +288,6 @@ export default function useTable<T>(
     mobileMainColumns,
     mobileRestColumns,
     page,
-    rowsPerPage
+    rowsPerPage,
   };
 }
