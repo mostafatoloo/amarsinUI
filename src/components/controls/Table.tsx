@@ -18,7 +18,7 @@ type TableProps<T> = {
   hasSumRow?: boolean;
 };
 
-export function Table<T,A>({
+export function Table<T>({
   data,
   headCells,
   headerGroups,
@@ -76,6 +76,7 @@ export function Table<T,A>({
                     : {}
                 }
               >
+                {/* mobile main columns */}
                 {(isMobile ? mobileMainColumns : headCells).map(
                   (cell: HeadCell<T>) => {
                     const lastRow =
@@ -84,17 +85,7 @@ export function Table<T,A>({
                         .length -
                         1;
                     let displayValue;
-                    if (cell.arrayFieldNames !== undefined) {
-                      const arrayData = item[cell.id as keyof T] as A[];
-                      displayValue = arrayData.map((childItem: A, index: number) => {
-                        const fieldNames = cell.arrayFieldNames!;
-                        return (
-                          <div key={index}>
-                            {`${(childItem as any)[fieldNames[1]]}|${(childItem as any)[fieldNames[2]]}`}
-                          </div>
-                        );
-                      });
-                    } else if (cell.icon !== undefined) {
+                    if (cell.icon !== undefined) {
                       displayValue =
                         hasSumRow && lastRow ? (
                           ""
@@ -111,10 +102,10 @@ export function Table<T,A>({
                       }
                     } else if (cell.isCurrency) {
                       displayValue = convertToFarsiDigits(
-                        formatNumberWithCommas(item[cell.id] as number)
+                        formatNumberWithCommas(item[cell.id as keyof T] as number)
                       );
                     } else {
-                      const value = item[cell.id];
+                      const value = item[cell.id as keyof T];
                       displayValue =
                         cell.isNumber && value !== undefined && value !== null
                           ? convertToFarsiDigits(
@@ -147,23 +138,34 @@ export function Table<T,A>({
                     );
                   }
                 )}
+                {/* mobile rest columns */}
                 {isMobile && mobileRestColumns.length > 0 && (
                   <TableCell className="text-xs">
                     {mobileRestColumns.map((cell: HeadCell<T>) => {
+                      const lastRow =
+                        idx ===
+                        (pagination ? recordsAfterPagingAndSorting() : data)
+                          .length -
+                          1;
                       let displayValue;
-                      console.log(cell, "cell.icon");
+
                       if (cell.icon !== undefined) {
-                        displayValue = <img src={cell.icon} alt={cell.label} />;
+                        displayValue =
+                          hasSumRow && lastRow ? (
+                            ""
+                          ) : (
+                            <img src={cell.icon} alt={cell.label} />
+                          );
                       } else if (cell.id === "index") {
                         displayValue = convertToFarsiDigits(
                           pagination ? page * rowsPerPage + idx + 1 : idx + 1
                         );
                       } else if (cell.isCurrency) {
                         displayValue = convertToFarsiDigits(
-                          formatNumberWithCommas(item[cell.id] as number)
+                          formatNumberWithCommas(item[cell.id as keyof T] as number)
                         );
                       } else {
-                        const value = item[cell.id];
+                        const value = item[cell.id as keyof T];
                         displayValue =
                           cell.isNumber && value !== undefined && value !== null
                             ? convertToFarsiDigits(

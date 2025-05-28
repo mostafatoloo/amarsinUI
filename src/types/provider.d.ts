@@ -48,6 +48,27 @@ interface ProviderDetail {
   cupInfoes: CupInfo[];
 }
 
+interface ProviderDetailTable {
+  id: number;
+  kind: string;
+  factorNo: string;
+  dat: string; // date in "YYYY/MM/DD" format
+  customerId: number;
+  srName: string;
+  nId: string;
+  productId: number;
+  bName: string;
+  cnt: number;
+  offerCnt: number;
+  cost: number;
+  dcrmnt: number;
+  valueTax: number;
+  total: number;
+  shRId: number;
+  shRDate: string; // date in "YYYY/MM/DD" format
+  cupInfoes: string
+}
+
 export type ProviderDetailList = {
   err: number;
   msg: string;

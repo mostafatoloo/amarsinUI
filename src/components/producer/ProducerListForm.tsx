@@ -6,14 +6,14 @@ import { useNavigate } from "react-router-dom";
 import { Table } from "../controls/Table";
 import { useGeneralContext } from "../../context/GeneralContext";
 import { HeadCell, HeaderGroup } from "../../hooks/useTable";
-import { useProviderList } from "../../hooks/useProviderList";
-import { ProviderItem } from "../../types/provider";
-import { useProviderStore } from "../../store/providerStore";
 import { convertPersianDate } from "../../utilities/general";
 import ReportIcon from "../../assets/images/GrayThem/report16.png";
-import ProviderProducerParams from "./ProviderProducerParams";
+import ProviderProducerParams from "../provider/ProviderProducerParams";
+import { useProducerList } from "../../hooks/useProducerList";
+import { RpProduct } from "../../types/producer";
+import { useProducerStore } from "../../store/producerStore";
 
-type ProviderListFormProps = {
+type ProducerListFormProps = {
   brand: { id: string; title: string } | null;
   setBrand: (brand: { id: string; title: string } | null) => void;
   sanadKind: { id: string; title: string } | null;
@@ -22,29 +22,26 @@ type ProviderListFormProps = {
   setStartDate: (date: Date | null) => void;
   endDate: Date | null;
   setEndDate: (date: Date | null) => void;
-  onShowDetails: (providerId: string) => void;
+  onShowDetails?: (providerId: string) => void;
 };
 
-export const headCells: HeadCell<ProviderItem>[] = [
+export const headCells: HeadCell<RpProduct>[] = [
   {
     id: "index",
     label: "ردیف",
     disableSorting: true,
     cellWidth: "10%",
   },
-  { id: "name", label: "نام کالا" ,cellWidth: "55%"},
-  { id: "cnt", label: "تعداد", isNumber: true ,cellWidth: "10%"},
-  { id: "total", label: "مبلغ", isNumber: true, isCurrency: true ,cellWidth: "10%"},
-  { id: "offerCnt", label: "تعداد", isNumber: true ,cellWidth: "10%"},
-  { id: "id", label: "گردش", icon: ReportIcon, hasDetails: true ,cellWidth: "5%"},
-];
-
-const headerGroups: HeaderGroup[] = [
-  { label: "", colSpan: 1 },
-  { label: "", colSpan: 1 },
-  { label: "ریالی", colSpan: 2 },
-  { label: "آفر", colSpan: 1 },
-  { label: "", colSpan: 1 },
+  { id: "name", label: "نام کالا", cellWidth: "20%" },
+  { id: "cnt", label: "تعداد", isNumber: true, cellWidth: "10%" },
+  {
+    id: "total",
+    label: "مبلغ",
+    isNumber: true,
+    isCurrency: true,
+    cellWidth: "10%",
+  },
+  { id: "offerCnt", label: "تعداد", isNumber: true, cellWidth: "10%" },
 ];
 
 export default function ProviderListForm({
@@ -57,13 +54,43 @@ export default function ProviderListForm({
   endDate,
   setEndDate,
   onShowDetails,
-}: ProviderListFormProps) {
-  const { providerList, error, isLoading } = useProviderList();
+}: ProducerListFormProps) {
+  const { producerList, error, isLoading } = useProducerList();
+
+  console.log(producerList.producers, "producers", producerList.rpProducts, "rpProducts");
+
+  const headerGroups: HeaderGroup[] = [
+    { label: "", colSpan: 1 },
+    { label: "", colSpan: 1 },
+    { label: "ریالی", colSpan: 2 },
+    { label: "آفر", colSpan: 1 },
+    { label: "تامین", colSpan: producerList.producers.length },
+    { label: "", colSpan: 1 },
+  ];
+
+  const dynamicHeadCells: HeadCell<RpProduct>[] = producerList.producers.map(
+    (producer) => ({
+      id: producer.id.toString(),
+      label: producer.name,
+      cellWidth: "10%",
+      isNumber: true,
+    })
+  );
+
+  const rotation = {
+    id: "id" as keyof RpProduct,
+    label: "گردش",
+    icon: ReportIcon,
+    hasDetails: true,
+    cellWidth: "5%",
+  };
+
+  const allHeadCells = [...headCells, ...dynamicHeadCells, rotation];
 
   const { systemId, yearId } = useGeneralContext();
 
   const { setField: setBrandField } = useBrandStore();
-  const { setField } = useProviderStore();
+  const { setField } = useProducerStore();
 
   const navigate = useNavigate();
   const [search, setSearch] = useState<string>("");
@@ -79,7 +106,6 @@ export default function ProviderListForm({
     setBrandField("accSystem", systemId);
     setBrandField("search", search);
   }, [search, systemId]);
-
 
   useEffect(() => {
     setField("accSystem", systemId);
@@ -102,14 +128,9 @@ export default function ProviderListForm({
   if (error) return <div>Error: {error.message} </div>;
 
   // Custom cell click handler for Table
-  const handleCellClick = (
-    cell: HeadCell<ProviderItem>,
-    item: ProviderItem
-  ) => {
+  const handleCellClick = (cell: HeadCell<RpProduct>, item: RpProduct) => {
     if (cell.hasDetails && cell.id === "id" && onShowDetails) {
       onShowDetails(item.id.toString());
-    } else if (cell.path) {
-      navigate(`${cell.path}/${item[cell.id as keyof ProviderItem]}`);
     }
   };
 
@@ -129,18 +150,27 @@ export default function ProviderListForm({
 
       {isLoading ? (
         <div className="text-center">{<Skeleton />}</div>
-      ) : providerList.err !== 0 ? (
+      ) : producerList.err !== 0 ? (
         <p className="p-6 text-red-400 text-sm md:text-base font-bold">
-          {providerList.msg}
+          {producerList.msg}
         </p>
-      ) : providerList.rpProviders.length > 0 ? (
+      ) : producerList.rpProducts.length > 0 ? (
         <div className="h-screen-minus-200 mt-2">
           <Table
-            data={providerList.rpProviders}
-            headCells={headCells}
+            data={producerList.rpProducts.map((product) => {
+              // Create an object with dynamic keys for each producer's amnt
+              const dynamicAmnts: Record<string, number> = {};
+              product.rpProducers.forEach((producer) => {
+                dynamicAmnts[producer.id.toString()] = producer.amnt || 0;
+              });
+              return {
+                ...product,
+                ...dynamicAmnts, // Spread dynamic amnt fields
+              };
+            })}
+            headCells={allHeadCells}
             resetPageSignal={brand?.id}
             headerGroups={headerGroups}
-            // Pass custom cell click handler
             cellClickHandler={handleCellClick}
             hasSumRow={true}
           />
@@ -150,7 +180,6 @@ export default function ProviderListForm({
           هیچ کالایی یافت نشد.
         </p>
       )}
-
     </Paper>
   );
 }

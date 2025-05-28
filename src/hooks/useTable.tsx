@@ -21,7 +21,7 @@ import { convertToFarsiDigits } from "../utilities/general";
 import { useGeneralContext } from "../context/GeneralContext";
 
 export type HeadCell<T> = {
-  id: keyof T | "index";
+  id: keyof T | "index" | string;
   label: string;
   disableSorting?: boolean;
   isNumber?: boolean;
@@ -30,8 +30,6 @@ export type HeadCell<T> = {
   path?: string;
   hasDetails?: boolean;
   cellWidth?: string;
-  arrayFieldNames?: string[];
-
 };
 
 export type HeaderGroup = {
@@ -60,7 +58,7 @@ export default function useTable<T>(
   headCells: HeadCell<T>[],
   headerGroups: HeaderGroup[],
   filterFn: FilterFn<T>,
-  resetPageSignal?: any,
+  resetPageSignal?: any
 ): UseTableReturn<T> {
   const theme = useTheme();
   const isMobile = useMediaQuery("(max-width: 600px)");
@@ -107,18 +105,19 @@ export default function useTable<T>(
       "&:last-child": {
         borderRight: "none",
       },
-      color: theme.palette.grey[700]
+      color: theme.palette.grey[700],
     },
     "& tbody tr:hover": {
       backgroundColor: "#fffbf2",
       cursor: "pointer",
     },
-
   };
 
   const TblContainer: React.FC<{ children: ReactNode }> = ({ children }) => (
-    <div style={{ maxHeight: "calc(100vh - 200px)", overflow: "auto" }}>
-      <Table sx={tableStyles}>{children}</Table>
+    <div className="2xl:max-h-[calc(100vh-200px)] max-h-[calc(100vh-350px)] overflow-y-auto overflow-x-auto w-full">
+      <Table sx={tableStyles} className="min-w-[600px]">
+        {children}
+      </Table>
     </div>
   );
 
@@ -133,11 +132,7 @@ export default function useTable<T>(
         {!isMobile && headerGroups.length > 0 && (
           <TableRow>
             {headerGroups.map((group, idx) => (
-              <TableCell
-                key={idx}
-                colSpan={group.colSpan}
-                align="center"
-              >
+              <TableCell key={idx} colSpan={group.colSpan} align="center">
                 {group.label}
               </TableCell>
             ))}
@@ -149,7 +144,9 @@ export default function useTable<T>(
               key={String(headCell.id)}
               align="center"
               sortDirection={orderBy === headCell.id ? order : false}
-              sx={{ width: headCell.icon ? "50px" : headCell.cellWidth || "auto" }}
+              sx={{
+                width: headCell.icon ? "50px" : headCell.cellWidth || "auto",
+              }}
             >
               {headCell.disableSorting ? (
                 headCell.label

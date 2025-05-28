@@ -21,7 +21,6 @@ export function useProviderList() {
 
       const url: string = `/api/ProviderReport/list?accSystem=${params.accSystem}&accYear=${params.accYear}&brandId=${params.brandId}&sanadKind=${params.sanadKind}&fDate=${encodeURIComponent(params.fDate)}&tDate=${encodeURIComponent(params.tDate)}`;
 
-      console.log('url',url)
       const response = await api.get(url);
       return response.data;
     },

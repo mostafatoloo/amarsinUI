@@ -93,8 +93,13 @@ export default function InventoryGoodListForm() {
 
         {isLoading ? (
           <div className="text-center">{<Skeleton />}</div>
+        ) : 
+        inventoryList.err !== 0 ? (
+          <p className="p-6 text-red-400 text-sm md:text-base font-bold">
+            {inventoryList.msg}
+          </p>
         ) : inventoryList.rpProviderInventories.length > 0 ? (
-          <div className="h-screen-minus-350 lg:h-screen-minus-200 mt-2">
+          <div className="h-screen-minus-200 mt-2">
             <Table
               data={inventoryList.rpProviderInventories}
               headCells={headCells}

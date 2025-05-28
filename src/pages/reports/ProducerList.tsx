@@ -3,16 +3,13 @@ import ExcelExport from "../../utilities/ExcelExport";
 import { useBrandStore } from "../../store/brandStore";
 import { useEffect, useState } from "react";
 import { useGeneralContext } from "../../context/GeneralContext";
-import { useProviderList } from "../../hooks/useProviderList";
-import ProviderListForm, {
-  headCells,
-} from "../../components/provider/ProviderListForm";
-import ProviderListDetails from "../../components/provider/ProviderListDetails";
-import {  useParams } from "react-router-dom";
-import ModalForm from "../../components/layout/ModalForm";
 
-export default function ProviderList() {
-  const { providerList } = useProviderList();
+import {  useParams } from "react-router-dom";
+import { useProducerList } from "../../hooks/useProducerList";
+import ProducerListForm, { headCells } from "../../components/producer/ProducerListForm";
+
+export default function ProducerList() {
+  const { producerList } = useProducerList();
   const { setField } = useBrandStore();
   const { systemId } = useGeneralContext();
   const { id } = useParams();
@@ -37,7 +34,7 @@ export default function ProviderList() {
     setField("accSystem", systemId);
   }, []);
 
-  const [detailsOpen, setDetailsOpen] = useState(false);
+  /*const [detailsOpen, setDetailsOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
 
   const handleShowDetails = (productId: string) => {
@@ -49,7 +46,8 @@ export default function ProviderList() {
     setDetailsOpen(false);
     setSelectedProductId(null);
   };
-  const hasDetails = true;
+
+  const hasDetails = true;*/
   return (
     <div
       className={`h-[calc(100vh-72px)] flex flex-col bg-gray-200  ${
@@ -60,14 +58,13 @@ export default function ProviderList() {
       {!id ? (
         <header className="flex items-center justify-between border-gray-300">
           <PageTitle />
-          <ExcelExport data={providerList.rpProviders} headCells={headCells} />
+          <ExcelExport data={producerList.rpProducts} headCells={headCells} />
         </header>
       ) : null}
-      {/* Sub-header */}
 
       {/* Main content */}
       <main className="h-full flex flex-col items-center justify-center px-2">
-        <ProviderListForm
+        <ProducerListForm
           brand={brand}
           setBrand={setBrand}
           sanadKind={sanadKind}
@@ -76,9 +73,10 @@ export default function ProviderList() {
           setStartDate={setStartDate}
           endDate={endDate}
           setEndDate={setEndDate}
-          onShowDetails={handleShowDetails}
+          //onShowDetails={handleShowDetails}
         />
       </main>
+      {/*
       {hasDetails && (
         <ModalForm isOpen={detailsOpen} onClose={handleCloseDetails} title="جزئیات گردش">
           {selectedProductId && (
@@ -91,7 +89,7 @@ export default function ProviderList() {
             />
           )}
         </ModalForm>
-      )}
+      )}*/}
 
       {/* Footer */}
       <footer className="border-t border-gray-200 text-xs text-gray-500 px-4 py-1 flex justify-between"></footer>

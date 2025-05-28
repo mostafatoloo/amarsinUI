@@ -5,9 +5,9 @@ import { HeadCell } from "../../hooks/useTable";
 import { convertPersianDate } from "../../utilities/general";
 import { useProviderDetailStore } from "../../store/providerStore";
 import { Paper } from "@mui/material";
-import { ProviderDetail } from "../../types/provider";
 import Skeleton from "../layout/Skeleton";
 import { Table } from "../controls/Table";
+import { ProviderDetailTable } from "../../types/provider";
 
 type ProviderListDetailsProps = {
   productId: string;
@@ -17,7 +17,7 @@ type ProviderListDetailsProps = {
   endDate: Date | null;
 };
 
-export const headCells: HeadCell<ProviderDetail>[] = [
+export const headCells: HeadCell<ProviderDetailTable>[] = [
   {
     id: "index",
     label: "ردیف",
@@ -32,10 +32,9 @@ export const headCells: HeadCell<ProviderDetail>[] = [
   { id: "srName", label: "نام مشتری", cellWidth: "20%" },
   {
     id: "cupInfoes",
-    label: "بچ",
+    label: "بچ |انقضاء",
     isNumber: true,
     cellWidth: "5%",
-    arrayFieldNames: ["iocId", "code", "expDate"],
   },
   { id: "cnt", label: "تعداد", isNumber: true, cellWidth: "5%" },
   { id: "offerCnt", label: "آفر", isNumber: true, cellWidth: "5%" },
@@ -86,9 +85,27 @@ export default function ProviderListDetails({
       {isLoading ? (
         <div className="text-center">{<Skeleton />}</div>
       ) : providerDetailList.rpProviderDetails.length > 0 ? (
-        <div className="h-screen-minus-350 lg:h-screen-minus-200 overflow-y-auto">
+        <div className="h-screen-minus-200">
           <Table
-            data={providerDetailList.rpProviderDetails}
+            data={providerDetailList.rpProviderDetails.map((ProviderDetail) => {
+              console.log(ProviderDetail.cupInfoes.length, "ProviderDetail");
+              return {
+                ...ProviderDetail,
+                cupInfoes:
+                  ProviderDetail.cupInfoes.length > 0
+                    ? ProviderDetail.cupInfoes
+                        .map((cupInfo) => {
+                          return (
+                            <p>
+                              cupInfo !== undefined ? `${cupInfo.code} | $
+                              {cupInfo.expDate}` : ""
+                            </p>
+                          );
+                        })
+                        .join(", ")
+                    : "",
+              };
+            })}
             headCells={headCells}
             resetPageSignal={brand?.id}
           />

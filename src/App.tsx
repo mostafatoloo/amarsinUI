@@ -8,6 +8,7 @@ import Layout from './components/layout/Layout'
 import User from './pages/User'
 import InventoryGoodList from './pages/reports/InventoryGoodList'
 import ProviderList from './pages/reports/ProviderList'
+import ProducerList from './pages/reports/ProducerList'
 
 
 const queryClient = new QueryClient()
@@ -58,10 +59,10 @@ function App() {
               }
             />
             <Route
-              path="/admin/RpProviders/:id"
+              path="/admin/RpProducers"
               element={
                 <PrivateRoute>
-                  <ProviderList />
+                  <ProducerList />
                 </PrivateRoute>
               }
             />
