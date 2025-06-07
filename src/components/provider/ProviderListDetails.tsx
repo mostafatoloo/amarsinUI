@@ -34,7 +34,7 @@ export const headCells: HeadCell<ProviderDetailTable>[] = [
     id: "cupInfoes",
     label: "بچ |انقضاء",
     isNumber: true,
-    cellWidth: "5%",
+    cellWidth: "10%",
   },
   { id: "cnt", label: "تعداد", isNumber: true, cellWidth: "5%" },
   { id: "offerCnt", label: "آفر", isNumber: true, cellWidth: "5%" },
@@ -54,7 +54,6 @@ export default function ProviderListDetails({
   endDate,
 }: ProviderListDetailsProps) {
   const { providerDetailList, error, isLoading } = useProviderDetailList();
-  console.log(providerDetailList, "providerDetailList");
 
   const { systemId, yearId } = useGeneralContext();
   const { setField } = useProviderDetailStore();
@@ -88,21 +87,15 @@ export default function ProviderListDetails({
         <div className="h-screen-minus-200">
           <Table
             data={providerDetailList.rpProviderDetails.map((ProviderDetail) => {
-              console.log(ProviderDetail.cupInfoes.length, "ProviderDetail");
               return {
                 ...ProviderDetail,
                 cupInfoes:
                   ProviderDetail.cupInfoes.length > 0
                     ? ProviderDetail.cupInfoes
                         .map((cupInfo) => {
-                          return (
-                            <p>
-                              cupInfo !== undefined ? `${cupInfo.code} | $
-                              {cupInfo.expDate}` : ""
-                            </p>
-                          );
+                          return cupInfo.code + " | " + cupInfo.expDate;
                         })
-                        .join(", ")
+                        .join(" ")
                     : "",
               };
             })}
