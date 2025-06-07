@@ -11,6 +11,7 @@ import ProviderProducerParams from "../provider/ProviderProducerParams";
 import { useProducerList } from "../../hooks/useProducerList";
 import { RpProduct } from "../../types/producer";
 import { useProducerStore } from "../../store/producerStore";
+import { cyan } from '@mui/material/colors';
 
 type ProducerListFormProps = {
   data: RpProduct[];
@@ -25,7 +26,6 @@ type ProducerListFormProps = {
   setEndDate: (date: Date | null) => void;
   onShowDetails?: (providerId: string) => void;
 };
-
 
 export default function ProviderListForm({
   data,
@@ -42,15 +42,19 @@ export default function ProviderListForm({
 }: ProducerListFormProps) {
   const { producerList, error, isLoading } = useProducerList();
 
+
   const headerGroups: HeaderGroup[] = [
     { label: "", colSpan: 1 },
     { label: "", colSpan: 1 },
     { label: "ریالی", colSpan: 2 },
     { label: "آفر", colSpan: 1 },
-    { label: "تامین", colSpan: producerList.producers.length },
+    {
+      label: "تامین",
+      colSpan: producerList.producers.length,
+      backgroundColor: cyan[100]
+    },
     { label: "", colSpan: 1 },
   ];
-
 
   const { systemId, yearId } = useGeneralContext();
 

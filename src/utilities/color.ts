@@ -1,6 +1,6 @@
 export const colors = { 
     cyan:"bg-cyan-600",
-    lightCyan:"bg-cyan-500",
+    cyan500:"bg-cyan-400",
     green:"bg-green-500",
     red:"bg-red-500",
     yellow:"bg-yellow-500",

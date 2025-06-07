@@ -30,11 +30,13 @@ export type HeadCell<T> = {
   path?: string;
   hasDetails?: boolean;
   cellWidth?: string;
+  backgroundColor?: string;
 };
 
 export type HeaderGroup = {
   label: string;
   colSpan: number;
+  backgroundColor?: string;
 };
 
 type FilterFn<T> = {
@@ -89,7 +91,6 @@ export default function useTable<T>(
       padding: "4px 8px",
       fontWeight: "bold",
       color: "gray",
-      backgroundColor: theme.palette.grey[300],
       borderRight: "1px solid lightgray",
       borderTop: "1px solid lightgray",
       borderBottom: "1px solid lightgray",
@@ -132,7 +133,12 @@ export default function useTable<T>(
         {!isMobile && headerGroups.length > 0 && (
           <TableRow>
             {headerGroups.map((group, idx) => (
-              <TableCell key={idx} colSpan={group.colSpan} align="center">
+              <TableCell
+                key={idx}
+                colSpan={group.colSpan}
+                align="center"
+                sx={{ backgroundColor: group.backgroundColor || theme.palette.grey[300] }}
+              >
                 {group.label}
               </TableCell>
             ))}
@@ -146,6 +152,7 @@ export default function useTable<T>(
               sortDirection={orderBy === headCell.id ? order : false}
               sx={{
                 width: headCell.icon ? "50px" : headCell.cellWidth || "auto",
+                backgroundColor: headCell.backgroundColor || theme.palette.grey[300],
               }}
             >
               {headCell.disableSorting ? (

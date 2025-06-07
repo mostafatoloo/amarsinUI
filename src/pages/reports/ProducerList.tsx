@@ -9,6 +9,8 @@ import { useProducerList } from "../../hooks/useProducerList";
 import ProducerListForm from "../../components/producer/ProducerListForm";
 import { HeadCell } from "../../hooks/useTable";
 import { RpProduct } from "../../types/producer";
+import { cyan } from '@mui/material/colors';
+
 
 export const headCells: HeadCell<RpProduct>[] = [
   {
@@ -56,6 +58,7 @@ export default function ProducerList() {
       cellWidth: "10%",
       isNumber: true,
       disableSorting: true,
+      backgroundColor: cyan[100],
     })
   );
 
