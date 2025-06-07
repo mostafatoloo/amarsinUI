@@ -26,7 +26,7 @@ export default function ProviderList() {
     id: string;
     title: string;
   } | null>({
-    id: "1",
+    id: "2",
     title: "فروش",
   });
 

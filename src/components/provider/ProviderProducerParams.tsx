@@ -33,8 +33,8 @@ const ProviderProducerParams = ({
   const [hasDate, setHasDate] = useState<boolean>(false);
 
   const type = [
-    { id: "1", title: "فروش" },
-    { id: "2", title: "برگشت از فروش" },
+    { id: "2", title: "فروش" },
+    { id: "4", title: "برگشت از فروش" },
   ];
 
   const { isModalOpen, setIsModalOpen } = useGeneralContext();

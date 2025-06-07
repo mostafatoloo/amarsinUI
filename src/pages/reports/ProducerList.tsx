@@ -3,10 +3,31 @@ import ExcelExport from "../../utilities/ExcelExport";
 import { useBrandStore } from "../../store/brandStore";
 import { useEffect, useState } from "react";
 import { useGeneralContext } from "../../context/GeneralContext";
-
+import ReportIcon from "../../assets/images/GrayThem/report16.png";
 import {  useParams } from "react-router-dom";
 import { useProducerList } from "../../hooks/useProducerList";
-import ProducerListForm, { headCells } from "../../components/producer/ProducerListForm";
+import ProducerListForm from "../../components/producer/ProducerListForm";
+import { HeadCell } from "../../hooks/useTable";
+import { RpProduct } from "../../types/producer";
+
+export const headCells: HeadCell<RpProduct>[] = [
+  {
+    id: "index",
+    label: "ردیف",
+    disableSorting: true,
+    cellWidth: "5%",
+  },
+  { id: "name", label: "نام کالا", cellWidth: "20%" },
+  { id: "cnt", label: "تعداد", isNumber: true, cellWidth: "10%" },
+  {
+    id: "total",
+    label: "مبلغ",
+    isNumber: true,
+    isCurrency: true,
+    cellWidth: "10%",
+  },
+  { id: "offerCnt", label: "تعداد", isNumber: true, cellWidth: "10%" },
+];
 
 export default function ProducerList() {
   const { producerList } = useProducerList();
@@ -23,10 +44,43 @@ export default function ProducerList() {
     id: string;
     title: string;
   } | null>({
-    id: "1",
+    id: "2",
     title: "فروش",
   });
 
+  
+  const dynamicHeadCells: HeadCell<RpProduct>[] = producerList.producers.map(
+    (producer) => ({
+      id: producer.id.toString(),
+      label: producer.name,
+      cellWidth: "10%",
+      isNumber: true,
+      disableSorting: true,
+    })
+  );
+
+  const rotation = {
+    id: "id" as keyof RpProduct,
+    label: "گردش",
+    icon: ReportIcon,
+    hasDetails: true,
+    cellWidth: "5%",
+    disableSorting: true,
+  };
+
+  const allHeadCells = [...headCells, ...dynamicHeadCells, rotation];
+
+  const rpProducts= producerList.rpProducts.map((product) => {
+    // Create an object with dynamic keys for each producer's amnt
+    const dynamicAmnts: Record<string, number> = {};
+    product.rpProducers.forEach((producer) => {
+      dynamicAmnts[producer.id.toString()] = producer.amnt || 0;
+    });
+    return {
+      ...product,
+      ...dynamicAmnts, // Spread dynamic amnt fields
+    };
+  })
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
@@ -34,20 +88,6 @@ export default function ProducerList() {
     setField("accSystem", systemId);
   }, []);
 
-  /*const [detailsOpen, setDetailsOpen] = useState(false);
-  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
-
-  const handleShowDetails = (productId: string) => {
-    setSelectedProductId(productId);
-    setDetailsOpen(true);
-  };
-
-  const handleCloseDetails = () => {
-    setDetailsOpen(false);
-    setSelectedProductId(null);
-  };
-
-  const hasDetails = true;*/
   return (
     <div
       className={`h-[calc(100vh-72px)] flex flex-col bg-gray-200  ${
@@ -58,13 +98,15 @@ export default function ProducerList() {
       {!id ? (
         <header className="flex items-center justify-between border-gray-300">
           <PageTitle />
-          <ExcelExport data={producerList.rpProducts} headCells={headCells} />
+          <ExcelExport data={rpProducts} headCells={allHeadCells} />
         </header>
       ) : null}
 
       {/* Main content */}
       <main className="h-full flex flex-col items-center justify-center px-2">
         <ProducerListForm
+          data={rpProducts}
+          headCells={allHeadCells}
           brand={brand}
           setBrand={setBrand}
           sanadKind={sanadKind}

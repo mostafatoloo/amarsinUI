@@ -7,13 +7,14 @@ import { Table } from "../controls/Table";
 import { useGeneralContext } from "../../context/GeneralContext";
 import { HeadCell, HeaderGroup } from "../../hooks/useTable";
 import { convertPersianDate } from "../../utilities/general";
-import ReportIcon from "../../assets/images/GrayThem/report16.png";
 import ProviderProducerParams from "../provider/ProviderProducerParams";
 import { useProducerList } from "../../hooks/useProducerList";
 import { RpProduct } from "../../types/producer";
 import { useProducerStore } from "../../store/producerStore";
 
 type ProducerListFormProps = {
+  data: RpProduct[];
+  headCells: HeadCell<RpProduct>[];
   brand: { id: string; title: string } | null;
   setBrand: (brand: { id: string; title: string } | null) => void;
   sanadKind: { id: string; title: string } | null;
@@ -25,26 +26,10 @@ type ProducerListFormProps = {
   onShowDetails?: (providerId: string) => void;
 };
 
-export const headCells: HeadCell<RpProduct>[] = [
-  {
-    id: "index",
-    label: "ردیف",
-    disableSorting: true,
-    cellWidth: "10%",
-  },
-  { id: "name", label: "نام کالا", cellWidth: "20%" },
-  { id: "cnt", label: "تعداد", isNumber: true, cellWidth: "10%" },
-  {
-    id: "total",
-    label: "مبلغ",
-    isNumber: true,
-    isCurrency: true,
-    cellWidth: "10%",
-  },
-  { id: "offerCnt", label: "تعداد", isNumber: true, cellWidth: "10%" },
-];
 
 export default function ProviderListForm({
+  data,
+  headCells,
   brand,
   setBrand,
   sanadKind,
@@ -57,8 +42,6 @@ export default function ProviderListForm({
 }: ProducerListFormProps) {
   const { producerList, error, isLoading } = useProducerList();
 
-  console.log(producerList.producers, "producers", producerList.rpProducts, "rpProducts");
-
   const headerGroups: HeaderGroup[] = [
     { label: "", colSpan: 1 },
     { label: "", colSpan: 1 },
@@ -68,24 +51,6 @@ export default function ProviderListForm({
     { label: "", colSpan: 1 },
   ];
 
-  const dynamicHeadCells: HeadCell<RpProduct>[] = producerList.producers.map(
-    (producer) => ({
-      id: producer.id.toString(),
-      label: producer.name,
-      cellWidth: "10%",
-      isNumber: true,
-    })
-  );
-
-  const rotation = {
-    id: "id" as keyof RpProduct,
-    label: "گردش",
-    icon: ReportIcon,
-    hasDetails: true,
-    cellWidth: "5%",
-  };
-
-  const allHeadCells = [...headCells, ...dynamicHeadCells, rotation];
 
   const { systemId, yearId } = useGeneralContext();
 
@@ -152,23 +117,13 @@ export default function ProviderListForm({
         <div className="text-center">{<Skeleton />}</div>
       ) : producerList.err !== 0 ? (
         <p className="p-6 text-red-400 text-sm md:text-base font-bold">
-          {producerList.msg}
+          هیچ کالایی یافت نشد.
         </p>
       ) : producerList.rpProducts.length > 0 ? (
         <div className="h-screen-minus-200 mt-2">
           <Table
-            data={producerList.rpProducts.map((product) => {
-              // Create an object with dynamic keys for each producer's amnt
-              const dynamicAmnts: Record<string, number> = {};
-              product.rpProducers.forEach((producer) => {
-                dynamicAmnts[producer.id.toString()] = producer.amnt || 0;
-              });
-              return {
-                ...product,
-                ...dynamicAmnts, // Spread dynamic amnt fields
-              };
-            })}
-            headCells={allHeadCells}
+            data={data}
+            headCells={headCells}
             resetPageSignal={brand?.id}
             headerGroups={headerGroups}
             cellClickHandler={handleCellClick}
