@@ -41,8 +41,8 @@ export const useAuthStore = create<AuthState>()(
         localStorage.removeItem('token')
         localStorage.removeItem('customerCode')
         set({
-          userName: '',
-          pass: '',
+          //userName: '',
+          //pass: '',
           playerId: '',
           customerTyp: 0,
           appVer: '1.0.0',

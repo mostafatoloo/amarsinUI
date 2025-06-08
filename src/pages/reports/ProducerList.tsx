@@ -57,7 +57,6 @@ export default function ProducerList() {
       label: producer.name,
       cellWidth: "10%",
       isNumber: true,
-      disableSorting: true,
       backgroundColor: cyan[100],
     })
   );

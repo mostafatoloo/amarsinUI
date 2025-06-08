@@ -38,6 +38,7 @@ export function Table<T>({
     TblHead,
     TblPagination,
     recordsAfterPagingAndSorting,
+    recordsAfterSorting,
     isMobile,
     mobileMainColumns,
     mobileRestColumns,
@@ -59,13 +60,13 @@ export function Table<T>({
       <TblContainer>
         <TblHead />
         <TableBody sx={{ overflowY: "auto" }}>
-          {(pagination ? recordsAfterPagingAndSorting() : data).map(
+          {(pagination ? recordsAfterPagingAndSorting() : recordsAfterSorting()).map(
             (item, idx) => (
               <TableRow
                 key={idx}
                 sx={
                   idx ===
-                    (pagination ? recordsAfterPagingAndSorting() : data)
+                    (pagination ? recordsAfterPagingAndSorting() : recordsAfterSorting())
                       .length -
                       1 && hasSumRow
                     ? {
@@ -81,7 +82,7 @@ export function Table<T>({
                   (cell: HeadCell<T>) => {
                     const lastRow =
                       idx ===
-                      (pagination ? recordsAfterPagingAndSorting() : data)
+                      (pagination ? recordsAfterPagingAndSorting() : recordsAfterSorting())
                         .length -
                         1;
                     let displayValue;
@@ -144,7 +145,7 @@ export function Table<T>({
                     {mobileRestColumns.map((cell: HeadCell<T>) => {
                       const lastRow =
                         idx ===
-                        (pagination ? recordsAfterPagingAndSorting() : data)
+                        (pagination ? recordsAfterPagingAndSorting() : recordsAfterSorting)
                           .length -
                           1;
                       let displayValue;

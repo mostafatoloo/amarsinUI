@@ -56,7 +56,7 @@ export function useAuth() {
       localStorage.setItem('token', responseData?.result?.login.token)
       setAuthApiResponse(data)
 
-      navigate('/dashboard')
+      navigate('/admin/WFMS/index')
     },
     onError: (error) => {
       console.error('Login error:', error)

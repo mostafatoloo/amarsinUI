@@ -19,14 +19,22 @@ const LoginRight = ({
   isHomePage,
 }: Props) => {
   const [errorPage, setErrorPage] = useState<string>("");
-  const [remember, setRemember] = useState(false);
+
   const { login, isLoading } = useAuth();
-  const { userName, pass, setField, message, errorCode, xCustomerCode, authApiResponse } =
-    useAuthStore();
-  const {setSystemId,setYearId,setChartId}=useGeneralContext()
+  const {
+    userName,
+    pass,
+    setField,
+    message,
+    errorCode,
+    xCustomerCode,
+    authApiResponse,
+  } = useAuthStore();
+  const { setSystemId, setYearId, setChartId, remember, setRemember } =
+    useGeneralContext();
 
   const submitButtonRef = useRef<HTMLButtonElement>(null); // Create a ref for the button
-  const initData=authApiResponse?.data.result.initData
+  const initData = authApiResponse?.data.result.initData;
 
   useEffect(() => {
     // Set focus on the submit button when the component mounts
@@ -34,7 +42,22 @@ const LoginRight = ({
       submitButtonRef.current.focus();
     }
     setActivationCode(xCustomerCode);
+
+    if (
+      localStorage.getItem("auth-storage") === "" ||
+      localStorage.getItem("auth-storage") === null ||
+      remember === false
+    ) {
+      setShowCodeModal(true);
+    }
   }, []);
+
+  useEffect(() => {
+    console.log(activationCode,"activationCode")
+    if (errorCode !== -1) {
+      setShowCodeModal(true);
+    }
+  }, [errorCode]);
 
   const handleLogin = (e: React.FormEvent) => {
     console.log("user", userName);
@@ -45,22 +68,23 @@ const LoginRight = ({
       setErrorPage("لطفا نام کاربری و رمز عبور را وارد کنید");
       return;
     }
-    if (activationCode === "") {
-      setErrorPage("لطفا کد فعال‌ساز را وارد کنید");
-      return;
-    }
+
     try {
       login();
 
-      setSystemId(initData?.systemId?? 0)
-      setYearId(initData?.yearId?? 0)
-      setChartId(initData?.chartId?? 0)
-      
+      setSystemId(initData?.systemId ?? 0);
+      setYearId(initData?.yearId ?? 0);
+      setChartId(initData?.chartId ?? 0);
     } catch (error) {
       if (error instanceof Error) {
         console.log(error.message);
       } else {
         console.log(error);
+      }
+    } finally {
+      if (errorCode !== -1 && isLoading) {
+        setShowCodeModal(true);
+        return;
       }
     }
   };
@@ -138,7 +162,7 @@ const LoginRight = ({
                   اطلاعات ورود را بخاطر بسپار
                 </label>
               </div>
-              {errorCode != -1 && (
+              {errorCode !== -1 && (
                 <div
                   className="bg-red-50 border border-red-200 text-red-600 px-4 py-2 rounded w-full mb-2 text-center text-sm"
                   role="alert"

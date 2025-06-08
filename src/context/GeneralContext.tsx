@@ -7,6 +7,8 @@ import React, {
 } from "react";
 
 interface GeneralContextProps {
+  remember: boolean;
+  setRemember: (value: boolean) => void;
   isMenuOpened: boolean;
   setIsMenuOpened: (value: boolean) => void;
   treeNodeTitle: string;
@@ -37,6 +39,9 @@ export const GeneralProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const pageNumbers = [5, 10, 25];
+  const [remember, setRemember] = useState<boolean>(() =>
+    getInitial("remember", true)
+  );
   const [isMenuOpened, setIsMenuOpened] = useState<boolean>(() =>
     getInitial("isMenuOpened", true)
   );
@@ -54,6 +59,7 @@ export const GeneralProvider: React.FC<{ children: ReactNode }> = ({
     getInitial("defaultRowsPerPage", pageNumbers[1])
   );
   const [isModalOpen, setIsModalOpen] = useState(false);  
+  
 
   useEffect(() => {
     localStorage.setItem("isMenuOpened", JSON.stringify(isMenuOpened));
@@ -95,6 +101,8 @@ export const GeneralProvider: React.FC<{ children: ReactNode }> = ({
         pageNumbers,
         isModalOpen,
         setIsModalOpen,
+        remember,
+        setRemember,
       }}
     >
       {children}

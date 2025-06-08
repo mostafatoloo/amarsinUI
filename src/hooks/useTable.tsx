@@ -48,6 +48,7 @@ type UseTableReturn<T> = {
   TblHead: React.FC;
   TblPagination: React.FC;
   recordsAfterPagingAndSorting: () => T[];
+  recordsAfterSorting: () => T[];
   isMobile: boolean;
   mobileMainColumns: HeadCell<T>[];
   mobileRestColumns: HeadCell<T>[];
@@ -169,7 +170,7 @@ export default function useTable<T>(
             </TableCell>
           ))}
           {isMobile && mobileRestColumns.length > 0 && (
-            <TableCell>جزئیات</TableCell>
+            <TableCell sx={{backgroundColor:theme.palette.grey[300]}}>جزئیات</TableCell>
           )}
         </TableRow>
       </TableHead>
@@ -283,11 +284,17 @@ export default function useTable<T>(
     );
   };
 
+  const recordsAfterSorting = (): T[] => {
+    const sorted = order && orderBy ? getComparator(order, orderBy) : () => 0;
+    return stableSort(filterFn.fn(records), sorted);
+  };
+
   return {
     TblContainer,
     TblHead,
     TblPagination,
     recordsAfterPagingAndSorting,
+    recordsAfterSorting,
     isMobile,
     mobileMainColumns,
     mobileRestColumns,

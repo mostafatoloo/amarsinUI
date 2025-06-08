@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Login from './pages/Login'
-import Dashboard from './pages/Dashboard'
 import { useAuthStore } from './store/authStore'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import Layout from './components/layout/Layout'
@@ -9,6 +8,7 @@ import User from './pages/User'
 import InventoryGoodList from './pages/reports/InventoryGoodList'
 import ProviderList from './pages/reports/ProviderList'
 import ProducerList from './pages/reports/ProducerList'
+import Workflow from './pages/Workflow'
 
 
 const queryClient = new QueryClient()
@@ -27,10 +27,10 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login isHomePage={true}/>} />
             <Route
-              path="/dashboard"
+              path="/admin/WFMS/index"
               element={
                 <PrivateRoute>
-                  <Dashboard />
+                  <Workflow />
                 </PrivateRoute>
               }
             />
@@ -67,7 +67,7 @@ function App() {
               }
             />
             
-            <Route path="/" element={<Navigate to="/dashboard" />} />
+            <Route path="/" element={<Navigate to="/admin/WFMS/index" />} />
           </Routes>
         </Layout>  
       </Router>

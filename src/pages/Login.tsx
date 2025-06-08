@@ -5,7 +5,6 @@ import LoginRight from "../components/login/LoginRight";
 import { useGeneralContext } from "../context/GeneralContext";
 import LoginLeft from "../components/login/LoginLeft";
 
-
 type Props = {
   isHomePage: boolean;
 };
@@ -19,7 +18,6 @@ export default function Login({ isHomePage }: Props) {
 
   const handleActivationCode = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("activation", activationCode);
     if (activationCode === "") {
       setErrorPage("لطفا کد فعال‌ساز را وارد کنید");
       return;
@@ -30,9 +28,8 @@ export default function Login({ isHomePage }: Props) {
   };
 
   useEffect(() => {
-    console.log(errorPage);
     setIsMenuOpened(true);
-
+    console.log(errorPage);
   }, []);
 
   return (
@@ -63,7 +60,7 @@ export default function Login({ isHomePage }: Props) {
                 placeholder="کد فعال‌ساز"
                 dir="rtl"
               />
-              <div className="flex justify-end space-x-2">
+              <div className="flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setShowCodeModal(false)}

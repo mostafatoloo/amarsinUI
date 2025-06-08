@@ -26,8 +26,6 @@ api.interceptors.response.use(
   response => response,
   error => {
     if (error.response && error.response.status === 401) {
-      // Clear localStorage and redirect to login
-      //localStorage.clear();
       window.location.href = '/login'; // Adjust if your login route is different
     }
     return Promise.reject(error);
