@@ -1,4 +1,4 @@
-import React, { useState, ReactNode, useEffect } from "react";
+import React, { useState, ReactNode } from "react";
 import {
   Table,
   TableHead,
@@ -31,6 +31,16 @@ export type HeadCell<T> = {
   hasDetails?: boolean;
   cellWidth?: string;
   backgroundColor?: string;
+  hasChildTable?: boolean;
+  childTableConfig?: {
+    headCells: HeadCell<any>[];
+    getChildData: (parentItem: T) => any[];
+  };
+  filterable?: boolean;
+//  filterField?: string;
+  filterType?: "text" | "number";
+  filterValue?: string;
+  setFilterValue?: (value: string) => void;
 };
 
 export type HeaderGroup = {
@@ -47,13 +57,11 @@ type UseTableReturn<T> = {
   TblContainer: React.FC<{ children: ReactNode }>;
   TblHead: React.FC;
   TblPagination: React.FC;
-  recordsAfterPagingAndSorting: () => T[];
+  recordsAfterPaging: () => T[];
   recordsAfterSorting: () => T[];
   isMobile: boolean;
   mobileMainColumns: HeadCell<T>[];
   mobileRestColumns: HeadCell<T>[];
-  page: number;
-  rowsPerPage: number;
 };
 
 export default function useTable<T>(
@@ -61,7 +69,12 @@ export default function useTable<T>(
   headCells: HeadCell<T>[],
   headerGroups: HeaderGroup[],
   filterFn: FilterFn<T>,
-  resetPageSignal?: any
+  page?: number,
+  setPage?: (page: number) => void,
+  pageSize?: number,
+  setPageSize?: (pageSize: number) => void,
+  totalCount?: number,
+  //onFilterChange?: (field: string, value: string) => void
 ): UseTableReturn<T> {
   const theme = useTheme();
   const isMobile = useMediaQuery("(max-width: 600px)");
@@ -69,10 +82,7 @@ export default function useTable<T>(
   const mobileMainColumns = headCells.slice(0, 3);
   const mobileRestColumns = headCells.slice(3);
 
-  const [page, setPage] = useState<number>(0);
-  const { setDefaultRowsPerPage, defaultRowsPerPage, pageNumbers } =
-    useGeneralContext();
-  const [rowsPerPage, setRowsPerPage] = useState<number>(defaultRowsPerPage);
+  const { setDefaultRowsPerPage, pageNumbers } = useGeneralContext();
   const pages = pageNumbers.map((num) => ({
     label: convertToFarsiDigits(num),
     value: num,
@@ -80,9 +90,6 @@ export default function useTable<T>(
 
   const [order, setOrder] = useState<"asc" | "desc" | undefined>();
   const [orderBy, setOrderBy] = useState<keyof T | "">("");
-  useEffect(() => {
-    setPage(0);
-  }, [resetPageSignal]);
 
   const tableStyles: SxProps = {
     "& thead th": {
@@ -123,12 +130,23 @@ export default function useTable<T>(
     </div>
   );
 
+  const handleSortRequest = (cellId: keyof T) => {
+    const isAsc = orderBy === cellId && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(cellId);
+  };
+
+  const handleFilterChange = (
+    //field: string,
+    value: string,
+    setFilterValue?: (value: string) => void
+  ) => {
+    //onFilterChange?.(field, value);
+    setFilterValue?.(value);
+    setPage?.(1);
+  };
+
   const TblHead: React.FC = () => {
-    const handleSortRequest = (cellId: keyof T) => {
-      const isAsc = orderBy === cellId && order === "asc";
-      setOrder(isAsc ? "desc" : "asc");
-      setOrderBy(cellId);
-    };
     return (
       <TableHead>
         {!isMobile && headerGroups.length > 0 && (
@@ -138,7 +156,10 @@ export default function useTable<T>(
                 key={idx}
                 colSpan={group.colSpan}
                 align="center"
-                sx={{ backgroundColor: group.backgroundColor || theme.palette.grey[300] }}
+                sx={{
+                  backgroundColor:
+                    group.backgroundColor || theme.palette.grey[300],
+                }}
               >
                 {group.label}
               </TableCell>
@@ -153,24 +174,45 @@ export default function useTable<T>(
               sortDirection={orderBy === headCell.id ? order : false}
               sx={{
                 width: headCell.icon ? "50px" : headCell.cellWidth || "auto",
-                backgroundColor: headCell.backgroundColor || theme.palette.grey[300],
+                backgroundColor:
+                  headCell.backgroundColor || theme.palette.grey[300],
               }}
             >
-              {headCell.disableSorting ? (
-                headCell.label
-              ) : (
-                <TableSortLabel
-                  active={orderBy === headCell.id}
-                  direction={orderBy === headCell.id ? order : "asc"}
-                  onClick={() => handleSortRequest(headCell.id as keyof T)}
-                >
-                  {headCell.label}
-                </TableSortLabel>
+              <TableSortLabel
+                active={orderBy === headCell.id}
+                direction={orderBy === headCell.id ? order : "asc"}
+                onClick={() => handleSortRequest(headCell.id as keyof T)}
+                disabled={headCell.disableSorting}
+              >
+                {headCell.label}
+              </TableSortLabel>
+              {headCell.filterable && (
+                <div className="mt-2">
+                  <input
+                    value={headCell.filterValue ?? ""}
+                    type={headCell.filterType}
+                    className="w-full p-1 text-sm border rounded"
+                    placeholder={`جستجو برای ${headCell.label}`}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      handleFilterChange(
+                        e.target.value,
+                        headCell.setFilterValue
+                      );
+                    }}
+                    onKeyDown={(e) => {
+                      e.stopPropagation();
+                    }}
+                    autoFocus
+                  />
+                </div>
               )}
             </TableCell>
           ))}
           {isMobile && mobileRestColumns.length > 0 && (
-            <TableCell sx={{backgroundColor:theme.palette.grey[300]}}>جزئیات</TableCell>
+            <TableCell sx={{ backgroundColor: theme.palette.grey[300] }}>
+              جزئیات
+            </TableCell>
           )}
         </TableRow>
       </TableHead>
@@ -180,7 +222,7 @@ export default function useTable<T>(
   // Custom Pagination Actions
   function TablePaginationActions(props: any) {
     const { count, page, rowsPerPage, onPageChange } = props;
-    setDefaultRowsPerPage(rowsPerPage);
+    setDefaultRowsPerPage(rowsPerPage || 10);
     const lastPage = Math.max(0, Math.ceil(count / rowsPerPage) - 1);
 
     return (
@@ -218,24 +260,26 @@ export default function useTable<T>(
   }
 
   const handleChangePage = (_event: unknown, newPage: number): void => {
-    setPage(newPage);
+    // Convert from 0-based to 1-based for API
+    console.log(newPage, "newPage");
+    setPage?.(newPage + 1);
   };
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    setPageSize?.(parseInt(event.target.value, 10));
+    setPage?.(1);
   };
 
   const TblPagination: React.FC = () => (
     <div dir="rtl" className={isMobile ? "text-xs font-bold" : ""}>
       <TablePagination
         component="div"
-        page={page}
+        page={page || 0}
         rowsPerPageOptions={pages}
-        rowsPerPage={rowsPerPage}
-        count={records ? records.length : 0}
+        rowsPerPage={pageSize || 10}
+        count={totalCount || 0}
         onPageChange={handleChangePage}
         ActionsComponent={TablePaginationActions}
         onRowsPerPageChange={handleChangeRowsPerPage}
@@ -276,12 +320,8 @@ export default function useTable<T>(
     return stabilizedThis.map((el) => el[0]);
   };
 
-  const recordsAfterPagingAndSorting = (): T[] => {
-    const sorted = order && orderBy ? getComparator(order, orderBy) : () => 0;
-    return stableSort(filterFn.fn(records), sorted).slice(
-      page * rowsPerPage,
-      (page + 1) * rowsPerPage
-    );
+  const recordsAfterPaging = (): T[] => {
+    return records;
   };
 
   const recordsAfterSorting = (): T[] => {
@@ -293,12 +333,10 @@ export default function useTable<T>(
     TblContainer,
     TblHead,
     TblPagination,
-    recordsAfterPagingAndSorting,
+    recordsAfterPaging,
     recordsAfterSorting,
     isMobile,
     mobileMainColumns,
     mobileRestColumns,
-    page,
-    rowsPerPage,
   };
 }

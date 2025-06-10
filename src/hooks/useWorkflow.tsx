@@ -5,15 +5,16 @@ import { WorkFlowRequest, WorkflowResponse } from "../types/workflow";
 
 
 export function useWorkflow() {
-  const { chartId, systemId, page, flowMapId, title, dateTime, code, cost, name, dsc, setWorkFlowResponse } = useWorkflowStore();
+  const { chartId, systemId, page,pageSize, flowMapId, title, dateTime, code, cost, name, dsc, setWorkFlowResponse } = useWorkflowStore();
 
   const query = useQuery<WorkflowResponse, Error, WorkflowResponse, unknown[]>({
-    queryKey: ["workflow", chartId, systemId, page, flowMapId, title, dateTime, code, cost, name, dsc],
+    queryKey: ["workflow", chartId, systemId, page,pageSize, flowMapId, title, dateTime, code, cost, name, dsc],
     queryFn: async () => {
       const params: WorkFlowRequest = {
         chartId,
         systemId,
         page,
+        pageSize,
         flowMapId,
         title,
         dateTime,
@@ -24,11 +25,12 @@ export function useWorkflow() {
       };
 
       console.log(params, "params");
-      const url: string = `api/WFMS/WorkTables?chartId=${params.chartId}&systemId=${params.systemId}&page=${params.page}&flowMapId=${params.flowMapId}&title=${params.title}&dateTime=${params.dateTime}&code=${params.code}&cost=${params.cost}&name=${params.name}&dsc=${params.dsc}`;
+      const url: string = `api/WFMS/WorkTables?chartId=${params.chartId}&systemId=${params.systemId}&page=${params.page}&pageSize=${params.pageSize}&flowMapId=${params.flowMapId}&title=${encodeURIComponent(params.title ?? "")}&dateTime=${encodeURIComponent(params.dateTime ?? "")}&code=${encodeURIComponent(params.code ?? "")}&cost=${encodeURIComponent(params.cost ?? "")}&name=${encodeURIComponent(params.name ?? "")}&dsc=${encodeURIComponent(params.dsc ?? "")}`;
 
       console.log(url, "url");
 
       const response = await api.get(url);
+      console.log(response.data, "response");
       return response.data;
     },
     enabled: !!chartId , // Only fetch if params are available

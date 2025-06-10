@@ -6,6 +6,7 @@ export const useWorkflowStore = create<WorkFlowState>()((set) => ({
   chartId: 1,
   systemId: 4,
   page: 1,
+  pageSize: 10,
   flowMapId: -1,
   title: "",
   dateTime: "",

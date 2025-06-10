@@ -1,15 +1,15 @@
-import { useEffect, } from "react";
+import { useEffect, useState } from "react";
 import { Paper } from "@mui/material";
 import Skeleton from "../layout/Skeleton";
 import { useNavigate } from "react-router-dom";
 import { Table } from "../controls/Table";
 import { useGeneralContext } from "../../context/GeneralContext";
-import { HeadCell } from "../../hooks/useTable";
-import { WorkFlowTable } from "../../types/workflow";
 import { useWorkflow } from "../../hooks/useWorkflow";
 import { useWorkflowStore } from "../../store/workflowStore";
+import { useWorkflowFilters } from "./useWorkflowFilters";
+import Input from "../controls/Input";
 
-export const headCells: HeadCell<WorkFlowTable>[] = [
+/*export const headCells: HeadCell<WorkFlowTable>[] = [
   {
     id: "index",
     label: "ردیف",
@@ -17,22 +17,22 @@ export const headCells: HeadCell<WorkFlowTable>[] = [
     cellWidth: "5%",
     isNumber: true,
   },
-  { id: "regDateTime", label: "زمان" ,cellWidth: "10%",isNumber: true},
-  { id: "formTitle", label: "فرم" ,cellWidth: "25%"},
-  { id: "formCode", label: "کد" ,cellWidth: "5%",isNumber:true},
-  { id: "formCost", label: "مقدار" ,cellWidth: "10%",isCurrency:true},
-  { id: "flowMapTitle", label: "مرحله" ,cellWidth: "10%"},
-  { id: "fChartName", label: "فرستنده" ,cellWidth: "15%",isNumber:true},
-  { id: "dsc", label: "شرح" ,cellWidth: "20%",isNumber:true},
-];
+  { id: "regDateTime", label: "زمان", cellWidth: "10%", isNumber: true ,disableSorting: true,},
+  { id: "formTitle", label: "فرم", cellWidth: "20%" , disableSorting: true },
+  { id: "formCode", label: "کد", cellWidth: "10%", isNumber: true ,disableSorting: true},
+  { id: "formCost", label: "مقدار", cellWidth: "10%", isCurrency: true,disableSorting: true, },
+  { id: "flowMapTitle", label: "مرحله", cellWidth: "10%" ,disableSorting: true,},
+  { id: "fChartName", label: "فرستنده", cellWidth: "15%", isNumber: true ,disableSorting: true,},
+  { id: "dsc", label: "شرح", cellWidth: "20%", isNumber: true ,disableSorting: true, },
+];*/
 
 export default function WorkflowForm() {
   const { workFlowResponse, error, isLoading } = useWorkflow();
-
-  const { systemId,chartId } = useGeneralContext();
-
+  const { systemId, chartId, defaultRowsPerPage } = useGeneralContext();
+  const [pageNumber, setPageNumber] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(defaultRowsPerPage);
   const { setField } = useWorkflowStore();
-  //if error occurred then navigate to login page
+  const { headCells, filters } = useWorkflowFilters();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,55 +43,52 @@ export default function WorkflowForm() {
   }, [error, navigate]);
 
   useEffect(() => {
-    setField("systemId",systemId)
-    setField("chartId",chartId)
-  }, [systemId,chartId]);
-  
-  
+    setField("systemId", systemId);
+    setField("chartId", chartId);
+    setField("page", pageNumber);
+    setField("pageSize", pageSize);
+  }, [systemId, chartId, pageNumber, pageSize]);
+
+
   if (error) return <div>Error: {error.message} </div>;
 
   return (
     <>
       <Paper className="p-2 m-2 w-full h-full">
-        {/*<div className="flex xl:w-1/4 justify-center items-center gap-2">
-          <label htmlFor="year" className="">
-            برند:
-          </label>
-          <AutoComplete
-            options={brands.map((b) => ({
-              id: b.id,
-              title: b.text,
-            }))}
-            value={brand}
-            handleChange={(_event, newValue) => {
-              return setBrand(newValue);
-            }}
-            setSearch={setSearch}
-            showLabel={false}
-            inputPadding="0 !important"
-          />
-        </div>*/}
+        {/*<Input 
+          name="dateTime"
+          label="dateTime"
+          value={filters.dateTime ?? ""}
+          onChange={(e) => setField("dateTime", e.target.value)}
+        />
+        
+        <Input
+          name="dsc"
+          label="dsc"
+          value={filters.dsc ?? ""}
+          onChange={(e) => setField("dsc", e.target.value)}
+        />*/}
 
         {isLoading ? (
           <div className="text-center">{<Skeleton />}</div>
-        ) : 
-        workFlowResponse.err !== 0 ? (
+        ) : workFlowResponse.err !== 0 ? (
           <p className="p-6 text-red-400 text-sm md:text-base font-bold">
             {workFlowResponse.msg}
           </p>
-        ) : workFlowResponse.workTables.length > 0 ? (
+        ) : (
           <div className="h-screen-minus-200 mt-2">
             <Table
               data={workFlowResponse.workTables}
               headCells={headCells}
-              resetPageSignal={systemId.toString()}
               pagination={true}
+              page={pageNumber - 1}
+              setPage={setPageNumber}
+              pageSize={pageSize}
+              setPageSize={setPageSize}
+              totalCount={workFlowResponse.totalCount}
+              //onFilterChange={handleFilterChange}
             />
           </div>
-        ) : (
-          <p className="p-6 text-red-400 text-sm md:text-base font-bold">
-            کاری در کارتابل شما وجود ندارد!
-          </p>
         )}
       </Paper>
     </>

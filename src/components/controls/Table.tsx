@@ -1,4 +1,4 @@
-import { TableBody, TableCell, TableRow, useTheme } from "@mui/material";
+import { TableBody, TableCell, TableRow, useTheme, Collapse, Typography } from "@mui/material";
 
 import {
   convertToFarsiDigits,
@@ -12,21 +12,34 @@ type TableProps<T> = {
   data: T[];
   headCells: HeadCell<T>[];
   headerGroups?: HeaderGroup[];
-  resetPageSignal: string | undefined;
+  //resetPageSignal: string | undefined;
   pagination?: boolean;
   cellClickHandler?: (cell: HeadCell<T>, item: T) => void;
   hasSumRow?: boolean;
+  page?: number;
+  setPage?: (page: number) => void;
+  pageSize?: number;
+  setPageSize?: (pageSize: number) => void;
+  totalCount?: number;
+//  onFilterChange?: (field: string, value: string) => void;
 };
 
 export function Table<T>({
   data,
   headCells,
   headerGroups,
-  resetPageSignal,
+  //resetPageSignal,
   pagination = false,
   cellClickHandler,
   hasSumRow = false,
+  page = 0,
+  setPage,
+  pageSize = 10,
+  setPageSize,
+  totalCount,
+ // onFilterChange
 }: TableProps<T>) {
+  const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
   const [filterFn] = useState<{
     fn: (items: T[]) => T[];
   }>({
@@ -37,54 +50,86 @@ export function Table<T>({
     TblContainer,
     TblHead,
     TblPagination,
-    recordsAfterPagingAndSorting,
+    recordsAfterPaging,
     recordsAfterSorting,
     isMobile,
     mobileMainColumns,
     mobileRestColumns,
-    page,
-    rowsPerPage,
+
   } = useTable<T>(
     data,
     headCells,
     headerGroups ?? [],
     filterFn,
-    resetPageSignal
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    totalCount,
+    //onFilterChange
   );
 
   const navigate = useNavigate();
   const theme = useTheme();
 
+  const toggleRow = (idx: number) => {
+    const newExpandedRows = new Set(expandedRows);
+    if (newExpandedRows.has(idx)) {
+      newExpandedRows.delete(idx);
+    } else {
+      newExpandedRows.add(idx);
+    }
+    setExpandedRows(newExpandedRows);
+  };
+
+  const renderChildTable = (item: T, idx: number) => {
+    const childTableColumn = headCells.find(cell => cell.hasChildTable);
+    if (!childTableColumn?.childTableConfig) return null;
+
+    const { headCells: childHeadCells, getChildData } = childTableColumn.childTableConfig;
+    const childData = getChildData(item);
+
+    return (
+      <TableRow>
+        <TableCell colSpan={headCells.length + (isMobile ? 1 : 0)} sx={{ padding: 0 }}>
+          <Collapse in={expandedRows.has(idx)} timeout="auto" unmountOnExit>
+            <div className="p-4 bg-gray-50">
+              <Table
+                data={childData}
+                headCells={childHeadCells}
+                //resetPageSignal={resetPageSignal}
+                pagination={false}
+              />
+            </div>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    );
+  };
+
+  const records = pagination ? recordsAfterPaging() : recordsAfterSorting();
+
   return (
-    <div className="h-full">
+    <div className="h-full flex flex-col gap-2">
       <TblContainer>
         <TblHead />
         <TableBody sx={{ overflowY: "auto" }}>
-          {(pagination ? recordsAfterPagingAndSorting() : recordsAfterSorting()).map(
+          {records.length > 0 ? records.map(
             (item, idx) => (
+              <React.Fragment key={idx}>
               <TableRow
-                key={idx}
                 sx={
-                  idx ===
-                    (pagination ? recordsAfterPagingAndSorting() : recordsAfterSorting())
-                      .length -
-                      1 && hasSumRow
+                  idx === records.length -1 && hasSumRow
                     ? {
-                        //for sum row
                         backgroundColor: theme.palette.grey[200],
                         fontWeight: "bold",
                       }
                     : {}
                 }
               >
-                {/* mobile main columns */}
                 {(isMobile ? mobileMainColumns : headCells).map(
                   (cell: HeadCell<T>) => {
-                    const lastRow =
-                      idx ===
-                      (pagination ? recordsAfterPagingAndSorting() : recordsAfterSorting())
-                        .length -
-                        1;
+                    const lastRow = idx === records.length -1;
                     let displayValue;
                     if (cell.icon !== undefined) {
                       displayValue =
@@ -98,7 +143,7 @@ export function Table<T>({
                         displayValue = "";
                       } else {
                         displayValue = convertToFarsiDigits(
-                          pagination ? page * rowsPerPage + idx + 1 : idx + 1
+                            pagination ? page  * pageSize + idx + 1 : idx + 1
                         );
                       }
                     } else if (cell.isCurrency) {
@@ -119,7 +164,9 @@ export function Table<T>({
                         key={String(cell.id)}
                         className={isMobile ? "text-xs" : ""}
                         onClick={() => {
-                          if (cellClickHandler && !lastRow) {
+                            if (cell.hasChildTable) {
+                              toggleRow(idx);
+                            } else if (cellClickHandler && !lastRow) {
                             cellClickHandler(cell, item);
                           } else if (cell.path) {
                             navigate(
@@ -139,15 +186,10 @@ export function Table<T>({
                     );
                   }
                 )}
-                {/* mobile rest columns */}
-                {isMobile && mobileRestColumns.length > 0 && (
+                  {isMobile && (
                   <TableCell className="text-xs">
                     {mobileRestColumns.map((cell: HeadCell<T>) => {
-                      const lastRow =
-                        idx ===
-                        (pagination ? recordsAfterPagingAndSorting() : recordsAfterSorting)
-                          .length -
-                          1;
+                      const lastRow = idx === records.length - 1;
                       let displayValue;
 
                       if (cell.icon !== undefined) {
@@ -159,7 +201,7 @@ export function Table<T>({
                           );
                       } else if (cell.id === "index") {
                         displayValue = convertToFarsiDigits(
-                          pagination ? page * rowsPerPage + idx + 1 : idx + 1
+                            pagination ? page  * pageSize + idx + 1 : idx + 1
                         );
                       } else if (cell.isCurrency) {
                         displayValue = convertToFarsiDigits(
@@ -178,7 +220,9 @@ export function Table<T>({
                         <div
                           key={String(cell.id)}
                           onClick={() => {
-                            if (cellClickHandler) {
+                              if (cell.hasChildTable) {
+                                toggleRow(idx);
+                              } else if (cellClickHandler) {
                               cellClickHandler(cell, item);
                             } else if (cell.path) {
                               navigate(
@@ -202,11 +246,21 @@ export function Table<T>({
                   </TableCell>
                 )}
               </TableRow>
+                {renderChildTable(item, idx)}
+              </React.Fragment>
             )
+          ) : (
+            <TableRow>
+              <TableCell colSpan={headCells.length + (isMobile ? 1 : 0)}>
+                <div className="flex justify-center items-center h-full p-6 text-red-400">
+                  <Typography variant="body1">رکوردی یافت نشد</Typography>
+                </div>
+              </TableCell>
+            </TableRow>
           )}
         </TableBody>
       </TblContainer>
-      {pagination && <TblPagination />}
+      {pagination && records.length > 0 && <TblPagination />}
     </div>
   );
 }

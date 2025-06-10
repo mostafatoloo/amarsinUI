@@ -24,8 +24,8 @@ export const headCells: HeadCell<ProviderDetailTable>[] = [
     disableSorting: true,
     cellWidth: "5%",
   },
-  { id: "kind", label: "نوع", cellWidth: "5%" ,disableSorting: true,},
-  { id: "factorNo", label: "شماره فاکتور", isNumber: true, cellWidth: "5%" ,},
+  { id: "kind", label: "نوع", cellWidth: "5%", disableSorting: true },
+  { id: "factorNo", label: "شماره فاکتور", isNumber: true, cellWidth: "5%" },
   { id: "dat", label: "تاریخ", isNumber: true, cellWidth: "5%" },
   { id: "customerId", label: "شماره. مشتری", isNumber: true, cellWidth: "5%" },
   { id: "nId", label: "کد/شناسه ملی", isNumber: true, cellWidth: "5%" },
@@ -39,12 +39,36 @@ export const headCells: HeadCell<ProviderDetailTable>[] = [
   },
   { id: "cnt", label: "تعداد", isNumber: true, cellWidth: "5%" },
   { id: "offerCnt", label: "آفر", isNumber: true, cellWidth: "5%" },
-  { id: "cost", label: "قیمت فروش", isNumber: true, cellWidth: "5%" , isCurrency: true},
-  { id: "dcrmnt", label: "تخفیف", isNumber: true, cellWidth: "5%" , isCurrency: true},
-  { id: "valueTax", label: "مالیات", isNumber: true, cellWidth: "5%" , isCurrency: true},
-  { id: "total", label: "مبلغ", isNumber: true, cellWidth: "5%" , isCurrency: true},
-  { id: "shRId", label: "ش. برگه مسیر", isNumber: true, cellWidth: "5%" ,},
-  { id: "shRDate", label: "ت. برگه مسیر", isNumber: true, cellWidth: "5%" ,},
+  {
+    id: "cost",
+    label: "قیمت فروش",
+    isNumber: true,
+    cellWidth: "5%",
+    isCurrency: true,
+  },
+  {
+    id: "dcrmnt",
+    label: "تخفیف",
+    isNumber: true,
+    cellWidth: "5%",
+    isCurrency: true,
+  },
+  {
+    id: "valueTax",
+    label: "مالیات",
+    isNumber: true,
+    cellWidth: "5%",
+    isCurrency: true,
+  },
+  {
+    id: "total",
+    label: "مبلغ",
+    isNumber: true,
+    cellWidth: "5%",
+    isCurrency: true,
+  },
+  { id: "shRId", label: "ش. برگه مسیر", isNumber: true, cellWidth: "5%" },
+  { id: "shRDate", label: "ت. برگه مسیر", isNumber: true, cellWidth: "5%" },
 ];
 
 export default function ProviderListDetails({
@@ -84,7 +108,7 @@ export default function ProviderListDetails({
     <Paper className="p-2 m-2 w-full h-full">
       {isLoading ? (
         <div className="text-center">{<Skeleton />}</div>
-      ) : providerDetailList.rpProviderDetails.length > 0 ? (
+      ) : (
         <div className="h-screen-minus-200">
           <Table
             data={providerDetailList.rpProviderDetails.map((ProviderDetail) => {
@@ -101,13 +125,8 @@ export default function ProviderListDetails({
               };
             })}
             headCells={headCells}
-            resetPageSignal={brand?.id}
           />
         </div>
-      ) : (
-        <p className="p-6 text-red-400 text-sm md:text-base font-bold">
-          هیچ اطلاعاتی یافت نشد.
-        </p>
       )}
     </Paper>
   );

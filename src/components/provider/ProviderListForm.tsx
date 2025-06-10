@@ -32,11 +32,23 @@ export const headCells: HeadCell<ProviderItem>[] = [
     disableSorting: true,
     cellWidth: "10%",
   },
-  { id: "name", label: "نام کالا" ,cellWidth: "55%"},
-  { id: "cnt", label: "تعداد", isNumber: true ,cellWidth: "10%"},
-  { id: "total", label: "مبلغ", isNumber: true, isCurrency: true ,cellWidth: "10%"},
-  { id: "offerCnt", label: "تعداد", isNumber: true ,cellWidth: "10%"},
-  { id: "id", label: "گردش", icon: ReportIcon, hasDetails: true ,cellWidth: "5%"},
+  { id: "name", label: "نام کالا", cellWidth: "55%" },
+  { id: "cnt", label: "تعداد", isNumber: true, cellWidth: "10%" },
+  {
+    id: "total",
+    label: "مبلغ",
+    isNumber: true,
+    isCurrency: true,
+    cellWidth: "10%",
+  },
+  { id: "offerCnt", label: "تعداد", isNumber: true, cellWidth: "10%" },
+  {
+    id: "id",
+    label: "گردش",
+    icon: ReportIcon,
+    hasDetails: true,
+    cellWidth: "5%",
+  },
 ];
 
 const headerGroups: HeaderGroup[] = [
@@ -79,7 +91,6 @@ export default function ProviderListForm({
     setBrandField("accSystem", systemId);
     setBrandField("search", search);
   }, [search, systemId]);
-
 
   useEffect(() => {
     setField("accSystem", systemId);
@@ -133,24 +144,18 @@ export default function ProviderListForm({
         <p className="p-6 text-red-400 text-sm md:text-base font-bold">
           {providerList.msg}
         </p>
-      ) : providerList.rpProviders.length > 0 ? (
+      ) : (
         <div className="h-screen-minus-200 mt-2">
           <Table
             data={providerList.rpProviders}
             headCells={headCells}
-            resetPageSignal={brand?.id}
             headerGroups={headerGroups}
             // Pass custom cell click handler
             cellClickHandler={handleCellClick}
             hasSumRow={true}
           />
         </div>
-      ) : (
-        <p className="p-6 text-red-400 text-sm md:text-base font-bold">
-          هیچ کالایی یافت نشد.
-        </p>
       )}
-
     </Paper>
   );
 }

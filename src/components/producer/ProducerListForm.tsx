@@ -128,7 +128,6 @@ export default function ProviderListForm({
           <Table
             data={data}
             headCells={headCells}
-            resetPageSignal={brand?.id}
             headerGroups={headerGroups}
             cellClickHandler={handleCellClick}
             hasSumRow={true}

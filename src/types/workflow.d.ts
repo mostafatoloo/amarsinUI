@@ -49,6 +49,7 @@ export interface WorkFlowRequest {
   chartId: number;
   systemId?: number;
   page?: number;
+  pageSize?: number;
   flowMapId?: number;
   title?: string;
   dateTime?: string;
