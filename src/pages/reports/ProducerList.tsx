@@ -19,7 +19,7 @@ export const headCells: HeadCell<RpProduct>[] = [
     disableSorting: true,
     cellWidth: "5%",
   },
-  { id: "name", label: "نام کالا", cellWidth: "20%" },
+  { id: "name", label: "نام کالا", cellWidth: "10%" },
   { id: "cnt", label: "تعداد", isNumber: true, cellWidth: "10%" },
   {
     id: "total",
@@ -55,7 +55,7 @@ export default function ProducerList() {
     (producer) => ({
       id: producer.id.toString(),
       label: producer.name,
-      cellWidth: "10%",
+      cellWidth: "12%",
       isNumber: true,
       backgroundColor: cyan[100],
     })

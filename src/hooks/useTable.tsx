@@ -36,11 +36,11 @@ export type HeadCell<T> = {
     headCells: HeadCell<any>[];
     getChildData: (parentItem: T) => any[];
   };
-  filterable?: boolean;
-//  filterField?: string;
+  /*  filterable?: boolean;
+  filterField?: string;
   filterType?: "text" | "number";
   filterValue?: string;
-  setFilterValue?: (value: string) => void;
+  setFilterValue?: (value: string) => void;*/
 };
 
 export type HeaderGroup = {
@@ -74,7 +74,6 @@ export default function useTable<T>(
   pageSize?: number,
   setPageSize?: (pageSize: number) => void,
   totalCount?: number,
-  //onFilterChange?: (field: string, value: string) => void
 ): UseTableReturn<T> {
   const theme = useTheme();
   const isMobile = useMediaQuery("(max-width: 600px)");
@@ -97,6 +96,7 @@ export default function useTable<T>(
       top: 0,
       zIndex: 1,
       padding: "4px 8px",
+      fontSize: "12px",
       fontWeight: "bold",
       color: "gray",
       borderRight: "1px solid lightgray",
@@ -123,7 +123,7 @@ export default function useTable<T>(
   };
 
   const TblContainer: React.FC<{ children: ReactNode }> = ({ children }) => (
-    <div className="2xl:max-h-[calc(100vh-200px)] max-h-[calc(100vh-350px)] overflow-y-auto overflow-x-auto w-full">
+    <div className="2xl:max-h-[calc(100vh-200px)] lg:max-h-[calc(100vh-250px)] max-h-[calc(100vh-350px)] overflow-y-auto overflow-x-auto w-full">
       <Table sx={tableStyles} className="min-w-[600px]">
         {children}
       </Table>
@@ -134,16 +134,6 @@ export default function useTable<T>(
     const isAsc = orderBy === cellId && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(cellId);
-  };
-
-  const handleFilterChange = (
-    //field: string,
-    value: string,
-    setFilterValue?: (value: string) => void
-  ) => {
-    //onFilterChange?.(field, value);
-    setFilterValue?.(value);
-    setPage?.(1);
   };
 
   const TblHead: React.FC = () => {
@@ -186,19 +176,22 @@ export default function useTable<T>(
               >
                 {headCell.label}
               </TableSortLabel>
-              {headCell.filterable && (
+              {/*{headCell.filterable && (
                 <div className="mt-2">
                   <input
                     value={headCell.filterValue ?? ""}
                     type={headCell.filterType}
-                    className="w-full p-1 text-sm border rounded"
+                    className="w-full p-1 text-xs border rounded"
                     placeholder={`جستجو برای ${headCell.label}`}
                     onChange={(e) => {
                       e.stopPropagation();
-                      handleFilterChange(
-                        e.target.value,
-                        headCell.setFilterValue
-                      );
+                      if (headCell.filterField) {
+                        handleFilterChange(
+                          headCell.filterField,
+                          e.target.value,
+                          headCell.setFilterValue
+                        );
+                      }
                     }}
                     onKeyDown={(e) => {
                       e.stopPropagation();
@@ -206,7 +199,7 @@ export default function useTable<T>(
                     autoFocus
                   />
                 </div>
-              )}
+              )}*/}
             </TableCell>
           ))}
           {isMobile && mobileRestColumns.length > 0 && (
@@ -283,9 +276,7 @@ export default function useTable<T>(
         onPageChange={handleChangePage}
         ActionsComponent={TablePaginationActions}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        labelRowsPerPage={
-          isMobile ? "تعداد" : "تعداد نمایش داده شده در هر صفحه:"
-        }
+        labelRowsPerPage={isMobile ? "تعداد" : "تعداد در هر صفحه:"}
         labelDisplayedRows={({ from, to, count }) =>
           `${convertToFarsiDigits(from)}-${convertToFarsiDigits(
             to

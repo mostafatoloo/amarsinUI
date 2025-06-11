@@ -16,7 +16,7 @@ export type WorkFlowTable = {
 }
 
 export type WorkTable = {
-  id: number;
+  id: number; //parent id
   regFDate: string;
   regTime: string;
   regDateTime: string;

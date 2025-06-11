@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { WorkFlowState } from "../types/workflow";
 
-
 export const useWorkflowStore = create<WorkFlowState>()((set) => ({
   chartId: 1,
   systemId: 4,
@@ -16,8 +15,12 @@ export const useWorkflowStore = create<WorkFlowState>()((set) => ({
   dsc: "",
   workFlowResponse: { err: 0, msg: "", totalCount: 0, flowMapTitles: [], workTables: [] },
   setField: (field: string | number | symbol, value: any) =>
-    set((state) => ({ ...state, [field]: value })),
-  setWorkFlowResponse: (workFlowResponse) => set({ workFlowResponse }),
+    set((state) => ({ 
+      ...state, 
+      [field]: value
+    })),
+  setWorkFlowResponse: (workFlowResponse) => 
+    set({ workFlowResponse }),
 }));
 
 

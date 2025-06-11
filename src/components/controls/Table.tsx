@@ -21,7 +21,6 @@ type TableProps<T> = {
   pageSize?: number;
   setPageSize?: (pageSize: number) => void;
   totalCount?: number;
-//  onFilterChange?: (field: string, value: string) => void;
 };
 
 export function Table<T>({
@@ -37,7 +36,6 @@ export function Table<T>({
   pageSize = 10,
   setPageSize,
   totalCount,
- // onFilterChange
 }: TableProps<T>) {
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
   const [filterFn] = useState<{
@@ -66,7 +64,6 @@ export function Table<T>({
     pageSize,
     setPageSize,
     totalCount,
-    //onFilterChange
   );
 
   const navigate = useNavigate();

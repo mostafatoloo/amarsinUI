@@ -1,28 +1,19 @@
-import { useEffect } from "react";
 import PageTitle from "../components/layout/PageTitle";
-import { useBrandStore } from "../store/brandStore";
-import { useAuthStore } from "../store/authStore";
 import Add32 from "../assets/images/GrayThem/add32.png"
 import FormFlow24 from "../assets/images/GrayThem/FormFlow24.png"
 import SentForm24 from "../assets/images/GrayThem/SentForm24.png"
 import Refresh32 from "../assets/images/GrayThem/rfrsh32.png"
-import WorkflowForm from "../components/workflow/WorkflowForm";
+import WorkflowForm from "../components/workflow/WorkflowParent";
+import { useWorkflow } from "../hooks/useWorkflow";
 
 
 export default function Workflow() {
-
-  const {setField} = useBrandStore()
-  const {authApiResponse}=useAuthStore()
-
-  const accSystem= authApiResponse?.data.result.initData.systemId
-  useEffect(()=>{
-    setField("accSystem",accSystem)
-  },[accSystem])
+const {refetch}=useWorkflow()
 
   return (
     <div className="h-[calc(100vh-72px)] overflow-y-auto flex flex-col bg-gray-200 pt-2">
       {/* Top blue header */}
-      <header className="flex items-center justify-between">
+      <header className="flex flex-col md:flex-row items-center justify-between gap-2">
         <PageTitle />
         <div className="flex px-4 items-center gap-4">
           <div className="flex flex-col items-center cursor-pointer">
@@ -37,7 +28,8 @@ export default function Workflow() {
             <img src={FormFlow24} alt="FormFlow24" className="w-6 h-6" />
             <p className="text-xs">گردش</p>
           </div>
-          <div className="flex flex-col items-center cursor-pointer">
+          <div className="flex flex-col items-center cursor-pointer"
+          onClick={()=>refetch()}>
             <img src={Refresh32} alt="Refresh32" className="w-6 h-6" />
             <p className="text-xs">بازخوانی</p>
           </div>
