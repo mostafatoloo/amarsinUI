@@ -9,6 +9,7 @@ import InventoryGoodList from './pages/reports/InventoryGoodList'
 import ProviderList from './pages/reports/ProviderList'
 import ProducerList from './pages/reports/ProducerList'
 import Workflow from './pages/Workflow'
+import Dashboard from './pages/Dashboard'
 
 
 const queryClient = new QueryClient()
@@ -26,6 +27,14 @@ function App() {
         <Layout>  
           <Routes>
             <Route path="/login" element={<Login isHomePage={true}/>} />
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute>
+                  <Dashboard />
+                </PrivateRoute>
+              }
+            />
             <Route
               path="/admin/WFMS/index"
               element={

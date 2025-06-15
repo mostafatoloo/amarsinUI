@@ -69,7 +69,6 @@ const SideMenu = () => {
     definitionInvironment.curMonth,
     definitionInvironment.curYear
   );
-  console.log(menu,"menu")
 
   return (
     <aside

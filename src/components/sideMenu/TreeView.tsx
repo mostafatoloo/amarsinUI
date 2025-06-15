@@ -41,6 +41,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ item, level, currentPath }) => {
   };
   const initiallyExpanded = hasChildren && hasDescendantWithPath(item);
   const [expanded, setExpanded] = useState(initiallyExpanded);
+  
   React.useEffect(() => {
     // Expand if currentPath changes and this node should be expanded
     if (hasChildren && hasDescendantWithPath(item)) {
@@ -51,6 +52,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ item, level, currentPath }) => {
   }, [currentPath]);
   const navigate = useNavigate();
   const { setTreeNodeTitle, setIsMenuOpened } = useGeneralContext();
+
   React.useEffect(() => {
     if (isCurrent) {
       setTreeNodeTitle(item.name);
