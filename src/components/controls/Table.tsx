@@ -28,6 +28,7 @@ type TableProps<T> = {
   setPageSize?: (pageSize: number) => void;
   totalCount?: number;
   setSelectedId?: (value: number) => void;
+  cellFontSize?: string;
 };
 
 export function Table<T>({
@@ -44,6 +45,7 @@ export function Table<T>({
   setPageSize,
   totalCount,
   setSelectedId,
+  cellFontSize,
 }: TableProps<T>) {
   const [filterFn] = useState<{
     fn: (items: T[]) => T[];
@@ -81,7 +83,7 @@ export function Table<T>({
     <div className="h-full flex flex-col gap-2">
       <TblContainer>
         <TblHead />
-        <TableBody sx={{ overflowY: "auto" }}>
+        <TableBody sx={{ overflowY: "auto"}}>
           {records.length > 0 ? (
             records.map((item, idx) => (
               <React.Fragment key={idx}>
@@ -133,33 +135,39 @@ export function Table<T>({
                             : value;
                       }
                       return (
-                        cell.isNotVisible!==true && <TableCell
-                          key={String(cell.id)}
-                          className={isMobile ? "text-xs" : ""}
-                          onClick={() => {
-                            if (cellClickHandler && !lastRow) {
-                              cellClickHandler(cell, item);
-                            } else if (cell.path) {
-                              navigate(
-                                `${cell.path}/${item[cell.id as keyof T]}`
-                              );
-                            }
-                          }}
-                        >
-                          {typeof displayValue === "string" ||
-                          typeof displayValue === "number" ||
-                          React.isValidElement(displayValue)
-                            ? displayValue
-                            : displayValue !== undefined &&
-                              displayValue !== null
-                            ? String(displayValue)
-                            : ""}
-                        </TableCell>
+                        cell.isNotVisible !== true && (
+                          <TableCell
+                            key={String(cell.id)}
+                            sx={{
+                              fontSize: isMobile ? "0.7rem" : cellFontSize,
+                            }}
+                            onClick={() => {
+                              if (cellClickHandler && !lastRow) {
+                                cellClickHandler(cell, item);
+                              } else if (cell.path) {
+                                navigate(
+                                  `${cell.path}/${item[cell.id as keyof T]}`
+                                );
+                              }
+                            }}
+                          >
+                            {typeof displayValue === "string" ||
+                            typeof displayValue === "number" ||
+                            React.isValidElement(displayValue)
+                              ? displayValue
+                              : displayValue !== undefined &&
+                                displayValue !== null
+                              ? String(displayValue)
+                              : ""}
+                          </TableCell>
+                        )
                       );
                     }
                   )}
                   {isMobile && (
-                    <TableCell className="text-xs">
+                    <TableCell
+                      sx={{ fontSize: isMobile ? "0.7rem" : cellFontSize }}
+                    >
                       {mobileRestColumns.map((cell: HeadCell<T>) => {
                         const lastRow = idx === records.length - 1;
                         let displayValue;
@@ -193,28 +201,30 @@ export function Table<T>({
                               : value;
                         }
                         return (
-                          cell.isNotVisible!==true && <div
-                            key={String(cell.id)}
-                            onClick={() => {
-                              if (cellClickHandler) {
-                                cellClickHandler(cell, item);
-                              } else if (cell.path) {
-                                navigate(
-                                  `${cell.path}/${item[cell.id as keyof T]}`
-                                );
-                              }
-                            }}
-                          >
-                            <strong>{cell.label}:</strong>
-                            {typeof displayValue === "string" ||
-                            typeof displayValue === "number" ||
-                            React.isValidElement(displayValue)
-                              ? displayValue
-                              : displayValue !== undefined &&
-                                displayValue !== null
-                              ? String(displayValue)
-                              : ""}
-                          </div>
+                          cell.isNotVisible !== true && (
+                            <div
+                              key={String(cell.id)}
+                              onClick={() => {
+                                if (cellClickHandler) {
+                                  cellClickHandler(cell, item);
+                                } else if (cell.path) {
+                                  navigate(
+                                    `${cell.path}/${item[cell.id as keyof T]}`
+                                  );
+                                }
+                              }}
+                            >
+                              <strong>{cell.label}:</strong>
+                              {typeof displayValue === "string" ||
+                              typeof displayValue === "number" ||
+                              React.isValidElement(displayValue)
+                                ? displayValue
+                                : displayValue !== undefined &&
+                                  displayValue !== null
+                                ? String(displayValue)
+                                : ""}
+                            </div>
+                          )
                         );
                       })}
                     </TableCell>

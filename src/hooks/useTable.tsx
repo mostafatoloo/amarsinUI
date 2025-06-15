@@ -170,7 +170,7 @@ export default function useTable<T>(
             </TableCell>
           ))}
           {isMobile && mobileRestColumns.length > 0 && (
-            <TableCell sx={{ backgroundColor: theme.palette.grey[300] }}>
+            <TableCell sx={{ backgroundColor: theme.palette.grey[300]}}>
               جزئیات
             </TableCell>
           )}

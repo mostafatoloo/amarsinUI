@@ -31,7 +31,7 @@ export default function WorkflowParent({setSelectedId}:Props) {
       id: "index",
       label: "ردیف",
       disableSorting: true,
-      cellWidth: "2%",
+      cellWidth: "5%",
       isNumber: true,
     },
     {
@@ -44,7 +44,7 @@ export default function WorkflowParent({setSelectedId}:Props) {
     {
       id: "formTitle",
       label: "فرم",
-      cellWidth: "23%",
+      cellWidth: "20%",
       disableSorting: true,
     },
     {
@@ -70,14 +70,14 @@ export default function WorkflowParent({setSelectedId}:Props) {
     {
       id: "fChartName",
       label: "فرستنده",
-      cellWidth: "15%",
+      cellWidth: "10%",
       isNumber: true,
       disableSorting: true,
     },
     {
       id: "dsc",
       label: "شرح",
-      cellWidth: "20%",
+      cellWidth: "25%",
       isNumber: true,
       disableSorting: true,
     },
@@ -107,6 +107,8 @@ export default function WorkflowParent({setSelectedId}:Props) {
     setField("flowMapId","-1")
   },[chartId])
 
+
+
   //define flowMapTitles
   const [flowMapTitle, setFlowMapTitle] = useState<{
     id: string;
@@ -123,6 +125,10 @@ export default function WorkflowParent({setSelectedId}:Props) {
   const [flowMapId, setFlowMapId] = useState("-1");
   const [name, setName] = useState("");
   const [dsc, setDsc] = useState("");
+
+  useEffect(()=>{
+    setPageNumber(1)
+  },[flowMapIdStore,dateTime,title,code,cost,name,dsc,chartId,systemId])
 
   useEffect(() => {
     console.log(flowMapId); //just for handling warning of unused flowMapId
@@ -276,6 +282,7 @@ export default function WorkflowParent({setSelectedId}:Props) {
               setPageSize={setPageSize}
               totalCount={workFlowResponse.totalCount}
               setSelectedId={setSelectedId}
+              cellFontSize="0.75rem"
             />
           </div>
         )}
