@@ -11,7 +11,7 @@ import {
 } from "../../utilities/general";
 import { useDefinitionInvironment } from "../../hooks/useDefinitionInvironment";
 import { colors } from "../../utilities/color";
-//import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const SideMenu = () => {
   const { isMenuOpened, setChartId
@@ -25,6 +25,7 @@ const SideMenu = () => {
   const menu: MenuItem[] | undefined = authApiResponse?.data.result.menu;
   const [visible, setVisible] = useState(isMenuOpened);
   const tree = buildTree(menu ?? []);
+  const location = useLocation();
 
   const [search, setSearch] = useState<string>("");
   const [chart, setChart] = useState<{ id: number; title: string } | null>({
@@ -68,6 +69,7 @@ const SideMenu = () => {
     definitionInvironment.curMonth,
     definitionInvironment.curYear
   );
+  console.log(menu,"menu")
 
   return (
     <aside
@@ -132,7 +134,7 @@ const SideMenu = () => {
 
       {/* Scrollable Menu Items */}
       <div className="flex-1 overflow-y-auto p-4 text-gray-400">
-        <TreeView data={tree} />
+        <TreeView data={tree} currentPath={location.pathname} />
       </div>
 
       {/* Logout Icon */}

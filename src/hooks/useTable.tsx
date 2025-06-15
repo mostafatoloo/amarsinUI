@@ -31,16 +31,7 @@ export type HeadCell<T> = {
   hasDetails?: boolean;
   cellWidth?: string;
   backgroundColor?: string;
-  hasChildTable?: boolean;
-  childTableConfig?: {
-    headCells: HeadCell<any>[];
-    getChildData: (parentItem: T) => any[];
-  };
-  /*  filterable?: boolean;
-  filterField?: string;
-  filterType?: "text" | "number";
-  filterValue?: string;
-  setFilterValue?: (value: string) => void;*/
+  isNotVisible?:boolean;
 };
 
 export type HeaderGroup = {
@@ -158,7 +149,7 @@ export default function useTable<T>(
         )}
         <TableRow>
           {(isMobile ? mobileMainColumns : headCells).map((headCell) => (
-            <TableCell
+            headCell.isNotVisible!==true && <TableCell
               key={String(headCell.id)}
               align="center"
               sortDirection={orderBy === headCell.id ? order : false}
@@ -176,30 +167,6 @@ export default function useTable<T>(
               >
                 {headCell.label}
               </TableSortLabel>
-              {/*{headCell.filterable && (
-                <div className="mt-2">
-                  <input
-                    value={headCell.filterValue ?? ""}
-                    type={headCell.filterType}
-                    className="w-full p-1 text-xs border rounded"
-                    placeholder={`جستجو برای ${headCell.label}`}
-                    onChange={(e) => {
-                      e.stopPropagation();
-                      if (headCell.filterField) {
-                        handleFilterChange(
-                          headCell.filterField,
-                          e.target.value,
-                          headCell.setFilterValue
-                        );
-                      }
-                    }}
-                    onKeyDown={(e) => {
-                      e.stopPropagation();
-                    }}
-                    autoFocus
-                  />
-                </div>
-              )}*/}
             </TableCell>
           ))}
           {isMobile && mobileRestColumns.length > 0 && (

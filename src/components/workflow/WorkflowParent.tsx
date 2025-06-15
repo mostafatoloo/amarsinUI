@@ -12,8 +12,13 @@ import AutoComplete from "../controls/AutoComplete";
 import { convertToFarsiDigits } from "../../utilities/general";
 import { debounce } from "lodash";
 
-export default function WorkflowParent() {
+type Props={
+  setSelectedId:(value: number) => void;
+}
+
+export default function WorkflowParent({setSelectedId}:Props) {
   const { workFlowResponse, error, isLoading } = useWorkflow();
+  const {flowMapId: flowMapIdStore}=useWorkflowStore()
   const { systemId, chartId, defaultRowsPerPage } = useGeneralContext();
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(defaultRowsPerPage);
@@ -26,7 +31,7 @@ export default function WorkflowParent() {
       id: "index",
       label: "ردیف",
       disableSorting: true,
-      cellWidth: "5%",
+      cellWidth: "2%",
       isNumber: true,
     },
     {
@@ -39,7 +44,7 @@ export default function WorkflowParent() {
     {
       id: "formTitle",
       label: "فرم",
-      cellWidth: "20%",
+      cellWidth: "23%",
       disableSorting: true,
     },
     {
@@ -52,14 +57,14 @@ export default function WorkflowParent() {
     {
       id: "formCost",
       label: "مقدار",
-      cellWidth: "10%",
+      cellWidth: "7%",
       isCurrency: true,
       disableSorting: true,
     },
     {
       id: "flowMapTitle",
       label: "مرحله",
-      cellWidth: "10%",
+      cellWidth: "13%",
       disableSorting: true,
     },
     {
@@ -76,6 +81,12 @@ export default function WorkflowParent() {
       isNumber: true,
       disableSorting: true,
     },
+    {
+      id:"id",
+      label:"شناسه رکورد",
+      cellWidth:"10%",
+      isNotVisible:true
+    }
   ];
 
   useEffect(() => {
@@ -91,6 +102,10 @@ export default function WorkflowParent() {
     setField("page", pageNumber);
     setField("pageSize", pageSize);
   }, [systemId, chartId, pageNumber, pageSize]);
+
+  useEffect(()=>{
+    setField("flowMapId","-1")
+  },[chartId])
 
   //define flowMapTitles
   const [flowMapTitle, setFlowMapTitle] = useState<{
@@ -110,8 +125,8 @@ export default function WorkflowParent() {
   const [dsc, setDsc] = useState("");
 
   useEffect(() => {
-    console.log(flowMapId);
-    if (flowMapId?.toString() === "-1" && workFlowResponse.totalCount > 0) {
+    console.log(flowMapId); //just for handling warning of unused flowMapId
+    if (flowMapIdStore?.toString() === "-1" && workFlowResponse.totalCount > 0) {
       setFlowMapTitle({
         id: "-1",
         title:
@@ -124,14 +139,14 @@ export default function WorkflowParent() {
             : "",
       });
     } else if (
-      flowMapId?.toString() === "-1" &&
+      flowMapIdStore?.toString() === "-1" &&
       workFlowResponse.totalCount === 0
     )
       setFlowMapTitle({
         id: "-1",
         title: "",
       });
-  }, [chartId, flowMapId, workFlowResponse.totalCount]);
+  }, [chartId, flowMapIdStore, workFlowResponse.totalCount]);
 
   const handleDebounceFilterChange = useCallback(
     debounce((field: string, value: string) => {
@@ -161,7 +176,7 @@ export default function WorkflowParent() {
 
   return (
     <>
-      <Paper className="p-2 m-2 w-full h-full">
+      <Paper className="p-2 m-2 w-full">
         <div className="w-full flex justify-center md:justify-end items-center ">
           <input
             name="dateTime"
@@ -203,7 +218,7 @@ export default function WorkflowParent() {
             className="border p-1 text-sm rounded-sm hidden md:block"
             style={{ width: headCells[4].cellWidth }}
           />
-          <div style={{ width: headCells[5].cellWidth }}>
+          <div className="hidden md:block" style={{ width: headCells[5].cellWidth }}>
             <AutoComplete
               options={workFlowResponse.flowMapTitles.map((b) => ({
                 id: b.id.toString(),
@@ -218,7 +233,7 @@ export default function WorkflowParent() {
               showLabel={false}
               inputPadding="0 !important"
               mobilefontsize="0.6rem"
-              desktopfontsize="0.7rem"
+              desktopfontsize="0.7rem"             
             />
           </div>
           <input
@@ -250,7 +265,7 @@ export default function WorkflowParent() {
             {workFlowResponse.msg}
           </p>
         ) : (
-          <div className="h-screen-minus-200 w-full mt-2">
+          <div className="h-screen-minus-500 w-full mt-2">
             <Table
               data={workFlowResponse.workTables}
               headCells={headCells}
@@ -260,6 +275,7 @@ export default function WorkflowParent() {
               pageSize={pageSize}
               setPageSize={setPageSize}
               totalCount={workFlowResponse.totalCount}
+              setSelectedId={setSelectedId}
             />
           </div>
         )}

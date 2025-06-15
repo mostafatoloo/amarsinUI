@@ -1,4 +1,10 @@
-import { TableBody, TableCell, TableRow, useTheme, Collapse, Typography } from "@mui/material";
+import {
+  TableBody,
+  TableCell,
+  TableRow,
+  useTheme,
+  Typography,
+} from "@mui/material";
 
 import {
   convertToFarsiDigits,
@@ -21,6 +27,7 @@ type TableProps<T> = {
   pageSize?: number;
   setPageSize?: (pageSize: number) => void;
   totalCount?: number;
+  setSelectedId?: (value: number) => void;
 };
 
 export function Table<T>({
@@ -36,8 +43,8 @@ export function Table<T>({
   pageSize = 10,
   setPageSize,
   totalCount,
+  setSelectedId,
 }: TableProps<T>) {
-  const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
   const [filterFn] = useState<{
     fn: (items: T[]) => T[];
   }>({
@@ -53,7 +60,6 @@ export function Table<T>({
     isMobile,
     mobileMainColumns,
     mobileRestColumns,
-
   } = useTable<T>(
     data,
     headCells,
@@ -63,46 +69,11 @@ export function Table<T>({
     setPage,
     pageSize,
     setPageSize,
-    totalCount,
+    totalCount
   );
 
   const navigate = useNavigate();
   const theme = useTheme();
-
-  const toggleRow = (idx: number) => {
-    const newExpandedRows = new Set(expandedRows);
-    if (newExpandedRows.has(idx)) {
-      newExpandedRows.delete(idx);
-    } else {
-      newExpandedRows.add(idx);
-    }
-    setExpandedRows(newExpandedRows);
-  };
-
-  const renderChildTable = (item: T, idx: number) => {
-    const childTableColumn = headCells.find(cell => cell.hasChildTable);
-    if (!childTableColumn?.childTableConfig) return null;
-
-    const { headCells: childHeadCells, getChildData } = childTableColumn.childTableConfig;
-    const childData = getChildData(item);
-
-    return (
-      <TableRow>
-        <TableCell colSpan={headCells.length + (isMobile ? 1 : 0)} sx={{ padding: 0 }}>
-          <Collapse in={expandedRows.has(idx)} timeout="auto" unmountOnExit>
-            <div className="p-4 bg-gray-50">
-              <Table
-                data={childData}
-                headCells={childHeadCells}
-                //resetPageSignal={resetPageSignal}
-                pagination={false}
-              />
-            </div>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-    );
-  };
 
   const records = pagination ? recordsAfterPaging() : recordsAfterSorting();
 
@@ -111,84 +82,26 @@ export function Table<T>({
       <TblContainer>
         <TblHead />
         <TableBody sx={{ overflowY: "auto" }}>
-          {records.length > 0 ? records.map(
-            (item, idx) => (
+          {records.length > 0 ? (
+            records.map((item, idx) => (
               <React.Fragment key={idx}>
-              <TableRow
-                sx={
-                  idx === records.length -1 && hasSumRow
-                    ? {
-                        backgroundColor: theme.palette.grey[200],
-                        fontWeight: "bold",
-                      }
-                    : {}
-                }
-              >
-                {(isMobile ? mobileMainColumns : headCells).map(
-                  (cell: HeadCell<T>) => {
-                    const lastRow = idx === records.length -1;
-                    let displayValue;
-                    if (cell.icon !== undefined) {
-                      displayValue =
-                        hasSumRow && lastRow ? (
-                          ""
-                        ) : (
-                          <img src={cell.icon} alt={cell.label} />
-                        );
-                    } else if (cell.id === "index") {
-                      if (hasSumRow && lastRow) {
-                        displayValue = "";
-                      } else {
-                        displayValue = convertToFarsiDigits(
-                            pagination ? page  * pageSize + idx + 1 : idx + 1
-                        );
-                      }
-                    } else if (cell.isCurrency) {
-                      displayValue = convertToFarsiDigits(
-                        formatNumberWithCommas(item[cell.id as keyof T] as number)
-                      );
-                    } else {
-                      const value = item[cell.id as keyof T];
-                      displayValue =
-                        cell.isNumber && value !== undefined && value !== null
-                          ? convertToFarsiDigits(
-                              value as string | number | null | undefined
-                            )
-                          : value;
-                    }
-                    return (
-                      <TableCell
-                        key={String(cell.id)}
-                        className={isMobile ? "text-xs" : ""}
-                        onClick={() => {
-                            if (cell.hasChildTable) {
-                              toggleRow(idx);
-                            } else if (cellClickHandler && !lastRow) {
-                            cellClickHandler(cell, item);
-                          } else if (cell.path) {
-                            navigate(
-                              `${cell.path}/${item[cell.id as keyof T]}`
-                            );
-                          }
-                        }}
-                      >
-                        {typeof displayValue === "string" ||
-                        typeof displayValue === "number" ||
-                        React.isValidElement(displayValue)
-                          ? displayValue
-                          : displayValue !== undefined && displayValue !== null
-                          ? String(displayValue)
-                          : ""}
-                      </TableCell>
-                    );
+                <TableRow
+                  onClick={() =>
+                    setSelectedId?.(item["id" as keyof T] as number)
                   }
-                )}
-                  {isMobile && (
-                  <TableCell className="text-xs">
-                    {mobileRestColumns.map((cell: HeadCell<T>) => {
+                  sx={
+                    idx === records.length - 1 && hasSumRow
+                      ? {
+                          backgroundColor: theme.palette.grey[200],
+                          fontWeight: "bold",
+                        }
+                      : {}
+                  }
+                >
+                  {(isMobile ? mobileMainColumns : headCells).map(
+                    (cell: HeadCell<T>) => {
                       const lastRow = idx === records.length - 1;
                       let displayValue;
-
                       if (cell.icon !== undefined) {
                         displayValue =
                           hasSumRow && lastRow ? (
@@ -197,12 +110,18 @@ export function Table<T>({
                             <img src={cell.icon} alt={cell.label} />
                           );
                       } else if (cell.id === "index") {
-                        displayValue = convertToFarsiDigits(
-                            pagination ? page  * pageSize + idx + 1 : idx + 1
-                        );
+                        if (hasSumRow && lastRow) {
+                          displayValue = "";
+                        } else {
+                          displayValue = convertToFarsiDigits(
+                            pagination ? page * pageSize + idx + 1 : idx + 1
+                          );
+                        }
                       } else if (cell.isCurrency) {
                         displayValue = convertToFarsiDigits(
-                          formatNumberWithCommas(item[cell.id as keyof T] as number)
+                          formatNumberWithCommas(
+                            item[cell.id as keyof T] as number
+                          )
                         );
                       } else {
                         const value = item[cell.id as keyof T];
@@ -214,12 +133,11 @@ export function Table<T>({
                             : value;
                       }
                       return (
-                        <div
+                        cell.isNotVisible!==true && <TableCell
                           key={String(cell.id)}
+                          className={isMobile ? "text-xs" : ""}
                           onClick={() => {
-                              if (cell.hasChildTable) {
-                                toggleRow(idx);
-                              } else if (cellClickHandler) {
+                            if (cellClickHandler && !lastRow) {
                               cellClickHandler(cell, item);
                             } else if (cell.path) {
                               navigate(
@@ -228,7 +146,6 @@ export function Table<T>({
                             }
                           }}
                         >
-                          <strong>{cell.label}:</strong>
                           {typeof displayValue === "string" ||
                           typeof displayValue === "number" ||
                           React.isValidElement(displayValue)
@@ -237,15 +154,74 @@ export function Table<T>({
                               displayValue !== null
                             ? String(displayValue)
                             : ""}
-                        </div>
+                        </TableCell>
                       );
-                    })}
-                  </TableCell>
-                )}
-              </TableRow>
-                {renderChildTable(item, idx)}
+                    }
+                  )}
+                  {isMobile && (
+                    <TableCell className="text-xs">
+                      {mobileRestColumns.map((cell: HeadCell<T>) => {
+                        const lastRow = idx === records.length - 1;
+                        let displayValue;
+
+                        if (cell.icon !== undefined) {
+                          displayValue =
+                            hasSumRow && lastRow ? (
+                              ""
+                            ) : (
+                              <img src={cell.icon} alt={cell.label} />
+                            );
+                        } else if (cell.id === "index") {
+                          displayValue = convertToFarsiDigits(
+                            pagination ? page * pageSize + idx + 1 : idx + 1
+                          );
+                        } else if (cell.isCurrency) {
+                          displayValue = convertToFarsiDigits(
+                            formatNumberWithCommas(
+                              item[cell.id as keyof T] as number
+                            )
+                          );
+                        } else {
+                          const value = item[cell.id as keyof T];
+                          displayValue =
+                            cell.isNumber &&
+                            value !== undefined &&
+                            value !== null
+                              ? convertToFarsiDigits(
+                                  value as string | number | null | undefined
+                                )
+                              : value;
+                        }
+                        return (
+                          cell.isNotVisible!==true && <div
+                            key={String(cell.id)}
+                            onClick={() => {
+                              if (cellClickHandler) {
+                                cellClickHandler(cell, item);
+                              } else if (cell.path) {
+                                navigate(
+                                  `${cell.path}/${item[cell.id as keyof T]}`
+                                );
+                              }
+                            }}
+                          >
+                            <strong>{cell.label}:</strong>
+                            {typeof displayValue === "string" ||
+                            typeof displayValue === "number" ||
+                            React.isValidElement(displayValue)
+                              ? displayValue
+                              : displayValue !== undefined &&
+                                displayValue !== null
+                              ? String(displayValue)
+                              : ""}
+                          </div>
+                        );
+                      })}
+                    </TableCell>
+                  )}
+                </TableRow>
               </React.Fragment>
-            )
+            ))
           ) : (
             <TableRow>
               <TableCell colSpan={headCells.length + (isMobile ? 1 : 0)}>

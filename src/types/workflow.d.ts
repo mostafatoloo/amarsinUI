@@ -5,15 +5,15 @@ export type FlowMapTitle = {
 };
 
 export type WorkFlowTable = {
-    id: number;
-    regDateTime: string;
-    formTitle: string;
-    formCode: string;
-    formCost: number;
-    flowMapTitle: string;
-    fChartName: string;
-    dsc: string;
-}
+  id: number;
+  regDateTime: string;
+  formTitle: string;
+  formCode: string;
+  formCost: number;
+  flowMapTitle: string;
+  fChartName: string;
+  dsc: string;
+};
 
 export type WorkTable = {
   id: number; //parent id
@@ -43,7 +43,7 @@ export type WorkflowResponse = {
   totalCount: number;
   flowMapTitles: FlowMapTitle[];
   workTables: WorkTable[];
-}; 
+};
 
 export interface WorkFlowRequest {
   chartId: number;
@@ -54,13 +54,63 @@ export interface WorkFlowRequest {
   title?: string;
   dateTime?: string;
   code?: string;
-  cost?:string;
-  name?:string;
-  dsc?:string;
+  cost?: string;
+  name?: string;
+  dsc?: string;
 }
 
 export interface WorkFlowState extends WorkFlowRequest {
-    workFlowResponse: WorkflowResponse;
-    setField: (field: string | number | symbol, value: any) => void;
-    setWorkFlowResponse: (workFlowResponse: WorkflowResponse) => void;
+  workFlowResponse: WorkflowResponse;
+  setField: (field: string | number | symbol, value: any) => void;
+  setWorkFlowResponse: (workFlowResponse: WorkflowResponse) => void;
+}
+
+export interface FlowButton {
+  id: number;
+  name: string;
+  webAPIUrl: string;
+  imageIndex: number;
+}
+
+export interface WorkTableForms {
+  form1Title: string;
+  form1ViewPath: string;
+  canEditForm1: boolean;
+  canEditForm1Mst1: boolean;
+  canEditForm1Mst2: boolean;
+  canEditForm1Mst3: boolean;
+  canEditForm1DtlDel: boolean;
+  canEditForm1Dtl1: boolean;
+  canEditForm1Dtl2: boolean;
+  canEditForm1Dtl3: boolean;
+  form2Title: string;
+  form2ViewPath: string;
+  canEditForm2: boolean;
+}
+
+export interface FlowDescription {
+  usrName: string;
+  dsc: string;
+}
+
+export interface WorkflowRowSelectResponse {
+  err: number;
+  msg: string;
+  workTableRow: WorkTable;
+  flowButtons: FlowButton[];
+  workTableForms: WorkTableForms;
+  flowDescriptions: FlowDescription[];
+}
+
+export interface WorkFlowRowSelectRequest {
+  chartId: number;
+  workTableId: number;
+}
+
+export interface WorkFlowRowSelectState extends WorkFlowRowSelectRequest {
+  workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  setField: (field: string | number | symbol, value: any) => void;
+  setWorkFlowRowSelectResponse: (
+    workFlowRowSelectResponse: WorkflowRowSelectResponse
+  ) => void;
 }

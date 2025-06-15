@@ -1,14 +1,47 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import api from "../api/axios";
-import { useWorkflowStore } from "../store/workflowStore";
-import { WorkFlowRequest, WorkflowResponse } from "../types/workflow";
-
+import {
+  useWorkflowRowSelectStore,
+  useWorkflowStore,
+} from "../store/workflowStore";
+import {
+  WorkFlowRequest,
+  WorkflowResponse,
+  WorkFlowRowSelectRequest,
+  WorkflowRowSelectResponse,
+} from "../types/workflow";
 
 export function useWorkflow() {
-  const { chartId, systemId, page, pageSize, flowMapId, title, dateTime, code, cost, name, dsc, setWorkFlowResponse } = useWorkflowStore();
+  const {
+    chartId,
+    systemId,
+    page,
+    pageSize,
+    flowMapId,
+    title,
+    dateTime,
+    code,
+    cost,
+    name,
+    dsc,
+    setWorkFlowResponse,
+  } = useWorkflowStore();
 
   const query = useQuery<WorkflowResponse, Error, WorkflowResponse, unknown[]>({
-    queryKey: ["workflow", chartId, systemId, page, pageSize, flowMapId, title, dateTime, code, cost, name, dsc],
+    queryKey: [
+      "workflow",
+      chartId,
+      systemId,
+      page,
+      pageSize,
+      flowMapId,
+      title,
+      dateTime,
+      code,
+      cost,
+      name,
+      dsc,
+    ],
     queryFn: async ({ signal }) => {
       const params: WorkFlowRequest = {
         chartId,
@@ -24,7 +57,21 @@ export function useWorkflow() {
         dsc,
       };
 
-      const url: string = `api/WFMS/WorkTables?chartId=${params.chartId}&systemId=${params.systemId}&page=${params.page}&pageSize=${params.pageSize}&flowMapId=${params.flowMapId}&title=${encodeURIComponent(params.title ?? "")}&dateTime=${encodeURIComponent(params.dateTime ?? "")}&code=${encodeURIComponent(params.code ?? "")}&cost=${encodeURIComponent(params.cost ?? "")}&name=${encodeURIComponent(params.name ?? "")}&dsc=${encodeURIComponent(params.dsc ?? "")}`;
+      const url: string = `api/WFMS/WorkTables?chartId=${
+        params.chartId
+      }&systemId=${params.systemId}&page=${params.page}&pageSize=${
+        params.pageSize
+      }&flowMapId=${params.flowMapId}&title=${encodeURIComponent(
+        params.title ?? ""
+      )}&dateTime=${encodeURIComponent(
+        params.dateTime ?? ""
+      )}&code=${encodeURIComponent(
+        params.code ?? ""
+      )}&cost=${encodeURIComponent(
+        params.cost ?? ""
+      )}&name=${encodeURIComponent(params.name ?? "")}&dsc=${encodeURIComponent(
+        params.dsc ?? ""
+      )}`;
 
       console.log(url, "url");
       const response = await api.get(url, { signal });
@@ -45,8 +92,92 @@ export function useWorkflow() {
   return {
     isLoading: query.isLoading,
     error: query.error,
-    workFlowResponse: query.data ?? { err: 0, msg: "", totalCount: 0, flowMapTitles: [], workTables: [] },
+    workFlowResponse: query.data ?? {
+      err: 0,
+      msg: "",
+      totalCount: 0,
+      flowMapTitles: [],
+      workTables: [],
+    },
     refetch: query.refetch, // Expose refetch function for manual refreshes
   };
 }
+//for RowSelect
+export function useWorkflowRowSelect() {
+  const { chartId, workTableId, setWorkFlowRowSelectResponse } =
+    useWorkflowRowSelectStore();
 
+  const queryRowSelect = useQuery<
+    WorkflowRowSelectResponse,
+    Error,
+    WorkflowRowSelectResponse,
+    unknown[]
+  >({
+    queryKey: ["workflowRowSelect", chartId, workTableId],
+    queryFn: async () => {
+      const params: WorkFlowRowSelectRequest = {
+        chartId,
+        workTableId,
+      };
+
+      const url: string = `api/WFMS/WorkTableRowSelect?WorkTableId=${params.workTableId}&chartId=${params.chartId}`;
+
+      console.log(url, "url");
+      const response = await api.get(url);
+      return response.data;
+    },
+    enabled: !!chartId,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    onSuccess: (data: any) => {
+      setWorkFlowRowSelectResponse(data);
+    },
+  } as UseQueryOptions<WorkflowRowSelectResponse, Error, WorkflowRowSelectResponse, unknown[]>);
+
+  return {
+    isLoading: queryRowSelect.isLoading,
+    error: queryRowSelect.error,
+    workFlowRowSelectResponse: queryRowSelect.data ?? {
+      err: 0,
+      msg: "",
+      workTableRow: {
+        id: 0, //parent id
+        regFDate: "",
+        regTime: "",
+        regDateTime: "",
+        formId: 0,
+        formTitle: "",
+        formCode: "",
+        formCost: 0,
+        fChartName: "",
+        flowMapTitle: "",
+        dsc: "",
+        operation: 0,
+        wfmS_FlowMapId: 0,
+        wfmS_FlowId: 0,
+        flowNo: 0,
+        canEditForm1: false,
+        canEditForm2: false,
+        printForm1: false,
+        printForm2: false,
+      },
+      flowButtons: [],
+      workTableForms: {
+        form1Title: "",
+        form1ViewPath: "",
+        canEditForm1: false,
+        canEditForm1Mst1: false,
+        canEditForm1Mst2: false,
+        canEditForm1Mst3: false,
+        canEditForm1DtlDel: false,
+        canEditForm1Dtl1: false,
+        canEditForm1Dtl2: false,
+        canEditForm1Dtl3: false,
+        form2Title: "",
+        form2ViewPath: "",
+        canEditForm2: false,
+      },
+      flowDescriptions: [],
+    },
+  };
+}
