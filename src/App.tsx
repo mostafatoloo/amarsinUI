@@ -11,7 +11,6 @@ import ProducerList from './pages/reports/ProducerList'
 import Workflow from './pages/Workflow'
 import Dashboard from './pages/Dashboard'
 
-
 const queryClient = new QueryClient()
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {

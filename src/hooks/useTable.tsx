@@ -31,7 +31,8 @@ export type HeadCell<T> = {
   hasDetails?: boolean;
   cellWidth?: string;
   backgroundColor?: string;
-  isNotVisible?:boolean;
+  isNotVisible?: boolean;
+  changeColor?: boolean;
 };
 
 export type HeaderGroup = {
@@ -64,7 +65,7 @@ export default function useTable<T>(
   setPage?: (page: number) => void,
   pageSize?: number,
   setPageSize?: (pageSize: number) => void,
-  totalCount?: number,
+  totalCount?: number
 ): UseTableReturn<T> {
   const theme = useTheme();
   const isMobile = useMediaQuery("(max-width: 600px)");
@@ -148,29 +149,35 @@ export default function useTable<T>(
           </TableRow>
         )}
         <TableRow>
-          {(isMobile ? mobileMainColumns : headCells).map((headCell) => (
-            headCell.isNotVisible!==true && <TableCell
-              key={String(headCell.id)}
-              align="center"
-              sortDirection={orderBy === headCell.id ? order : false}
-              sx={{
-                width: headCell.icon ? "50px" : headCell.cellWidth || "auto",
-                backgroundColor:
-                  headCell.backgroundColor || theme.palette.grey[300],
-              }}
-            >
-              <TableSortLabel
-                active={orderBy === headCell.id}
-                direction={orderBy === headCell.id ? order : "asc"}
-                onClick={() => handleSortRequest(headCell.id as keyof T)}
-                disabled={headCell.disableSorting}
-              >
-                {headCell.label}
-              </TableSortLabel>
-            </TableCell>
-          ))}
+          {(isMobile ? mobileMainColumns : headCells).map(
+            (headCell) =>
+              headCell.isNotVisible !== true && (
+                <TableCell
+                  key={String(headCell.id)}
+                  align="center"
+                  sortDirection={orderBy === headCell.id ? order : false}
+                  sx={{
+                    width: headCell.icon
+                      ? "50px"
+                      : headCell.cellWidth || "auto",
+                    backgroundColor: headCell.changeColor //اگر رنگ سلول باید در شرایط خاص تغییر کند رنگ هدر ثابت بماند
+                      ? theme.palette.grey[300]
+                      : headCell.backgroundColor || theme.palette.grey[300],
+                  }}
+                >
+                  <TableSortLabel
+                    active={orderBy === headCell.id}
+                    direction={orderBy === headCell.id ? order : "asc"}
+                    onClick={() => handleSortRequest(headCell.id as keyof T)}
+                    disabled={headCell.disableSorting}
+                  >
+                    {headCell.label}
+                  </TableSortLabel>
+                </TableCell>
+              )
+          )}
           {isMobile && mobileRestColumns.length > 0 && (
-            <TableCell sx={{ backgroundColor: theme.palette.grey[300]}}>
+            <TableCell sx={{ backgroundColor: theme.palette.grey[300] }}>
               جزئیات
             </TableCell>
           )}

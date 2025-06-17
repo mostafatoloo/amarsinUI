@@ -1,32 +1,23 @@
-import { useEffect, useState } from "react";
+import { useRef } from "react";
 import WorkflowParent from "./WorkflowParent";
-import { useGeneralContext } from "../../context/GeneralContext";
-import WorkflowRowSelect from "./WorkflowRowSelect";
-import { useWorkflowRowSelectStore, useWorkflowStore } from "../../store/workflowStore";
-import { useWorkflow } from "../../hooks/useWorkflow";
+import { WorkflowChild } from "./WorkflowChild";
 
-export const WorkflowForm = () => {
-  const { chartId ,systemId} = useGeneralContext();
-  const [selectedId, setSelectedId] = useState<number>(0);
-  const { setField } = useWorkflowRowSelectStore();
-  const {page,pageSize,dateTime,code,cost,flowMapId,name,dsc} = useWorkflowStore()
-  const { workFlowResponse } = useWorkflow();
-
-  useEffect(() => {
-    setField("chartId", chartId);
-    setField("workTableId", selectedId);
-  }, [selectedId,chartId]);
-
-  useEffect(()=>{
-    setField("workTableId",0)
-  },[systemId, chartId, page, pageSize,dateTime,code,cost,flowMapId,name,dsc])
+const WorkflowForm = () => {
+  const selectedIdRef = useRef<number>(0);
+  
+  const handleSelectedIdChange = (id: number) => {
+    selectedIdRef.current = id;
+    // Force re-render of WorkflowChild only
+    const event = new CustomEvent('selectedIdChanged', { detail: id });
+    window.dispatchEvent(event);
+  };
 
   return (
     <div className="w-full h-full">
-      <WorkflowParent setSelectedId={setSelectedId} />
-      {workFlowResponse.err === 0 && workFlowResponse.workTables.length > 0 && (
-        <WorkflowRowSelect />
-      )}
+      <WorkflowParent setSelectedId={handleSelectedIdChange} />
+      <WorkflowChild selectedId={selectedIdRef.current}/>
     </div>
   );
 };
+
+export default WorkflowForm;

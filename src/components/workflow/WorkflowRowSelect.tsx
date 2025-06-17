@@ -8,7 +8,7 @@ const WorkflowRowSelect = () => {
 
   if (error) return <div>Error: {error.message} </div>;
   return (
-    <div className="px-2">
+    <div className="w-full">
       {isLoading ? (
         <div className="text-center">{<Skeleton />}</div>
       ) : workFlowRowSelectResponse.err !== 0 ? (
@@ -16,7 +16,7 @@ const WorkflowRowSelect = () => {
           {workFlowRowSelectResponse.msg}
         </p>
       ) : (
-        <div className="h-screen-minus-300 w-full mt-2">
+        <div className="w-full mt-2">
           <WorkflowRowSelectHeader/>
         </div>
       )}

@@ -4,7 +4,7 @@ import FormFlow24 from "../assets/images/GrayThem/FormFlow24.png"
 import SentForm24 from "../assets/images/GrayThem/SentForm24.png"
 import Refresh32 from "../assets/images/GrayThem/rfrsh32.png"
 import { useWorkflow } from "../hooks/useWorkflow";
-import { WorkflowForm } from "../components/workflow/WorkflowForm";
+import WorkflowForm from "../components/workflow/WorkflowForm";
 
 
 export default function Workflow() {

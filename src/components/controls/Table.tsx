@@ -21,6 +21,7 @@ type TableProps<T> = {
   //resetPageSignal: string | undefined;
   pagination?: boolean;
   cellClickHandler?: (cell: HeadCell<T>, item: T) => void;
+  cellColorChangeHandler?: (cell: HeadCell<T>, item: T) => string;
   hasSumRow?: boolean;
   page?: number;
   setPage?: (page: number) => void;
@@ -38,6 +39,7 @@ export function Table<T>({
   //resetPageSignal,
   pagination = false,
   cellClickHandler,
+  cellColorChangeHandler,
   hasSumRow = false,
   page = 0,
   setPage,
@@ -83,14 +85,15 @@ export function Table<T>({
     <div className="h-full flex flex-col gap-2">
       <TblContainer>
         <TblHead />
-        <TableBody sx={{ overflowY: "auto"}}>
+        <TableBody sx={{ overflowY: "auto" }}>
           {records.length > 0 ? (
             records.map((item, idx) => (
               <React.Fragment key={idx}>
                 <TableRow
-                  onClick={() =>
-                    setSelectedId?.(item["id" as keyof T] as number)
-                  }
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setSelectedId?.(item["id" as keyof T] as number);
+                  }}
                   sx={
                     idx === records.length - 1 && hasSumRow
                       ? {
@@ -140,6 +143,10 @@ export function Table<T>({
                             key={String(cell.id)}
                             sx={{
                               fontSize: isMobile ? "0.7rem" : cellFontSize,
+                              backgroundColor:
+                                cell.changeColor && cellColorChangeHandler
+                                  ? cellColorChangeHandler(cell,item)
+                                  : cell.backgroundColor,
                             }}
                             onClick={() => {
                               if (cellClickHandler && !lastRow) {
@@ -156,7 +163,7 @@ export function Table<T>({
                             React.isValidElement(displayValue)
                               ? displayValue
                               : displayValue !== undefined &&
-                                displayValue !== null
+                                displayValue !== null 
                               ? String(displayValue)
                               : ""}
                           </TableCell>
