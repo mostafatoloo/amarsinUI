@@ -7,6 +7,8 @@ import React, {
 } from "react";
 
 interface GeneralContextProps {
+  url: string;
+  setUrl: (value: string) => void;
   remember: boolean;
   setRemember: (value: boolean) => void;
   isMenuOpened: boolean;
@@ -55,10 +57,13 @@ export const GeneralProvider: React.FC<{ children: ReactNode }> = ({
   const [chartId, setChartId] = useState<number>(() =>
     getInitial("chartId", 0)
   );
-  const [defaultRowsPerPage, setDefaultRowsPerPage] = useState<number>(() =>
-    getInitial("defaultRowsPerPage", pageNumbers[1])
-  );
+  const [defaultRowsPerPage, setDefaultRowsPerPage] = useState<number>(pageNumbers[1])
+  
+  // const [defaultRowsPerPage, setDefaultRowsPerPage] = useState<number>(() =>
+  //   getInitial("defaultRowsPerPage", pageNumbers[1])
+  // );
   const [isModalOpen, setIsModalOpen] = useState(false);  
+  const [url, setUrl] = useState("http://www.ps.dotis.ir");  
   
 
   useEffect(() => {
@@ -76,12 +81,13 @@ export const GeneralProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     localStorage.setItem("chartId", JSON.stringify(chartId));
   }, [chartId]);
-  useEffect(() => {
-    localStorage.setItem(
-      "defaultRowsPerPage",
-      JSON.stringify(defaultRowsPerPage)
-    );
-  }, [defaultRowsPerPage == 0 ? pageNumbers[1] : defaultRowsPerPage]);
+
+  // useEffect(() => {
+  //   localStorage.setItem(
+  //     "defaultRowsPerPage",
+  //     JSON.stringify(defaultRowsPerPage)
+  //   );
+  // }, [defaultRowsPerPage == 0 ? pageNumbers[1] : defaultRowsPerPage]);
 
   return (
     <GeneralContext.Provider
@@ -103,6 +109,8 @@ export const GeneralProvider: React.FC<{ children: ReactNode }> = ({
         setIsModalOpen,
         remember,
         setRemember,
+        url,
+        setUrl
       }}
     >
       {children}

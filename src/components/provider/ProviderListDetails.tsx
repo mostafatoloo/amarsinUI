@@ -125,6 +125,7 @@ export default function ProviderListDetails({
               };
             })}
             headCells={headCells}
+            wordWrap={true}
           />
         </div>
       )}

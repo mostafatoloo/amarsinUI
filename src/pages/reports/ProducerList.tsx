@@ -9,7 +9,7 @@ import { useProducerList } from "../../hooks/useProducerList";
 import ProducerListForm from "../../components/producer/ProducerListForm";
 import { HeadCell } from "../../hooks/useTable";
 import { RpProduct } from "../../types/producer";
-import { cyan } from '@mui/material/colors';
+import { blue } from '@mui/material/colors';
 
 
 export const headCells: HeadCell<RpProduct>[] = [
@@ -19,7 +19,7 @@ export const headCells: HeadCell<RpProduct>[] = [
     disableSorting: true,
     cellWidth: "5%",
   },
-  { id: "name", label: "نام کالا", cellWidth: "10%" },
+  { id: "name", label: "نام کالا", cellWidth: "30%" },
   { id: "cnt", label: "تعداد", isNumber: true, cellWidth: "10%" },
   {
     id: "total",
@@ -55,9 +55,9 @@ export default function ProducerList() {
     (producer) => ({
       id: producer.id.toString(),
       label: producer.name,
-      cellWidth: "12%",
+      cellWidth: producer.name.length>10 ? "15%" : "5%",
       isNumber: true,
-      backgroundColor: cyan[100],
+      backgroundColor: blue[50],
     })
   );
 
@@ -92,9 +92,7 @@ export default function ProducerList() {
 
   return (
     <div
-      className={`h-[calc(100vh-72px)] flex flex-col bg-gray-200  ${
-        id ? "" : "pt-2"
-      }`}
+      className={`h-[calc(100vh-72px)] overflow-y-auto flex flex-col bg-gray-200 pt-2`}
     >
       {/* Top header */}
       {!id ? (
@@ -105,7 +103,7 @@ export default function ProducerList() {
       ) : null}
 
       {/* Main content */}
-      <main className="h-full flex flex-col items-center justify-center px-2">
+      <main className="flex flex-col items-center justify-center px-2">
         <ProducerListForm
           data={rpProducts}
           headCells={allHeadCells}
@@ -136,7 +134,7 @@ export default function ProducerList() {
       )}*/}
 
       {/* Footer */}
-      <footer className="border-t border-gray-200 text-xs text-gray-500 px-4 py-1 flex justify-between"></footer>
+      
     </div>
   );
 }

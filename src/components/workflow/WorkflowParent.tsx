@@ -5,12 +5,13 @@ import { useNavigate } from "react-router-dom";
 import { Table } from "../controls/Table";
 import { useGeneralContext } from "../../context/GeneralContext";
 import { useWorkflow } from "../../hooks/useWorkflow";
-import { useWorkflowStore } from "../../store/workflowStore";
+import { useWorkflowRowSelectStore, useWorkflowStore } from "../../store/workflowStore";
 import { HeadCell } from "../../hooks/useTable";
 import { WorkFlowTable } from "../../types/workflow";
 import AutoComplete from "../controls/AutoComplete";
 import { convertToFarsiDigits } from "../../utilities/general";
 import { debounce } from "lodash";
+import { blue,  } from "@mui/material/colors";
 
 type Props = {
   setSelectedId: (value: number) => void;
@@ -18,11 +19,11 @@ type Props = {
 
 export default function WorkflowParent({ setSelectedId }: Props) {
   const { workFlowResponse, error, isLoading } = useWorkflow();
-  const { flowMapId: flowMapIdStore } = useWorkflowStore();
+  const { flowMapId: flowMapIdStore ,setField} = useWorkflowStore();
   const { systemId, chartId, defaultRowsPerPage } = useGeneralContext();
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(defaultRowsPerPage);
-  const { setField } = useWorkflowStore();
+  const { workTableId } = useWorkflowRowSelectStore();
   const navigate = useNavigate();
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -33,6 +34,7 @@ export default function WorkflowParent({ setSelectedId }: Props) {
       disableSorting: true,
       cellWidth: "5%",
       isNumber: true,
+      changeColor:true
     },
     {
       id: "regDateTime",
@@ -40,12 +42,14 @@ export default function WorkflowParent({ setSelectedId }: Props) {
       cellWidth: "10%",
       isNumber: true,
       disableSorting: true,
+      changeColor:true
     },
     {
       id: "formTitle",
       label: "فرم",
-      cellWidth: "20%",
+      cellWidth: "25%",
       disableSorting: true,
+      changeColor:true
     },
     {
       id: "formCode",
@@ -53,19 +57,22 @@ export default function WorkflowParent({ setSelectedId }: Props) {
       cellWidth: "10%",
       isNumber: true,
       disableSorting: true,
+      changeColor:true
     },
     {
       id: "formCost",
       label: "مقدار",
-      cellWidth: "7%",
+      cellWidth: "10%",
       isCurrency: true,
       disableSorting: true,
+      changeColor:true
     },
     {
       id: "flowMapTitle",
       label: "مرحله",
-      cellWidth: "13%",
+      cellWidth: "10%",
       disableSorting: true,
+      changeColor:true
     },
     {
       id: "fChartName",
@@ -73,20 +80,22 @@ export default function WorkflowParent({ setSelectedId }: Props) {
       cellWidth: "10%",
       isNumber: true,
       disableSorting: true,
+      changeColor:true
     },
     {
       id: "dsc",
       label: "شرح",
-      cellWidth: "25%",
+      cellWidth: "20%",
       isNumber: true,
       disableSorting: true,
+      changeColor:true
     },
-    {
+/*    {
       id: "formId",
       label: "شناسه فرم",
-      cellWidth: "10%",
+      cellWidth: "5%",
       isNotVisible: true,
-    },
+    },*/
   ];
 
   useEffect(() => {
@@ -123,8 +132,6 @@ export default function WorkflowParent({ setSelectedId }: Props) {
   const [flowMapId, setFlowMapId] = useState("-1");
   const [name, setName] = useState("");
   const [dsc, setDsc] = useState("");
-
-  const parentHeight = window.innerHeight / 4;
 
   useEffect(() => {
     setPageNumber(1);
@@ -168,12 +175,11 @@ export default function WorkflowParent({ setSelectedId }: Props) {
   }, [chartId, flowMapIdStore, workFlowResponse.totalCount]);
 
   const handleDebounceFilterChange = useCallback(
-    debounce((field: string, value: string) => {
+    debounce((field: string, value: string|number) => {
       // Cancel any existing request
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
-
       // Create a new AbortController for this request
       abortControllerRef.current = new AbortController();
 
@@ -190,6 +196,21 @@ export default function WorkflowParent({ setSelectedId }: Props) {
       }
     };
   }, []);
+
+  useEffect(()=>{
+    setSelectedId(workFlowResponse.workTables.length>0 ? workFlowResponse.workTables[0].id : 0)
+  },[workFlowResponse])
+
+  // Custom cell click handler for Table
+  const handleCellColorChange = (
+    cell: HeadCell<WorkFlowTable>,
+    item: WorkFlowTable
+  ) => {
+    if (cell.changeColor && item?.["id"] === workTableId) {
+      return blue[50];
+    }
+    return "";
+  };
 
   if (error) return <div>Error: {error.message} </div>;
 
@@ -214,7 +235,7 @@ export default function WorkflowParent({ setSelectedId }: Props) {
               handleDebounceFilterChange("title", e.target.value);
               setTitle(e.target.value);
             }}
-            className={`border p-1 text-sm rounded-sm w-1/4 md:w-[20%]`}
+            className={`border p-1 text-sm rounded-sm w-1/4 md:w-[25%]`}
             //style={{  width: headCells[2].cellWidth}}
           />
           <input
@@ -287,7 +308,9 @@ export default function WorkflowParent({ setSelectedId }: Props) {
             {workFlowResponse.msg}
           </p>
         ) : (
-          <div className="w-full mt-2" style={{ height: parentHeight }}>
+          <div className="w-full mt-2" 
+          //style={{ height: parentHeight }}
+          >
             <Table
               data={workFlowResponse.workTables}
               headCells={headCells}
@@ -299,6 +322,8 @@ export default function WorkflowParent({ setSelectedId }: Props) {
               totalCount={workFlowResponse.totalCount}
               setSelectedId={setSelectedId}
               cellFontSize="0.75rem"
+              wordWrap= {false}
+              cellColorChangeHandler={handleCellColorChange}
             />
           </div>
         )}

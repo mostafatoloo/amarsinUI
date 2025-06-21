@@ -11,7 +11,7 @@ export default function Workflow() {
 const {refetch}=useWorkflow()
 
   return (
-    <div className="h-[calc(100vh-72px)] overflow-y-auto flex flex-col bg-gray-200 pt-2">
+    <div className="h-[calc(100vh-72px)] overflow-y-scroll flex flex-col bg-gray-200 pt-2">
       {/* Top blue header */}
       <header className="flex flex-col md:flex-row items-center justify-between gap-2">
         <PageTitle />

@@ -1,4 +1,4 @@
-import React, { useState, ReactNode } from "react";
+import React, { useState, ReactNode, } from "react";
 import {
   Table,
   TableHead,
@@ -19,6 +19,7 @@ import {
 import { SxProps } from "@mui/system";
 import { convertToFarsiDigits } from "../utilities/general";
 import { useGeneralContext } from "../context/GeneralContext";
+import { ceil, } from "lodash";
 
 export type HeadCell<T> = {
   id: keyof T | "index" | string;
@@ -29,7 +30,7 @@ export type HeadCell<T> = {
   icon?: string;
   path?: string;
   hasDetails?: boolean;
-  cellWidth?: string;
+  cellWidth: string;
   backgroundColor?: string;
   isNotVisible?: boolean;
   changeColor?: boolean;
@@ -70,8 +71,8 @@ export default function useTable<T>(
   const theme = useTheme();
   const isMobile = useMediaQuery("(max-width: 600px)");
 
-  const mobileMainColumns = headCells.slice(0, 3);
-  const mobileRestColumns = headCells.slice(3);
+  const mobileMainColumns = headCells.slice(0, 4);
+  const mobileRestColumns = headCells.slice(4);
 
   const { setDefaultRowsPerPage, pageNumbers } = useGeneralContext();
   const pages = pageNumbers.map((num) => ({
@@ -87,7 +88,7 @@ export default function useTable<T>(
       position: "sticky",
       top: 0,
       zIndex: 1,
-      padding: "4px 8px",
+      padding: "1px 1px",
       fontSize: "12px",
       fontWeight: "bold",
       color: "gray",
@@ -100,7 +101,7 @@ export default function useTable<T>(
     },
 
     "& tbody td": {
-      padding: "4px 8px",
+      padding: "2px 4px",
       fontWeight: 300,
       borderRight: "1px solid lightgray",
       "&:last-child": {
@@ -115,7 +116,10 @@ export default function useTable<T>(
   };
 
   const TblContainer: React.FC<{ children: ReactNode }> = ({ children }) => (
-    <div className="2xl:max-h-[calc(100vh-200px)] lg:max-h-[calc(100vh-250px)] max-h-[calc(100vh-350px)] overflow-y-auto overflow-x-auto w-full">
+    <div
+      className="w-full overflow-x-auto"
+      /*"w-full 2xl:max-h-[calc(100vh-200px)] lg:max-h-[calc(100vh-250px)] max-h-[calc(100vh-350px)] overflow-y-auto overflow-x-auto"*/
+    >
       <Table sx={tableStyles} className="min-w-[600px]">
         {children}
       </Table>
@@ -157,9 +161,7 @@ export default function useTable<T>(
                   align="center"
                   sortDirection={orderBy === headCell.id ? order : false}
                   sx={{
-                    width: headCell.icon
-                      ? "50px"
-                      : headCell.cellWidth || "auto",
+                    width: headCell.icon ? "50px" : headCell.cellWidth,
                     backgroundColor: headCell.changeColor //اگر رنگ سلول باید در شرایط خاص تغییر کند رنگ هدر ثابت بماند
                       ? theme.palette.grey[300]
                       : headCell.backgroundColor || theme.palette.grey[300],
@@ -193,20 +195,13 @@ export default function useTable<T>(
     const lastPage = Math.max(0, Math.ceil(count / rowsPerPage) - 1);
 
     return (
-      <div style={{ display: "flex" }}>
+      <div className="flex w-full bg-gray-100">
         <IconButton
-          onClick={() => onPageChange(null, 0)}
-          disabled={page === 0}
-          aria-label="first page"
+          onClick={() => onPageChange(null, lastPage)}
+          disabled={page >= lastPage}
+          aria-label="last page"
         >
-          <FirstPage />
-        </IconButton>
-        <IconButton
-          onClick={() => onPageChange(null, page - 1)}
-          disabled={page === 0}
-          aria-label="previous page"
-        >
-          <KeyboardArrowLeft />
+          <LastPage />
         </IconButton>
         <IconButton
           onClick={() => onPageChange(null, page + 1)}
@@ -215,12 +210,41 @@ export default function useTable<T>(
         >
           <KeyboardArrowRight />
         </IconButton>
+
+        <div className="border m-2 px-2 py-1 border-gray-200 place-content-center rounded-md">
+          {totalCount
+            ? convertToFarsiDigits(
+                ceil(totalCount / (pageSize === undefined ? 10 : pageSize))
+              )
+            : convertToFarsiDigits(0)}
+        </div>
+
+        <input
+          className="w-16 m-2 pr-1 rounded-md border border-gray-200"
+          type="number"
+          min={1}
+          max={
+            totalCount
+              ? ceil(totalCount / (pageSize === undefined ? 10 : pageSize))
+              : 0
+          }
+          value={page + 1}
+          onChange={handleChangePageSpinner}
+        />
+
         <IconButton
-          onClick={() => onPageChange(null, lastPage)}
-          disabled={page >= lastPage}
-          aria-label="last page"
+          onClick={() => onPageChange(null, page - 1)}
+          disabled={page === 0}
+          aria-label="previous page"
         >
-          <LastPage />
+          <KeyboardArrowLeft />
+        </IconButton>
+        <IconButton
+          onClick={() => onPageChange(null, 0)}
+          disabled={page === 0}
+          aria-label="first page"
+        >
+          <FirstPage />
         </IconButton>
       </div>
     );
@@ -231,6 +255,43 @@ export default function useTable<T>(
     console.log(newPage, "newPage");
     setPage?.(newPage + 1);
   };
+  
+  //const abortControllerRef = useRef<AbortController | null>(null);
+
+  // const handleDebounceFilterChange = useCallback(
+  //   debounce((value: string) => {
+  //     const val: number = Number(value);
+  //     // Cancel any existing request
+  //     if (abortControllerRef.current) {
+  //       abortControllerRef.current.abort();
+  //     }
+  //     // Create a new AbortController for this request
+  //     abortControllerRef.current = new AbortController();
+
+  //     let totalPage = 0;
+  //     if (totalCount !== undefined)
+  //       totalPage = ceil(totalCount / (pageSize === undefined ? 10 : pageSize));
+  //     if (val > 0 && val <= totalPage) setPage?.(val);
+  //   }, 500),
+  //   [page]
+  // );
+
+  // // Cleanup on component unmount
+  // useEffect(() => {
+  //   return () => {
+  //     if (abortControllerRef.current) {
+  //       abortControllerRef.current.abort();
+  //     }
+  //   };
+  // }, []);
+
+  const handleChangePageSpinner = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val: number = Number(e.target.value);
+    let totalPage = 0;
+    if (totalCount !== undefined)
+      totalPage = ceil(totalCount / (pageSize === undefined ? 10 : pageSize));
+    if (val > 0 && val <= totalPage) setPage?.(val);
+  };
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -240,7 +301,12 @@ export default function useTable<T>(
   };
 
   const TblPagination: React.FC = () => (
-    <div dir="rtl" className={isMobile ? "text-xs font-bold" : ""}>
+    <div
+      dir="rtl"
+      className={`${
+        isMobile ? "text-xs" : "text-sm"
+      } w-full bg-gray-100 flex justify-center items-center`}
+    >
       <TablePagination
         component="div"
         page={page || 0}
@@ -250,12 +316,13 @@ export default function useTable<T>(
         onPageChange={handleChangePage}
         ActionsComponent={TablePaginationActions}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        labelRowsPerPage={isMobile ? "تعداد" : "تعداد در هر صفحه:"}
-        labelDisplayedRows={({ from, to, count }) =>
-          `${convertToFarsiDigits(from)}-${convertToFarsiDigits(
-            to
-          )} از ${convertToFarsiDigits(count)}`
-        }
+        labelRowsPerPage={isMobile ? "تعداد" : "تعداد در صفحه:"}
+        labelDisplayedRows={() => ``}
+        // {({ from, to, count }) =>
+        //   `${convertToFarsiDigits(from)}-${convertToFarsiDigits(
+        //     to
+        //   )} از ${convertToFarsiDigits(count)}`
+        // }
         dir="rtl"
       />
     </div>

@@ -18,7 +18,7 @@ const WorkflowRowSelectHeader = () => {
           {flowButtons.length > 0 &&
             flowButtons.map((fb) => {
               return (
-                <div className="flex justify-center p-1 text-sm border border-slate-300 rounded-md w-48 cursor-pointer hover:font-bold hover:bg-gray-100">
+                <div className="flex justify-center p-1 text-sm border border-slate-300 rounded-md cursor-pointer hover:font-bold hover:bg-gray-100">
                   <button className="flex justify-center items-center gap-1" title={String(fb.id)}>
                     {fb.imageIndex === 3 ? (
                       <img src={OkForm} alt="ok" />
@@ -37,7 +37,7 @@ const WorkflowRowSelectHeader = () => {
         {flowDescriptions.length > 0 &&
           flowDescriptions.map((fd) => {
             return (
-              <p className="text-sm">
+              <p className="text-sm" key={fd.usrName}>
                 {fd.usrName}:{fd.dsc}
               </p>
             );

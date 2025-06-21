@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { Meta } from "./invoice";
 
 interface Indent {
@@ -30,21 +31,29 @@ export interface WarehouseTemporaryReceiptIndentDtl {
 }
 
 export interface WarehouseTemporaryReceiptIndentDtlTable {
-    expire: string;
-    uId: string;
-    status: number;
-    cId: number;
-    code: string;
-    pCode: string;
-    pName: string;
-    cnt: number;
-    indentId:string;
-    indentCode:string;
-    indentCnt:string;
-    indentOffer:string;
-    indentDsc:string
-    rCnt: number;
-    rOffer: number;
+  expire: string;
+  uId: string;
+  status: ReactNode;
+  statusOriginal: number;
+  cId: number;
+  code: string;
+  pCode: string;
+  pName: string;
+  cnt: number;
+  indentId: string;
+  indentCode: string;
+  indentCnt: string;
+  indentOffer: string;
+  indentDsc: string;
+  rCnt: number;
+  rOffer: number;
+}
+
+export interface ProductCatalogTable {
+  rowId: string
+  title: string;
+  systemInfo: string;
+  samaneInfo: string;
 }
 
 interface WarehouseTemporaryReceiptMst {
@@ -80,18 +89,48 @@ interface Data {
   result: Result;
 }
 
-export interface WarehouseShowIdResponse{
-    meta:Meta
-    data:Data
-
+export interface WarehouseShowIdResponse {
+  meta: Meta;
+  data: Data;
 }
 
 export interface WarehouseState {
-    formId: number;
-    warehouseShowIdResponse: WarehouseShowIdResponse;
-    setField: (field: string, value: any) => void;
-    setWarehouseShowIdResponse: (
-        warehouseShowIdResponse: WarehouseShowIdResponse
-    ) => void;
-  }
-  
+  formId: number;
+  productId:number
+  warehouseShowIdResponse: WarehouseShowIdResponse;
+  productCatalog:ProductCatalog
+  setField: (field: string, value: any) => void;
+  setWarehouseShowIdResponse: (
+    warehouseShowIdResponse: WarehouseShowIdResponse
+  ) => void;
+  setProductCatalog: (
+    productCatalog: ProductCatalog
+  ) => void;
+}
+
+export interface ProductCatalog {
+  data: {
+    Manufacturing: string;
+    Expiration: string;
+    BatchCode: string;
+    GenericName: string | null;
+    GenericCode: string;
+    UID: string;
+    GTIN: string;
+    IRC: string;
+    LicenseOwner: string;
+    EnglishProductName: string;
+    PersianProductName: string;
+    ProductCategory: string;
+    ProductCategoryCode: number;
+    PackageCount: number;
+    StatusCode: number;
+  };
+  statusCode: number;
+  statusMessage: string;
+  CupId: number;
+  UID: string;
+  IRC: string;
+  ttac: boolean;
+  SystemId: number;
+}

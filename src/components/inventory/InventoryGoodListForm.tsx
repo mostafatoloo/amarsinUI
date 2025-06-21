@@ -103,6 +103,7 @@ export default function InventoryGoodListForm() {
             <Table
               data={inventoryList.rpProviderInventories}
               headCells={headCells}
+              wordWrap={true}
             />
           </div>
         ) : (

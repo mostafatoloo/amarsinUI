@@ -30,6 +30,7 @@ type TableProps<T> = {
   totalCount?: number;
   setSelectedId?: (value: number) => void;
   cellFontSize?: string;
+  wordWrap?:boolean
 };
 
 export function Table<T>({
@@ -48,6 +49,7 @@ export function Table<T>({
   totalCount,
   setSelectedId,
   cellFontSize,
+  wordWrap
 }: TableProps<T>) {
   const [filterFn] = useState<{
     fn: (items: T[]) => T[];
@@ -78,7 +80,6 @@ export function Table<T>({
 
   const navigate = useNavigate();
   const theme = useTheme();
-
   const records = pagination ? recordsAfterPaging() : recordsAfterSorting();
 
   return (
@@ -139,13 +140,17 @@ export function Table<T>({
                       }
                       return (
                         cell.isNotVisible !== true && (
-                          <TableCell
+                          <TableCell title={wordWrap ? "" : String(item[cell.id as keyof T])}
                             key={String(cell.id)}
                             sx={{
+                              maxWidth: !wordWrap ? "20px" : "",
+                              width:cell.cellWidth,
+                              textWrap: !wordWrap ? "nowrap" : "wrap",
+                              overflow: !wordWrap ? "hidden" : "auto",
                               fontSize: isMobile ? "0.7rem" : cellFontSize,
                               backgroundColor:
                                 cell.changeColor && cellColorChangeHandler
-                                  ? cellColorChangeHandler(cell,item)
+                                  ? cellColorChangeHandler(cell, item)
                                   : cell.backgroundColor,
                             }}
                             onClick={() => {
@@ -163,7 +168,7 @@ export function Table<T>({
                             React.isValidElement(displayValue)
                               ? displayValue
                               : displayValue !== undefined &&
-                                displayValue !== null 
+                                displayValue !== null
                               ? String(displayValue)
                               : ""}
                           </TableCell>

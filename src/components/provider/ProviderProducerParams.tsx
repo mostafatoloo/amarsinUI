@@ -80,7 +80,7 @@ const ProviderProducerParams = ({
   };
 
   return (
-    <div className="w-full flex flex-col 2xl:flex-row justify-between items-center gap-2">
+    <div className="w-full flex flex-col 2xl:flex-row justify-between items-center gap-2 mb-2">
       <div className="w-full flex flex-col lg:flex-row gap-2">
         <div className="w-full flex items-center gap-2">
           <Checkbox

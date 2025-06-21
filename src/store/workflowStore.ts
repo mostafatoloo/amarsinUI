@@ -32,7 +32,7 @@ export const useWorkflowStore = create<WorkFlowState>()((set) => ({
 export const useWorkflowRowSelectStore = create<WorkFlowRowSelectState>()(
   (set) => ({
     chartId: 1,
-    workTableId: 0,
+    workTableId: 148201,
     workFlowRowSelectResponse: {
       err: 0,
       msg: "",

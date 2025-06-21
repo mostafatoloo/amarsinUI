@@ -60,6 +60,7 @@ const PageTitle = () => {
           showClearIcon={false}
           outlinedInputPadding="0"
           inputPadding="0 !important"
+          showPopupIcon={false}
         />
         {/* for year */}
         <AutoComplete

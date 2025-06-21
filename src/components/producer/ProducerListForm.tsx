@@ -11,7 +11,7 @@ import ProviderProducerParams from "../provider/ProviderProducerParams";
 import { useProducerList } from "../../hooks/useProducerList";
 import { RpProduct } from "../../types/producer";
 import { useProducerStore } from "../../store/producerStore";
-import { cyan } from "@mui/material/colors";
+import { blue, } from "@mui/material/colors";
 
 type ProducerListFormProps = {
   data: RpProduct[];
@@ -50,7 +50,7 @@ export default function ProviderListForm({
     {
       label: "تامین",
       colSpan: producerList.producers.length,
-      backgroundColor: cyan[100],
+      backgroundColor: blue[50],
     },
     { label: "", colSpan: 1 },
   ];
@@ -102,6 +102,8 @@ export default function ProviderListForm({
     }
   };
 
+  const height= window.innerHeight * 4/7
+
   return (
     <Paper className="p-2 m-2 w-full h-full">
       <ProviderProducerParams
@@ -123,13 +125,15 @@ export default function ProviderListForm({
           هیچ کالایی یافت نشد.
         </p>
       ) : producerList.rpProducts.length > 0 ? (
-        <div className="h-full mt-2">
+        <div className="mt-2" style={{height}}>
           <Table
             data={data}
             headCells={headCells}
             headerGroups={headerGroups}
             cellClickHandler={handleCellClick}
             hasSumRow={true}
+            cellFontSize="0.75rem"
+            wordWrap={true}
           />
         </div>
       ) : (

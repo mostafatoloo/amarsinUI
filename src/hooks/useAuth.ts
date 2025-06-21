@@ -74,6 +74,7 @@ export function useAuth() {
         navigate('/dashboard');
         setTreeNodeTitle('داشبورد')
       }
+      
     },
     onError: (error) => {
       console.error('Login error:', error)

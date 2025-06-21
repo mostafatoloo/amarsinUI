@@ -124,6 +124,8 @@ export default function ProviderListForm({
     }
   };
 
+  const height= window.innerHeight * 4/7
+
   return (
     <Paper className="p-2 m-2 w-full h-full">
       <ProviderProducerParams
@@ -145,7 +147,7 @@ export default function ProviderListForm({
           {providerList.msg}
         </p>
       ) : (
-        <div className="h-screen-minus-200 mt-2">
+        <div className="mt-2" style={{height}}> {/* remove h-screen-minus-300 */}
           <Table
             data={providerList.rpProviders}
             headCells={headCells}
@@ -153,6 +155,7 @@ export default function ProviderListForm({
             // Pass custom cell click handler
             cellClickHandler={handleCellClick}
             hasSumRow={true}
+            wordWrap={true}
           />
         </div>
       )}

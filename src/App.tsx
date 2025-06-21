@@ -1,31 +1,35 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import Login from './pages/Login'
-import { useAuthStore } from './store/authStore'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import Layout from './components/layout/Layout'
-import User from './pages/User'
-import InventoryGoodList from './pages/reports/InventoryGoodList'
-import ProviderList from './pages/reports/ProviderList'
-import ProducerList from './pages/reports/ProducerList'
-import Workflow from './pages/Workflow'
-import Dashboard from './pages/Dashboard'
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Login from "./pages/Login";
+import { useAuthStore } from "./store/authStore";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import Layout from "./components/layout/Layout";
+import User from "./pages/User";
+import InventoryGoodList from "./pages/reports/InventoryGoodList";
+import ProviderList from "./pages/reports/ProviderList";
+import ProducerList from "./pages/reports/ProducerList";
+import Workflow from "./pages/Workflow";
+import Dashboard from "./pages/Dashboard";
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
-  return isAuthenticated ? <>{children}</> : <Navigate to="/login" />
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
 }
 
 function App() {
-
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
-        <Layout>  
+        <Layout>
           <Routes>
-            <Route path="/login" element={<Login isHomePage={true}/>} />
+            <Route path="/login" element={<Login isHomePage={true} />} />
             <Route
               path="/dashboard"
               element={
@@ -74,14 +78,14 @@ function App() {
                 </PrivateRoute>
               }
             />
-            
+
             <Route path="/" element={<Navigate to="/admin/WFMS/index" />} />
           </Routes>
-        </Layout>  
+        </Layout>
       </Router>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
-  )
+  );
 }
 
-export default App 
+export default App;

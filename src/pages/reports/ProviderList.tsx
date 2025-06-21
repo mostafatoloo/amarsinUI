@@ -8,7 +8,7 @@ import ProviderListForm, {
   headCells,
 } from "../../components/provider/ProviderListForm";
 import ProviderListDetails from "../../components/provider/ProviderListDetails";
-import {  useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import ModalForm from "../../components/layout/ModalForm";
 
 export default function ProviderList() {
@@ -16,7 +16,6 @@ export default function ProviderList() {
   const { setField } = useBrandStore();
   const { systemId } = useGeneralContext();
   const { id } = useParams();
-
 
   const [brand, setBrand] = useState<{ id: string; title: string } | null>({
     id: "0",
@@ -38,7 +37,9 @@ export default function ProviderList() {
   }, []);
 
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(
+    null
+  );
 
   const handleShowDetails = (productId: string) => {
     setSelectedProductId(productId);
@@ -49,12 +50,10 @@ export default function ProviderList() {
     setDetailsOpen(false);
     setSelectedProductId(null);
   };
-  const hasDetails = true;
+
   return (
     <div
-      className={`h-[calc(100vh-72px)] flex flex-col bg-gray-200  ${
-        id ? "" : "pt-2"
-      }`}
+      className={`h-[calc(100vh-72px)] flex flex-col bg-gray-200 pt-2`} // overflow-y-auto
     >
       {/* Top header */}
       {!id ? (
@@ -66,7 +65,7 @@ export default function ProviderList() {
       {/* Sub-header */}
 
       {/* Main content */}
-      <main className="h-full flex flex-col items-center justify-center px-2">
+      <main className="flex flex-col items-center justify-center px-2">
         <ProviderListForm
           brand={brand}
           setBrand={setBrand}
@@ -79,19 +78,22 @@ export default function ProviderList() {
           onShowDetails={handleShowDetails}
         />
       </main>
-      {hasDetails && (
-        <ModalForm isOpen={detailsOpen} onClose={handleCloseDetails} title="جزئیات گردش">
-          {selectedProductId && (
-            <ProviderListDetails
-              productId={selectedProductId}
-              brand={brand}
-              sanadKind={sanadKind}
-              startDate={startDate}
-              endDate={endDate}
-            />
-          )}
-        </ModalForm>
-      )}
+
+      <ModalForm
+        isOpen={detailsOpen}
+        onClose={handleCloseDetails}
+        title="جزئیات گردش"
+      >
+        {selectedProductId && (
+          <ProviderListDetails
+            productId={selectedProductId}
+            brand={brand}
+            sanadKind={sanadKind}
+            startDate={startDate}
+            endDate={endDate}
+          />
+        )}
+      </ModalForm>
 
       {/* Footer */}
       <footer className="border-t border-gray-200 text-xs text-gray-500 px-4 py-1 flex justify-between"></footer>

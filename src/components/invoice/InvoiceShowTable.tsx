@@ -79,6 +79,7 @@ const InvoiceShowTable = () => {
               headCells={headCells}
               headerGroups={headerGroups}
               cellFontSize="0.75rem"
+              wordWrap={true}
             />
           </div>
         )}
