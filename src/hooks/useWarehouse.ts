@@ -1,14 +1,24 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import api from "../api/axios";
 import { useWarehouseStore } from "../store/warehouseStore";
-import { ProductCatalog, WarehouseShowIdResponse } from "../types/warehouse";
+import {
+  ProductCatalog,
+  WarehouseShowIdResponse,
+  WarehouseIndentListResponse,
+} from "../types/warehouse";
 import axios from "axios";
 import { useGeneralContext } from "../context/GeneralContext";
 
 export function useWarehouse() {
-  const { formId, productId, setWarehouseShowIdResponse, setProductCatalog } =
-    useWarehouseStore();
-  const {url:apiUrl}=useGeneralContext()
+  const {
+    formId,
+    productId,
+    iocId,
+    setWarehouseShowIdResponse,
+    setProductCatalog,
+    setWarehouseIndentListResponse,
+  } = useWarehouseStore();
+  const { url: apiUrl } = useGeneralContext();
 
   const warehouseShowIdQuery = useQuery<
     WarehouseShowIdResponse,
@@ -57,6 +67,31 @@ export function useWarehouse() {
       setProductCatalog(data);
     },
   } as UseQueryOptions<ProductCatalog, Error, ProductCatalog, unknown[]>);
+
+  //for warehouseTemporaryReceiptIndentListResponse
+
+  const warehouseIndentListQuery = useQuery<
+  WarehouseIndentListResponse,
+    Error,
+    WarehouseIndentListResponse,
+    unknown[]
+  >({
+    queryKey: ["warehouseIndentList", iocId],
+    queryFn: async () => {
+      console.log("enter")
+      const url: string = `api/WarehouseTemporaryReceipt/indentList/${iocId}`;
+      console.log(url, "url");
+
+      const response = await api.get(url);
+      return response.data;
+    },
+    enabled: !!iocId, // Only fetch if param is available
+    refetchOnWindowFocus: true, // Refetch data when the window is focused
+    refetchOnReconnect: true, // Refetch data when the network reconnects
+    onSuccess: (data: any) => {
+      setWarehouseIndentListResponse(data);
+    },
+  } as UseQueryOptions<WarehouseIndentListResponse, Error, WarehouseIndentListResponse, unknown[]>);
 
   return {
     //getInventoryList: () => query.refetch(), // Optional manual trigger
@@ -120,5 +155,21 @@ export function useWarehouse() {
       ttac: false,
       SystemId: 0,
     },
+    //output for WarehouseTemporaryReceiptIndentList
+    isLoadingWarehouseIndentList:
+      warehouseIndentListQuery.isLoading,
+    errorWarehouseIndentList:
+    warehouseIndentListQuery.error,
+    warehouseIndentList:
+    warehouseIndentListQuery.data ?? {
+        meta: { errorCode: 0, message: "", type: "" },
+        data: {
+          result: {
+            err: 0,
+            msg: "",
+            warehouseTemporaryReceiptIndentLists: []
+          }
+        }
+      },
   };
 }

@@ -57,11 +57,25 @@ export const useWarehouseStore = create<WarehouseState>()((set) => ({
     ttac: false,
     SystemId: 0,
   },
+  warehouseIndentListResponse: {
+    meta: { errorCode: 0, message: "", type: "" },
+    data: {
+      result: {
+        err: 0,
+        msg: "",
+        warehouseTemporaryReceiptIndentLists: []
+      }
+    }
+  },
   formId: 0,
   productId: 163818,
+  iocId:3683021,
   setField: (field: string, value: any) =>
     set((state) => ({ ...state, [field]: value })),
   setWarehouseShowIdResponse: (warehouseShowIdResponse) =>
     set({ warehouseShowIdResponse }),
   setProductCatalog: (productCatalog) => set({ productCatalog }),
+  setWarehouseIndentListResponse: (
+    warehouseIndentListResponse
+  ) => set({ warehouseIndentListResponse }),
 }));

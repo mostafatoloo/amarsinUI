@@ -8,14 +8,17 @@ import HistoryIcon from "../../assets/images/GrayThem/history_gray_16.png";
 import EditIcon from "../../assets/images/GrayThem/edit_gray16.png";
 import { grey, red, indigo, green } from "@mui/material/colors";
 import { convertToFarsiDigits } from "../../utilities/general";
+import { useWarehouseStore } from "../../store/warehouseStore";
 
 type Props={
+  setEditClicked:(editClicked : boolean) => void
   setStatusClicked:(statusClicked: boolean)=>void
   setSelectedProduct:(dtl:WarehouseTemporaryReceiptIndentDtl) => void
 }
 
-const WarehouseShowTable = ({setStatusClicked, setSelectedProduct}:Props) => {
+const WarehouseShowTable = ({setEditClicked, setStatusClicked, setSelectedProduct}:Props) => {
   const { isLoadingWarehouseShowId, warehouseShowIdResponse } = useWarehouse();
+  const { setField } = useWarehouseStore();
   const headCells: HeadCell<WarehouseTemporaryReceiptIndentDtlTable>[] = [
     {
       id: "index",
@@ -122,15 +125,12 @@ const WarehouseShowTable = ({setStatusClicked, setSelectedProduct}:Props) => {
       backgroundColor: green[50],
     },
     {
-      id: "indentId",
-      label: "",
-      icon: EditIcon,
+      id: "editIcon",
+      label: "ویرایش",
       cellWidth: "50px",
-      isNumber: true,
       disableSorting: true,
       backgroundColor: green[50],
-    },
-
+    },    
     {
       id: "rCnt",
       label: "تعداد",
@@ -149,15 +149,13 @@ const WarehouseShowTable = ({setStatusClicked, setSelectedProduct}:Props) => {
       backgroundColor: indigo[50],
     },
     {
-      id: "id",
-      label: "",
-      icon: HistoryIcon,
-      isNumber: true,
+      id: "historyIcon",
+      label: "خلاصه",
       cellWidth: "50px",
       disableSorting: true,
-      isCurrency: true,
       backgroundColor: indigo[50],
-    },
+    },    
+    
   ];
 
   const headerGroups: HeaderGroup[] = [
@@ -181,6 +179,13 @@ const WarehouseShowTable = ({setStatusClicked, setSelectedProduct}:Props) => {
     setSelectedProduct(dtl)
     setStatusClicked(true)
   }
+
+  const handleEditClick= (dtl:WarehouseTemporaryReceiptIndentDtl) =>{
+    setField("iocId", dtl.iocId);
+    console.log(dtl,"dtl")
+    setEditClicked(true)
+  }
+
   const data =
     warehouseShowIdResponse.data.result.response.warehouseTemporaryReceiptIndentDtls.map(
       (dtl) => {
@@ -192,12 +197,13 @@ const WarehouseShowTable = ({setStatusClicked, setSelectedProduct}:Props) => {
               {convertToFarsiDigits(dtl.status)}
               <input
                 type="checkbox"
-                checked={false}
+                checked={dtl.status===0 ? true : false}
                 readOnly
                 onClick={()=>handleStatusClick(dtl)}
               />
             </div>
           ),
+          editIcon:<img src={EditIcon} onClick={()=>handleEditClick(dtl)}/> ,
           statusOriginal: dtl.status,
           cId: dtl.cId,
           code: dtl?.code,
@@ -246,6 +252,7 @@ const WarehouseShowTable = ({setStatusClicked, setSelectedProduct}:Props) => {
               : "",
           rCnt: dtl.rCnt,
           rOffer: dtl.rOffer,
+          historyIcon:<img src={HistoryIcon} /> ,
         };
       }
     );

@@ -7,7 +7,7 @@ import {
 } from "../../types/warehouse";
 import { Table } from "../controls/Table";
 import { useWarehouseStore } from "../../store/warehouseStore";
-import { green, red } from "@mui/material/colors";
+import {  green, red } from "@mui/material/colors";
 
 type Props = {
   dtl: WarehouseTemporaryReceiptIndentDtl;

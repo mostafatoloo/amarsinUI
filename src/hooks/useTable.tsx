@@ -34,6 +34,9 @@ export type HeadCell<T> = {
   backgroundColor?: string;
   isNotVisible?: boolean;
   changeColor?: boolean;
+  type?:string
+  val?:string;
+  setVal?:(e:React.ChangeEvent<HTMLInputElement>)=>void
 };
 
 export type HeaderGroup = {
@@ -229,6 +232,7 @@ export default function useTable<T>(
               : 0
           }
           value={page + 1}
+          autoFocus
           onChange={handleChangePageSpinner}
         />
 

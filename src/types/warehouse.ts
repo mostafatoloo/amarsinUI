@@ -34,6 +34,8 @@ export interface WarehouseTemporaryReceiptIndentDtlTable {
   expire: string;
   uId: string;
   status: ReactNode;
+  editIcon: ReactNode;
+  historyIcon: ReactNode;
   statusOriginal: number;
   cId: number;
   code: string;
@@ -50,7 +52,7 @@ export interface WarehouseTemporaryReceiptIndentDtlTable {
 }
 
 export interface ProductCatalogTable {
-  rowId: string
+  rowId: string;
   title: string;
   systemInfo: string;
   samaneInfo: string;
@@ -96,15 +98,18 @@ export interface WarehouseShowIdResponse {
 
 export interface WarehouseState {
   formId: number;
-  productId:number
+  productId: number;
+  iocId: number;
   warehouseShowIdResponse: WarehouseShowIdResponse;
-  productCatalog:ProductCatalog
+  warehouseIndentListResponse: WarehouseIndentListResponse;
+  productCatalog: ProductCatalog;
   setField: (field: string, value: any) => void;
   setWarehouseShowIdResponse: (
     warehouseShowIdResponse: WarehouseShowIdResponse
   ) => void;
-  setProductCatalog: (
-    productCatalog: ProductCatalog
+  setProductCatalog: (productCatalog: ProductCatalog) => void;
+  setWarehouseIndentListResponse: (
+    warehouseIndentListResponse: WarehouseIndentListResponse
   ) => void;
 }
 
@@ -133,4 +138,39 @@ export interface ProductCatalog {
   IRC: string;
   ttac: boolean;
   SystemId: number;
+}
+
+type TemporaryReceiptIndent = {
+  id: number;
+  payDuration: number;
+  dId: number;
+  cnt: number;
+  offer: number;
+  amnt: number;
+  rem: number;
+  dcrmnt: number;
+  dsc: string;
+};
+
+export interface WarehouseTemporaryReceiptIndent
+  extends TemporaryReceiptIndent {
+  rCnt: number;
+  rOffer: number;
+}
+
+export interface WarehouseTemporaryReceiptIndentTable
+  extends TemporaryReceiptIndent {
+  rCnt: ReactNode;
+  rOffer: ReactNode;
+}
+
+export interface WarehouseIndentListResponse {
+  meta: Meta;
+  data: {
+    result: {
+      err: number;
+      msg: string;
+      warehouseTemporaryReceiptIndentLists: WarehouseTemporaryReceiptIndent[];
+    };
+  };
 }

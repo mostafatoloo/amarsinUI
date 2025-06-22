@@ -4,15 +4,20 @@ import WarehouseShowTable from "./WarehouseShowTable";
 import ModalForm from "../layout/ModalForm";
 import ProductCatalogue from "./ProductCatalogue";
 import { WarehouseTemporaryReceiptIndentDtl } from "../../types/warehouse";
+import WarehouseIndentTable from "./WarehouseIndentTable";
 
 const WarehouseShow = () => {
-  
   const [statusClicked, setStatusClicked] = useState(false);
+  const [editClicked, setEditClicked] = useState(false);
   const [selectedProduct, setSelectedProduct] =
     useState<WarehouseTemporaryReceiptIndentDtl | null>(null);
-  const handleClose = () => {
+
+  const handleProductCatalogueClose = () => {
     setStatusClicked(false);
     setSelectedProduct(null);
+  };
+  const handleWarehouseIndentListClose = () => {
+    setEditClicked(false);
   };
 
   return (
@@ -20,16 +25,27 @@ const WarehouseShow = () => {
       <WarehouseShowHeader />
       <p className="mt-2 px-2 text-sm">اقلام</p>
       <WarehouseShowTable
+        setEditClicked={setEditClicked}
         setStatusClicked={setStatusClicked}
         setSelectedProduct={setSelectedProduct}
       />
+      {/*open product catalog if status is clicked*/}
       <ModalForm
         isOpen={statusClicked}
-        onClose={handleClose}
+        onClose={handleProductCatalogueClose}
         title="کاتالوگ محصول"
-        width="50%"
+        width="1/2"
       >
-        {selectedProduct && <ProductCatalogue dtl={selectedProduct}/>}
+        {selectedProduct && <ProductCatalogue dtl={selectedProduct} />}
+      </ModalForm>
+      {/*open product catalog if status is clicked*/}
+      <ModalForm
+        isOpen={editClicked}
+        onClose={handleWarehouseIndentListClose}
+        title="لیست درخواستها"
+        width="2/3"
+      >
+        <WarehouseIndentTable />
       </ModalForm>
     </div>
   );

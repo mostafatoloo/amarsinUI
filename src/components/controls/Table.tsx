@@ -10,7 +10,7 @@ import {
   convertToFarsiDigits,
   formatNumberWithCommas,
 } from "../../utilities/general";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import useTable, { HeadCell, HeaderGroup } from "../../hooks/useTable";
 import { useNavigate } from "react-router-dom";
 
@@ -30,7 +30,7 @@ type TableProps<T> = {
   totalCount?: number;
   setSelectedId?: (value: number) => void;
   cellFontSize?: string;
-  wordWrap?:boolean
+  wordWrap?: boolean;
 };
 
 export function Table<T>({
@@ -49,7 +49,7 @@ export function Table<T>({
   totalCount,
   setSelectedId,
   cellFontSize,
-  wordWrap
+  wordWrap,
 }: TableProps<T>) {
   const [filterFn] = useState<{
     fn: (items: T[]) => T[];
@@ -81,6 +81,26 @@ export function Table<T>({
   const navigate = useNavigate();
   const theme = useTheme();
   const records = pagination ? recordsAfterPaging() : recordsAfterSorting();
+  const inputRef = useRef<number>(0);
+  //const [focusFlag,setFocusFlag] = useState(false)
+
+  const renderInput = (item: T, cell: HeadCell<T>, i: number) => {
+    return (
+      <input
+        type="text"
+        autoFocus={i===inputRef.current ? true : false}
+        value={cell.val === "0" ? String(item[cell.id as keyof T]) : cell.val}
+        onChange={(e) => {
+          cell.setVal?.(e);
+          console.log(e.target.value);
+        }}
+        style={{
+          backgroundColor: cell.backgroundColor,
+        }}
+        onClick={()=>{console.log("enter"+i);inputRef.current=i}}
+      />
+    );
+  };
 
   return (
     <div className="h-full flex flex-col gap-2">
@@ -105,9 +125,15 @@ export function Table<T>({
                   }
                 >
                   {(isMobile ? mobileMainColumns : headCells).map(
-                    (cell: HeadCell<T>) => {
+                    (cell: HeadCell<T>, i) => {
                       const lastRow = idx === records.length - 1;
                       let displayValue;
+
+                      if (cell.type === "input" && inputRef.current===i) {
+                        console.log(inputRef.current,"inputRef.current",i)
+                        inputRef.current=i
+                      }
+
                       if (cell.icon !== undefined) {
                         displayValue =
                           hasSumRow && lastRow ? (
@@ -140,11 +166,14 @@ export function Table<T>({
                       }
                       return (
                         cell.isNotVisible !== true && (
-                          <TableCell title={wordWrap ? "" : String(item[cell.id as keyof T])}
+                          <TableCell
+                            title={
+                              wordWrap ? "" : String(item[cell.id as keyof T])
+                            }
                             key={String(cell.id)}
                             sx={{
                               maxWidth: !wordWrap ? "20px" : "",
-                              width:cell.cellWidth,
+                              width: cell.cellWidth,
                               textWrap: !wordWrap ? "nowrap" : "wrap",
                               overflow: !wordWrap ? "hidden" : "auto",
                               fontSize: isMobile ? "0.7rem" : cellFontSize,
@@ -163,9 +192,12 @@ export function Table<T>({
                               }
                             }}
                           >
-                            {typeof displayValue === "string" ||
-                            typeof displayValue === "number" ||
-                            React.isValidElement(displayValue)
+                            {/* if item[cell] is of "input" type */}
+                            {cell.type === "input"
+                              ? renderInput(item, cell, i)
+                              : typeof displayValue === "string" ||
+                                typeof displayValue === "number" ||
+                                React.isValidElement(displayValue)
                               ? displayValue
                               : displayValue !== undefined &&
                                 displayValue !== null
