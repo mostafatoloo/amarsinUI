@@ -1,4 +1,4 @@
-import React, { useState, ReactNode, } from "react";
+import React, { useState, ReactNode, useCallback, useEffect, useRef } from "react";
 import {
   Table,
   TableHead,
@@ -85,6 +85,31 @@ export default function useTable<T>(
 
   const [order, setOrder] = useState<"asc" | "desc" | undefined>();
   const [orderBy, setOrderBy] = useState<keyof T | "">("");
+  const [inputValue, setInputValue] = useState<string>((page || 0) + 1 + "");
+  const timeoutRef = useRef<number | null>(null);
+
+  // Update input value when page changes
+  useEffect(() => {
+    setInputValue((page || 0) + 1 + "");
+  }, [page]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Debounced page change function
+  const debouncedSetPage = useCallback((value: string) => {
+    const val: number = Number(value);
+    let totalPage = 0;
+    if (totalCount !== undefined)
+      totalPage = ceil(totalCount / (pageSize === undefined ? 10 : pageSize));
+    if (val > 0 && val <= totalPage) setPage?.(val);
+  }, [totalCount, pageSize, setPage]);
 
   const tableStyles: SxProps = {
     "& thead th": {
@@ -231,9 +256,22 @@ export default function useTable<T>(
               ? ceil(totalCount / (pageSize === undefined ? 10 : pageSize))
               : 0
           }
-          value={page + 1}
+          value={inputValue}
           autoFocus
-          onChange={handleChangePageSpinner}
+          onChange={(e) => {
+            const value = e.target.value;
+            setInputValue(value);
+            
+            // Clear existing timeout
+            if (timeoutRef.current) {
+              clearTimeout(timeoutRef.current);
+            }
+            
+            // Set new timeout for debounced API call
+            timeoutRef.current = window.setTimeout(() => {
+              debouncedSetPage(value);
+            }, 500); // 500ms delay
+          }}
         />
 
         <IconButton
@@ -260,43 +298,6 @@ export default function useTable<T>(
     setPage?.(newPage + 1);
   };
   
-  //const abortControllerRef = useRef<AbortController | null>(null);
-
-  // const handleDebounceFilterChange = useCallback(
-  //   debounce((value: string) => {
-  //     const val: number = Number(value);
-  //     // Cancel any existing request
-  //     if (abortControllerRef.current) {
-  //       abortControllerRef.current.abort();
-  //     }
-  //     // Create a new AbortController for this request
-  //     abortControllerRef.current = new AbortController();
-
-  //     let totalPage = 0;
-  //     if (totalCount !== undefined)
-  //       totalPage = ceil(totalCount / (pageSize === undefined ? 10 : pageSize));
-  //     if (val > 0 && val <= totalPage) setPage?.(val);
-  //   }, 500),
-  //   [page]
-  // );
-
-  // // Cleanup on component unmount
-  // useEffect(() => {
-  //   return () => {
-  //     if (abortControllerRef.current) {
-  //       abortControllerRef.current.abort();
-  //     }
-  //   };
-  // }, []);
-
-  const handleChangePageSpinner = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val: number = Number(e.target.value);
-    let totalPage = 0;
-    if (totalCount !== undefined)
-      totalPage = ceil(totalCount / (pageSize === undefined ? 10 : pageSize));
-    if (val > 0 && val <= totalPage) setPage?.(val);
-  };
-
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {

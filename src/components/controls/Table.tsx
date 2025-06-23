@@ -88,16 +88,19 @@ export function Table<T>({
     return (
       <input
         type="text"
-        autoFocus={i===inputRef.current ? true : false}
+        autoFocus={i === inputRef.current ? true : false}
         value={cell.val === "0" ? String(item[cell.id as keyof T]) : cell.val}
         onChange={(e) => {
           cell.setVal?.(e);
           console.log(e.target.value);
+          inputRef.current = i;
         }}
         style={{
-          backgroundColor: cell.backgroundColor,
+          backgroundColor: !isMobile ? cell.backgroundColor : "transparent",
         }}
-        onClick={()=>{console.log("enter"+i);inputRef.current=i}}
+        /*onClick={()=>{console.log("enter"+i);inputRef.current=i}}
+        onKeyDown={()=>{console.log("enter"+i);inputRef.current=i}}
+        onMouseDown={()=>{console.log("enter"+i);inputRef.current=i}}*/
       />
     );
   };
@@ -129,9 +132,9 @@ export function Table<T>({
                       const lastRow = idx === records.length - 1;
                       let displayValue;
 
-                      if (cell.type === "input" && inputRef.current===i) {
-                        console.log(inputRef.current,"inputRef.current",i)
-                        inputRef.current=i
+                      if (cell.type === "input" && inputRef.current === i) {
+                        console.log(inputRef.current, "inputRef.current", i);
+                        inputRef.current = i;
                       }
 
                       if (cell.icon !== undefined) {
@@ -212,7 +215,7 @@ export function Table<T>({
                     <TableCell
                       sx={{ fontSize: isMobile ? "0.7rem" : cellFontSize }}
                     >
-                      {mobileRestColumns.map((cell: HeadCell<T>) => {
+                      {mobileRestColumns.map((cell: HeadCell<T>,i) => {
                         const lastRow = idx === records.length - 1;
                         let displayValue;
 
@@ -259,9 +262,12 @@ export function Table<T>({
                               }}
                             >
                               <strong>{cell.label}:</strong>
-                              {typeof displayValue === "string" ||
-                              typeof displayValue === "number" ||
-                              React.isValidElement(displayValue)
+                              {/* if item[cell] is of "input" type */}
+                              {cell.type === "input"
+                                ? renderInput(item, cell, i)
+                                : typeof displayValue === "string" ||
+                                  typeof displayValue === "number" ||
+                                  React.isValidElement(displayValue)
                                 ? displayValue
                                 : displayValue !== undefined &&
                                   displayValue !== null

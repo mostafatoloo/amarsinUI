@@ -5,6 +5,8 @@ import { WarehouseTemporaryReceiptIndent } from "../../types/warehouse";
 import { Table } from "../controls/Table";
 import { Skeleton } from "@mui/material";
 import { useState } from "react";
+import Button from "../controls/Button";
+import ConfirmCard from "../layout/ConfirmCard";
 
 const WarehouseIndentTable = () => {
   const { isLoadingWarehouseIndentList, warehouseIndentList } = useWarehouse();
@@ -34,21 +36,21 @@ const WarehouseIndentTable = () => {
     {
       id: "payDuration",
       label: "سررسید",
-      cellWidth: "10%",
+      cellWidth: "5%",
       isNumber: true,
       disableSorting: true,
     },
     {
       id: "cnt",
       label: "تعداد",
-      cellWidth: "10%",
+      cellWidth: "5%",
       isNumber: true,
       disableSorting: true,
     },
     {
       id: "offer",
       label: "آفر",
-      cellWidth: "10%",
+      cellWidth: "5%",
       isNumber: true,
       disableSorting: true,
     },
@@ -76,7 +78,7 @@ const WarehouseIndentTable = () => {
     {
       id: "dsc",
       label: "شرح",
-      cellWidth: "10%",
+      cellWidth: "25%",
       isNumber: true,
       disableSorting: true,
     },
@@ -146,9 +148,11 @@ const WarehouseIndentTable = () => {
           {/* <p>
             {rCnt},{rOffer}
           </p> */}
-          <div className="w-full bg-gray-100 rounded-md p-2 flex justify-end">
-            <button className="bg-green-500 px-4 py-2 rounded-md text-white hover:bg-green-600">تایید</button>
-          </div>
+          {data.length > 0 && (
+            <ConfirmCard>
+              <Button text="تایید" />
+            </ConfirmCard>
+          )}
         </div>
       )}
     </>

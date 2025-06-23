@@ -3,20 +3,29 @@ import { HeadCell, HeaderGroup } from "../../hooks/useTable";
 import { Table } from "../controls/Table";
 import Skeleton from "../layout/Skeleton";
 import { useWarehouse } from "../../hooks/useWarehouse";
-import { WarehouseTemporaryReceiptIndentDtl, WarehouseTemporaryReceiptIndentDtlTable } from "../../types/warehouse";
+import {
+  WarehouseTemporaryReceiptIndentDtl,
+  WarehouseTemporaryReceiptIndentDtlTable,
+} from "../../types/warehouse";
 import HistoryIcon from "../../assets/images/GrayThem/history_gray_16.png";
 import EditIcon from "../../assets/images/GrayThem/edit_gray16.png";
 import { grey, red, indigo, green } from "@mui/material/colors";
 import { convertToFarsiDigits } from "../../utilities/general";
 import { useWarehouseStore } from "../../store/warehouseStore";
+import ConfirmCard from "../layout/ConfirmCard";
+import Button from "../controls/Button";
 
-type Props={
-  setEditClicked:(editClicked : boolean) => void
-  setStatusClicked:(statusClicked: boolean)=>void
-  setSelectedProduct:(dtl:WarehouseTemporaryReceiptIndentDtl) => void
-}
+type Props = {
+  setEditClicked: (editClicked: boolean) => void;
+  setStatusClicked: (statusClicked: boolean) => void;
+  setSelectedProduct: (dtl: WarehouseTemporaryReceiptIndentDtl) => void;
+};
 
-const WarehouseShowTable = ({setEditClicked, setStatusClicked, setSelectedProduct}:Props) => {
+const WarehouseShowTable = ({
+  setEditClicked,
+  setStatusClicked,
+  setSelectedProduct,
+}: Props) => {
   const { isLoadingWarehouseShowId, warehouseShowIdResponse } = useWarehouse();
   const { setField } = useWarehouseStore();
   const headCells: HeadCell<WarehouseTemporaryReceiptIndentDtlTable>[] = [
@@ -130,7 +139,7 @@ const WarehouseShowTable = ({setEditClicked, setStatusClicked, setSelectedProduc
       cellWidth: "50px",
       disableSorting: true,
       backgroundColor: green[50],
-    },    
+    },
     {
       id: "rCnt",
       label: "تعداد",
@@ -154,8 +163,7 @@ const WarehouseShowTable = ({setEditClicked, setStatusClicked, setSelectedProduc
       cellWidth: "50px",
       disableSorting: true,
       backgroundColor: indigo[50],
-    },    
-    
+    },
   ];
 
   const headerGroups: HeaderGroup[] = [
@@ -175,16 +183,16 @@ const WarehouseShowTable = ({setEditClicked, setStatusClicked, setSelectedProduc
     return grey[50];
   };
 
-  const handleStatusClick= (dtl:WarehouseTemporaryReceiptIndentDtl) =>{
-    setSelectedProduct(dtl)
-    setStatusClicked(true)
-  }
+  const handleStatusClick = (dtl: WarehouseTemporaryReceiptIndentDtl) => {
+    setSelectedProduct(dtl);
+    setStatusClicked(true);
+  };
 
-  const handleEditClick= (dtl:WarehouseTemporaryReceiptIndentDtl) =>{
+  const handleEditClick = (dtl: WarehouseTemporaryReceiptIndentDtl) => {
     setField("iocId", dtl.iocId);
-    console.log(dtl,"dtl")
-    setEditClicked(true)
-  }
+    console.log(dtl, "dtl");
+    setEditClicked(true);
+  };
 
   const data =
     warehouseShowIdResponse.data.result.response.warehouseTemporaryReceiptIndentDtls.map(
@@ -197,13 +205,13 @@ const WarehouseShowTable = ({setEditClicked, setStatusClicked, setSelectedProduc
               {convertToFarsiDigits(dtl.status)}
               <input
                 type="checkbox"
-                checked={dtl.status===0 ? true : false}
+                checked={dtl.status === 0 ? true : false}
                 readOnly
-                onClick={()=>handleStatusClick(dtl)}
+                onClick={() => handleStatusClick(dtl)}
               />
             </div>
           ),
-          editIcon:<img src={EditIcon} onClick={()=>handleEditClick(dtl)}/> ,
+          editIcon: <img src={EditIcon} onClick={() => handleEditClick(dtl)} />,
           statusOriginal: dtl.status,
           cId: dtl.cId,
           code: dtl?.code,
@@ -252,7 +260,7 @@ const WarehouseShowTable = ({setEditClicked, setStatusClicked, setSelectedProduc
               : "",
           rCnt: dtl.rCnt,
           rOffer: dtl.rOffer,
-          historyIcon:<img src={HistoryIcon} /> ,
+          historyIcon: <img src={HistoryIcon} />,
         };
       }
     );
@@ -271,11 +279,16 @@ const WarehouseShowTable = ({setEditClicked, setStatusClicked, setSelectedProduc
               data={data}
               headCells={headCells}
               headerGroups={headerGroups}
-              cellFontSize="0.75rem"              
+              cellFontSize="0.75rem"
               cellColorChangeHandler={handleCellColorChange}
               wordWrap={true}
             />
           </div>
+        )}
+        {data.length > 0 && (
+          <ConfirmCard>
+            <Button text="تایید" />
+          </ConfirmCard>
         )}
       </Paper>
     </>
