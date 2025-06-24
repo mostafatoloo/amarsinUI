@@ -12,6 +12,7 @@ import AutoComplete from "../controls/AutoComplete";
 import { Table } from "../controls/Table";
 import { useGeneralContext } from "../../context/GeneralContext";
 import { HeadCell } from "../../hooks/useTable";
+import { height, width } from "../../utilities/general";
 
 export const headCells: HeadCell<InventoryItem>[] = [
   {
@@ -99,7 +100,7 @@ export default function InventoryGoodListForm() {
             {inventoryList.msg}
           </p>
         ) : inventoryList.rpProviderInventories.length > 0 ? (
-          <div className="h-screen-minus-200 mt-2">
+          <div className="mt-2" style= {width>768 ? {height:height}:{}}> {/* remove h-screen-minus-300 */}
             <Table
               data={inventoryList.rpProviderInventories}
               headCells={headCells}

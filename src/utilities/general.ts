@@ -93,3 +93,13 @@ export const convertPersianDate = (dateStr: string): string => {
 export const formatNumberWithCommas = (num: number): string => {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
+
+
+export const width = window.innerWidth;
+//console.log(width,"width")
+export const height =
+  width > 1535
+    ? window.innerHeight - 200
+    : width > 1024
+    ? window.innerHeight - 300
+    : window.innerHeight - 400;

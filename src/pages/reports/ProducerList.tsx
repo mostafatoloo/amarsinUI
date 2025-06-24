@@ -92,7 +92,7 @@ export default function ProducerList() {
 
   return (
     <div
-      className={`h-[calc(100vh-72px)] overflow-y-auto flex flex-col bg-gray-200 pt-2`}
+      className={`md:h-[calc(100vh-72px)] flex flex-col bg-gray-200 pt-2`}
     >
       {/* Top header */}
       {!id ? (

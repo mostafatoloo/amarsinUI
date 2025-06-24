@@ -18,7 +18,6 @@ type TableProps<T> = {
   data: T[];
   headCells: HeadCell<T>[];
   headerGroups?: HeaderGroup[];
-  //resetPageSignal: string | undefined;
   pagination?: boolean;
   cellClickHandler?: (cell: HeadCell<T>, item: T) => void;
   cellColorChangeHandler?: (cell: HeadCell<T>, item: T) => string;
@@ -105,8 +104,177 @@ export function Table<T>({
     );
   };
 
+  const TblCell = ({
+    displayValue,
+    cell,
+    item,
+    lastRow,
+    i,
+    isMobile
+  }: {
+    displayValue: any;
+    cell: HeadCell<T>;
+    item: T;
+    lastRow: boolean;
+    i: number;
+    isMobile:boolean
+  }) => {
+    return (
+      <>
+        {isMobile ? (
+          <div
+            key={String(cell.id)}
+            onClick={() => {
+              if (cellClickHandler) {
+                cellClickHandler(cell, item);
+              } else if (cell.path) {
+                navigate(`${cell.path}/${item[cell.id as keyof T]}`);
+              }
+            }}
+          >
+            <strong>{cell.label}:</strong>
+            {/* if item[cell] is of "input" type */}
+            {cell.type === "input"
+              ? renderInput(item, cell, i)
+              : typeof displayValue === "string" ||
+                typeof displayValue === "number" ||
+                React.isValidElement(displayValue)
+              ? displayValue
+              : displayValue !== undefined && displayValue !== null
+              ? String(displayValue)
+              : ""}
+          </div>
+        ) : (
+          <TableCell
+            title={wordWrap ? "" : String(item[cell.id as keyof T])}
+            key={String(cell.id)}
+            sx={{
+              maxWidth: !wordWrap ? "20px" : "",
+              width: cell.cellWidth,
+              textWrap: !wordWrap ? "nowrap" : "wrap",
+              overflow: !wordWrap ? "hidden" : "auto",
+              fontSize: isMobile ? "0.7rem" : cellFontSize,
+              backgroundColor:
+                cell.changeColor && cellColorChangeHandler
+                  ? cellColorChangeHandler(cell, item)
+                  : cell.backgroundColor,
+            }}
+            onClick={() => {
+              if (cellClickHandler && !lastRow) {
+                cellClickHandler(cell, item);
+              } else if (cell.path) {
+                navigate(`${cell.path}/${item[cell.id as keyof T]}`);
+              }
+            }}
+          >
+            {isMobile && <strong>{cell.label}:</strong>}
+            {/* if item[cell] is of "input" type */}
+            {cell.type === "input"
+              ? renderInput(item, cell, i)
+              : typeof displayValue === "string" ||
+                typeof displayValue === "number" ||
+                React.isValidElement(displayValue)
+              ? displayValue
+              : displayValue !== undefined && displayValue !== null
+              ? String(displayValue)
+              : ""}
+          </TableCell>
+        )}
+      </>
+    );
+  };
+
+  const Cells = ({
+    columns,
+    item,
+    idx,
+    shrinkInOneColumn,
+  }: {
+    columns: HeadCell<T>[];
+    item: T;
+    idx: number;
+    shrinkInOneColumn: boolean;
+  }) => {
+    return shrinkInOneColumn ? (
+      <TableCell sx={{ fontSize: isMobile ? "0.7rem" : cellFontSize, width:"50px" }}>
+        {columns.map((cell: HeadCell<T>, i) => {
+          const lastRow = idx === records.length - 1;
+          let displayValue = returnDisplayValue(cell, item, lastRow, idx, i);
+
+          return (
+            <TblCell
+              cell={cell}
+              displayValue={displayValue}
+              i={i}
+              item={item}
+              lastRow={lastRow}
+              key={i}
+              isMobile={shrinkInOneColumn}
+            />
+          );
+        })}
+      </TableCell>
+    ) : (
+      columns.map((cell: HeadCell<T>, i) => {
+        const lastRow = idx === records.length - 1;
+        let displayValue = returnDisplayValue(cell, item, lastRow, idx, i);
+        return (
+          cell.isNotVisible !== true && (
+            <TblCell
+              cell={cell}
+              displayValue={displayValue}
+              i={i}
+              item={item}
+              lastRow={lastRow}
+              key={i}
+              isMobile={false}
+            />
+          )
+        );
+      })
+    );
+  };
+
+  const returnDisplayValue = (
+    cell: HeadCell<T>,
+    item: T,
+    lastRow: boolean,
+    idx: number,
+    i: number
+  ): string | JSX.Element | T[keyof T] => {
+    let displayValue;
+    if (cell.type === "input" && inputRef.current === i) {
+      console.log(inputRef.current, "inputRef.current", i);
+      inputRef.current = i;
+    }
+
+    if (cell.icon !== undefined) {
+      displayValue =
+        hasSumRow && lastRow ? "" : <img src={cell.icon} alt={cell.label} />;
+    } else if (cell.id === "index") {
+      if (hasSumRow && lastRow) {
+        displayValue = "";
+      } else {
+        displayValue = convertToFarsiDigits(
+          pagination ? page * pageSize + idx + 1 : idx + 1
+        );
+      }
+    } else if (cell.isCurrency) {
+      displayValue = convertToFarsiDigits(
+        formatNumberWithCommas(item[cell.id as keyof T] as number)
+      );
+    } else {
+      const value = item[cell.id as keyof T];
+      displayValue =
+        cell.isNumber && value !== undefined && value !== null
+          ? convertToFarsiDigits(value as string | number | null | undefined)
+          : value;
+    }
+    return displayValue;
+  };
+
   return (
-    <div className="h-full flex flex-col gap-2">
+    <div className="w-full h-full flex flex-col gap-2">
       <TblContainer>
         <TblHead />
         <TableBody sx={{ overflowY: "auto" }}>
@@ -121,162 +289,31 @@ export function Table<T>({
                   sx={
                     idx === records.length - 1 && hasSumRow
                       ? {
+                          fontSize: isMobile ? "0.7rem" : cellFontSize,
                           backgroundColor: theme.palette.grey[200],
                           fontWeight: "bold",
                         }
-                      : {}
+                      : { fontSize: isMobile ? "0.7rem" : cellFontSize }
                   }
                 >
-                  {(isMobile ? mobileMainColumns : headCells).map(
-                    (cell: HeadCell<T>, i) => {
-                      const lastRow = idx === records.length - 1;
-                      let displayValue;
-
-                      if (cell.type === "input" && inputRef.current === i) {
-                        console.log(inputRef.current, "inputRef.current", i);
-                        inputRef.current = i;
-                      }
-
-                      if (cell.icon !== undefined) {
-                        displayValue =
-                          hasSumRow && lastRow ? (
-                            ""
-                          ) : (
-                            <img src={cell.icon} alt={cell.label} />
-                          );
-                      } else if (cell.id === "index") {
-                        if (hasSumRow && lastRow) {
-                          displayValue = "";
-                        } else {
-                          displayValue = convertToFarsiDigits(
-                            pagination ? page * pageSize + idx + 1 : idx + 1
-                          );
-                        }
-                      } else if (cell.isCurrency) {
-                        displayValue = convertToFarsiDigits(
-                          formatNumberWithCommas(
-                            item[cell.id as keyof T] as number
-                          )
-                        );
-                      } else {
-                        const value = item[cell.id as keyof T];
-                        displayValue =
-                          cell.isNumber && value !== undefined && value !== null
-                            ? convertToFarsiDigits(
-                                value as string | number | null | undefined
-                              )
-                            : value;
-                      }
-                      return (
-                        cell.isNotVisible !== true && (
-                          <TableCell
-                            title={
-                              wordWrap ? "" : String(item[cell.id as keyof T])
-                            }
-                            key={String(cell.id)}
-                            sx={{
-                              maxWidth: !wordWrap ? "20px" : "",
-                              width: cell.cellWidth,
-                              textWrap: !wordWrap ? "nowrap" : "wrap",
-                              overflow: !wordWrap ? "hidden" : "auto",
-                              fontSize: isMobile ? "0.7rem" : cellFontSize,
-                              backgroundColor:
-                                cell.changeColor && cellColorChangeHandler
-                                  ? cellColorChangeHandler(cell, item)
-                                  : cell.backgroundColor,
-                            }}
-                            onClick={() => {
-                              if (cellClickHandler && !lastRow) {
-                                cellClickHandler(cell, item);
-                              } else if (cell.path) {
-                                navigate(
-                                  `${cell.path}/${item[cell.id as keyof T]}`
-                                );
-                              }
-                            }}
-                          >
-                            {/* if item[cell] is of "input" type */}
-                            {cell.type === "input"
-                              ? renderInput(item, cell, i)
-                              : typeof displayValue === "string" ||
-                                typeof displayValue === "number" ||
-                                React.isValidElement(displayValue)
-                              ? displayValue
-                              : displayValue !== undefined &&
-                                displayValue !== null
-                              ? String(displayValue)
-                              : ""}
-                          </TableCell>
-                        )
-                      );
-                    }
-                  )}
+                  <Cells
+                    columns={isMobile ? mobileMainColumns : headCells}
+                    idx={idx}
+                    item={item}
+                    key={idx}
+                    shrinkInOneColumn={false}
+                  />
                   {isMobile && (
                     <TableCell
                       sx={{ fontSize: isMobile ? "0.7rem" : cellFontSize }}
                     >
-                      {mobileRestColumns.map((cell: HeadCell<T>,i) => {
-                        const lastRow = idx === records.length - 1;
-                        let displayValue;
-
-                        if (cell.icon !== undefined) {
-                          displayValue =
-                            hasSumRow && lastRow ? (
-                              ""
-                            ) : (
-                              <img src={cell.icon} alt={cell.label} />
-                            );
-                        } else if (cell.id === "index") {
-                          displayValue = convertToFarsiDigits(
-                            pagination ? page * pageSize + idx + 1 : idx + 1
-                          );
-                        } else if (cell.isCurrency) {
-                          displayValue = convertToFarsiDigits(
-                            formatNumberWithCommas(
-                              item[cell.id as keyof T] as number
-                            )
-                          );
-                        } else {
-                          const value = item[cell.id as keyof T];
-                          displayValue =
-                            cell.isNumber &&
-                            value !== undefined &&
-                            value !== null
-                              ? convertToFarsiDigits(
-                                  value as string | number | null | undefined
-                                )
-                              : value;
-                        }
-                        return (
-                          cell.isNotVisible !== true && (
-                            <div
-                              key={String(cell.id)}
-                              onClick={() => {
-                                if (cellClickHandler) {
-                                  cellClickHandler(cell, item);
-                                } else if (cell.path) {
-                                  navigate(
-                                    `${cell.path}/${item[cell.id as keyof T]}`
-                                  );
-                                }
-                              }}
-                            >
-                              <strong>{cell.label}:</strong>
-                              {/* if item[cell] is of "input" type */}
-                              {cell.type === "input"
-                                ? renderInput(item, cell, i)
-                                : typeof displayValue === "string" ||
-                                  typeof displayValue === "number" ||
-                                  React.isValidElement(displayValue)
-                                ? displayValue
-                                : displayValue !== undefined &&
-                                  displayValue !== null
-                                ? String(displayValue)
-                                : ""}
-                            </div>
-                          )
-                        );
-                      })}
+                      <Cells
+                        columns={mobileRestColumns}
+                        idx={idx}
+                        item={item}
+                        key={idx}
+                        shrinkInOneColumn={true}
+                      />
                     </TableCell>
                   )}
                 </TableRow>

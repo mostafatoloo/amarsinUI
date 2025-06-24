@@ -1,4 +1,10 @@
-import React, { useState, ReactNode, useCallback, useEffect, useRef } from "react";
+import React, {
+  useState,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import {
   Table,
   TableHead,
@@ -19,7 +25,7 @@ import {
 import { SxProps } from "@mui/system";
 import { convertToFarsiDigits } from "../utilities/general";
 import { useGeneralContext } from "../context/GeneralContext";
-import { ceil, } from "lodash";
+import { ceil } from "lodash";
 
 export type HeadCell<T> = {
   id: keyof T | "index" | string;
@@ -34,9 +40,9 @@ export type HeadCell<T> = {
   backgroundColor?: string;
   isNotVisible?: boolean;
   changeColor?: boolean;
-  type?:string
-  val?:string;
-  setVal?:(e:React.ChangeEvent<HTMLInputElement>)=>void
+  type?: string;
+  val?: string;
+  setVal?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 export type HeaderGroup = {
@@ -87,6 +93,7 @@ export default function useTable<T>(
   const [orderBy, setOrderBy] = useState<keyof T | "">("");
   const [inputValue, setInputValue] = useState<string>((page || 0) + 1 + "");
   const timeoutRef = useRef<number | null>(null);
+  const inputRef = useRef<boolean>(false);
 
   // Update input value when page changes
   useEffect(() => {
@@ -103,13 +110,16 @@ export default function useTable<T>(
   }, []);
 
   // Debounced page change function
-  const debouncedSetPage = useCallback((value: string) => {
-    const val: number = Number(value);
-    let totalPage = 0;
-    if (totalCount !== undefined)
-      totalPage = ceil(totalCount / (pageSize === undefined ? 10 : pageSize));
-    if (val > 0 && val <= totalPage) setPage?.(val);
-  }, [totalCount, pageSize, setPage]);
+  const debouncedSetPage = useCallback(
+    (value: string) => {
+      const val: number = Number(value);
+      let totalPage = 0;
+      if (totalCount !== undefined)
+        totalPage = ceil(totalCount / (pageSize === undefined ? 10 : pageSize));
+      if (val > 0 && val <= totalPage) setPage?.(val);
+    },
+    [totalCount, pageSize, setPage]
+  );
 
   const tableStyles: SxProps = {
     "& thead th": {
@@ -145,10 +155,10 @@ export default function useTable<T>(
 
   const TblContainer: React.FC<{ children: ReactNode }> = ({ children }) => (
     <div
-      className="w-full overflow-x-auto"
+      className="w-full md:overflow-y-auto" //overflow-x-hidden
       /*"w-full 2xl:max-h-[calc(100vh-200px)] lg:max-h-[calc(100vh-250px)] max-h-[calc(100vh-350px)] overflow-y-auto overflow-x-auto"*/
     >
-      <Table sx={tableStyles} className="min-w-[600px]">
+      <Table sx={tableStyles} className="md:min-w-[600px]">
         {children}
       </Table>
     </div>
@@ -207,7 +217,7 @@ export default function useTable<T>(
               )
           )}
           {isMobile && mobileRestColumns.length > 0 && (
-            <TableCell sx={{ backgroundColor: theme.palette.grey[300] }}>
+            <TableCell sx={{ backgroundColor: theme.palette.grey[300], width:"50px" }}>
               جزئیات
             </TableCell>
           )}
@@ -257,16 +267,17 @@ export default function useTable<T>(
               : 0
           }
           value={inputValue}
-          autoFocus
+          autoFocus={inputRef.current}
           onChange={(e) => {
             const value = e.target.value;
             setInputValue(value);
-            
+            inputRef.current = true;
+
             // Clear existing timeout
             if (timeoutRef.current) {
               clearTimeout(timeoutRef.current);
             }
-            
+
             // Set new timeout for debounced API call
             timeoutRef.current = window.setTimeout(() => {
               debouncedSetPage(value);
@@ -297,7 +308,7 @@ export default function useTable<T>(
     console.log(newPage, "newPage");
     setPage?.(newPage + 1);
   };
-  
+
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {

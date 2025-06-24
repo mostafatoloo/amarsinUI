@@ -9,7 +9,7 @@ import { HeadCell, HeaderGroup } from "../../hooks/useTable";
 import { useProviderList } from "../../hooks/useProviderList";
 import { ProviderItem } from "../../types/provider";
 import { useProviderStore } from "../../store/providerStore";
-import { convertPersianDate } from "../../utilities/general";
+import { convertPersianDate, height, width } from "../../utilities/general";
 import ReportIcon from "../../assets/images/GrayThem/report16.png";
 import ProviderProducerParams from "./ProviderProducerParams";
 
@@ -124,10 +124,10 @@ export default function ProviderListForm({
     }
   };
 
-  const height= window.innerHeight * 4/7
+
 
   return (
-    <Paper className="p-2 m-2 w-full h-full">
+    <Paper className="p-2 m-2 w-full md:h-full">
       <ProviderProducerParams
         brand={brand}
         setBrand={setBrand}
@@ -147,7 +147,8 @@ export default function ProviderListForm({
           {providerList.msg}
         </p>
       ) : (
-        <div className="mt-2" style={{height}}> {/* remove h-screen-minus-300 */}
+        <div className="mt-2"  style={width>768 ? { height:height } : {}}>
+          {/* remove h-screen-minus-300 */}
           <Table
             data={providerList.rpProviders}
             headCells={headCells}

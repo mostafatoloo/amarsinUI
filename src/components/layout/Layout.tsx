@@ -36,7 +36,7 @@ const Layout: React.FC<Props> = ({ children }) => {
 
   return (
     <Box
-      className="focus:outline-none select-none overflow-y-hidden"
+      className="focus:outline-none select-none md:overflow-y-hidden"
       sx={{ display: "flex" }}
     >
       <CssBaseline />

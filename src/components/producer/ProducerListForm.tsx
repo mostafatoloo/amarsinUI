@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Table } from "../controls/Table";
 import { useGeneralContext } from "../../context/GeneralContext";
 import { HeadCell, HeaderGroup } from "../../hooks/useTable";
-import { convertPersianDate } from "../../utilities/general";
+import { convertPersianDate, height, width } from "../../utilities/general";
 import ProviderProducerParams from "../provider/ProviderProducerParams";
 import { useProducerList } from "../../hooks/useProducerList";
 import { RpProduct } from "../../types/producer";
@@ -102,10 +102,8 @@ export default function ProviderListForm({
     }
   };
 
-  const height= window.innerHeight * 4/7
-
   return (
-    <Paper className="p-2 m-2 w-full h-full">
+    <Paper className="p-2 m-2 w-full md:h-full">
       <ProviderProducerParams
         brand={brand}
         setBrand={setBrand}
@@ -125,7 +123,7 @@ export default function ProviderListForm({
           هیچ کالایی یافت نشد.
         </p>
       ) : producerList.rpProducts.length > 0 ? (
-        <div className="mt-2" style={{height}}>
+        <div className="mt-2" style= {width>768 ? {height:height}:{}}>
           <Table
             data={data}
             headCells={headCells}

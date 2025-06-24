@@ -105,7 +105,7 @@ export default function ProviderListDetails({
   if (error) return <div>Error: {error.message} </div>;
 
   return (
-    <Paper className="p-2 m-2 w-full h-full">
+    <Paper className="p-2 m-2 w-full md:h-full overflow-y-auto">
       {isLoading ? (
         <div className="text-center">{<Skeleton />}</div>
       ) : (

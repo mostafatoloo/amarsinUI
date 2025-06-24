@@ -58,7 +58,7 @@ const ModalForm: React.FC<ModalProps> = ({
             </h2>
           </header>
         )}
-        <div>{children}</div>
+        <div >{children}</div>
       </div>
     </div>
   );
