@@ -6,12 +6,13 @@ import { useNavigate } from "react-router-dom";
 import { Table } from "../controls/Table";
 import { useGeneralContext } from "../../context/GeneralContext";
 import { HeadCell, HeaderGroup } from "../../hooks/useTable";
-import { convertPersianDate, height, width } from "../../utilities/general";
+import { convertPersianDate } from "../../utilities/general";
 import ProviderProducerParams from "../provider/ProviderProducerParams";
 import { useProducerList } from "../../hooks/useProducerList";
 import { RpProduct } from "../../types/producer";
 import { useProducerStore } from "../../store/producerStore";
-import { blue, } from "@mui/material/colors";
+import { blue } from "@mui/material/colors";
+import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
 
 type ProducerListFormProps = {
   data: RpProduct[];
@@ -102,6 +103,8 @@ export default function ProviderListForm({
     }
   };
 
+  const { height, width } = useCalculateTableHeight();
+
   return (
     <Paper className="p-2 m-2 w-full md:h-full">
       <ProviderProducerParams
@@ -123,7 +126,7 @@ export default function ProviderListForm({
           هیچ کالایی یافت نشد.
         </p>
       ) : producerList.rpProducts.length > 0 ? (
-        <div className="mt-2" style= {width>768 ? {height:height}:{}}>
+        <div className="mt-2 " style={width > 640 ? { height: height } : {}}>
           <Table
             data={data}
             headCells={headCells}

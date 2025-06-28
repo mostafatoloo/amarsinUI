@@ -41,8 +41,8 @@ export type HeadCell<T> = {
   isNotVisible?: boolean;
   changeColor?: boolean;
   type?: string;
-  val?: string;
-  setVal?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  val?: string[];
+  setVal?: (e: React.ChangeEvent<HTMLInputElement>, index: number) => void;
 };
 
 export type HeaderGroup = {
@@ -155,7 +155,7 @@ export default function useTable<T>(
 
   const TblContainer: React.FC<{ children: ReactNode }> = ({ children }) => (
     <div
-      className="w-full md:overflow-y-auto" //overflow-x-hidden
+      className="w-full sm:overflow-y-auto" //overflow-x-hidden
       /*"w-full 2xl:max-h-[calc(100vh-200px)] lg:max-h-[calc(100vh-250px)] max-h-[calc(100vh-350px)] overflow-y-auto overflow-x-auto"*/
     >
       <Table sx={tableStyles} className="md:min-w-[600px]">
@@ -199,7 +199,23 @@ export default function useTable<T>(
                   align="center"
                   sortDirection={orderBy === headCell.id ? order : false}
                   sx={{
-                    width: headCell.icon ? "50px" : headCell.cellWidth,
+                    "& .MuiTableSortLabel-icon": {
+                      visibility: headCell.disableSorting ? "hidden" : "visible",
+                      width: headCell.disableSorting ? "0px" : "auto",
+                      margin: headCell.disableSorting ? "0px" : "auto"
+                    },
+                    "& .MuiTableSortLabel-icon svg": {
+                      visibility: headCell.disableSorting ? "hidden" : "visible",
+
+                    },
+                    "& .MuiSvgIcon-root": {
+                      visibility: headCell.disableSorting ? "hidden" : "visible",
+                    },
+                    "& .MuiTableSortLabel-root": {
+                      paddingRight: headCell.disableSorting ? "0px" : "auto",
+                      paddingLeft: headCell.disableSorting ? "0px" : "auto"
+                    },
+                    width:headCell.cellWidth,
                     backgroundColor: headCell.changeColor //اگر رنگ سلول باید در شرایط خاص تغییر کند رنگ هدر ثابت بماند
                       ? theme.palette.grey[300]
                       : headCell.backgroundColor || theme.palette.grey[300],

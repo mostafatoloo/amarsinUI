@@ -3,7 +3,7 @@ import { Meta } from "./invoice";
 
 interface Indent {
   id: number;
-  code: string;
+  code: string | null;
   cnt: number;
   offer: number;
   dsc: string;
@@ -31,6 +31,7 @@ export interface WarehouseTemporaryReceiptIndentDtl {
 }
 
 export interface WarehouseTemporaryReceiptIndentDtlTable {
+  id: number;
   expire: string;
   uId: string;
   status: ReactNode;
@@ -111,6 +112,10 @@ export interface WarehouseState {
   setWarehouseIndentListResponse: (
     warehouseIndentListResponse: WarehouseIndentListResponse
   ) => void;
+  selectIndentsResponse: SelectIndentsResponse;
+  setSelectIndentsResponse: (selectIndentsResponse: SelectIndentsResponse) => void;
+  regResponse: RegResponse;
+  setRegResponse: (regResponse: RegResponse) => void; 
 }
 
 export interface ProductCatalog {
@@ -158,12 +163,6 @@ export interface WarehouseTemporaryReceiptIndent
   rOffer: number;
 }
 
-export interface WarehouseTemporaryReceiptIndentTable
-  extends TemporaryReceiptIndent {
-  rCnt: ReactNode;
-  rOffer: ReactNode;
-}
-
 export interface WarehouseIndentListResponse {
   meta: Meta;
   data: {
@@ -171,6 +170,51 @@ export interface WarehouseIndentListResponse {
       err: number;
       msg: string;
       warehouseTemporaryReceiptIndentLists: WarehouseTemporaryReceiptIndent[];
+    };
+  };
+}
+
+export type IndentRequest = {
+  id: number;
+  cnt: number;
+  offer: number;
+};
+
+export type SelectIndentsRequest = {
+  iocId: number;
+  indents: IndentRequest[];
+};
+
+export interface SelectIndentsResponse {
+  meta: {
+    errorCode: number;
+    message: string;
+    type: string;
+  };
+  data: {
+    result: {
+      err: number;
+      msg: string;
+      indents: Indent[];
+    };
+  };
+}
+
+export interface RegRequest {
+  usrId: number;
+  id: number;
+  customerId: number;
+  dtls: IndentRequest[];
+};
+
+export interface RegResponse {
+  meta: Meta
+  data: {
+    result: {
+      id: number;
+      err: number;
+      msg: string;
+      dtlErrMsgs: any[];
     };
   };
 }

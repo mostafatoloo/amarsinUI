@@ -32,7 +32,7 @@ export default function WorkflowParent({ setSelectedId }: Props) {
       id: "index",
       label: "ردیف",
       disableSorting: true,
-      cellWidth: "5%",
+      cellWidth: "3%",
       isNumber: true,
       changeColor:true
     },
@@ -47,7 +47,7 @@ export default function WorkflowParent({ setSelectedId }: Props) {
     {
       id: "formTitle",
       label: "فرم",
-      cellWidth: "25%",
+      cellWidth: "27%",
       disableSorting: true,
       changeColor:true
     },
@@ -90,12 +90,7 @@ export default function WorkflowParent({ setSelectedId }: Props) {
       disableSorting: true,
       changeColor:true
     },
-/*    {
-      id: "formId",
-      label: "شناسه فرم",
-      cellWidth: "5%",
-      isNotVisible: true,
-    },*/
+
   ];
 
   useEffect(() => {
@@ -235,7 +230,7 @@ export default function WorkflowParent({ setSelectedId }: Props) {
               handleDebounceFilterChange("title", e.target.value);
               setTitle(e.target.value);
             }}
-            className={`border p-1 text-sm rounded-sm w-1/4 md:w-[25%]`}
+            className={`border p-1 text-sm rounded-sm w-1/4 md:w-[27%]`}
             //style={{  width: headCells[2].cellWidth}}
           />
           <input
@@ -308,7 +303,7 @@ export default function WorkflowParent({ setSelectedId }: Props) {
             {workFlowResponse.msg}
           </p>
         ) : (
-          <div className="w-full mt-2" 
+          <div className="w-full" 
           //style={{ height: parentHeight }}
           >
             <Table

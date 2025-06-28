@@ -1,10 +1,12 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import { useMutation, useQuery, UseQueryOptions } from "@tanstack/react-query";
 import api from "../api/axios";
 import { useWarehouseStore } from "../store/warehouseStore";
 import {
   ProductCatalog,
   WarehouseShowIdResponse,
   WarehouseIndentListResponse,
+  SelectIndentsRequest,
+  RegRequest,
 } from "../types/warehouse";
 import axios from "axios";
 import { useGeneralContext } from "../context/GeneralContext";
@@ -17,9 +19,12 @@ export function useWarehouse() {
     setWarehouseShowIdResponse,
     setProductCatalog,
     setWarehouseIndentListResponse,
+    setSelectIndentsResponse,
+    setRegResponse
   } = useWarehouseStore();
   const { url: apiUrl } = useGeneralContext();
 
+  // for warehouseShowIdResponse
   const warehouseShowIdQuery = useQuery<
     WarehouseShowIdResponse,
     Error,
@@ -93,8 +98,34 @@ export function useWarehouse() {
     },
   } as UseQueryOptions<WarehouseIndentListResponse, Error, WarehouseIndentListResponse, unknown[]>);
 
+  // for editIndentsResponse
+
+  const editIndentMutation = useMutation({
+    mutationFn: async (request: SelectIndentsRequest) => {
+      const url: string = `api/WarehouseTemporaryReceipt/SelectIndents`;
+      const response = await api.post(url, request);
+      console.log(response.data,"response.data")
+      return response.data;
+    },
+    onSuccess: (data: any) => {
+      setSelectIndentsResponse(data);
+      warehouseShowIdQuery.refetch()
+    },
+  });
+  //for regResponse
+  const regMutation = useMutation({
+    mutationFn: async (request: RegRequest) => {
+      const url: string = `api/WarehouseTemporaryReceipt/Reg`;
+      const response = await api.post(url, request);
+      return response.data;
+    },
+    onSuccess: (data: any) => {
+      setRegResponse(data);
+    },
+  });
   return {
     //getInventoryList: () => query.refetch(), // Optional manual trigger
+    getWarehouseShowIdResponse: () => warehouseShowIdQuery.refetch(), // Optional manual trigger
     isLoadingWarehouseShowId: warehouseShowIdQuery.isLoading,
     errorWarehouseShowId: warehouseShowIdQuery.error,
     warehouseShowIdResponse: warehouseShowIdQuery.data ?? {
@@ -156,13 +187,14 @@ export function useWarehouse() {
       SystemId: 0,
     },
     //output for WarehouseTemporaryReceiptIndentList
+    getWarehouseIndentList: () => warehouseIndentListQuery.refetch(), // Optional manual trigger
     isLoadingWarehouseIndentList:
       warehouseIndentListQuery.isLoading,
     errorWarehouseIndentList:
     warehouseIndentListQuery.error,
     warehouseIndentList:
     warehouseIndentListQuery.data ?? {
-        meta: { errorCode: 0, message: "", type: "" },
+        meta: { errorCode: -1, message: "", type: "" },
         data: {
           result: {
             err: 0,
@@ -171,5 +203,13 @@ export function useWarehouse() {
           }
         }
       },
+    //output for selectIndentsResponse
+    isLoadingEditIndents: editIndentMutation.isPending,
+    errorEditIndents: editIndentMutation.error,
+    editIndents: editIndentMutation.mutateAsync,
+    //output for regResponse
+    isLoadingReg: regMutation.isPending,
+    errorReg: regMutation.error,
+    reg: regMutation.mutateAsync,
   };
 }

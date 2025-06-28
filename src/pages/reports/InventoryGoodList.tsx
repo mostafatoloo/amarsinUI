@@ -18,7 +18,7 @@ export default function InventoryGoodList() {
   },[])
 
   return (
-    <div className="h-[calc(100vh-72px)] w-full flex flex-col bg-gray-200 pt-2">
+    <div className="sm:h-[calc(100vh-72px)] w-full flex flex-col bg-gray-200 pt-2">
       {/* Top header */}
       <header className="flex items-center justify-between border-gray-300">
         <PageTitle />

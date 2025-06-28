@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { WarehouseState } from "../types/warehouse";
+import {  WarehouseState } from "../types/warehouse";
 
 export const useWarehouseStore = create<WarehouseState>()((set) => ({
   warehouseShowIdResponse: {
@@ -67,9 +67,29 @@ export const useWarehouseStore = create<WarehouseState>()((set) => ({
       }
     }
   },
+  selectIndentsResponse: {
+    meta: { errorCode: -1, message: "", type: "" },
+    data: {
+      result: { err: 0, msg: "", indents: [] },
+    },
+  },
   formId: 0,
   productId: 163818,
   iocId:3683021,
+  selectIndentsRequest: {
+    iocId: 0,
+    indents: {
+      id: 0,
+      cnt: 0,
+      offer: 0,
+    },
+  },
+  regResponse: {
+    meta: { errorCode: 0, message: "", type: "" },
+    data: {
+      result: { id: 0, err: 0, msg: "", dtlErrMsgs: [] },
+    },
+  },
   setField: (field: string, value: any) =>
     set((state) => ({ ...state, [field]: value })),
   setWarehouseShowIdResponse: (warehouseShowIdResponse) =>
@@ -78,4 +98,7 @@ export const useWarehouseStore = create<WarehouseState>()((set) => ({
   setWarehouseIndentListResponse: (
     warehouseIndentListResponse
   ) => set({ warehouseIndentListResponse }),
+  setSelectIndentsResponse: (selectIndentsResponse) =>
+    set({ selectIndentsResponse }),
+  setRegResponse: (regResponse) => set({ regResponse }),
 }));

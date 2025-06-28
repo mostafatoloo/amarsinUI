@@ -53,7 +53,7 @@ export default function ProviderList() {
 
   return (
     <div
-      className={`h-[calc(100vh-72px)] flex flex-col bg-gray-200 pt-2`} // overflow-y-auto
+      className={`sm:h-[calc(100vh-72px)] flex flex-col bg-gray-200 pt-2`} // overflow-y-auto
     >
       {/* Top header */}
       {!id ? (

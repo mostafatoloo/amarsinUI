@@ -9,9 +9,10 @@ import { HeadCell, HeaderGroup } from "../../hooks/useTable";
 import { useProviderList } from "../../hooks/useProviderList";
 import { ProviderItem } from "../../types/provider";
 import { useProviderStore } from "../../store/providerStore";
-import { convertPersianDate, height, width } from "../../utilities/general";
+import { convertPersianDate } from "../../utilities/general";
 import ReportIcon from "../../assets/images/GrayThem/report16.png";
 import ProviderProducerParams from "./ProviderProducerParams";
+import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
 
 type ProviderListFormProps = {
   brand: { id: string; title: string } | null;
@@ -124,6 +125,7 @@ export default function ProviderListForm({
     }
   };
 
+  const {height,width}=useCalculateTableHeight()
 
 
   return (
@@ -147,7 +149,7 @@ export default function ProviderListForm({
           {providerList.msg}
         </p>
       ) : (
-        <div className="mt-2"  style={width>768 ? { height:height } : {}}>
+        <div className="mt-2"  style={width>640 ? { height:height } : {}}>
           {/* remove h-screen-minus-300 */}
           <Table
             data={providerList.rpProviders}

@@ -3,7 +3,7 @@ import { Autocomplete, TextField } from "@mui/material";
 type Props<T> = {
   options: T[];
   label?: string;
-  value: T | null ;
+  value: T | null;
   handleChange: (event: any, newValue: T | null) => void;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
   className?: string;
@@ -15,6 +15,7 @@ type Props<T> = {
   showPopupIcon?: boolean;
   outlinedInputPadding?: string;
   inputPadding?: string;
+  textAlign?: string;
   showBold?: boolean; // <-- add this
 };
 
@@ -31,6 +32,7 @@ const AutoComplete = <T extends { id: string | number; title: string }>({
   showClearIcon = true,
   showPopupIcon = true,
   outlinedInputPadding,
+  textAlign,
   inputPadding,
   showBold = false, // <-- default to false
 }: Props<T>) => {
@@ -40,7 +42,12 @@ const AutoComplete = <T extends { id: string | number; title: string }>({
       clearIcon={showClearIcon ? undefined : <span />}
       popupIcon={showPopupIcon ? undefined : <span />}
       renderOption={(props, option) => (
-        <li {...props} className="text-xs md:text-sm p-2" key={option.id}>
+        <li
+          {...props}
+          className="text-xs md:text-sm p-2"
+          style={{ textAlign: (textAlign !== undefined ? textAlign : "right") as "left" | "center" | "right" }}
+          key={option.id}
+        >
           {option.title}
         </li>
       )}
@@ -56,6 +63,7 @@ const AutoComplete = <T extends { id: string | number; title: string }>({
               fontSize: { xs: mobilefontsize, sm: desktopfontsize },
               fontWeight: showBold ? 700 : 400, // <-- input font weight
               ...(inputPadding && { padding: inputPadding }),
+              textAlign: textAlign ?? "left",
             },
             "& .MuiInputLabel-root": {
               fontSize: { xs: mobilefontsize, sm: desktopfontsize },

@@ -4,6 +4,8 @@ import { Table } from "../controls/Table";
 import Skeleton from "../layout/Skeleton";
 import { useWarehouse } from "../../hooks/useWarehouse";
 import {
+  IndentRequest,
+  RegRequest,
   WarehouseTemporaryReceiptIndentDtl,
   WarehouseTemporaryReceiptIndentDtlTable,
 } from "../../types/warehouse";
@@ -14,28 +16,48 @@ import { convertToFarsiDigits } from "../../utilities/general";
 import { useWarehouseStore } from "../../store/warehouseStore";
 import ConfirmCard from "../layout/ConfirmCard";
 import Button from "../controls/Button";
+import { useAuthStore } from "../../store/authStore";
+import { useWorkflowRowSelect } from "../../hooks/useWorkflow";
 
 type Props = {
   setEditClicked: (editClicked: boolean) => void;
   setStatusClicked: (statusClicked: boolean) => void;
   setSelectedProduct: (dtl: WarehouseTemporaryReceiptIndentDtl) => void;
+  setIocId: (iocId: number) => void;
+  setIsModalOpenReg: (isModalOpenReg: boolean) => void;
+  setConfirmHasError: (isModalOpenReg: boolean) => void;
 };
 
 const WarehouseShowTable = ({
   setEditClicked,
   setStatusClicked,
   setSelectedProduct,
+  setIocId,
+  setIsModalOpenReg,
+  setConfirmHasError,
 }: Props) => {
-  const { isLoadingWarehouseShowId, warehouseShowIdResponse } = useWarehouse();
+  const { isLoadingWarehouseShowId, warehouseShowIdResponse, reg } =
+    useWarehouse();
+  const { workFlowRowSelectResponse } = useWorkflowRowSelect();
+  const { authApiResponse } = useAuthStore();
   const { setField } = useWarehouseStore();
   const headCells: HeadCell<WarehouseTemporaryReceiptIndentDtlTable>[] = [
     {
       id: "index",
       label: "ردیف",
       disableSorting: true,
-      cellWidth: "5%",
+      cellWidth: "3%",
       isNumber: true,
       changeColor: true,
+    },
+    {
+      id: "id",
+      label: "شناسه",
+      disableSorting: true,
+      cellWidth: "3%",
+      isNumber: true,
+      changeColor: true,
+      isNotVisible: true,
     },
     {
       id: "expire",
@@ -87,7 +109,7 @@ const WarehouseShowTable = ({
     {
       id: "pName",
       label: "کالا",
-      cellWidth: "20%",
+      cellWidth: "22%",
       isNumber: true,
       disableSorting: false,
       changeColor: true,
@@ -135,9 +157,9 @@ const WarehouseShowTable = ({
     },
     {
       id: "editIcon",
-      label: "ویرایش",
+      label: "",
       cellWidth: "50px",
-      disableSorting: true,
+      disableSorting: false,
       backgroundColor: green[50],
     },
     {
@@ -159,9 +181,9 @@ const WarehouseShowTable = ({
     },
     {
       id: "historyIcon",
-      label: "خلاصه",
+      label: "",
       cellWidth: "50px",
-      disableSorting: true,
+      disableSorting: false,
       backgroundColor: indigo[50],
     },
   ];
@@ -190,6 +212,7 @@ const WarehouseShowTable = ({
 
   const handleEditClick = (dtl: WarehouseTemporaryReceiptIndentDtl) => {
     setField("iocId", dtl.iocId);
+    setIocId(dtl.iocId);
     console.log(dtl, "dtl");
     setEditClicked(true);
   };
@@ -198,6 +221,7 @@ const WarehouseShowTable = ({
     warehouseShowIdResponse.data.result.response.warehouseTemporaryReceiptIndentDtls.map(
       (dtl) => {
         return {
+          id:dtl.id,
           expire: dtl.expire,
           uId: dtl.uId,
           status: (
@@ -220,43 +244,23 @@ const WarehouseShowTable = ({
           cnt: dtl.cnt,
           indentId:
             dtl.indents.length > 0
-              ? dtl.indents
-                  .map((indent) => {
-                    return indent.id;
-                  })
-                  .join(" ")
+              ? dtl.indents.map((indent) => indent.id).join(" ")
               : "",
           indentCode:
             dtl.indents.length > 0
-              ? dtl.indents
-                  .map((indent) => {
-                    return indent.code;
-                  })
-                  .join(" ")
+              ? dtl.indents.map((indent) => indent.code).join("\n")
               : "",
           indentCnt:
             dtl.indents.length > 0
-              ? dtl.indents
-                  .map((indent) => {
-                    return indent.cnt;
-                  })
-                  .join(" ")
+              ? dtl.indents.map((indent) => indent.cnt).join("\n")
               : "",
           indentOffer:
             dtl.indents.length > 0
-              ? dtl.indents
-                  .map((indent) => {
-                    return indent.offer;
-                  })
-                  .join(" ")
+              ? dtl.indents.map((indent) => indent.offer).join("\n")
               : "",
           indentDsc:
             dtl.indents.length > 0
-              ? dtl.indents
-                  .map((indent) => {
-                    return indent.dsc;
-                  })
-                  .join(" ")
+              ? dtl.indents.map((indent) => indent.dsc).join(" ")
               : "",
           rCnt: dtl.rCnt,
           rOffer: dtl.rOffer,
@@ -264,6 +268,65 @@ const WarehouseShowTable = ({
         };
       }
     );
+
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    /*if (sum1 !== sum2) {
+        setIsModalOpen(true);
+        return;
+      }*/
+
+    let request: RegRequest;
+    let indents: IndentRequest[] = [];
+
+    let dataReg =
+      warehouseShowIdResponse.data.result.response
+        .warehouseTemporaryReceiptIndentDtls;
+
+    dataReg.map((item) => {
+      return indents.push({
+        id: item.iocId,
+        cnt: Number(item.rCnt),
+        offer: Number(item.rOffer),
+      });
+    });
+    request = {
+      usrId: authApiResponse?.data.result.login.usrId ?? 0,
+      id: workFlowRowSelectResponse.workTableRow.formId,
+      customerId: authApiResponse?.data.result.login.customerId ?? 0,
+      dtls: indents,
+    };
+
+    console.log(request, "request");
+
+    try {
+      const response = await reg(request);
+      //handleWarehouseIndentListClose();
+
+      // Now we can check the response directly
+      //if (response.meta.errorCode !== -1) {
+      console.log(
+        response.meta.errorCode,
+        response.meta.message,
+        "response.meta.errorCode"
+      );
+      if (response.meta.errorCode === 1) setConfirmHasError(true);
+      else setConfirmHasError(false);
+      setIsModalOpenReg(true);
+      // }
+    } catch (error) {
+      console.error("Error editing indents:", error);
+      //setIsModalOpen(true);
+    }
+  };
+
+  const handleRowClick = (
+    item: WarehouseTemporaryReceiptIndentDtlTable,
+    setSelectedRowId: React.Dispatch<React.SetStateAction<number | null>>
+  ) => {
+    setSelectedRowId(Number(item["id"]));
+  };
+
   return (
     <>
       <Paper className="p-2 mt-2 w-full">
@@ -281,13 +344,14 @@ const WarehouseShowTable = ({
               headerGroups={headerGroups}
               cellFontSize="0.75rem"
               cellColorChangeHandler={handleCellColorChange}
+              rowClickHandler={handleRowClick}
               wordWrap={true}
             />
           </div>
         )}
         {data.length > 0 && (
           <ConfirmCard>
-            <Button text="تایید" />
+            <Button text="تایید" onClick={handleSubmit} />
           </ConfirmCard>
         )}
       </Paper>

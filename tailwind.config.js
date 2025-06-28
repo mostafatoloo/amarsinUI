@@ -1,3 +1,5 @@
+import { transform } from 'lodash';
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -18,10 +20,16 @@ export default {
           '0%':{transform: 'scaleY(0)'},
           '80%':{transform: 'scaleY(1.2)'},
           '100%':{transform: 'scaleY(1)'},
+        },
+        'open-modalMsg':{
+          '0%':{transform: 'scaleX(0)'},
+          '80%':{transform: 'scaleX(1.2)'},
+          '100%':{transform: 'scaleX(1)'},
         }
       },
       animation:{
         'open-modal':'open-modal 0.5s ease-in-out forwards',
+        'open-modalMsg':'open-modalMsg 1s ease-in-out forwards',
       }
 
     },

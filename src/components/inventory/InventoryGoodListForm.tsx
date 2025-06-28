@@ -12,7 +12,7 @@ import AutoComplete from "../controls/AutoComplete";
 import { Table } from "../controls/Table";
 import { useGeneralContext } from "../../context/GeneralContext";
 import { HeadCell } from "../../hooks/useTable";
-import { height, width } from "../../utilities/general";
+import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
 
 export const headCells: HeadCell<InventoryItem>[] = [
   {
@@ -20,6 +20,13 @@ export const headCells: HeadCell<InventoryItem>[] = [
     label: "ردیف",
     disableSorting: true,
     cellWidth: "10%",
+  },
+  {
+    id: "id",
+    label: "شناسه",
+    disableSorting: true,
+    cellWidth: "10%",
+    isNotVisible:true
   },
   { id: "bn", label: "برند" ,cellWidth: "10%"},
   { id: "fn", label: "نام کالا" ,cellWidth: "20%"},
@@ -70,9 +77,11 @@ export default function InventoryGoodListForm() {
 
   if (error) return <div>Error: {error.message} </div>;
 
+  const {height,width}=useCalculateTableHeight()
+
   return (
     <>
-      <Paper className="p-2 m-2 w-full h-full">
+      <Paper className="p-2 m-2 w-full h-fit md:h-full">
         <div className="flex xl:w-1/4 justify-center items-center gap-2">
           <label htmlFor="year" className="">
             برند:
@@ -100,7 +109,7 @@ export default function InventoryGoodListForm() {
             {inventoryList.msg}
           </p>
         ) : inventoryList.rpProviderInventories.length > 0 ? (
-          <div className="mt-2" style= {width>768 ? {height:height}:{}}> {/* remove h-screen-minus-300 */}
+          <div className="mt-2" style= {width>640 ? {height:height}:{height:"fit"}}> {/* remove h-screen-minus-300 */}
             <Table
               data={inventoryList.rpProviderInventories}
               headCells={headCells}

@@ -14,9 +14,11 @@ import { colors } from "../../utilities/color";
 import { useLocation } from "react-router-dom";
 
 const SideMenu = () => {
-  const { isMenuOpened, setChartId
-  //  , chartId
-   } = useGeneralContext();
+  const {
+    isMenuOpened,
+    setChartId,
+    //  , chartId
+  } = useGeneralContext();
   const { definitionInvironment } = useDefinitionInvironment();
   const { authApiResponse, logout } = useAuthStore();
 
@@ -98,7 +100,7 @@ const SideMenu = () => {
             {userInfo?.nam || "کاربر سیستم"}
           </div>
           {/* سمت */}
-          <div className="flex justify-center items-center w-52 ">
+          <div className="w-full flex justify-center items-center">
             <AutoComplete
               options={
                 definitionInvironment?.charts !== undefined
@@ -108,6 +110,7 @@ const SideMenu = () => {
                     }))
                   : []
               }
+              inputPadding="0 !important"
               value={chart}
               handleChange={(_event, newValue) => {
                 return setChart(newValue);
@@ -118,7 +121,7 @@ const SideMenu = () => {
               showLabel={false}
               showBorder={false}
               showClearIcon={false}
-              inputPadding="0 !important"
+              textAlign="center"
             />
           </div>
         </div>

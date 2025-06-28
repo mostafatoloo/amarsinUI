@@ -13,6 +13,7 @@ import {
 import React, { useRef, useState } from "react";
 import useTable, { HeadCell, HeaderGroup } from "../../hooks/useTable";
 import { useNavigate } from "react-router-dom";
+import { blue } from "@mui/material/colors";
 
 type TableProps<T> = {
   data: T[];
@@ -21,6 +22,10 @@ type TableProps<T> = {
   pagination?: boolean;
   cellClickHandler?: (cell: HeadCell<T>, item: T) => void;
   cellColorChangeHandler?: (cell: HeadCell<T>, item: T) => string;
+  rowClickHandler?: (
+    item: T,
+    setSelectedRowId: React.Dispatch<React.SetStateAction<number | null>>
+  ) => void;
   hasSumRow?: boolean;
   page?: number;
   setPage?: (page: number) => void;
@@ -40,6 +45,7 @@ export function Table<T>({
   pagination = false,
   cellClickHandler,
   cellColorChangeHandler,
+  rowClickHandler,
   hasSumRow = false,
   page = 0,
   setPage,
@@ -80,22 +86,32 @@ export function Table<T>({
   const navigate = useNavigate();
   const theme = useTheme();
   const records = pagination ? recordsAfterPaging() : recordsAfterSorting();
-  const inputRef = useRef<number>(0);
+  const inputRef = useRef<{ idx: number; i: number }>({ idx: 0, i: 0 });
+  const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
   //const [focusFlag,setFocusFlag] = useState(false)
 
-  const renderInput = (item: T, cell: HeadCell<T>, i: number) => {
+  const renderInput = (item: T, cell: HeadCell<T>, i: number, idx: number) => {
     return (
       <input
         type="text"
-        autoFocus={i === inputRef.current ? true : false}
-        value={cell.val === "0" ? String(item[cell.id as keyof T]) : cell.val}
+        className="w-full"
+        autoFocus={
+          i === inputRef.current.i && idx === inputRef.current.idx
+            ? true
+            : false
+        }
+        value={
+          cell.val?.[idx] === "0"
+            ? String(item[cell.id as keyof T])
+            : cell.val?.[idx]
+        }
         onChange={(e) => {
-          cell.setVal?.(e);
+          cell.setVal?.(e, idx);
           console.log(e.target.value);
-          inputRef.current = i;
+          inputRef.current = { idx: idx, i: i };
         }}
         style={{
-          backgroundColor: !isMobile ? cell.backgroundColor : "transparent",
+          backgroundColor: !isMobile && !selectedRowId === item["id" as keyof T] ? cell.backgroundColor : !isMobile && selectedRowId === item["id" as keyof T] ? "whitesmoke" : "transparent",
         }}
         /*onClick={()=>{console.log("enter"+i);inputRef.current=i}}
         onKeyDown={()=>{console.log("enter"+i);inputRef.current=i}}
@@ -110,14 +126,16 @@ export function Table<T>({
     item,
     lastRow,
     i,
-    isMobile
+    idx,
+    isMobile,
   }: {
     displayValue: any;
     cell: HeadCell<T>;
     item: T;
     lastRow: boolean;
-    i: number;
-    isMobile:boolean
+    i: number; // index of the cell in the row
+    idx: number; // index of the item in the records array
+    isMobile: boolean;
   }) => {
     return (
       <>
@@ -135,7 +153,7 @@ export function Table<T>({
             <strong>{cell.label}:</strong>
             {/* if item[cell] is of "input" type */}
             {cell.type === "input"
-              ? renderInput(item, cell, i)
+              ? renderInput(item, cell, i, idx)
               : typeof displayValue === "string" ||
                 typeof displayValue === "number" ||
                 React.isValidElement(displayValue)
@@ -149,13 +167,16 @@ export function Table<T>({
             title={wordWrap ? "" : String(item[cell.id as keyof T])}
             key={String(cell.id)}
             sx={{
+              whiteSpace: "pre-wrap",
               maxWidth: !wordWrap ? "20px" : "",
               width: cell.cellWidth,
               textWrap: !wordWrap ? "nowrap" : "wrap",
               overflow: !wordWrap ? "hidden" : "auto",
               fontSize: isMobile ? "0.7rem" : cellFontSize,
               backgroundColor:
-                cell.changeColor && cellColorChangeHandler
+                rowClickHandler && selectedRowId === item["id" as keyof T]
+                  ? blue[50]
+                  : cell.changeColor && cellColorChangeHandler
                   ? cellColorChangeHandler(cell, item)
                   : cell.backgroundColor,
             }}
@@ -170,7 +191,7 @@ export function Table<T>({
             {isMobile && <strong>{cell.label}:</strong>}
             {/* if item[cell] is of "input" type */}
             {cell.type === "input"
-              ? renderInput(item, cell, i)
+              ? renderInput(item, cell, i, idx)
               : typeof displayValue === "string" ||
                 typeof displayValue === "number" ||
                 React.isValidElement(displayValue)
@@ -196,7 +217,9 @@ export function Table<T>({
     shrinkInOneColumn: boolean;
   }) => {
     return shrinkInOneColumn ? (
-      <TableCell sx={{ fontSize: isMobile ? "0.7rem" : cellFontSize, width:"50px" }}>
+      <TableCell
+        sx={{ fontSize: isMobile ? "0.7rem" : cellFontSize, width: "50px" }}
+      >
         {columns.map((cell: HeadCell<T>, i) => {
           const lastRow = idx === records.length - 1;
           let displayValue = returnDisplayValue(cell, item, lastRow, idx, i);
@@ -206,6 +229,7 @@ export function Table<T>({
               cell={cell}
               displayValue={displayValue}
               i={i}
+              idx={idx}
               item={item}
               lastRow={lastRow}
               key={i}
@@ -224,6 +248,7 @@ export function Table<T>({
               cell={cell}
               displayValue={displayValue}
               i={i}
+              idx={idx}
               item={item}
               lastRow={lastRow}
               key={i}
@@ -243,9 +268,12 @@ export function Table<T>({
     i: number
   ): string | JSX.Element | T[keyof T] => {
     let displayValue;
-    if (cell.type === "input" && inputRef.current === i) {
-      console.log(inputRef.current, "inputRef.current", i);
-      inputRef.current = i;
+    if (
+      cell.type === "input" &&
+      inputRef.current.idx === idx &&
+      inputRef.current.i === i
+    ) {
+      inputRef.current = { idx: idx, i: i };
     }
 
     if (cell.icon !== undefined) {
@@ -279,46 +307,53 @@ export function Table<T>({
         <TblHead />
         <TableBody sx={{ overflowY: "auto" }}>
           {records.length > 0 ? (
-            records.map((item, idx) => (
-              <React.Fragment key={idx}>
-                <TableRow
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setSelectedId?.(item["id" as keyof T] as number);
-                  }}
-                  sx={
-                    idx === records.length - 1 && hasSumRow
-                      ? {
-                          fontSize: isMobile ? "0.7rem" : cellFontSize,
-                          backgroundColor: theme.palette.grey[200],
-                          fontWeight: "bold",
-                        }
-                      : { fontSize: isMobile ? "0.7rem" : cellFontSize }
-                  }
-                >
-                  <Cells
-                    columns={isMobile ? mobileMainColumns : headCells}
-                    idx={idx}
-                    item={item}
-                    key={idx}
-                    shrinkInOneColumn={false}
-                  />
-                  {isMobile && (
-                    <TableCell
-                      sx={{ fontSize: isMobile ? "0.7rem" : cellFontSize }}
-                    >
-                      <Cells
-                        columns={mobileRestColumns}
-                        idx={idx}
-                        item={item}
-                        key={idx}
-                        shrinkInOneColumn={true}
-                      />
-                    </TableCell>
-                  )}
-                </TableRow>
-              </React.Fragment>
-            ))
+            records.map((item, idx) => {
+              const itemId = item["id" as keyof T] as number;
+              return (
+                <React.Fragment key={idx}>
+                  <TableRow
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setSelectedId?.(itemId);
+                      if (rowClickHandler)
+                        rowClickHandler(item, setSelectedRowId);
+                    }}
+                    sx={
+                      idx === records.length - 1 && hasSumRow
+                        ? {
+                            fontSize: isMobile ? "0.7rem" : cellFontSize,
+                            backgroundColor: theme.palette.grey[200],
+                            fontWeight: "bold",
+                          }
+                        : {
+                            fontSize: isMobile ? "0.7rem" : cellFontSize,
+                          }
+                    }
+                  >
+                    <Cells
+                      columns={isMobile ? mobileMainColumns : headCells}
+                      idx={idx}
+                      item={item}
+                      key={idx}
+                      shrinkInOneColumn={false}
+                    />
+                    {isMobile && (
+                      <TableCell
+                        sx={{ fontSize: isMobile ? "0.7rem" : cellFontSize }}
+                      >
+                        <Cells
+                          columns={mobileRestColumns}
+                          idx={idx}
+                          item={item}
+                          key={idx}
+                          shrinkInOneColumn={true}
+                        />
+                      </TableCell>
+                    )}
+                  </TableRow>
+                </React.Fragment>
+              );
+            })
           ) : (
             <TableRow>
               <TableCell colSpan={headCells.length + (isMobile ? 1 : 0)}>

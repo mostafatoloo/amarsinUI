@@ -1,3 +1,18 @@
+export const convertToLatinDigits = (
+  str: string | null | undefined
+): string => {
+  const farsiDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
+
+  if (str === null || str === undefined) {
+    return "";
+  }
+
+  return str.replace(/[۰-۹]/g, (d) => {
+    const index = farsiDigits.indexOf(d);
+    return index !== -1 ? index.toString() : d;
+  });
+};
+
 export const convertToFarsiDigits = (
   num: number | string | null | undefined
 ): string => {
@@ -95,11 +110,3 @@ export const formatNumberWithCommas = (num: number): string => {
 };
 
 
-export const width = window.innerWidth;
-//console.log(width,"width")
-export const height =
-  width > 1535
-    ? window.innerHeight - 200
-    : width > 1024
-    ? window.innerHeight - 300
-    : window.innerHeight - 400;

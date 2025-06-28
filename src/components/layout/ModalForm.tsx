@@ -20,15 +20,16 @@ const ModalForm: React.FC<ModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  let classname="bg-white rounded-lg shadow-lg w-full relative p-4 mt-4 animate-open-modal";
+  let classname =
+    "bg-white rounded-lg shadow-lg w-full relative p-4 mt-4 animate-open-modal";
   switch (width) {
     case "1/2":
-      classname=`md:w-1/2 ${classname}`
+      classname = `md:w-1/2 ${classname}`;
       break;
     case "2/3":
-      classname=`md:w-2/3 ${classname}`
+      classname = `md:w-2/3 ${classname}`;
       break;
-  
+
     default:
       break;
   }
@@ -58,7 +59,7 @@ const ModalForm: React.FC<ModalProps> = ({
             </h2>
           </header>
         )}
-        <div >{children}</div>
+        <div>{children}</div>
       </div>
     </div>
   );
