@@ -18,7 +18,7 @@ export const WorkflowChild = ({ selectedId }: Props) => {
   const { page, pageSize, dateTime, code, cost, flowMapId, name, dsc } =
     useWorkflowStore();
   const { workFlowResponse } = useWorkflow();
-  const { workFlowRowSelectResponse } = useWorkflowRowSelect();
+  const { workFlowRowSelectResponse, isLoading, error } = useWorkflowRowSelect();
 
   useEffect(() => {
     const handleSelectedIdChange = (event: CustomEvent) => {
@@ -40,6 +40,7 @@ export const WorkflowChild = ({ selectedId }: Props) => {
   useEffect(() => {
     setField("chartId", chartId);
     setField("workTableId", currentSelectedId);
+    //getWorkTableRowSelect()
   }, [currentSelectedId, chartId]);
 
   useEffect(() => {
@@ -65,10 +66,15 @@ export const WorkflowChild = ({ selectedId }: Props) => {
   return (
     <>
       {workFlowResponse.err === 0 && workFlowResponse.workTables.length > 0 && (
-        <WorkflowRowSelect />
+        <WorkflowRowSelect 
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          isLoading={isLoading}
+          error={error}
+        />
       )}
       <WorkflowComponent
         formViewPath={workFlowRowSelectResponse.workTableForms.form1ViewPath}
+        workFlowRowSelectResponse={workFlowRowSelectResponse}
       />
     </>
   );

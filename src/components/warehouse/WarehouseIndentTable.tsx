@@ -105,7 +105,7 @@ const WarehouseIndentTable = ({
       backgroundColor: green[50],
       type: "input",
       val: rCnt,
-      setVal: (e, idx) => setValRCnt(e, idx),
+      setVal: (e, idx) => setValue(e, idx,setRCnt),
     },
     {
       id: "rOffer",
@@ -116,31 +116,17 @@ const WarehouseIndentTable = ({
       backgroundColor: green[50],
       type: "input",
       val: rOffer,
-      setVal: (e, idx) => setValROffer(e, idx),
+      setVal: (e, idx) => setValue(e, idx,setROffer),
     },
   ];
 
   const regex = /^[0-9\u06F0-\u06F9]*$/;
 
-  const setValRCnt = (e: React.ChangeEvent<HTMLInputElement>, idx: number) => {
+  const setValue = (e: React.ChangeEvent<HTMLInputElement>, idx: number,setVal:React.Dispatch<React.SetStateAction<string[]>>) => {
     //Regular expression to allow only numbers
     const value = convertToFarsiDigits(e.target.value);
     if (regex.test(value)) {
-      setRCnt((prev) => {
-        const newArr = [...prev];
-        newArr[idx] = value;
-        return newArr;
-      });
-    }
-  };
-  const setValROffer = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    idx: number
-  ) => {
-    //Regular expression to allow only numbers
-    const value = convertToFarsiDigits(e.target.value);
-    if (regex.test(value)) {
-      setROffer((prev) => {
+      setVal((prev) => {
         const newArr = [...prev];
         newArr[idx] = value;
         return newArr;
@@ -170,19 +156,9 @@ const WarehouseIndentTable = ({
     });
   }, [data]);
 
-  /*const sum1 =
-    rCnt.reduce((acc, cnt) => acc + parseInt(cnt), 0) +
-    rOffer.reduce((acc, offer) => acc + parseInt(offer), 0);
-  const sum2 = data.reduce((acc, item) => acc + item.amnt, 0);*/
-
-  //if (sum1 !== sum2) setIsModalOpen(true);
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    /*if (sum1 !== sum2) {
-      setIsModalOpen(true);
-      return;
-    }*/
 
     let request: SelectIndentsRequest;
     let indents: IndentRequest[] = [];
@@ -203,11 +179,9 @@ const WarehouseIndentTable = ({
 
       // Now we can check the response directly
       if (response.meta.errorCode !== -1) {
-        console.log(response.meta.errorCode, "response.meta.errorCode");
         setIsModalOpen(true);
       }
     } catch (error) {
-      console.error("Error editing indents:", error);
       setIsModalOpen(true);
     }
   };

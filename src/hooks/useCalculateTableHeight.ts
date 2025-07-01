@@ -11,7 +11,6 @@ export default function useCalculateTableHeight(): UseCalculateTableHeightReturn
     height: window.innerHeight,
   });
 
-  console.log(screenDimensions)
   //calculate table height based on screen size
   const calculateTableHeight = () => {
     const { width, height } = screenDimensions;

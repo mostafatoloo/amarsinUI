@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import {  WarehouseState } from "../types/warehouse";
+import { WarehouseState } from "../types/warehouse";
 
 export const useWarehouseStore = create<WarehouseState>()((set) => ({
   warehouseShowIdResponse: {
@@ -63,9 +63,9 @@ export const useWarehouseStore = create<WarehouseState>()((set) => ({
       result: {
         err: 0,
         msg: "",
-        warehouseTemporaryReceiptIndentLists: []
-      }
-    }
+        warehouseTemporaryReceiptIndentLists: [],
+      },
+    },
   },
   selectIndentsResponse: {
     meta: { errorCode: -1, message: "", type: "" },
@@ -74,8 +74,8 @@ export const useWarehouseStore = create<WarehouseState>()((set) => ({
     },
   },
   formId: 0,
-  productId: 163818,
-  iocId:3683021,
+  productId: 0,
+  iocId: 0,
   selectIndentsRequest: {
     iocId: 0,
     indents: {
@@ -90,14 +90,17 @@ export const useWarehouseStore = create<WarehouseState>()((set) => ({
       result: { id: 0, err: 0, msg: "", dtlErrMsgs: [] },
     },
   },
-  setField: (field: string, value: any) =>
-    set((state) => ({ ...state, [field]: value })),
+  setField: (field: string, value: any) => {
+ /*   if (field === "formId") {
+      console.log("[WarehouseStore] setField called for formId:", value);
+    }*/
+    set((state) => ({ ...state, [field]: value }));
+  },
   setWarehouseShowIdResponse: (warehouseShowIdResponse) =>
     set({ warehouseShowIdResponse }),
   setProductCatalog: (productCatalog) => set({ productCatalog }),
-  setWarehouseIndentListResponse: (
-    warehouseIndentListResponse
-  ) => set({ warehouseIndentListResponse }),
+  setWarehouseIndentListResponse: (warehouseIndentListResponse) =>
+    set({ warehouseIndentListResponse }),
   setSelectIndentsResponse: (selectIndentsResponse) =>
     set({ selectIndentsResponse }),
   setRegResponse: (regResponse) => set({ regResponse }),

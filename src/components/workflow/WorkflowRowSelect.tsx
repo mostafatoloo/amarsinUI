@@ -1,10 +1,14 @@
-import { useWorkflowRowSelect } from "../../hooks/useWorkflow";
 import WorkflowRowSelectHeader from "./WorkflowRowSelectHeader";
 import {Skeleton} from "@mui/material"
+import { WorkflowRowSelectResponse } from "../../types/workflow";
 
-const WorkflowRowSelect = () => {
-  const { error, isLoading, workFlowRowSelectResponse } =
-    useWorkflowRowSelect();
+type Props = {
+  workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  isLoading: boolean;
+  error: Error | null;
+};
+
+const WorkflowRowSelect = ({ workFlowRowSelectResponse, isLoading, error }: Props) => {
   if (error) return <div>Error: {error.message} </div>;
   return (
     <div className="w-full">
@@ -16,7 +20,7 @@ const WorkflowRowSelect = () => {
         </p>
       ) : (
         <div className="w-full mt-2">
-          <WorkflowRowSelectHeader/>
+          <WorkflowRowSelectHeader workFlowRowSelectResponse={workFlowRowSelectResponse} />
         </div>
       )}
     </div>

@@ -2,12 +2,12 @@ import { Paper } from "@mui/material";
 import { HeadCell, HeaderGroup } from "../../hooks/useTable";
 import { Table } from "../controls/Table";
 import Skeleton from "../layout/Skeleton";
-import { useWarehouse } from "../../hooks/useWarehouse";
 import {
   IndentRequest,
   RegRequest,
   WarehouseTemporaryReceiptIndentDtl,
   WarehouseTemporaryReceiptIndentDtlTable,
+  WarehouseShowIdResponse,
 } from "../../types/warehouse";
 import HistoryIcon from "../../assets/images/GrayThem/history_gray_16.png";
 import EditIcon from "../../assets/images/GrayThem/edit_gray16.png";
@@ -17,7 +17,8 @@ import { useWarehouseStore } from "../../store/warehouseStore";
 import ConfirmCard from "../layout/ConfirmCard";
 import Button from "../controls/Button";
 import { useAuthStore } from "../../store/authStore";
-import { useWorkflowRowSelect } from "../../hooks/useWorkflow";
+import { WorkflowRowSelectResponse } from "../../types/workflow";
+import { useWarehouse } from "../../hooks/useWarehouse";
 
 type Props = {
   setEditClicked: (editClicked: boolean) => void;
@@ -26,6 +27,10 @@ type Props = {
   setIocId: (iocId: number) => void;
   setIsModalOpenReg: (isModalOpenReg: boolean) => void;
   setConfirmHasError: (isModalOpenReg: boolean) => void;
+  customerId: number;
+  workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  warehouseShowIdResponse: WarehouseShowIdResponse;
+  isLoadingWarehouseShowId: boolean;
 };
 
 const WarehouseShowTable = ({
@@ -35,10 +40,12 @@ const WarehouseShowTable = ({
   setIocId,
   setIsModalOpenReg,
   setConfirmHasError,
+  customerId,
+  workFlowRowSelectResponse,
+  warehouseShowIdResponse,
+  isLoadingWarehouseShowId,
 }: Props) => {
-  const { isLoadingWarehouseShowId, warehouseShowIdResponse, reg } =
-    useWarehouse();
-  const { workFlowRowSelectResponse } = useWorkflowRowSelect();
+  const { reg } = useWarehouse();
   const { authApiResponse } = useAuthStore();
   const { setField } = useWarehouseStore();
   const headCells: HeadCell<WarehouseTemporaryReceiptIndentDtlTable>[] = [
@@ -91,7 +98,7 @@ const WarehouseShowTable = ({
       isNotVisible: true,
     },
     {
-      id: "cId",
+      id: "code",
       label: "بچ",
       cellWidth: "5%",
       isNumber: true,
@@ -99,7 +106,7 @@ const WarehouseShowTable = ({
       changeColor: true,
     },
     {
-      id: "code",
+      id: "pCode",
       label: "کد",
       cellWidth: "5%",
       isNumber: true,
@@ -212,6 +219,7 @@ const WarehouseShowTable = ({
 
   const handleEditClick = (dtl: WarehouseTemporaryReceiptIndentDtl) => {
     setField("iocId", dtl.iocId);
+    //getWarehouseIndentList()
     setIocId(dtl.iocId);
     console.log(dtl, "dtl");
     setEditClicked(true);
@@ -221,7 +229,7 @@ const WarehouseShowTable = ({
     warehouseShowIdResponse.data.result.response.warehouseTemporaryReceiptIndentDtls.map(
       (dtl) => {
         return {
-          id:dtl.id,
+          id: dtl.id,
           expire: dtl.expire,
           uId: dtl.uId,
           status: (
@@ -290,33 +298,21 @@ const WarehouseShowTable = ({
         offer: Number(item.rOffer),
       });
     });
+
     request = {
       usrId: authApiResponse?.data.result.login.usrId ?? 0,
       id: workFlowRowSelectResponse.workTableRow.formId,
-      customerId: authApiResponse?.data.result.login.customerId ?? 0,
+      customerId: customerId,
       dtls: indents,
     };
-
     console.log(request, "request");
-
     try {
       const response = await reg(request);
-      //handleWarehouseIndentListClose();
-
-      // Now we can check the response directly
-      //if (response.meta.errorCode !== -1) {
-      console.log(
-        response.meta.errorCode,
-        response.meta.message,
-        "response.meta.errorCode"
-      );
       if (response.meta.errorCode === 1) setConfirmHasError(true);
       else setConfirmHasError(false);
       setIsModalOpenReg(true);
-      // }
     } catch (error) {
       console.error("Error editing indents:", error);
-      //setIsModalOpen(true);
     }
   };
 

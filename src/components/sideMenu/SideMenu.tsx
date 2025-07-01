@@ -57,15 +57,6 @@ const SideMenu = () => {
     }
   }, [chart]);
 
-  // useEffect(() => {
-  //   console.log(chartId, "chartId");
-  //   if (location.pathname != "/")
-  //     if (chartId === undefined || chartId === 0) {
-  //       logout();
-  //       return;
-  //     }
-  // }, []);
-
   const formatted = formatPersianDate(
     definitionInvironment.curDay,
     definitionInvironment.curMonth,
@@ -121,7 +112,8 @@ const SideMenu = () => {
               showLabel={false}
               showBorder={false}
               showClearIcon={false}
-              textAlign="center"
+              textAlign="center"  
+              outlinedInputPadding="10px"           
             />
           </div>
         </div>

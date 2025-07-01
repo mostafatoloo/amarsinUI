@@ -5,13 +5,13 @@ import { useNavigate } from "react-router-dom";
 import { Table } from "../controls/Table";
 import { useGeneralContext } from "../../context/GeneralContext";
 import { useWorkflow } from "../../hooks/useWorkflow";
-import { useWorkflowRowSelectStore, useWorkflowStore } from "../../store/workflowStore";
+import {  useWorkflowRowSelectStore, useWorkflowStore } from "../../store/workflowStore";
 import { HeadCell } from "../../hooks/useTable";
 import { WorkFlowTable } from "../../types/workflow";
 import AutoComplete from "../controls/AutoComplete";
 import { convertToFarsiDigits } from "../../utilities/general";
 import { debounce } from "lodash";
-import { blue,  } from "@mui/material/colors";
+import { blue } from "@mui/material/colors";
 
 type Props = {
   setSelectedId: (value: number) => void;
@@ -36,6 +36,15 @@ export default function WorkflowParent({ setSelectedId }: Props) {
       isNumber: true,
       changeColor:true
     },
+   /* {
+      id: "id",
+      label: "شناسه",
+      disableSorting: true,
+      cellWidth: "3%",
+      isNumber: true,
+      changeColor:true,
+      isNotVisible:true
+    },*/
     {
       id: "regDateTime",
       label: "زمان",
@@ -207,6 +216,13 @@ export default function WorkflowParent({ setSelectedId }: Props) {
     return "";
   };
 
+  /*const handleRowClick = (
+    item: WorkFlowTable,
+    setSelectedRowId: React.Dispatch<React.SetStateAction<number | null>>
+  ) => {
+    setSelectedRowId(Number(item["id"]));
+  };
+*/
   if (error) return <div>Error: {error.message} </div>;
 
   return (
@@ -318,6 +334,7 @@ export default function WorkflowParent({ setSelectedId }: Props) {
               setSelectedId={setSelectedId}
               cellFontSize="0.75rem"
               wordWrap= {false}
+              //rowClickHandler={handleRowClick}
               cellColorChangeHandler={handleCellColorChange}
             />
           </div>

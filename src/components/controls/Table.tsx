@@ -107,15 +107,20 @@ export function Table<T>({
         }
         onChange={(e) => {
           cell.setVal?.(e, idx);
-          console.log(e.target.value);
+          //console.log(e.target.value);
           inputRef.current = { idx: idx, i: i };
         }}
         style={{
-          backgroundColor: !isMobile && !selectedRowId === item["id" as keyof T] ? cell.backgroundColor : !isMobile && selectedRowId === item["id" as keyof T] ? "whitesmoke" : "transparent",
+          backgroundColor:
+            !isMobile && !selectedRowId === item["id" as keyof T]
+              ? cell.backgroundColor
+              : !isMobile && selectedRowId === item["id" as keyof T]
+              ? "whitesmoke"
+              : "transparent",
         }}
-        /*onClick={()=>{console.log("enter"+i);inputRef.current=i}}
-        onKeyDown={()=>{console.log("enter"+i);inputRef.current=i}}
-        onMouseDown={()=>{console.log("enter"+i);inputRef.current=i}}*/
+        onClick={()=>{console.log("enter"+i);inputRef.current={ idx: idx, i: i }}}
+        onKeyDown={()=>{console.log("enter"+i);inputRef.current={ idx: idx, i: i }}}
+        onMouseDown={()=>{console.log("enter"+i);inputRef.current={ idx: idx, i: i }}}
       />
     );
   };
@@ -218,7 +223,11 @@ export function Table<T>({
   }) => {
     return shrinkInOneColumn ? (
       <TableCell
-        sx={{ fontSize: isMobile ? "0.7rem" : cellFontSize, width: "50px" }}
+        sx={{
+          fontSize: isMobile
+            ? "0.7rem"
+            : cellFontSize /*, width: cell.cellWidth */,
+        }}
       >
         {columns.map((cell: HeadCell<T>, i) => {
           const lastRow = idx === records.length - 1;

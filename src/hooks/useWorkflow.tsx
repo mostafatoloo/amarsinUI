@@ -77,7 +77,7 @@ export function useWorkflow() {
       const response = await api.get(url, { signal });
       return response.data;
     },
-    enabled: !!chartId,
+    enabled: systemId !== 0 && chartId !== 0 ? true : false,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
     /*staleTime: 30000, // Consider data fresh for 30 seconds
@@ -123,10 +123,11 @@ export function useWorkflowRowSelect() {
       const url: string = `api/WFMS/WorkTableRowSelect?WorkTableId=${params.workTableId}&chartId=${params.chartId}`;
 
       console.log(url, "url");
+
       const response = await api.get(url);
       return response.data;
     },
-    enabled: !!chartId,
+    enabled: workTableId !== 0 && chartId !== 0 ? true : false,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
     onSuccess: (data: any) => {
@@ -135,6 +136,7 @@ export function useWorkflowRowSelect() {
   } as UseQueryOptions<WorkflowRowSelectResponse, Error, WorkflowRowSelectResponse, unknown[]>);
 
   return {
+    getWorkTableRowSelect: queryRowSelect.refetch,
     isLoading: queryRowSelect.isLoading,
     error: queryRowSelect.error,
     workFlowRowSelectResponse: queryRowSelect.data ?? {

@@ -23,7 +23,7 @@ export function useWarehouse() {
     setRegResponse
   } = useWarehouseStore();
   const { url: apiUrl } = useGeneralContext();
-
+  //console.log("[useWarehouse] Setting formId to", formId)
   // for warehouseShowIdResponse
   const warehouseShowIdQuery = useQuery<
     WarehouseShowIdResponse,
@@ -34,13 +34,12 @@ export function useWarehouse() {
     queryKey: ["warehouseShowId", formId],
     queryFn: async () => {
       const url: string = `api/WarehouseTemporaryReceipt/show/${formId}`;
-
       console.log(url, "url");
 
       const response = await api.get(url);
       return response.data;
     },
-    enabled: !!formId, // Only fetch if param is available
+    enabled: formId!==0 ? true : false, // Only fetch if param is available
     refetchOnWindowFocus: true, // Refetch data when the window is focused
     refetchOnReconnect: true, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -65,7 +64,7 @@ export function useWarehouse() {
       const response = await axios.get(`${apiUrl}${url}`);
       return response.data;
     },
-    enabled: !!productId, // Only fetch if param is available
+    enabled: productId!==0 ? true : false, // Only fetch if param is available
     refetchOnWindowFocus: true, // Refetch data when the window is focused
     refetchOnReconnect: true, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -83,14 +82,13 @@ export function useWarehouse() {
   >({
     queryKey: ["warehouseIndentList", iocId],
     queryFn: async () => {
-      console.log("enter")
       const url: string = `api/WarehouseTemporaryReceipt/indentList/${iocId}`;
       console.log(url, "url");
 
       const response = await api.get(url);
       return response.data;
     },
-    enabled: !!iocId, // Only fetch if param is available
+    enabled: iocId!==0 ? true : false, // Only fetch if param is available
     refetchOnWindowFocus: true, // Refetch data when the window is focused
     refetchOnReconnect: true, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -124,8 +122,9 @@ export function useWarehouse() {
     },
   });
   return {
+    // output for warehouseShowId
     //getInventoryList: () => query.refetch(), // Optional manual trigger
-    getWarehouseShowIdResponse: () => warehouseShowIdQuery.refetch(), // Optional manual trigger
+    //getWarehouseShowIdResponse: () => warehouseShowIdQuery.refetch(), // Optional manual trigger
     isLoadingWarehouseShowId: warehouseShowIdQuery.isLoading,
     errorWarehouseShowId: warehouseShowIdQuery.error,
     warehouseShowIdResponse: warehouseShowIdQuery.data ?? {
@@ -158,6 +157,7 @@ export function useWarehouse() {
       },
     },
     //output for productCatalog
+    //getProductCatalog: () => productCatalogQuery.refetch(), // Optional manual trigger
     isLoadingProductCatalog: productCatalogQuery.isLoading,
     errorProductCatalog: productCatalogQuery.error,
     productCatalog: productCatalogQuery.data ?? {
@@ -187,7 +187,7 @@ export function useWarehouse() {
       SystemId: 0,
     },
     //output for WarehouseTemporaryReceiptIndentList
-    getWarehouseIndentList: () => warehouseIndentListQuery.refetch(), // Optional manual trigger
+    //getWarehouseIndentList: () => warehouseIndentListQuery.refetch(), // Optional manual trigger
     isLoadingWarehouseIndentList:
       warehouseIndentListQuery.isLoading,
     errorWarehouseIndentList:

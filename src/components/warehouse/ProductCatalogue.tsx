@@ -14,7 +14,7 @@ type Props = {
 };
 
 const ProductCatalogue = ({ dtl }: Props) => {
-  const { productCatalog } = useWarehouse();
+  const { productCatalog, } = useWarehouse();
   const { setField } = useWarehouseStore();
   const headCells: HeadCell<ProductCatalogTable>[] = [
     {
@@ -67,7 +67,7 @@ const ProductCatalogue = ({ dtl }: Props) => {
   ];
 
   const systemInfos = [
-    dtl.cId.toString(),
+    dtl.code,
     "",
     dtl.pName,
     dtl.produce,
@@ -114,7 +114,10 @@ const ProductCatalogue = ({ dtl }: Props) => {
   }
 
   useEffect(() => {
+    console.log(dtl.cId, "dtl.cId")
     setField("productId", dtl.cId);
+    //getProductCatalog()
+
   }, []);
 
   const handleCellColorChange = (

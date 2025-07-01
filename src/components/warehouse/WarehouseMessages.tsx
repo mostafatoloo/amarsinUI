@@ -33,7 +33,6 @@ function WarehouseMessages() {
     return "";
   };
   const {height,width}=useCalculateTableHeight()
-  console.log(height,width);
 
   const data = regResponse.data.result.dtlErrMsgs.map((dtlErrMsg, index) => ({
     index: index + 1,

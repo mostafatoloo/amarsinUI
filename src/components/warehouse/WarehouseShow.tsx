@@ -9,16 +9,42 @@ import { useGeneralContext } from "../../context/GeneralContext";
 import ModalMessage from "../layout/ModalMessage";
 import { useWarehouseStore } from "../../store/warehouseStore";
 import WarehouseMessages from "./WarehouseMessages";
+import { WorkflowRowSelectResponse } from "../../types/workflow";
+import { useWarehouse } from "../../hooks/useWarehouse";
 
-const WarehouseShow = () => {
+type Props = {
+  workFlowRowSelectResponse: WorkflowRowSelectResponse;
+};
+
+const WarehouseShow = ({ workFlowRowSelectResponse }: Props) => {
   const [isModalOpenReg, setIsModalOpenReg] = useState(false);
   const [statusClicked, setStatusClicked] = useState(false);
   const [confirmHasError, setConfirmHasError] = useState(false);
-  const { selectIndentsResponse, regResponse } = useWarehouseStore();
+  const { selectIndentsResponse, regResponse, formId } = useWarehouseStore();
+
   const [editClicked, setEditClicked] = useState(false);
   const [iocId, setIocId] = useState(0);
   const [selectedProduct, setSelectedProduct] =
     useState<WarehouseTemporaryReceiptIndentDtl | null>(null);
+  const { setField } = useWarehouseStore();
+
+  useEffect(() => {
+    if (formId !== workFlowRowSelectResponse.workTableRow.formId)
+      setField("formId", workFlowRowSelectResponse.workTableRow.formId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [workFlowRowSelectResponse.workTableRow.formId]);
+
+  const { warehouseShowIdResponse, isLoadingWarehouseShowId } = useWarehouse();
+
+  const [customer, setCustomer] = useState<{
+    id: string;
+    title: string;
+  } | null>({
+    id: warehouseShowIdResponse.data.result.response.warehouseTemporaryReceiptMst.cId.toString(),
+    title:
+      warehouseShowIdResponse.data.result.response.warehouseTemporaryReceiptMst
+        .srName,
+  });
 
   const handleProductCatalogueClose = () => {
     setStatusClicked(false);
@@ -50,7 +76,11 @@ const WarehouseShow = () => {
 
   return (
     <div className="w-full flex flex-col">
-      <WarehouseShowHeader />
+      <WarehouseShowHeader
+        customer={customer}
+        setCustomer={setCustomer}
+        warehouseShowIdResponse={warehouseShowIdResponse}
+      />
       <p className="mt-2 px-2 text-sm">اقلام</p>
       <WarehouseShowTable
         setEditClicked={setEditClicked}
@@ -59,6 +89,10 @@ const WarehouseShow = () => {
         setIocId={setIocId}
         setIsModalOpenReg={setIsModalOpenReg}
         setConfirmHasError={setConfirmHasError}
+        customerId={Number(customer?.id)}
+        workFlowRowSelectResponse={workFlowRowSelectResponse}
+        warehouseShowIdResponse={warehouseShowIdResponse}
+        isLoadingWarehouseShowId={isLoadingWarehouseShowId}
       />
       {/*open product catalog if status is clicked*/}
       <ModalForm

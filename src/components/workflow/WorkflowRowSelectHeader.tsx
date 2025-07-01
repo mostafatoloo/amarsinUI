@@ -1,9 +1,12 @@
-import { useWorkflowRowSelect } from "../../hooks/useWorkflow";
 import OkForm from "../../assets/images/GrayThem/img24_3.png";
 import CancelForm from "../../assets/images/GrayThem/img24_4.png";
+import { WorkflowRowSelectResponse } from "../../types/workflow";
 
-const WorkflowRowSelectHeader = () => {
-  const { workFlowRowSelectResponse } = useWorkflowRowSelect();
+type Props = {
+  workFlowRowSelectResponse: WorkflowRowSelectResponse;
+};
+
+const WorkflowRowSelectHeader = ({ workFlowRowSelectResponse }: Props) => {
   const flowButtons = workFlowRowSelectResponse.flowButtons;
   const flowDescriptions = workFlowRowSelectResponse.flowDescriptions;
 
@@ -18,8 +21,14 @@ const WorkflowRowSelectHeader = () => {
           {flowButtons.length > 0 &&
             flowButtons.map((fb) => {
               return (
-                <div className="flex justify-center p-1 text-sm border border-slate-300 rounded-md cursor-pointer hover:font-bold hover:bg-gray-100">
-                  <button className="flex justify-center items-center gap-1" title={String(fb.id)}>
+                <div
+                  className="flex justify-center p-1 text-sm border border-slate-300 rounded-md cursor-pointer hover:font-bold hover:bg-gray-100"
+                  key={fb.id}
+                >
+                  <button
+                    className="flex justify-center items-center gap-1"
+                    title={String(fb.id)}
+                  >
                     {fb.imageIndex === 3 ? (
                       <img src={OkForm} alt="ok" />
                     ) : (
@@ -35,9 +44,9 @@ const WorkflowRowSelectHeader = () => {
 
       <div className="px-2 border border-gray-300 rounded-md w-full md:w-1/3">
         {flowDescriptions.length > 0 &&
-          flowDescriptions.map((fd) => {
+          flowDescriptions.map((fd,index) => {
             return (
-              <p className="text-sm" key={fd.usrName}>
+              <p className="text-sm" key={index}>
                 {fd.usrName}:{fd.dsc}
               </p>
             );

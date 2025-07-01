@@ -21,7 +21,7 @@ export function useInvoice() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: !!formId, // Only fetch if param is available
+    enabled: formId!==0 ? true : false , // Only fetch if param is available
     refetchOnWindowFocus: true, // Refetch data when the window is focused
     refetchOnReconnect: true, // Refetch data when the network reconnects
     onSuccess: (data: any) => {

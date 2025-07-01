@@ -1,11 +1,14 @@
 import { useEffect } from "react";
 import { useInvoice } from "../../hooks/useInvoice";
-import { useWorkflowRowSelect } from "../../hooks/useWorkflow";
 import { useInvoiceStore } from "../../store/invoiceStore";
 import { convertToFarsiDigits } from "../../utilities/general";
+import { WorkflowRowSelectResponse } from "../../types/workflow";
 
-const InvoiceShowHeader = () => {
-  const { workFlowRowSelectResponse } = useWorkflowRowSelect();
+type Props = {
+  workFlowRowSelectResponse: WorkflowRowSelectResponse;
+};
+
+const InvoiceShowHeader = ({ workFlowRowSelectResponse }: Props) => {
   const { invoiceShowIdResponse } = useInvoice();
   const { setField } = useInvoiceStore();
 

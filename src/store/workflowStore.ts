@@ -3,8 +3,8 @@ import { WorkFlowRowSelectState, WorkFlowState } from "../types/workflow";
 import { WorkTable } from "../types/workflow";
 
 export const useWorkflowStore = create<WorkFlowState>()((set) => ({
-  chartId: 1,
-  systemId: 4,
+  chartId:0,
+  systemId: 0,
   page: 1,
   pageSize: 10,
   flowMapId: -1,
@@ -31,8 +31,8 @@ export const useWorkflowStore = create<WorkFlowState>()((set) => ({
 
 export const useWorkflowRowSelectStore = create<WorkFlowRowSelectState>()(
   (set) => ({
-    chartId: 1,
-    workTableId: 148201,
+    chartId: 0,
+    workTableId: 0,
     workFlowRowSelectResponse: {
       err: 0,
       msg: "",

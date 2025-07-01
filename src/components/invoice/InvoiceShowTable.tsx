@@ -63,6 +63,12 @@ const InvoiceShowTable = () => {
 
   const headerGroups: HeaderGroup[] = [{ label: "اقلام", colSpan: 7 }];
 
+  const handleRowClick = (
+    item: InvoiceDetail,
+    setSelectedRowId: React.Dispatch<React.SetStateAction<number | null>>
+  ) => {
+    setSelectedRowId(Number(item["id"]));
+  };
   return (
     <>
       <Paper className="p-2 mt-2 w-full">
@@ -80,6 +86,7 @@ const InvoiceShowTable = () => {
               headerGroups={headerGroups}
               cellFontSize="0.75rem"
               wordWrap={true}
+              rowClickHandler={handleRowClick}
             />
           </div>
         )}
