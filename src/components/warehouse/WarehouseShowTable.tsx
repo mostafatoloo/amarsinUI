@@ -1,17 +1,14 @@
 import { Paper } from "@mui/material";
-import { HeadCell, HeaderGroup } from "../../hooks/useTable";
-import { Table } from "../controls/Table";
 import Skeleton from "../layout/Skeleton";
 import {
   IndentRequest,
   RegRequest,
   WarehouseTemporaryReceiptIndentDtl,
-  WarehouseTemporaryReceiptIndentDtlTable,
   WarehouseShowIdResponse,
 } from "../../types/warehouse";
 import HistoryIcon from "../../assets/images/GrayThem/history_gray_16.png";
 import EditIcon from "../../assets/images/GrayThem/edit_gray16.png";
-import { grey, red, indigo, green } from "@mui/material/colors";
+import { grey, red } from "@mui/material/colors";
 import { convertToFarsiDigits } from "../../utilities/general";
 import { useWarehouseStore } from "../../store/warehouseStore";
 import ConfirmCard from "../layout/ConfirmCard";
@@ -19,6 +16,9 @@ import Button from "../controls/Button";
 import { useAuthStore } from "../../store/authStore";
 import { WorkflowRowSelectResponse } from "../../types/workflow";
 import { useWarehouse } from "../../hooks/useWarehouse";
+import React from "react";
+import TTable from "../controls/TTable";
+import { colors } from "../../utilities/color";
 
 type Props = {
   setEditClicked: (editClicked: boolean) => void;
@@ -48,165 +48,167 @@ const WarehouseShowTable = ({
   const { reg } = useWarehouse();
   const { authApiResponse } = useAuthStore();
   const { setField } = useWarehouseStore();
-  const headCells: HeadCell<WarehouseTemporaryReceiptIndentDtlTable>[] = [
-    {
-      id: "index",
-      label: "ردیف",
-      disableSorting: true,
-      cellWidth: "3%",
-      isNumber: true,
-      changeColor: true,
-    },
-    {
-      id: "id",
-      label: "شناسه",
-      disableSorting: true,
-      cellWidth: "3%",
-      isNumber: true,
-      changeColor: true,
-      isNotVisible: true,
-    },
-    {
-      id: "expire",
-      label: "انقضاء",
-      cellWidth: "5%",
-      isNumber: true,
-      disableSorting: true,
-      changeColor: true,
-    },
-    {
-      id: "uId",
-      label: "UID",
-      cellWidth: "10%",
-      isNumber: true,
-      disableSorting: true,
-      changeColor: true,
-    },
-    {
-      id: "status",
-      label: "وضعیت",
-      cellWidth: "5%",
-      disableSorting: true,
-      changeColor: true,
-    },
-    {
-      id: "statusOriginal",
-      label: "وضعیت",
-      cellWidth: "5%",
-      disableSorting: true,
-      changeColor: true,
-      isNotVisible: true,
-    },
-    {
-      id: "code",
-      label: "بچ",
-      cellWidth: "5%",
-      isNumber: true,
-      disableSorting: true,
-      changeColor: true,
-    },
-    {
-      id: "pCode",
-      label: "کد",
-      cellWidth: "5%",
-      isNumber: true,
-      disableSorting: true,
-      changeColor: true,
-    },
-    {
-      id: "pName",
-      label: "کالا",
-      cellWidth: "22%",
-      isNumber: true,
-      disableSorting: false,
-      changeColor: true,
-    },
-    {
-      id: "cnt",
-      label: "تعداد",
-      cellWidth: "5%",
-      isNumber: true,
-      disableSorting: false,
-      isCurrency: true,
-      changeColor: true,
-    },
-    {
-      id: "indentCode",
-      label: "شماره",
-      cellWidth: "5%",
-      isNumber: true,
-      disableSorting: true,
-      backgroundColor: green[50],
-    },
-    {
-      id: "indentCnt",
-      label: "تعداد",
-      cellWidth: "5%",
-      isNumber: true,
-      disableSorting: true,
-      backgroundColor: green[50],
-    },
-    {
-      id: "indentOffer",
-      label: "آفر",
-      cellWidth: "5%",
-      isNumber: true,
-      disableSorting: true,
-      backgroundColor: green[50],
-    },
-    {
-      id: "indentDsc",
-      label: "شرح",
-      cellWidth: "15%",
-      isNumber: true,
-      disableSorting: false,
-      backgroundColor: green[50],
-    },
-    {
-      id: "editIcon",
-      label: "",
-      cellWidth: "50px",
-      disableSorting: false,
-      backgroundColor: green[50],
-    },
-    {
-      id: "rCnt",
-      label: "تعداد",
-      cellWidth: "5%",
-      isNumber: true,
-      disableSorting: false,
-      backgroundColor: indigo[50],
-    },
-    {
-      id: "rOffer",
-      label: "آفر",
-      cellWidth: "5%",
-      isNumber: true,
-      disableSorting: false,
-      isCurrency: true,
-      backgroundColor: indigo[50],
-    },
-    {
-      id: "historyIcon",
-      label: "",
-      cellWidth: "50px",
-      disableSorting: false,
-      backgroundColor: indigo[50],
-    },
-  ];
 
-  const headerGroups: HeaderGroup[] = [
-    { label: "اطلاعات رسید موقت", colSpan: 8 },
-    { label: "درخواست های مرتبط", colSpan: 5, backgroundColor: green[50] },
-    { label: "اطلاعات ثبت", colSpan: 3, backgroundColor: indigo[50] },
-  ];
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: "اطلاعات رسید موقت",
+        width: "56%",
+        columns: [
+          {
+            Header: "ردیف",
+            accessor: "index",
+            width: "3%",
+            Cell: ({ value }: any) => {
+              return convertToFarsiDigits(value);
+            },
+          },
+          {
+            Header: "انقضاء",
+            accessor: "expire",
+            width: "5%",
+            Cell: ({ value }: any) => convertToFarsiDigits(value),
+          },
+          {
+            Header: "لیست درخواستها",
+            accessor: "iocId",
+            width: "5%",
+            visible: false,
+          },
+          {
+            Header: "UID",
+            accessor: "uId",
+            width: "10%",
+            Cell: ({ value }: any) => convertToFarsiDigits(value),
+          },
+          {
+            Header: "وضعیت",
+            accessor: "status",
+            width: "5%",
+          },
+          {
+            Header: "وضعیت",
+            accessor: "statusOriginal",
+            width: "5%",
+            visible: false,
+          },
+          {
+            Header: "بچ",
+            accessor: "code",
+            width: "5%",
+            Cell: ({ value }: any) => convertToFarsiDigits(value),
+          },
+          {
+            Header: "کد",
+            accessor: "pCode",
+            width: "5%",
+            Cell: ({ value }: any) => convertToFarsiDigits(value),
+          },
+          {
+            Header: "کالا",
+            accessor: "pName",
+            width: "18%",
+            Cell: ({ value }: any) => convertToFarsiDigits(value),
+          },
+          {
+            Header: "تعداد",
+            accessor: "cnt",
+            width: "5%",
+            Cell: ({ value }: any) => convertToFarsiDigits(value),
+          },
+        ],
+      },
+      {
+        Header: "درخواست های مرتبط",
+        width: "32%",
+        backgroundColor: colors.green50,
+        columns: [
+          {
+            Header: "شماره",
+            accessor: "indentCode",
+            width: "5%",
+            backgroundColor: colors.green50,
+            Cell: ({ value }: any) => convertToFarsiDigits(value),
+          },
+          {
+            Header: "تعداد",
+            accessor: "indentCnt",
+            width: "5%",
+            backgroundColor: colors.green50,
+            Cell: ({ value }: any) => convertToFarsiDigits(value),
+          },
+          {
+            Header: "آفر",
+            accessor: "indentOffer",
+            width: "5%",
+            backgroundColor: colors.green50,
+            Cell: ({ value }: any) => convertToFarsiDigits(value),
+          },
+          {
+            Header: "شرح",
+            accessor: "indentDsc",
+            width: "15%",
+            backgroundColor: colors.green50,
+            Cell: ({ value }: any) => convertToFarsiDigits(value),
+          },
+          {
+            Header: " ",
+            accessor: "editIcon",
+            width: "2%",
+            backgroundColor: colors.green50,
+            Cell: ({ row }: any) => (
+              <img
+                src={EditIcon}
+                onClick={() => handleEditClick(row)}
+                className="cursor-pointer"
+                alt="report"
+              />
+            ),
+          },
+        ],
+      },
+      {
+        Header: "اطلاعات ثبت",
+        width: "12%",
+        backgroundColor: colors.indigo50,
+        columns: [
+          {
+            Header: "تعداد",
+            accessor: "rCnt",
+            width: "5%",
+            backgroundColor: colors.indigo50,
+            Cell: ({ value }: any) => convertToFarsiDigits(value),
+          },
+          {
+            Header: "آفر",
+            accessor: "rOffer",
+            width: "5%",
+            backgroundColor: colors.indigo50,
+            Cell: ({ value }: any) => convertToFarsiDigits(value),
+          },
+          {
+            Header: " ",
+            accessor: "historyIcon",
+            width: "2%",
+            backgroundColor: colors.indigo50,
+            Cell: ({ value }: any) => (
+              <img
+                src={HistoryIcon}
+                onClick={() => console.log(value)}
+                className="cursor-pointer"
+                alt="report"
+              />
+            ),
+          },
+        ],
+      },
+    ],
+    []
+  );
 
   // Custom cell click handler for Table
-  const handleCellColorChange = (
-    cell: HeadCell<WarehouseTemporaryReceiptIndentDtlTable>,
-    item: WarehouseTemporaryReceiptIndentDtlTable
-  ) => {
-    if (cell.changeColor && item?.["statusOriginal"] > 0) {
+  const handleCellColorChange = (row: any) => {
+    if (row.original.statusOriginal > 0) {
       return red[100];
     }
     return grey[50];
@@ -217,19 +219,20 @@ const WarehouseShowTable = ({
     setStatusClicked(true);
   };
 
-  const handleEditClick = (dtl: WarehouseTemporaryReceiptIndentDtl) => {
-    setField("iocId", dtl.iocId);
-    //getWarehouseIndentList()
-    setIocId(dtl.iocId);
+  const handleEditClick = (dtl: any) => {
+    setField("iocId", dtl.original.iocId);
+    setIocId(dtl.original.iocId);
     console.log(dtl, "dtl");
     setEditClicked(true);
   };
 
   const data =
     warehouseShowIdResponse.data.result.response.warehouseTemporaryReceiptIndentDtls.map(
-      (dtl) => {
+      (dtl, i) => {
         return {
+          index: i + 1,
           id: dtl.id,
+          iocId: dtl.iocId,
           expire: dtl.expire,
           uId: dtl.uId,
           status: (
@@ -279,11 +282,6 @@ const WarehouseShowTable = ({
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    /*if (sum1 !== sum2) {
-        setIsModalOpen(true);
-        return;
-      }*/
-
     let request: RegRequest;
     let indents: IndentRequest[] = [];
 
@@ -305,7 +303,7 @@ const WarehouseShowTable = ({
       customerId: customerId,
       dtls: indents,
     };
-    console.log(request, "request");
+    //console.log(request, "request");
     try {
       const response = await reg(request);
       if (response.meta.errorCode === 1) setConfirmHasError(true);
@@ -314,13 +312,6 @@ const WarehouseShowTable = ({
     } catch (error) {
       console.error("Error editing indents:", error);
     }
-  };
-
-  const handleRowClick = (
-    item: WarehouseTemporaryReceiptIndentDtlTable,
-    setSelectedRowId: React.Dispatch<React.SetStateAction<number | null>>
-  ) => {
-    setSelectedRowId(Number(item["id"]));
   };
 
   return (
@@ -334,20 +325,25 @@ const WarehouseShowTable = ({
           </p>
         ) : (
           <div className="w-full mt-2">
-            <Table
+            <TTable
+              columns={columns}
               data={data}
-              headCells={headCells}
-              headerGroups={headerGroups}
-              cellFontSize="0.75rem"
-              cellColorChangeHandler={handleCellColorChange}
-              rowClickHandler={handleRowClick}
-              wordWrap={true}
+              //updateMyData={updateMyData}
+              //skipPageReset={skipPageReset}
+              fontSize="0.75rem"
+              changeRowSelectColor={true}
+              CellColorChange={handleCellColorChange}
             />
           </div>
         )}
         {data.length > 0 && (
-          <ConfirmCard>
-            <Button text="تایید" onClick={handleSubmit} />
+          <ConfirmCard variant="rounded-md justify-end">
+            <Button
+              text="تایید"
+              backgroundColor="bg-green-500"
+              backgroundColorHover="bg-green-600"
+              onClick={handleSubmit}
+            />
           </ConfirmCard>
         )}
       </Paper>

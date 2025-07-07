@@ -12,6 +12,18 @@ interface  RpProduct {
   offerCnt: number;
   rpProducers: RpProducer[];
 }
+interface  RpProductTbl {
+  id: string;
+  name: string;
+  cnt: string;
+  total: string;
+  offerCnt: string;
+  rpProducers: {
+    id: string;
+    strFrmId: string;
+    amnt: string;
+  }[]
+}
 
 interface Producer {
   id: number;

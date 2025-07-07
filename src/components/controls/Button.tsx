@@ -1,11 +1,11 @@
-
-interface CustomButtonProps  {
+interface CustomButtonProps {
   text: string;
-  backgroundColor?:string;
-  backgroundColorHover?:string;
-  color?:string;
-  variant?:string;
-  onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined
+  backgroundColor?: string;
+  backgroundColorHover?: string;
+  color?: string;
+  variant?: string;
+  colorHover?: string;
+  onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
 }
 
 export default function Button(props: CustomButtonProps) {
@@ -15,15 +15,13 @@ export default function Button(props: CustomButtonProps) {
     color = "text-white",
     variant = "",
     backgroundColorHover = "bg-green-600",
-    onClick
+    colorHover = "text-white",
+    onClick,
   } = props;
 
-  const classname= `${backgroundColor} px-4 py-2 rounded-md ${color} hover:${backgroundColorHover} ${variant}`
+  const classname = `${backgroundColor} hover:${backgroundColorHover} hover:${colorHover} px-4 py-2 rounded-md ${color}  ${variant}`;
   return (
-    <button
-      className={classname}
-      onClick={onClick}
-    >
+    <button className={classname} onClick={onClick}>
       {text}
     </button>
   );

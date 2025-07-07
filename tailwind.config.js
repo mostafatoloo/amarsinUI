@@ -35,4 +35,12 @@ export default {
     },
   },
   plugins: [],
+  mode: 'jit',
+  safelist: [
+    'hover:bg-green-600',
+    'hover:bg-green-500',
+    'hover:bg-blue-600',
+    'hover:bg-blue-500',
+    // other classes you want to ensure
+  ],
 } 

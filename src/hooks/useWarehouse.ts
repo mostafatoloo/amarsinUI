@@ -88,7 +88,7 @@ export function useWarehouse() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: iocId!==0 ? true : false, // Only fetch if param is available
+    enabled: iocId!==0 && iocId!==undefined ? true : false, // Only fetch if param is available
     refetchOnWindowFocus: true, // Refetch data when the window is focused
     refetchOnReconnect: true, // Refetch data when the network reconnects
     onSuccess: (data: any) => {

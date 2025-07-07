@@ -1,7 +1,7 @@
 import InvoiceShow from "../invoice/InvoiceShow";
 import WarehouseShow from "../warehouse/WarehouseShow";
 import { WorkflowRowSelectResponse } from "../../types/workflow";
-import InvoiceReceiptShow from "../invoiceReceipt/invoiceReceiptShow";
+import InvoiceReceiptShow from "../invoiceReceipt/InvoiceReceiptShow";
 
 type Props = {
   formViewPath: string;

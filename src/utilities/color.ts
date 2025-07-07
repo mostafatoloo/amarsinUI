@@ -12,5 +12,10 @@ export const colors = {
     gray700:"bg-gray-700",
     gray800:"bg-gray-800",
     gray900:"bg-gray-900",
-    
+    indigo50:"#eef2ff",
+    green50:"#f0fdf4",
+    green200:"#a5d6a7",
+    yellow50:"#fffbf2",
+    gray200:"#E5E7EB",
+    blue50:"#ebf8ff"
 }

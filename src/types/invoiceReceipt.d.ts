@@ -57,8 +57,7 @@ interface IndentDtl {
 }
 
 export interface IndentDtlTable extends IndentDtl {
-  icons: ReactNode;
-  productAutoComplete: ReactNode;
+  index:number;
 }
 
 export interface InvoiceReceiptState {

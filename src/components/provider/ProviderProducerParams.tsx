@@ -5,6 +5,7 @@ import AutoComplete from "../controls/AutoComplete";
 import { useBrand } from "../../hooks/useBrands";
 import { useGeneralContext } from "../../context/GeneralContext";
 import ModalMessage from "../layout/ModalMessage";
+import { DefaultOptionTypeStringId } from "../../types/general";
 
 type ProviderProducerParamsProps = {
   brand: { id: string; title: string } | null;
@@ -117,7 +118,7 @@ const ProviderProducerParams = ({
             options={type}
             value={sanadKind}
             handleChange={(_event, newValue) => {
-              return setSanadKind(newValue);
+              return setSanadKind(newValue as DefaultOptionTypeStringId);
             }}
             setSearch={setSearch}
             showLabel={false}
@@ -138,7 +139,7 @@ const ProviderProducerParams = ({
             }))}
             value={brand}
             handleChange={(_event, newValue) => {
-              return setBrand(newValue);
+              return setBrand(newValue as DefaultOptionTypeStringId);
             }}
             setSearch={setSearch}
             showLabel={false}

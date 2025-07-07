@@ -1,3 +1,4 @@
+import { WorkTable } from './workflow.d';
 export type FlowMapTitle = {
   id: number;
   name: string;

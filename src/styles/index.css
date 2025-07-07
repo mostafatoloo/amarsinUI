@@ -18,8 +18,3 @@ body {
   display: block !important;
   width: 100% !important;
 }
-
-.MuiAutocomplete-hasPopupIcon.MuiAutocomplete-hasClearIcon.muirtl-1tlcqt-MuiAutocomplete-root .MuiOutlinedInput-root {
-    padding-left: 0 !important;
-}
-

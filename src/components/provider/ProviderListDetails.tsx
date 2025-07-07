@@ -1,13 +1,16 @@
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useGeneralContext } from "../../context/GeneralContext";
 import { useProviderDetailList } from "../../hooks/useProviderList";
-import { HeadCell } from "../../hooks/useTable";
-import { convertPersianDate } from "../../utilities/general";
+import {
+  convertPersianDate,
+  convertToFarsiDigits,
+} from "../../utilities/general";
 import { useProviderDetailStore } from "../../store/providerStore";
 import { Paper } from "@mui/material";
 import Skeleton from "../layout/Skeleton";
-import { Table } from "../controls/Table";
-import { ProviderDetailTable } from "../../types/provider";
+import {  ProviderDetailTbl } from "../../types/provider";
+import { TableColumns } from "../../types/general";
+import TTable from "../controls/TTable";
 
 type ProviderListDetailsProps = {
   productId: string;
@@ -17,60 +20,6 @@ type ProviderListDetailsProps = {
   endDate: Date | null;
 };
 
-export const headCells: HeadCell<ProviderDetailTable>[] = [
-  {
-    id: "index",
-    label: "ردیف",
-    disableSorting: true,
-    cellWidth: "5%",
-  },
-  { id: "kind", label: "نوع", cellWidth: "5%", disableSorting: true },
-  { id: "factorNo", label: "شماره فاکتور", isNumber: true, cellWidth: "5%" },
-  { id: "dat", label: "تاریخ", isNumber: true, cellWidth: "5%" },
-  { id: "customerId", label: "شماره. مشتری", isNumber: true, cellWidth: "5%" },
-  { id: "nId", label: "کد/شناسه ملی", isNumber: true, cellWidth: "5%" },
-  { id: "srName", label: "نام مشتری", cellWidth: "20%" },
-  {
-    id: "cupInfoes",
-    label: "بچ |انقضاء",
-    isNumber: true,
-    cellWidth: "10%",
-    disableSorting: true,
-  },
-  { id: "cnt", label: "تعداد", isNumber: true, cellWidth: "5%" },
-  { id: "offerCnt", label: "آفر", isNumber: true, cellWidth: "5%" },
-  {
-    id: "cost",
-    label: "قیمت فروش",
-    isNumber: true,
-    cellWidth: "5%",
-    isCurrency: true,
-  },
-  {
-    id: "dcrmnt",
-    label: "تخفیف",
-    isNumber: true,
-    cellWidth: "5%",
-    isCurrency: true,
-  },
-  {
-    id: "valueTax",
-    label: "مالیات",
-    isNumber: true,
-    cellWidth: "5%",
-    isCurrency: true,
-  },
-  {
-    id: "total",
-    label: "مبلغ",
-    isNumber: true,
-    cellWidth: "5%",
-    isCurrency: true,
-  },
-  { id: "shRId", label: "ش. برگه مسیر", isNumber: true, cellWidth: "5%" },
-  { id: "shRDate", label: "ت. برگه مسیر", isNumber: true, cellWidth: "5%" },
-];
-
 export default function ProviderListDetails({
   productId,
   brand,
@@ -78,6 +27,91 @@ export default function ProviderListDetails({
   startDate,
   endDate,
 }: ProviderListDetailsProps) {
+  const columns: TableColumns = React.useMemo(
+    () => [
+      {
+        Header: "ردیف",
+        accessor: "index",
+        width: "5%",
+      },
+      {
+        Header: "نوع",
+        accessor: "kind",
+        width: "5%",
+      },
+      {
+        Header: "شماره فاکتور",
+        accessor: "factorNo",
+        width: "5%",
+      },
+      {
+        Header: "تاریخ",
+        accessor: "dat",
+        width: "5%",
+      },
+      {
+        Header: "شماره. مشتری",
+        accessor: "customerId",
+        width: "5%",
+      },
+      {
+        Header: "کد/شناسه ملی",
+        accessor: "nId",
+        width: "5%",
+      },
+      {
+        Header: "نام مشتری",
+        accessor: "srName",
+        width: "20%",
+      },
+      {
+        Header: "بچ |انقضاء",
+        accessor: "cupInfoes",
+        width: "10%",
+      },
+      {
+        Header: "تعداد",
+        accessor: "cnt",
+        width: "5%",
+      },
+      {
+        Header: "آفر",
+        accessor: "offerCnt",
+        width: "5%",
+      },
+      {
+        Header: "قیمت فروش",
+        accessor: "cost",
+        width: "5%",
+      },
+      {
+        Header: "تخفیف",
+        accessor: "dcrmnt",
+        width: "5%",
+      },
+      {
+        Header: "مالیات",
+        accessor: "valueTax",
+        width: "5%",
+      },
+      {
+        Header: "مبلغ",
+        accessor: "total",
+        width: "5%",
+      },
+      {
+        Header: "ش. برگه مسیر",
+        accessor: "shRId",
+        width: "5%",
+      },
+      {
+        Header: "ت. برگه مسیر",
+        accessor: "shRDate",
+        width: "5%",
+      },
+    ],
+    []
+  );
   const { providerDetailList, error, isLoading } = useProviderDetailList();
 
   const { systemId, yearId } = useGeneralContext();
@@ -104,28 +138,65 @@ export default function ProviderListDetails({
   }, [systemId, yearId, brand?.id, sanadKind?.id, startDate, endDate]);
   if (error) return <div>Error: {error.message} </div>;
 
+  const [data, setData] = useState<ProviderDetailTbl[]>([]);
+
+  //console.log(data, "data");
+  const [skipPageReset, setSkipPageReset] = useState(false);
+
+  useEffect(() => {
+    setData(
+      providerDetailList.rpProviderDetails.map((item, idx) => ({
+        index: convertToFarsiDigits(idx + 1),
+        bName: convertToFarsiDigits(item.bName),
+        cnt: convertToFarsiDigits(item.cnt),
+        cost: convertToFarsiDigits(item.cost),
+        customerId: convertToFarsiDigits(item.customerId),
+        dat: convertToFarsiDigits(item.dat),
+        dcrmnt: convertToFarsiDigits(item.dcrmnt),
+        factorNo: convertToFarsiDigits(item.factorNo),
+        kind: convertToFarsiDigits(item.kind),
+        nId: convertToFarsiDigits(item.nId),
+        offerCnt: convertToFarsiDigits(item.offerCnt),
+        productId: convertToFarsiDigits(item.productId),
+        id: convertToFarsiDigits(item.id),
+        srName: convertToFarsiDigits(item.srName),
+        valueTax: convertToFarsiDigits(item.valueTax),
+        total: convertToFarsiDigits(item.total),
+        shRId: convertToFarsiDigits(item.shRId),
+        shRDate: convertToFarsiDigits(item.shRDate),
+        cupInfoes: item.cupInfoes
+          .map((cupInfo) => {
+            return (
+              convertToFarsiDigits(cupInfo.code) +
+              " | " +
+              convertToFarsiDigits(cupInfo.expDate)
+            );
+          })
+          .join("\n"),
+      }))
+    );
+  }, [providerDetailList.rpProviderDetails]);
+
+  useEffect(() => {
+    setSkipPageReset(false);
+  }, [data]);
+
+  console.log(data);
+
   return (
     <Paper className="p-2 m-2 w-full md:h-full overflow-y-auto">
       {isLoading ? (
         <div className="text-center">{<Skeleton />}</div>
       ) : (
         <div className="h-screen-minus-200">
-          <Table
-            data={providerDetailList.rpProviderDetails.map((ProviderDetail) => {
-              return {
-                ...ProviderDetail,
-                cupInfoes:
-                  ProviderDetail.cupInfoes.length > 0
-                    ? ProviderDetail.cupInfoes
-                        .map((cupInfo) => {
-                          return cupInfo.code + " | " + cupInfo.expDate;
-                        })
-                        .join(" ")
-                    : "",
-              };
-            })}
-            headCells={headCells}
+          <TTable
+            columns={columns}
+            data={data}
+            //updateMyData={updateMyData}
+            skipPageReset={skipPageReset}
+            //fontSize="10px"
             wordWrap={true}
+            hasSumRow={true}
           />
         </div>
       )}

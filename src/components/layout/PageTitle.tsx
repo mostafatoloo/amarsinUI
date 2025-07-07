@@ -4,6 +4,7 @@ import { convertToFarsiDigits } from "../../utilities/general";
 import AutoComplete from "../controls/AutoComplete";
 import { useGeneralContext } from "../../context/GeneralContext";
 import { useDefinitionInvironment } from "../../hooks/useDefinitionInvironment";
+import { DefaultOptionType } from "../../types/general";
 
 const PageTitle = () => {
   const { setSystemId, setYearId } = useGeneralContext();
@@ -38,27 +39,27 @@ const PageTitle = () => {
   }, [system]);
 
   return (
-    <div className="flex justify-center w-80 items-start md:flex-row px-4 gap-2 text-xs md:text-sm">
-      <div className="flex flex-col justify-evenly items-end text-center  w-20">
-        <label htmlFor="system">سیستم:</label>
-        <label htmlFor="year" className="">
+    <div className="flex justify-center items-center w-80 md:flex-row px-4 gap-2 text-xs md:text-sm">
+      <div className="flex flex-col justify-evenly items-end text-center w-20">
+        <label htmlFor="system" >سیستم:</label>
+        <label htmlFor="year" >
           سال مالی:
         </label>
       </div>
-      <div className="flex flex-col justify-center items-end w-60">
+      <div className="flex flex-col justify-center items-end w-60 pt-4 md:pt-0">
         {/* for system */}
         <AutoComplete
           options={definitionInvironment?.systems ?? []}
           value={system}
           handleChange={(_event, newValue) => {
-            return setSystem(newValue);
+            return setSystem(newValue as DefaultOptionType);
           }}
           setSearch={setSearch}
           className="w-2/3 md:w-1/5"
           showLabel={false}
           showBorder={false}
           showClearIcon={false}
-          outlinedInputPadding="0"
+          outlinedInputPadding="0 !important"
           inputPadding="0 !important"
           showPopupIcon={false}
         />
@@ -74,16 +75,17 @@ const PageTitle = () => {
           }
           value={year}
           handleChange={(_event, newValue) => {
-            return setYear(newValue);
+            return setYear(newValue as DefaultOptionType) ;
           }}
           setSearch={setSearch}
-          className="w-2/3 pt-4 md:pt-0 md:w-1/5"
+          className="w-2/3 md:w-1/5"
           showLabel={false}
           showBorder={false}
           showClearIcon={false}
-          outlinedInputPadding="0"
+          outlinedInputPadding="0 !important"
           inputPadding="0 !important"
           showPopupIcon={false}
+          
         />
 
       </div>

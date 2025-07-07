@@ -20,7 +20,6 @@ export function useInvoiceReceipt() {
       console.log(url, "url");
 
       const response = await api.get(url);
-      console.log(response.data, "response");
       return response.data;
     },
     enabled: mrsId!==0 ? true : false, // Only fetch if param is available

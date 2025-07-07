@@ -1,18 +1,22 @@
-import { useEffect, useState } from "react";
-import { Paper } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import { useBrandStore } from "../../store/brandStore";
 import Skeleton from "../layout/Skeleton";
 import { useNavigate } from "react-router-dom";
-import { Table } from "../controls/Table";
 import { useGeneralContext } from "../../context/GeneralContext";
-import { HeadCell, HeaderGroup } from "../../hooks/useTable";
+import { HeadCell } from "../../hooks/useTable";
 import { useProviderList } from "../../hooks/useProviderList";
-import { ProviderItem } from "../../types/provider";
+import { ProviderItem, ProviderItemTbl } from "../../types/provider";
 import { useProviderStore } from "../../store/providerStore";
-import { convertPersianDate } from "../../utilities/general";
+import {
+  convertPersianDate,
+  convertToFarsiDigits,
+  convertToLatinDigits,
+  formatNumberWithCommas,
+} from "../../utilities/general";
 import ReportIcon from "../../assets/images/GrayThem/report16.png";
 import ProviderProducerParams from "./ProviderProducerParams";
 import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
+import TTable from "../controls/TTable";
 
 type ProviderListFormProps = {
   brand: { id: string; title: string } | null;
@@ -31,9 +35,9 @@ export const headCells: HeadCell<ProviderItem>[] = [
     id: "index",
     label: "ردیف",
     disableSorting: true,
-    cellWidth: "10%",
+    cellWidth: "5%",
   },
-  { id: "name", label: "نام کالا", cellWidth: "55%" },
+  { id: "name", label: "نام کالا", cellWidth: "60%" },
   { id: "cnt", label: "تعداد", isNumber: true, cellWidth: "10%" },
   {
     id: "total",
@@ -52,13 +56,13 @@ export const headCells: HeadCell<ProviderItem>[] = [
   },
 ];
 
-const headerGroups: HeaderGroup[] = [
+/*const headerGroups: HeaderGroup[] = [
   { label: "", colSpan: 1 },
   { label: "", colSpan: 1 },
   { label: "ریالی", colSpan: 2 },
   { label: "آفر", colSpan: 1 },
   { label: "", colSpan: 1 },
-];
+];*/
 
 export default function ProviderListForm({
   brand,
@@ -71,6 +75,76 @@ export default function ProviderListForm({
   setEndDate,
   onShowDetails,
 }: ProviderListFormProps) {
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: " ",
+        width: "65%",
+        columns: [
+          {
+            Header: "ردیف",
+            accessor: "index",
+            width: "5%",
+          },
+          {
+            Header: "نام کالا",
+            accessor: "name",
+            width: "60%",
+          },
+        ],
+      },
+      {
+        Header: "ریالی",
+        width: "22%",
+        columns: [
+          {
+            Header: "تعداد",
+            accessor: "cnt",
+            width: "10%",
+          },
+          {
+            Header: "مبلغ",
+            accessor: "total",
+            width: "12%",
+          },
+        ],
+      },
+      {
+        Header: "آفر",
+        width: "13%",
+        columns: [
+          {
+            Header: "آفر",
+            accessor: "offerCnt",
+            width: "10%",
+          },
+          {
+            Header: " ",
+            accessor: "id",
+            width: "3%",
+            Cell: ({value}:any) => (
+              //<div className="flex gap-2">
+              <img
+                src={ReportIcon}
+                onClick={() => handleCellClick(value)}
+                className="cursor-pointer w-6 h-6"
+                alt="report"
+              />
+              // <img
+              //   src={ReportIcon}
+              //onClick={() => handleDelete(row.original)}
+              //   className="cursor-pointer w-6 h-6"
+              //   alt="rep"
+              //  />
+              //</div>
+            ),
+          },
+        ],
+      },
+    ],
+    []
+  );
+
   const { providerList, error, isLoading } = useProviderList();
 
   const { systemId, yearId } = useGeneralContext();
@@ -113,23 +187,39 @@ export default function ProviderListForm({
   }, [systemId, yearId, brand?.id, sanadKind?.id, startDate, endDate]);
   if (error) return <div>Error: {error.message} </div>;
 
+  const [data, setData] = useState<ProviderItemTbl[]>([]);
+
+  //console.log(data, "data");
+  const [skipPageReset, setSkipPageReset] = useState(false);
+
   // Custom cell click handler for Table
-  const handleCellClick = (
-    cell: HeadCell<ProviderItem>,
-    item: ProviderItem
-  ) => {
-    if (cell.hasDetails && cell.id === "id" && onShowDetails) {
-      onShowDetails(item.id.toString());
-    } else if (cell.path) {
-      navigate(`${cell.path}/${item[cell.id as keyof ProviderItem]}`);
-    }
+  const handleCellClick = (value:any) => {
+    if ( onShowDetails) {
+      onShowDetails(convertToLatinDigits(value));
+    } 
   };
 
-  const {height,width}=useCalculateTableHeight()
+  useEffect(() => {
+    setData(
+      providerList.rpProviders.map((item, idx) => ({
+        index: convertToFarsiDigits(idx + 1),
+        name: item.name,
+        cnt: convertToFarsiDigits(item.cnt),
+        total: convertToFarsiDigits(formatNumberWithCommas(item.total)),
+        offerCnt: convertToFarsiDigits(item.offerCnt),
+        id: convertToFarsiDigits(item.id),
+      }))
+    );
+  }, [providerList.rpProviders]);
 
+  useEffect(() => {
+    setSkipPageReset(false);
+  }, [data]);
+
+  const { height, width } = useCalculateTableHeight();
 
   return (
-    <Paper className="p-2 m-2 w-full md:h-full">
+    <div className="p-2 m-2 w-full md:h-full bg-white rounded-md">
       <ProviderProducerParams
         brand={brand}
         setBrand={setBrand}
@@ -149,19 +239,20 @@ export default function ProviderListForm({
           {providerList.msg}
         </p>
       ) : (
-        <div className="mt-2"  style={width>640 ? { height:height } : {}}>
-          {/* remove h-screen-minus-300 */}
-          <Table
-            data={providerList.rpProviders}
-            headCells={headCells}
-            headerGroups={headerGroups}
-            // Pass custom cell click handler
-            cellClickHandler={handleCellClick}
+        <div
+          className="mt-2 overflow-y-auto"
+          style={width > 640 ? { height: height } : { height: "fit" }}
+        >
+          <TTable
+            columns={columns}
+            data={data}
+            //updateMyData={updateMyData}
+            skipPageReset={skipPageReset}
+            //fontSize="14px"
             hasSumRow={true}
-            wordWrap={true}
           />
         </div>
       )}
-    </Paper>
+    </div>
   );
 }

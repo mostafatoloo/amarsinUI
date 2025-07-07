@@ -30,6 +30,11 @@ export interface WarehouseTemporaryReceiptIndentDtl {
   rOffer: number;
 }
 
+/*export interface WarehouseTemporaryReceiptIndentDtlTable
+  extends WarehouseTemporaryReceiptIndentDtl {
+
+
+  }*/
 export interface WarehouseTemporaryReceiptIndentDtlTable {
   id: number;
   expire: string;
@@ -113,9 +118,11 @@ export interface WarehouseState {
     warehouseIndentListResponse: WarehouseIndentListResponse
   ) => void;
   selectIndentsResponse: SelectIndentsResponse;
-  setSelectIndentsResponse: (selectIndentsResponse: SelectIndentsResponse) => void;
+  setSelectIndentsResponse: (
+    selectIndentsResponse: SelectIndentsResponse
+  ) => void;
   regResponse: RegResponse;
-  setRegResponse: (regResponse: RegResponse) => void; 
+  setRegResponse: (regResponse: RegResponse) => void;
 }
 
 export interface ProductCatalog {
@@ -163,6 +170,20 @@ export interface WarehouseTemporaryReceiptIndent
   rOffer: number;
 }
 
+export interface WarehouseTemporaryReceiptIndentTbl {
+  id: string;
+  payDuration: string;
+  dId: string;
+  cnt: string;
+  offer: string;
+  amnt: string;
+  rem: string;
+  dcrmnt: string;
+  dsc: string;
+  rCnt: string;
+  rOffer: string;
+}
+
 export interface WarehouseIndentListResponse {
   meta: Meta;
   data: {
@@ -205,10 +226,10 @@ export interface RegRequest {
   id: number;
   customerId: number;
   dtls: IndentRequest[];
-};
+}
 
 export interface RegResponse {
-  meta: Meta
+  meta: Meta;
   data: {
     result: {
       id: number;

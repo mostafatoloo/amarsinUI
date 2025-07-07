@@ -4,13 +4,13 @@ import WarehouseShowTable from "./WarehouseShowTable";
 import ModalForm from "../layout/ModalForm";
 import ProductCatalogue from "./ProductCatalogue";
 import { WarehouseTemporaryReceiptIndentDtl } from "../../types/warehouse";
-import WarehouseIndentTable from "./WarehouseIndentTable";
 import { useGeneralContext } from "../../context/GeneralContext";
 import ModalMessage from "../layout/ModalMessage";
 import { useWarehouseStore } from "../../store/warehouseStore";
 import WarehouseMessages from "./WarehouseMessages";
 import { WorkflowRowSelectResponse } from "../../types/workflow";
 import { useWarehouse } from "../../hooks/useWarehouse";
+import WarehouseIndentTable from "./WarehouseIndentTable";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;

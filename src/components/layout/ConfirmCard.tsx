@@ -9,7 +9,7 @@ const ConfirmCard = ({
   backgroundColor = "bg-gray-100",
   variant = "justify-end",
 }: Props) => {
-  const classname = `w-full ${backgroundColor} rounded-md p-2 flex ${variant}`;
+  const classname = `w-full ${backgroundColor} p-2 flex  ${variant}`;
   return <div className={classname}>{children}</div>;
 };
 

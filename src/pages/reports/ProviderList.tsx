@@ -42,6 +42,7 @@ export default function ProviderList() {
   );
 
   const handleShowDetails = (productId: string) => {
+    console.log(productId,"productId")
     setSelectedProductId(productId);
     setDetailsOpen(true);
   };

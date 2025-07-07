@@ -12,6 +12,7 @@ import {
 import { useDefinitionInvironment } from "../../hooks/useDefinitionInvironment";
 import { colors } from "../../utilities/color";
 import { useLocation } from "react-router-dom";
+import { DefaultOptionType } from "../../types/general";
 
 const SideMenu = () => {
   const {
@@ -104,7 +105,7 @@ const SideMenu = () => {
               inputPadding="0 !important"
               value={chart}
               handleChange={(_event, newValue) => {
-                return setChart(newValue);
+                return setChart(newValue as DefaultOptionType);
               }}
               setSearch={setSearch}
               desktopfontsize="0.8rem"

@@ -1,3 +1,6 @@
+import  DateObject  from "react-date-object";
+import persian from "react-date-object/calendars/persian";
+
 export const convertToLatinDigits = (
   str: string | null | undefined
 ): string => {
@@ -12,7 +15,7 @@ export const convertToLatinDigits = (
     return index !== -1 ? index.toString() : d;
   });
 };
-
+/////////////////////////////////////////////////////////////
 export const convertToFarsiDigits = (
   num: number | string | null | undefined
 ): string => {
@@ -39,12 +42,12 @@ export const convertToFarsiDigits = (
     return temp;
   }
 };
-
+/////////////////////////////////////////////////////////////
 export const convertStringToInteger = (str: string) => {
   const result = parseInt(str, 10); // Base 10
   return isNaN(result) ? null : result; // Return null for NaN
 };
-
+/////////////////////////////////////////////////////////////
 export function formatPersianDate(
   curDay: number,
   curMonth: number,
@@ -81,7 +84,7 @@ export function formatPersianDate(
 
   return convertToFarsiDigits(`${dayName}، ${curDay} ${monthName} ${curYear}`);
 }
-
+/////////////////////////////////////////////////////////////
 export const convertPersianDate = (dateStr: string): string => {
   const persianToEnglish = {
     "۰": "0",
@@ -108,5 +111,39 @@ export const convertPersianDate = (dateStr: string): string => {
 export const formatNumberWithCommas = (num: number): string => {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
+////////////////////////////////////////////////////////////
+// Generic handler for both single and multiple AutoComplete components
+export const handleAutoCompleteChange = <
+  T extends { id: number|string; title: string }
+>(
+  newValue: T | T[] | null,
+  setter: React.Dispatch<React.SetStateAction<T | null>>
+) => {
+  const selectedValue = Array.isArray(newValue) ? newValue[0] : newValue;
+  setter(selectedValue);
+};
+////////////////////////////////////////////
+export function parsePersianDateString(dateString: string): Date | null {
+  // Expected format: "YYYY/MM/DD"
+  if (dateString === null || dateString === undefined) {
+    return null;
+  }
+  const parts = dateString.split('/');
+  if (parts.length !== 3) {
+    return null;
+  }
 
+  const year = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10);
+  const day = parseInt(parts[2], 10);
 
+  if (isNaN(year) || isNaN(month) || isNaN(day)) {
+    return null;
+  }
+
+  // Create a Persian DateObject with the provided date parts
+  const dateObject = new DateObject({ year, month, day, calendar: persian });
+
+  // Convert to Gregorian Date
+  return dateObject.toDate();
+}

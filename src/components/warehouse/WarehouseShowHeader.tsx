@@ -55,7 +55,7 @@ const WarehouseShowHeader = ({
               }))}
               value={customer}
               handleChange={(_event, newValue) => {
-                return setCustomer(newValue);
+                return setCustomer(newValue as Customer);
               }}
               setSearch={setSearch}
               showLabel={false}

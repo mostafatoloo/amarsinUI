@@ -9,6 +9,17 @@ export interface InventoryItem {
   gtin: string;
   ed: string;
 }
+export interface InventoryItemTbl {
+  id: string;
+  bn: string;
+  fn: string;
+  s: string;
+  ns: string;
+  c: string;
+  uid: string;
+  gtin: string;
+  ed: string;
+}
 
 export interface InventoryList {
   err: number;

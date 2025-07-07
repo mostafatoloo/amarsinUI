@@ -1,9 +1,17 @@
-export type ProviderItem = {
-  id: number;
-  name: string;
-  cnt: number;
-  total: number;
-  offerCnt: number;
+  export type ProviderItem = {
+    id: number;
+    name: string;
+    cnt: number;
+    total: number;
+    offerCnt: number;
+  };
+
+export type ProviderItemTbl = {
+  id: string;
+  index: string;
+  cnt: string;
+  total: string;
+  offerCnt: string;
 };
 
 export type ProviderList = {
@@ -65,6 +73,26 @@ interface ProviderDetailTable {
   valueTax: number;
   total: number;
   shRId: number;
+  shRDate: string; // date in "YYYY/MM/DD" format
+  cupInfoes: string
+}
+interface ProviderDetailTbl {
+  id: string;
+  kind: string;
+  factorNo: string;
+  dat: string; // date in "YYYY/MM/DD" format
+  customerId: string;
+  srName: string;
+  nId: string;
+  productId: string;
+  bName: string;
+  cnt: string;
+  offerCnt: string;
+  cost: string;
+  dcrmnt: string;
+  valueTax: string;
+  total: string;
+  shRId: string;
   shRDate: string; // date in "YYYY/MM/DD" format
   cupInfoes: string
 }

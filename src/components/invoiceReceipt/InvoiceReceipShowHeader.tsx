@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { convertToFarsiDigits } from "../../utilities/general";
+import {
+  convertToFarsiDigits,
+} from "../../utilities/general";
 import AutoComplete from "../controls/AutoComplete";
 import { useCustomers } from "../../hooks/useCustomers";
 import { IndentMrsResponse } from "../../types/invoiceReceipt";
@@ -7,7 +9,15 @@ import { useGeneralContext } from "../../context/GeneralContext";
 import { useCustomerStore } from "../../store/customerStore";
 import { useBrand } from "../../hooks/useBrands";
 import { useBrandStore } from "../../store/brandStore";
-import { Fields } from "./invoiceReceiptShow";
+import { Fields } from "./InvoiceReceiptShow";
+import { useProductStore } from "../../store/productStore";
+import { useProducts } from "../../hooks/useProducts";
+import {
+  DefaultOptionType,
+  DefaultOptionTypeStringId,
+} from "../../types/general";
+import PersianDatePicker from "../controls/PersianDatePicker";
+import ModalMessage from "../layout/ModalMessage";
 
 type Props = {
   fields: Fields;
@@ -20,21 +30,50 @@ const InvoiceReceipShowHeader = ({
   indentMrsResponse,
 }: Props) => {
   const { customers } = useCustomers();
-  const [search, setSearch] = useState<string>("");
+  const [cusomerSearch, setCusomerSearch] = useState<string>("");
+  const [cusomerSearchCondition, setCusomerSearchCondition] =
+    useState<string>("");
+  const [brandsearch, setBrandSearch] = useState<string>("");
+  const [salesPricesearch, setSalesPriceSearch] = useState<string>("");
   const { systemId, yearId } = useGeneralContext();
   const { setField: setCusomerField } = useCustomerStore();
   const { setField: setBrandField } = useBrandStore();
+  const { setField: setSalesPriceField } = useProductStore();
   useEffect(() => {
     setCusomerField("systemId", systemId);
     setCusomerField("yearId", yearId);
-    setCusomerField("search", search);
-  }, [search, systemId]);
+    setCusomerField("search", cusomerSearchCondition);
+  }, [cusomerSearchCondition, systemId]);
 
   useEffect(() => {
     setBrandField("accSystem", systemId);
-    setBrandField("search", search);
-  }, [search, systemId]);
+    setBrandField("search", brandsearch);
+  }, [brandsearch, systemId]);
   const { brands } = useBrand();
+
+  useEffect(() => {
+    console.log(cusomerSearch)
+    setSalesPriceField("salesPricesSearch", salesPricesearch);
+    setSalesPriceField("salesPricesSearchPage", 1);
+    setSalesPriceField("lastId", 0);
+  }, [salesPricesearch]);
+
+  const { salesPricesSearchResponse } = useProducts();
+
+  const { isModalOpen, setIsModalOpen } = useGeneralContext();
+  useEffect(() => {
+    let timeoutId: number;
+    if (isModalOpen) {
+      timeoutId = setTimeout(() => {
+        setIsModalOpen(false);
+      }, 3000);
+    }
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [isModalOpen]);
 
   const body1 = (
     <div className="mt-2 text-sm w-full flex flex-col gap-2 border border-gray-400 rounded-md p-2">
@@ -50,15 +89,17 @@ const InvoiceReceipShowHeader = ({
               value={fields.customer}
               handleChange={(_event, newValue) => {
                 return setFields((prev: Fields) => {
-                  return { ...prev, customer: newValue };
+                  return {
+                    ...prev,
+                    customer: newValue as DefaultOptionTypeStringId,
+                  };
                 });
               }}
-              setSearch={setSearch}
+              setSearch={setCusomerSearch}
               showLabel={false}
               inputPadding="0 !important"
               showClearIcon={false}
               outlinedInputPadding="5px"
-              
             />
           </div>
         </div>
@@ -79,7 +120,9 @@ const InvoiceReceipShowHeader = ({
           <label className="p-1">تاریخ:</label>
           <input
             type="text"
-            value={convertToFarsiDigits(indentMrsResponse.indents[0]?.dat ?? "")}
+            value={convertToFarsiDigits(
+              indentMrsResponse.indents[0]?.dat ?? ""
+            )}
             disabled
             className="text-sm text-gray-400 w-full p-1 border border-gray-300 rounded-md"
           />
@@ -88,7 +131,9 @@ const InvoiceReceipShowHeader = ({
           <label className="p-1">ساعت:</label>
           <input
             type="text"
-            value={convertToFarsiDigits(indentMrsResponse.indents[0]?.tim ?? "")}
+            value={convertToFarsiDigits(
+              indentMrsResponse.indents[0]?.tim ?? ""
+            )}
             disabled
             className="text-sm text-gray-400 w-full p-1 border border-gray-300 rounded-md"
           />
@@ -106,10 +151,38 @@ const InvoiceReceipShowHeader = ({
     </div>
   );
 
+  const handleDateChange = (event: {
+    target: { name: string; value: Date | null };
+  }) => {
+    if (event.target.name === "fDate") {
+      setFields((prev: Fields) => ({
+        ...prev,
+        fdate: event.target.value,
+      }));
+    } else {
+      console.log(event.target.value);
+      console.log(fields.fdate);
+      if (
+        event.target.value &&
+        fields.fdate &&
+        event.target.value < fields.fdate
+      ) {
+        console.log(event.target.value, "2if");
+        console.log(fields.fdate, "2if");
+        setIsModalOpen(true);
+        return;
+      }
+      setFields((prev: Fields) => ({
+        ...prev,
+        tdate: event.target.value,
+      }));
+    }
+  };
+
   const body2 = (
     <div className="mt-2 text-sm w-full flex flex-col gap-2 border border-gray-400 rounded-md p-2">
       <div className="flex items-center justify-between gap-2">
-        <div className="w-full flex">
+        <div className="w-full flex items-center">
           <label className="p-1 w-24 text-left">تامین کننده:</label>
           <div className="bg-slate-50 flex w-full">
             <AutoComplete
@@ -117,23 +190,31 @@ const InvoiceReceipShowHeader = ({
                 id: b.id,
                 title: b.text,
               }))}
-              value={fields.customerCondition}
+              value={fields.customerCondition as DefaultOptionTypeStringId[]}
               handleChange={(_event, newValue) => {
                 return setFields((prev: Fields) => {
-                  return { ...prev, customerCondition: newValue };
+                  return {
+                    ...prev,
+                    customerCondition: newValue as DefaultOptionTypeStringId[],
+                  };
                 });
               }}
-              setSearch={setSearch}
+              multiple={true}
+              setSearch={setCusomerSearchCondition}
               showLabel={false}
-              inputPadding="0 !important"
               showClearIcon={false}
-              outlinedInputPadding="5px"
-              placeholder="تامین کننده را انتخاب کنید..."
+              outlinedInputPadding="10px"
+              placeholder={
+                Array.isArray(fields.customerCondition) &&
+                fields.customerCondition.length > 0
+                  ? undefined
+                  : "تامین کننده را انتخاب کنید..."
+              }
             />
           </div>
         </div>
       </div>
-      <div className="w-full flex">
+      <div className="w-full flex items-center">
         <label htmlFor="year" className="p-1 w-24 text-left">
           برند:
         </label>
@@ -146,58 +227,63 @@ const InvoiceReceipShowHeader = ({
             value={fields.brand}
             handleChange={(_event, newValue) => {
               return setFields((prev: Fields) => {
-                return { ...prev, brand: newValue };
+                return {
+                  ...prev,
+                  brand: newValue as DefaultOptionTypeStringId[],
+                };
               });
             }}
-            setSearch={setSearch}
+            multiple={true}
+            setSearch={setBrandSearch}
             showLabel={false}
-            inputPadding="0 !important"
-            outlinedInputPadding="5px"
-            placeholder="برند را انتخاب کنید..."
+            outlinedInputPadding="10px"
+            placeholder={
+              Array.isArray(fields.brand) && fields.brand.length > 0
+                ? undefined
+                : "برند را انتخاب کنید..."
+            }
           />
         </div>
       </div>
       <div className="flex w-full justify-center items-center">
-        <div className="w-1/3 flex">
+        <div className="w-1/3 flex items-center">
           <label className="p-1 w-28 text-left">قیمت:</label>
-          <input
-            type="text"
-            value={fields.price}
-            onChange={(e) =>
-              setFields((prev: Fields) => ({
-                ...prev,
-                price: e.target.value,
-              }))
-            }
-            className="text-sm text-gray-800 w-full p-1 border border-gray-300 rounded-md"
-          />
+          <div className="bg-slate-50 flex w-full">
+            <AutoComplete
+              options={salesPricesSearchResponse.map((b) => ({
+                id: b.id,
+                title: b.text,
+              }))}
+              value={fields.price}
+              handleChange={(_event, newValue) => {
+                return setFields((prev: Fields) => {
+                  return { ...prev, price: newValue as DefaultOptionType };
+                });
+              }}
+              setSearch={setSalesPriceSearch}
+              showLabel={false}
+              outlinedInputPadding="10px"
+            />
+          </div>
         </div>
-        <div className="w-1/3 flex">
+        <div className="w-1/3 flex items-center">
           <label className="p-1  w-36 text-left">فروش از تاریخ:</label>
-          <input
-            type="text"
+          <PersianDatePicker
+            name="fDate"
+            label="از:"
             value={fields.fdate}
-            onChange={(e) =>
-              setFields((prev: Fields) => ({
-                ...prev,
-                fdate: e.target.value,
-              }))
-            }
-            className="text-sm text-gray-800 w-full p-1 border border-gray-300 rounded-md"
+            onChange={handleDateChange}
+            disabled={false}
           />
         </div>
-        <div className="w-1/3 flex">
+        <div className="w-1/3 flex items-center">
           <label className="p-1 w-36 text-left">تا تاریخ:</label>
-          <input
-            type="text"
+          <PersianDatePicker
+            name="tDate"
+            label="تا:"
             value={fields.tdate}
-            onChange={(e) =>
-              setFields((prev: Fields) => ({
-                ...prev,
-                tdate: e.target.value,
-              }))
-            }
-            className="text-sm text-gray-800 w-full p-1 border border-gray-300 rounded-md"
+            onChange={handleDateChange}
+            disabled={false}
           />
         </div>
       </div>
@@ -209,6 +295,16 @@ const InvoiceReceipShowHeader = ({
       {body1}
       <p className="mt-2 px-2 text-sm">شرایط</p>
       {body2}
+      <ModalMessage
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        message="تاریخ انتخابی باید بیشتر از تاریخ شروع باشد."
+        backgroundColor="bg-red-200"
+        color="text-red-800"
+        bgColorButton="bg-red-500"
+        bgColorButtonHover="bg-red-600"
+        visibleButton={false}
+      />
     </>
   );
 };

@@ -1,13 +1,76 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import { useMutation, useQuery, UseQueryOptions } from "@tanstack/react-query";
 import api from "../api/axios";
 import { useProductStore } from "../store/productStore";
-import { ProductSearchRequest, ProductSearchResponse } from "../types/product";
+import {
+  IndentShowProductListRequest,
+  ProductSearchRequest,
+  ProductSearchResponse,
+  SalesPricesSearchRequest,
+  SalesPricesSearchResponse,
+} from "../types/product";
 
 export function useProducts() {
-  const { accYear, accSystem, searchTerm, page, setProductSearchResponse } =
-    useProductStore();
+  const {
+    accYear,
+    accSystem,
+    searchTerm,
+    page,
+    setProductSearchResponse,
+    salesPricesSearch,
+    salesPricesSearchPage,
+    lastId,
+    setSalesPricesSearchResponse,
+    setIndentShowProductListResponse,
+  } = useProductStore();
+  //for indent/showProductList
+  const addList = useMutation({
+    mutationFn: async (request: IndentShowProductListRequest) => {
+      const url: string = `api/Indent/showProductList `;
+      const response = await api.post(url, request);
+      return response.data;
+    },
+    onSuccess: (data: any) => {
+      setIndentShowProductListResponse(data);
+    },
+  });
 
-  const query = useQuery<
+  //for salesPricesSearch req
+  const salesPricesSearchQuery = useQuery<
+    SalesPricesSearchResponse,
+    Error,
+    SalesPricesSearchResponse,
+    unknown[]
+  >({
+    queryKey: [
+      "salesPricesSearch",
+      salesPricesSearch,
+      salesPricesSearchPage,
+      lastId,
+    ],
+    queryFn: async () => {
+      const params: SalesPricesSearchRequest = {
+        salesPricesSearch,
+        salesPricesSearchPage,
+        lastId,
+      };
+      const response = await api.get(
+        `/api/Product/salesPricesSearch?page=${
+          params.salesPricesSearchPage
+        }&lastId=${params.lastId}&Search=${encodeURIComponent(
+          params.salesPricesSearch ?? ""
+        )}`
+      );
+      return response.data;
+    },
+    refetchOnWindowFocus: true, // Refetch data when the window is focused
+    refetchOnReconnect: true, // Refetch data when the network reconnects
+    onSuccess: (data: any) => {
+      setSalesPricesSearchResponse(data);
+    },
+  } as UseQueryOptions<SalesPricesSearchResponse, Error, SalesPricesSearchResponse, unknown[]>);
+
+  //for productSearch req
+  const productSearchQuery = useQuery<
     ProductSearchResponse,
     Error,
     ProductSearchResponse,
@@ -21,11 +84,19 @@ export function useProducts() {
         searchTerm,
         page,
       };
+      console.log(
+        `/api/Product/search?accSystem=${params.accSystem}&accYear=${
+          params.accYear
+        }&page=${params.page}&searchTerm=${encodeURIComponent(
+          params.searchTerm ?? ""
+        )}`,
+        "params.searchTerm"
+      );
       const response = await api.get(
         `/api/Product/search?accSystem=${params.accSystem}&accYear=${
           params.accYear
         }&page=${params.page}&searchTerm=${encodeURIComponent(
-          searchTerm ?? ""
+          params.searchTerm ?? ""
         )}`
       );
 
@@ -40,8 +111,17 @@ export function useProducts() {
   } as UseQueryOptions<ProductSearchResponse, Error, ProductSearchResponse, unknown[]>);
 
   return {
-    isLoading: query.isLoading,
-    error: query.error,
-    products: query.data?.data.result ?? [],
+    //output for indent/showProductList
+    isLoadingAddList: addList.isPending,
+    errorAddList: addList.error,
+    addProductList: addList.mutateAsync,
+
+    isSalesPricesSearchLoading: salesPricesSearchQuery.isLoading,
+    salesPricesSearchError: salesPricesSearchQuery.error,
+    salesPricesSearchResponse: salesPricesSearchQuery.data?.searchResults ?? [],
+
+    isProductSearchLoading: productSearchQuery.isLoading,
+    productSearchError: productSearchQuery.error,
+    products: productSearchQuery.data?.data.result ?? [],
   };
 }

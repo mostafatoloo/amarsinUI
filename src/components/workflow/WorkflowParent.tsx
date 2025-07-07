@@ -1,17 +1,19 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Paper } from "@mui/material";
 import Skeleton from "../layout/Skeleton";
 import { useNavigate } from "react-router-dom";
-import { Table } from "../controls/Table";
 import { useGeneralContext } from "../../context/GeneralContext";
 import { useWorkflow } from "../../hooks/useWorkflow";
-import {  useWorkflowRowSelectStore, useWorkflowStore } from "../../store/workflowStore";
-import { HeadCell } from "../../hooks/useTable";
-import { WorkFlowTable } from "../../types/workflow";
+import {
+  useWorkflowStore,
+} from "../../store/workflowStore";
+
 import AutoComplete from "../controls/AutoComplete";
 import { convertToFarsiDigits } from "../../utilities/general";
 import { debounce } from "lodash";
-import { blue } from "@mui/material/colors";
+import TTable from "../controls/TTable";
+import { DefaultOptionTypeStringId, TableColumns } from "../../types/general";
+import { TablePaginationActions } from "../controls/TablePaginationActions";
 
 type Props = {
   setSelectedId: (value: number) => void;
@@ -19,15 +21,68 @@ type Props = {
 
 export default function WorkflowParent({ setSelectedId }: Props) {
   const { workFlowResponse, error, isLoading } = useWorkflow();
-  const { flowMapId: flowMapIdStore ,setField} = useWorkflowStore();
+  const { flowMapId: flowMapIdStore, setField } = useWorkflowStore();
   const { systemId, chartId, defaultRowsPerPage } = useGeneralContext();
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(defaultRowsPerPage);
-  const { workTableId } = useWorkflowRowSelectStore();
+  //const { workTableId } = useWorkflowRowSelectStore();
   const navigate = useNavigate();
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const headCells: HeadCell<WorkFlowTable>[] = [
+  const columns: TableColumns = React.useMemo(
+    () => [
+      {
+        Header: "ردیف",
+        accessor: "index",
+        width: "3%",
+      },
+      {
+        //define for selectedId
+        Header: "شناسه",
+        accessor: "id",
+        width: "5%",
+        visible: false,
+      },
+      {
+        Header: "زمان",
+        accessor: "regDateTime",
+        width: "10%",
+      },
+      {
+        Header: "فرم",
+        accessor: "formTitle",
+        width: "27%",
+      },
+      {
+        Header: "کد",
+        accessor: "formCode",
+        width: "10%",
+      },
+      {
+        Header: "مقدار",
+        accessor: "formCost",
+        width: "10%",
+      },
+      {
+        Header: "مرحله",
+        accessor: "flowMapTitle",
+        width: "10%",
+      },
+      {
+        Header: "فرستنده",
+        accessor: "fChartName",
+        width: "10%",
+      },
+      {
+        Header: "شرح",
+        accessor: "dsc",
+        width: "20%",
+      },
+    ],
+    []
+  );
+
+  /*const headCells: HeadCell<WorkFlowTable>[] = [
     {
       id: "index",
       label: "ردیف",
@@ -36,15 +91,6 @@ export default function WorkflowParent({ setSelectedId }: Props) {
       isNumber: true,
       changeColor:true
     },
-   /* {
-      id: "id",
-      label: "شناسه",
-      disableSorting: true,
-      cellWidth: "3%",
-      isNumber: true,
-      changeColor:true,
-      isNotVisible:true
-    },*/
     {
       id: "regDateTime",
       label: "زمان",
@@ -100,7 +146,7 @@ export default function WorkflowParent({ setSelectedId }: Props) {
       changeColor:true
     },
 
-  ];
+  ];*/
 
   useEffect(() => {
     if (error) {
@@ -179,7 +225,7 @@ export default function WorkflowParent({ setSelectedId }: Props) {
   }, [chartId, flowMapIdStore, workFlowResponse.totalCount]);
 
   const handleDebounceFilterChange = useCallback(
-    debounce((field: string, value: string|number) => {
+    debounce((field: string, value: string | number) => {
       // Cancel any existing request
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
@@ -201,12 +247,16 @@ export default function WorkflowParent({ setSelectedId }: Props) {
     };
   }, []);
 
-  useEffect(()=>{
-    setSelectedId(workFlowResponse.workTables.length>0 ? workFlowResponse.workTables[0].id : 0)
-  },[workFlowResponse])
+  useEffect(() => {
+    setSelectedId(
+      workFlowResponse.workTables.length > 0
+        ? workFlowResponse.workTables[0].id
+        : 0
+    );
+  }, [workFlowResponse]);
 
   // Custom cell click handler for Table
-  const handleCellColorChange = (
+  /*const handleCellColorChange = (
     cell: HeadCell<WorkFlowTable>,
     item: WorkFlowTable
   ) => {
@@ -214,17 +264,33 @@ export default function WorkflowParent({ setSelectedId }: Props) {
       return blue[50];
     }
     return "";
-  };
-
-  /*const handleRowClick = (
-    item: WorkFlowTable,
-    setSelectedRowId: React.Dispatch<React.SetStateAction<number | null>>
-  ) => {
-    setSelectedRowId(Number(item["id"]));
-  };
-*/
+  };*/
   if (error) return <div>Error: {error.message} </div>;
+  const [data, setData] = useState<any[]>([]);
 
+  //console.log(data, "data");
+  const [skipPageReset, setSkipPageReset] = useState(false);
+
+  useEffect(() => {
+    setData(
+      workFlowResponse.workTables.map((item, idx) => ({
+        ...item,
+        index: convertToFarsiDigits((pageNumber - 1) * pageSize + idx + 1),
+        id: convertToFarsiDigits(item.id),
+        regDateTime: convertToFarsiDigits(item.regDateTime),
+        formTitle: convertToFarsiDigits(item.formTitle),
+        formCode: convertToFarsiDigits(item.formCode),
+        formCost: convertToFarsiDigits(item.formCost),
+        flowMapTitle: convertToFarsiDigits(item.flowMapTitle),
+        fChartName: convertToFarsiDigits(item.fChartName),
+        dsc: convertToFarsiDigits(item.dsc),
+      }))
+    );
+  }, [workFlowResponse.workTables]);
+
+  useEffect(() => {
+    setSkipPageReset(false);
+  }, [data]);
   return (
     <>
       <Paper className="p-2 mt-2 w-full">
@@ -257,7 +323,7 @@ export default function WorkflowParent({ setSelectedId }: Props) {
               setCode(e.target.value);
             }}
             className="border p-1 text-sm rounded-sm hidden md:block"
-            style={{ width: headCells[3].cellWidth }}
+            style={{ width: "10%" }}
           />
           <input
             name="cost"
@@ -267,12 +333,9 @@ export default function WorkflowParent({ setSelectedId }: Props) {
               setCost(e.target.value);
             }}
             className="border p-1 text-sm rounded-sm hidden md:block"
-            style={{ width: headCells[4].cellWidth }}
+            style={{ width: "10%" }}
           />
-          <div
-            className="hidden md:block"
-            style={{ width: headCells[5].cellWidth }}
-          >
+          <div className="hidden md:block" style={{ width: "10%" }}>
             <AutoComplete
               options={workFlowResponse.flowMapTitles.map((b) => ({
                 id: b.id.toString(),
@@ -280,8 +343,11 @@ export default function WorkflowParent({ setSelectedId }: Props) {
               }))}
               value={flowMapTitle}
               handleChange={(_event, newValue) => {
-                setField("flowMapId", newValue?.id ?? "-1");
-                return setFlowMapTitle(newValue);
+                setField(
+                  "flowMapId",
+                  (newValue as DefaultOptionTypeStringId)?.id ?? "-1"
+                );
+                return setFlowMapTitle(newValue as DefaultOptionTypeStringId);
               }}
               setSearch={setFlowMapId}
               showLabel={false}
@@ -298,7 +364,7 @@ export default function WorkflowParent({ setSelectedId }: Props) {
               setName(e.target.value);
             }}
             className="border p-1 text-sm rounded-sm hidden md:block"
-            style={{ width: headCells[6].cellWidth }}
+            style={{ width: "10%" }}
           />
           <input
             name="dsc"
@@ -308,7 +374,7 @@ export default function WorkflowParent({ setSelectedId }: Props) {
               setDsc(e.target.value);
             }}
             className="border p-1 text-sm rounded-sm hidden md:block"
-            style={{ width: headCells[7].cellWidth }}
+            style={{ width: "20%" }}
           />
         </div>
 
@@ -319,10 +385,11 @@ export default function WorkflowParent({ setSelectedId }: Props) {
             {workFlowResponse.msg}
           </p>
         ) : (
-          <div className="w-full" 
-          //style={{ height: parentHeight }}
+          <div
+            className="w-full"
+            //style={{ height: parentHeight }}
           >
-            <Table
+            {/*<Table
               data={workFlowResponse.workTables}
               headCells={headCells}
               pagination={true}
@@ -333,9 +400,26 @@ export default function WorkflowParent({ setSelectedId }: Props) {
               totalCount={workFlowResponse.totalCount}
               setSelectedId={setSelectedId}
               cellFontSize="0.75rem"
-              wordWrap= {false}
+              wordWrap={false}
               //rowClickHandler={handleRowClick}
               cellColorChangeHandler={handleCellColorChange}
+            />*/}
+            <TTable
+              columns={columns}
+              data={data}
+              //updateMyData={updateMyData}
+              skipPageReset={skipPageReset}
+              fontSize="0.75rem"
+              changeRowSelectColor={true}
+              setSelectedId={setSelectedId}
+              wordWrap={false}
+            />
+            <TablePaginationActions
+              page={pageNumber - 1}
+              setPage={setPageNumber}
+              pageSize={pageSize}
+              setPageSize={setPageSize}
+              totalCount={workFlowResponse.totalCount}
             />
           </div>
         )}

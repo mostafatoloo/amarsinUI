@@ -3,20 +3,19 @@ import { Paper } from "@mui/material";
 import { useBrandStore } from "../../store/brandStore";
 import Skeleton from "../layout/Skeleton";
 import { useNavigate } from "react-router-dom";
-import { Table } from "../controls/Table";
 import { useGeneralContext } from "../../context/GeneralContext";
-import { HeadCell, HeaderGroup } from "../../hooks/useTable";
 import { convertPersianDate } from "../../utilities/general";
 import ProviderProducerParams from "../provider/ProviderProducerParams";
 import { useProducerList } from "../../hooks/useProducerList";
 import { RpProduct } from "../../types/producer";
 import { useProducerStore } from "../../store/producerStore";
-import { blue } from "@mui/material/colors";
 import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
+import { TableColumns } from "../../types/general";
+import TTable from "../controls/TTable";
 
 type ProducerListFormProps = {
   data: RpProduct[];
-  headCells: HeadCell<RpProduct>[];
+  headCells: TableColumns;
   brand: { id: string; title: string } | null;
   setBrand: (brand: { id: string; title: string } | null) => void;
   sanadKind: { id: string; title: string } | null;
@@ -39,22 +38,9 @@ export default function ProviderListForm({
   setStartDate,
   endDate,
   setEndDate,
-  onShowDetails,
+  //onShowDetails,
 }: ProducerListFormProps) {
   const { producerList, error, isLoading } = useProducerList();
-
-  const headerGroups: HeaderGroup[] = [
-    { label: "", colSpan: 1 },
-    { label: "", colSpan: 1 },
-    { label: "ریالی", colSpan: 2 },
-    { label: "آفر", colSpan: 1 },
-    {
-      label: "تامین",
-      colSpan: producerList.producers.length,
-      backgroundColor: blue[50],
-    },
-    { label: "", colSpan: 1 },
-  ];
 
   const { systemId, yearId } = useGeneralContext();
 
@@ -96,14 +82,13 @@ export default function ProviderListForm({
   }, [systemId, yearId, brand?.id, sanadKind?.id, startDate, endDate]);
   if (error) return <div>Error: {error.message} </div>;
 
-  // Custom cell click handler for Table
-  const handleCellClick = (cell: HeadCell<RpProduct>, item: RpProduct) => {
-    if (cell.hasDetails && cell.id === "id" && onShowDetails) {
-      onShowDetails(item.id.toString());
-    }
-  };
-
   const { height, width } = useCalculateTableHeight();
+
+  const [skipPageReset, setSkipPageReset] = useState(false);
+
+  useEffect(() => {
+    setSkipPageReset(false);
+  }, [data]);
 
   return (
     <Paper className="p-2 m-2 w-full md:h-full">
@@ -126,15 +111,15 @@ export default function ProviderListForm({
           هیچ کالایی یافت نشد.
         </p>
       ) : producerList.rpProducts.length > 0 ? (
-        <div className="mt-2 " style={width > 640 ? { height: height } : {}}>
-          <Table
+        <div className="mt-2 overflow-y-auto" style={width > 640 ? { height: height } : {}}>
+          <TTable
+            columns={headCells}
             data={data}
-            headCells={headCells}
-            headerGroups={headerGroups}
-            cellClickHandler={handleCellClick}
-            hasSumRow={true}
-            cellFontSize="0.75rem"
+            //updateMyData={updateMyData}
+            skipPageReset={skipPageReset}
+            //fontSize="10px"
             wordWrap={true}
+            hasSumRow={true}
           />
         </div>
       ) : (
