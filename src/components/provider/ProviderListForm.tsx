@@ -17,6 +17,7 @@ import ReportIcon from "../../assets/images/GrayThem/report16.png";
 import ProviderProducerParams from "./ProviderProducerParams";
 import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
 import TTable from "../controls/TTable";
+import { TableColumns } from "../../types/general";
 
 type ProviderListFormProps = {
   brand: { id: string; title: string } | null;
@@ -30,7 +31,7 @@ type ProviderListFormProps = {
   onShowDetails: (providerId: string) => void;
 };
 
-export const headCells: HeadCell<ProviderItem>[] = [
+/*export const headCells: HeadCell<ProviderItem>[] = [
   {
     id: "index",
     label: "ردیف",
@@ -54,7 +55,7 @@ export const headCells: HeadCell<ProviderItem>[] = [
     hasDetails: true,
     cellWidth: "5%",
   },
-];
+];*/
 
 /*const headerGroups: HeaderGroup[] = [
   { label: "", colSpan: 1 },
@@ -63,6 +64,74 @@ export const headCells: HeadCell<ProviderItem>[] = [
   { label: "آفر", colSpan: 1 },
   { label: "", colSpan: 1 },
 ];*/
+
+export const headCells:TableColumns = 
+[
+  {
+    Header: " ",
+    width: "65%",
+    columns: [
+      {
+        Header: "ردیف",
+        accessor: "index",
+        width: "5%",
+      },
+      {
+        Header: "نام کالا",
+        accessor: "name",
+        width: "60%",
+      },
+    ],
+  },
+  {
+    Header: "ریالی",
+    width: "22%",
+    columns: [
+      {
+        Header: "تعداد",
+        accessor: "cnt",
+        width: "10%",
+      },
+      {
+        Header: "مبلغ",
+        accessor: "total",
+        width: "12%",
+      },
+    ],
+  },
+  {
+    Header: "آفر",
+    width: "13%",
+    columns: [
+      {
+        Header: "آفر",
+        accessor: "offerCnt",
+        width: "10%",
+      },
+      {
+        Header: " ",
+        accessor: "id",
+        width: "3%",
+        Cell: ({value}:any) => (
+          //<div className="flex gap-2">
+          <img
+            src={ReportIcon}
+            onClick={() => console.log(value)}
+            className="cursor-pointer w-6 h-6"
+            alt="report"
+          />
+          // <img
+          //   src={ReportIcon}
+          //onClick={() => handleDelete(row.original)}
+          //   className="cursor-pointer w-6 h-6"
+          //   alt="rep"
+          //  />
+          //</div>
+        ),
+      },
+    ],
+  },
+] 
 
 export default function ProviderListForm({
   brand,

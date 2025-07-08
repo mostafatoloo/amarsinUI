@@ -1,5 +1,5 @@
 import PageTitle from "../../components/layout/PageTitle";
-import  InventoryGoodListForm, { headCells } from "../../components/inventory/InventoryGoodListForm";
+import  InventoryGoodListForm, { columns } from "../../components/inventory/InventoryGoodListForm";
 import ExcelExport from "../../utilities/ExcelExport";
 import { useBrandStore } from "../../store/brandStore";
 import { useEffect } from "react";
@@ -22,7 +22,7 @@ export default function InventoryGoodList() {
       {/* Top header */}
       <header className="flex items-center justify-between border-gray-300">
         <PageTitle />
-        <ExcelExport data={inventoryList.rpProviderInventories} headCells={headCells}  />
+        <ExcelExport data={inventoryList.rpProviderInventories} headCells={columns}  />
       </header>
       {/* Sub-header */}
 

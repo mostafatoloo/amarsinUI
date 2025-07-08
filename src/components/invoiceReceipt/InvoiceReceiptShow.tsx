@@ -1,4 +1,4 @@
-import {  useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useInvoiceReceipt } from "../../hooks/useInvoiceReceipt";
 import { WorkflowRowSelectResponse } from "../../types/workflow";
 import { useInvoiceReceiptStore } from "../../store/invoiceReceiptStore";
@@ -11,8 +11,16 @@ import InvoiceReceipShowHeader from "./InvoiceReceipShowHeader";
 import { DefaultOptionTypeStringId } from "../../types/general";
 import ConfirmCard from "../layout/ConfirmCard";
 import Button from "../controls/Button";
-import { IndentShowProductListRequest } from "../../types/product";
+import {
+  IndentShowProductListRequest,
+  IndentShowProductListResponse,
+} from "../../types/product";
 import { useGeneralContext } from "../../context/GeneralContext";
+import { useProducts } from "../../hooks/useProducts";
+import { useProductStore } from "../../store/productStore";
+import { IndentDtlTable } from "../../types/invoiceReceipt";
+import { handleExport } from "../../utilities/ExcelExport";
+import { headCells } from "./InvoiceReceiptShowTable"
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -32,7 +40,8 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
   const { setField, mrsId } = useInvoiceReceiptStore();
   const { yearId } = useGeneralContext();
   const { indentMrsResponse, isLoading } = useInvoiceReceipt();
-  //  const { addProductList } = useProducts();
+  const { addProductList } = useProducts();
+  const { indentShowProductListResponse } = useProductStore(); // outpu for add list
 
   useEffect(() => {
     if (mrsId !== workFlowRowSelectResponse.workTableRow.formId)
@@ -84,12 +93,15 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
     isLoading && <p>Loading...</p>;
   }
 
-  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (
+    e?: React.MouseEvent<HTMLButtonElement>,
+    productId: number = 0
+  ): Promise<IndentShowProductListResponse | undefined> => {
+    if (e) e.preventDefault();
     let request: IndentShowProductListRequest;
     request = {
       mrsId,
-      productId: 0,
+      productId: productId,
       acc_Year: yearId,
       providers:
         fields.customerCondition?.map((provider) => Number(provider.id)) ?? [],
@@ -107,12 +119,123 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
 
     console.log(request, "request");
     try {
-      //const response = await addProductList(request);
+      return await addProductList(request);
       console.log("response");
     } catch (error) {
       console.error("Error editing indents:", error);
     }
   };
+
+  const newRow: IndentDtlTable = {
+    index: 0,
+    id: 0,
+    ordr: 0,
+    custId: 0,
+    customer: "",
+    pId: 0,
+    bName: "",
+    productCode: "",
+    product: "",
+    sumCompanyCnt: 0,
+    sumStoreCnt: 0,
+    lbDate: "",
+    companyStock: 0,
+    storeStock: 0,
+    productExp: "",
+    cnt: 0,
+    offer: 0,
+    cost: 0,
+    dcrmntPrcnt: 0,
+    dcrmnt: 0,
+    taxValue: 0,
+    total: 0,
+    dtlDsc: "",
+    del: false,
+    recieptId: 0,
+    recieptDsc: "",
+    isDeleted:false
+  };
+
+  const handleAddRow = (
+    index: number,
+    setData: Dispatch<SetStateAction<IndentDtlTable[]>>
+  ) => {
+    setData((prev: IndentDtlTable[]) => [...prev, { ...newRow, index: index }]);
+  };
+
+  const [addList, setAddList] = useState<IndentDtlTable[]>([]);
+  const [showDeleted, setShowDeleted] = useState(true);
+
+  const handleSubmitAndAddToTable = async (
+    e: React.MouseEvent<HTMLButtonElement>,
+    productId: number = 0
+  ) => {
+    const rowIndex = indentMrsResponse.indentDtls.length + 1; // from your existing code
+    const res = await handleSubmit(e, productId);
+
+    if (res && res.indentProducts) {
+      // Map through the new products
+      res.indentProducts.forEach((product, i) => {
+        setAddList((prev) => [
+          ...prev,
+          {
+            index: rowIndex + 1 + i,
+            id: product.id,
+            ordr: 0,
+            custId: 0,
+            customer: "",
+            pId: product.pId,
+            bName: product.bName,
+            productCode: "",
+            product: product.product,
+            sumCompanyCnt: product.sumCompanyCnt ?? 0,
+            sumStoreCnt: product.sumStoreCnt ?? 0,
+            lbDate: product.lbDate ?? "",
+            companyStock: product.companyStock ?? 0,
+            storeStock: product.storeStock ?? 0,
+            productExp: "",
+            cnt: product.cnt ?? 0,
+            offer: product.offer ?? 0,
+            cost: product.cost ?? 0,
+            dcrmntPrcnt: 0,
+            dcrmnt: 0,
+            taxValue: product.taxValue ?? 0,
+            total: product.total ?? 0,
+            dtlDsc: product.dtlDsc,
+            del: false,
+            recieptId: 0,
+            recieptDsc: "",
+            isDeleted: false,
+          },
+        ]);
+      });
+      setAddList((prev) => [
+        ...prev,
+        { ...newRow, index: rowIndex + res.indentProducts.length + 1 },
+      ]);
+    }
+  };
+
+  const handleShowDeleted = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setShowDeleted(e.target.checked);
+  };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const fileName = "data_export.xlsx";
+
+  useEffect(() => {
+    let timeoutId: number;
+    if (isModalOpen) {
+      timeoutId = setTimeout(() => {
+        setIsModalOpen(false);
+      }, 3000);
+    }
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [isModalOpen]);
 
   return (
     <div className="w-full flex flex-col">
@@ -129,7 +252,7 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
           backgroundColorHover="bg-blue-500"
           colorHover="text-white"
           variant="shadow-lg"
-          onClick={handleSubmit}
+          onClick={handleSubmitAndAddToTable}
         />
         <Button
           text="اکسل"
@@ -138,14 +261,14 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
           backgroundColorHover="bg-green-500"
           colorHover="text-white"
           variant="shadow-lg"
-          onClick={() => console.log("first")}
+          onClick={()=>handleExport({data:indentMrsResponse.indentDtls,setIsModalOpen,headCells,fileName})}
         />
       </ConfirmCard>
 
       <div className="flex justify-between items-center">
         <p className="mt-2 px-2 text-sm">اقلام</p>
         <div className="flex gap-2 items-center justify-center">
-          <input type="checkbox" />
+          <input type="checkbox" checked={showDeleted} onChange={handleShowDeleted} />
           <p>نمایش حذف شده ها</p>
         </div>
       </div>
@@ -153,6 +276,10 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
       <InvoiceReceiptShowTable
         indentMrsResponse={indentMrsResponse}
         isLoading={isLoading}
+        handleSubmit={handleSubmit}
+        addList={addList}
+        handleAddRow={handleAddRow}
+        showDeleted={showDeleted}
       />
     </div>
   );

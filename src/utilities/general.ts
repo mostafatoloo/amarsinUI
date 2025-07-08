@@ -1,3 +1,4 @@
+import { toJalaali } from 'jalaali-js';
 import  DateObject  from "react-date-object";
 import persian from "react-date-object/calendars/persian";
 
@@ -146,4 +147,18 @@ export function parsePersianDateString(dateString: string): Date | null {
 
   // Convert to Gregorian Date
   return dateObject.toDate();
+}
+//////////////////////////////////////////
+export function convertToPersianDate(date: Date): string {
+  const jalaaliDate = toJalaali(date.getFullYear(), date.getMonth() + 1, date.getDate());
+  const { jy, jm, jd } = jalaaliDate;
+
+  // Format as 'YYYY/MM/DD'
+  const persianDate = `${jy}/${padZero(jm)}/${padZero(jd)}`;
+  return persianDate;
+}
+
+// Helper function to pad single digit months/days with leading zero
+function padZero(num: number): string {
+  return num < 10 ? `0${num}` : `${num}`;
 }

@@ -30,6 +30,7 @@ type TableProps<T extends object> = {
   options?: DefaultOptionType[];
   setSearchText?: Dispatch<SetStateAction<string>>;
   updateMyData?: (rowIndex: number, columnId: string, value: string) => void;
+  updateMyRow?: (rowIndex: number, values: DefaultOptionType) => void;
   skipPageReset?: boolean;
   fontSize?: string;
   wordWrap?: boolean;
@@ -44,8 +45,12 @@ interface EditableCellProps<T extends object> extends CellProps<T, any> {
   updateMyData: (
     rowIndex: number,
     columnId: string,
-    value: string | DefaultOptionType
+    value: string 
   ) => void;
+  updateMyRow?:(
+    rowIndex: number,
+    newValue: DefaultOptionType | DefaultOptionType[] | null
+  )=>void;
   options?: DefaultOptionType[];
   setSearchText: Dispatch<SetStateAction<string>>;
 }
@@ -57,6 +62,7 @@ export function EditableInput<T extends object>({
   options,
   setSearchText,
   updateMyData,
+  updateMyRow,
 }: EditableCellProps<T>) {
   const { id, type, placeholder, isCurrency, backgroundColor } = column as any;
   const [value, setValue] = React.useState<string>(initialValue);
@@ -77,18 +83,21 @@ export function EditableInput<T extends object>({
 
   // Handle change from AutoComplete
   const handleAutoCompleteChange = (
-    //event: any,
+    event: any,
     newValue: DefaultOptionType | DefaultOptionType[] | null
   ) => {
+    console.log(event)
+    console.log(newValue,"newValue in handleAutoCompleteChange")
     setValue((newValue as DefaultOptionType)?.title ?? "");
+    if (updateMyRow) {
+      updateMyRow(index,newValue as DefaultOptionType)
+    }
     if (newValue) {
       updateMyData(index, id, (newValue as DefaultOptionType)?.title ?? "");
     }
   };
 
   if (type === "autoComplete") {
-    //console.log(initialValue,"initialValue")
-    //const val=
     return (
       <AutoComplete
         options={options || []}
@@ -145,6 +154,7 @@ export default function TTable<T extends object>({
   options = [],
   setSearchText,
   updateMyData = () => {},
+  updateMyRow = () => {},
   //skipPageReset,
   fontSize = "0.75rem",
   wordWrap = true,
@@ -168,6 +178,7 @@ export default function TTable<T extends object>({
       //defaultColumn,
       //autoResetPage: !skipPageReset,
       updateMyData,
+      updateMyRow,
       options,
       setSearchText,
     } as any,

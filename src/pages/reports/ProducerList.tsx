@@ -6,71 +6,72 @@ import ReportIcon from "../../assets/images/GrayThem/report16.png";
 import { useParams } from "react-router-dom";
 import { useProducerList } from "../../hooks/useProducerList";
 import ProducerListForm from "../../components/producer/ProducerListForm";
-import { convertToFarsiDigits, formatNumberWithCommas } from "../../utilities/general";
+import {
+  convertToFarsiDigits,
+  formatNumberWithCommas,
+} from "../../utilities/general";
+import ExcelExport from "../../utilities/ExcelExport";
 
-export default function ProducerList() {
-  const columns = React.useMemo(
-    () => [
+export const columns = [
+  {
+    Header: "   ",
+    width: "5%",
+    columns: [
       {
-        Header: "   ",
+        Header: "ردیف",
+        accessor: "index",
         width: "5%",
-        columns: [
-          {
-            Header: "ردیف",
-            accessor: "index",
-            width: "5%",
-          },
-        ],
-      },
-      {
-        Header: "  ",
-        width: "17%",
-        columns: [
-          {
-            Header: "نام کالا",
-            accessor: "name",
-            width: "17%",
-          },
-        ],
-      },
-      {
-        Header: "ریالی",
-        width: "20%",
-        columns: [
-          {
-            Header: "تعداد",
-            accessor: "cnt",
-            width: "10%",
-          },
-          {
-            Header: "مبلغ",
-            accessor: "total",
-            width: "10%",
-          },
-        ],
-      },
-      {
-        Header: "آفر",
-        width: "5%",
-        columns: [
-          {
-            Header: "تعداد",
-            accessor: "offerCnt",
-            width: "5%",
-          },
-        ],
       },
     ],
-    []
-  );
+  },
+  {
+    Header: "  ",
+    width: "17%",
+    columns: [
+      {
+        Header: "نام کالا",
+        accessor: "name",
+        width: "17%",
+      },
+    ],
+  },
+  {
+    Header: "ریالی",
+    width: "20%",
+    columns: [
+      {
+        Header: "تعداد",
+        accessor: "cnt",
+        width: "10%",
+      },
+      {
+        Header: "مبلغ",
+        accessor: "total",
+        width: "10%",
+      },
+    ],
+  },
+  {
+    Header: "آفر",
+    width: "5%",
+    columns: [
+      {
+        Header: "تعداد",
+        accessor: "offerCnt",
+        width: "5%",
+      },
+    ],
+  },
+];
 
+export default function ProducerList() {
   const { producerList } = useProducerList();
 
   const dynamicColumns = React.useMemo(
     () => [
       {
         Header: "تامین",
-        backgroundColor:"#e3f2fd",  
+        backgroundColor: "#e3f2fd",
         width:
           (
             Math.round(50 / producerList.producers.length) *
@@ -137,7 +138,7 @@ export default function ProducerList() {
 
   useEffect(() => {
     setData(
-      producerList.rpProducts.map((product,i) => {
+      producerList.rpProducts.map((product, i) => {
         // Create an object with dynamic keys for each producer's amnt
         const dynamicAmnts: Record<string, string> = {};
         product.rpProducers.forEach((producer) => {
@@ -148,7 +149,7 @@ export default function ProducerList() {
         return {
           ...product,
           ...dynamicAmnts, // Spread dynamic amnt fields
-          index:convertToFarsiDigits(i+1),
+          index: convertToFarsiDigits(i + 1),
           id: convertToFarsiDigits(product.id),
           cnt: convertToFarsiDigits(product.cnt),
           name: product.name,
@@ -166,13 +167,14 @@ export default function ProducerList() {
     setField("accSystem", systemId);
   }, []);
 
+  console.log(data, "data in ProducerList")
   return (
     <div className={`sm:h-[calc(100vh-72px)] flex flex-col bg-gray-200 pt-2`}>
       {/* Top header */}
       {!id ? (
         <header className="flex items-center justify-between border-gray-300">
           <PageTitle />
-          {/*<ExcelExport data={rpProducts} headCells={allHeadCells} />*/}
+          <ExcelExport data={data} headCells={allColumns} />
         </header>
       ) : null}
 

@@ -1,3 +1,5 @@
+import { red } from "@mui/material/colors";
+
 export const colors = { 
     cyan:"bg-cyan-600",
     cyan500:"bg-cyan-400",
@@ -17,5 +19,6 @@ export const colors = {
     green200:"#a5d6a7",
     yellow50:"#fffbf2",
     gray200:"#E5E7EB",
-    blue50:"#ebf8ff"
+    blue50:"#ebf8ff",
+    red50:"#ffebee"
 }

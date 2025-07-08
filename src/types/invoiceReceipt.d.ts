@@ -54,10 +54,12 @@ interface IndentDtl {
   del: boolean;
   recieptId: number;
   recieptDsc: string;
+  isDeleted:boolean;
 }
 
 export interface IndentDtlTable extends IndentDtl {
   index:number;
+
 }
 
 export interface InvoiceReceiptState {

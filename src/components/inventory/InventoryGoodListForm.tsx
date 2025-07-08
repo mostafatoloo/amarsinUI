@@ -40,57 +40,55 @@ export const headCells: HeadCell<InventoryItem>[] = [
   { id: "ed", label: "انقضاء", isNumber: true, cellWidth: "10%" },
 ];
 
+export const columns: TableColumns = [
+  {
+    Header: "ردیف",
+    accessor: "index",
+    width: "3%",
+  },
+  {
+    Header: "برند",
+    accessor: "bn",
+    width: "10%",
+  },
+  {
+    Header: "نام کالا",
+    accessor: "fn",
+    width: "22%",
+  },
+  {
+    Header: "قابل فروش",
+    accessor: "s",
+    width: "10%",
+  },
+  {
+    Header: "غیر قابل فروش",
+    accessor: "ns",
+    width: "10%",
+  },
+  {
+    Header: "بچ",
+    accessor: "c",
+    width: "10%",
+  },
+  {
+    Header: "UID",
+    accessor: "uid",
+    width: "15%",
+  },
+  {
+    Header: "GTIN",
+    accessor: "gtin",
+    width: "10%",
+  },
+  {
+    Header: "انقضاء",
+    accessor: "ed",
+    width: "10%",
+  },
+];
+
 export default function InventoryGoodListForm() {
-const columns:TableColumns = React.useMemo(
-    () => [
-      {
-        Header: "ردیف",
-        accessor: "index",
-        width: "3%",
-      },
-      {
-        Header: "برند",
-        accessor: "bn",
-        width: "10%",
-      },
-      {
-        Header: "نام کالا",
-        accessor: "fn",
-        width: "22%",
-      },
-      {
-        Header: "قابل فروش",
-        accessor: "s",
-        width: "10%",
-      },
-      {
-        Header: "غیر قابل فروش",
-        accessor: "ns",
-        width: "10%",
-      },
-      {
-        Header: "بچ",
-        accessor: "c",
-        width: "10%",
-      },
-      {
-        Header: "UID",
-        accessor: "uid",
-        width: "15%",
-      },
-      {
-        Header: "GTIN",
-        accessor: "gtin",
-        width: "10%",
-      },
-      {
-        Header: "انقضاء",
-        accessor: "ed",
-        width: "10%",
-      },
-    ],
-    []
-  );
 
   const { inventoryList, error, isLoading } = useInventoryGoodList();
 

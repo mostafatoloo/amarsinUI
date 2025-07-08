@@ -32,7 +32,6 @@ export function TablePaginationActions(props: Props) {
   const timeoutRef = useRef<number | null>(null);
   setDefaultRowsPerPage(pageSize || 10);
   const lastPage = Math.max(0, Math.ceil(totalCount / pageSize) - 1);
-  console.log(lastPage,totalCount,pageSize,"lastPage")
 
   // Update input value when page changes
   useEffect(() => {
@@ -62,7 +61,6 @@ export function TablePaginationActions(props: Props) {
 
   const handleChangePage = (_event: unknown, newPage: number): void => {
     // Convert from 0-based to 1-based for API
-    console.log(newPage, "newPage");
     setPage?.(newPage + 1);
   };
 
