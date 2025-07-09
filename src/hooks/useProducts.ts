@@ -2,6 +2,7 @@ import { useMutation, useQuery, UseQueryOptions } from "@tanstack/react-query";
 import api from "../api/axios";
 import { useProductStore } from "../store/productStore";
 import {
+  IndentSaveRequest,
   IndentShowProductListRequest,
   ProductSearchRequest,
   ProductSearchResponse,
@@ -21,6 +22,7 @@ export function useProducts() {
     lastId,
     setSalesPricesSearchResponse,
     setIndentShowProductListResponse,
+    setIndentSaveResponse
   } = useProductStore();
   //for indent/showProductList
   const addList = useMutation({
@@ -31,6 +33,17 @@ export function useProducts() {
     },
     onSuccess: (data: any) => {
       setIndentShowProductListResponse(data);
+    },
+  });
+  //for indent/save
+  const saveList = useMutation({
+    mutationFn: async (request: IndentSaveRequest) => {
+      const url: string = `api/Indent/save `;
+      const response = await api.post(url, request);
+      return response.data;
+    },
+    onSuccess: (data: any) => {
+      setIndentSaveResponse(data);
     },
   });
 
@@ -115,6 +128,11 @@ export function useProducts() {
     isLoadingAddList: addList.isPending,
     errorAddList: addList.error,
     addProductList: addList.mutateAsync,
+
+    //output for indent/save
+    isLoadingSaveList: saveList.isPending,
+    errorSaveList: saveList.error,
+    saveList: saveList.mutateAsync,
 
     isSalesPricesSearchLoading: salesPricesSearchQuery.isLoading,
     salesPricesSearchError: salesPricesSearchQuery.error,

@@ -14,4 +14,5 @@ export const useInvoiceReceiptStore = create<InvoiceReceiptState>()((set) => ({
     set((state) => ({ ...state, [field]: value })),
   setIndentMrsResponse: (indentMrsResponse) =>
     set({ indentMrsResponse }),
+
 }));

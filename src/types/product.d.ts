@@ -20,6 +20,8 @@ export interface ProductState
   productSearchResponse: ProductSearchResponse;
   salesPricesSearchResponse: SalesPricesSearchResponse;
   indentShowProductListResponse: IndentShowProductListResponse;
+  indentSaveRequest: IndentSaveRequest;
+  indentSaveResponse: IndentSaveResponse;
   setField: (
     field:
       | keyof ProductSearchRequest
@@ -36,7 +38,8 @@ export interface ProductState
   setIndentShowProductListResponse: (
     indentShowProductListResponse: IndentShowProductListResponse
   ) => void;
-}
+  setIndentSaveResponse: (indentSaveResponse: IndentSaveResponse) => void;
+  }
 
 type Product = {
   pId: number;
@@ -109,4 +112,43 @@ interface IndentShowProductListRequest {
   salesPriceId: number;
   saleFDate: string;
   saleTDate: string;
+}
+export interface Detail {
+  id: number;
+  cId: number;
+  pId: number;
+  cnt: string;
+  offer: string;
+  cost: string;
+  dcrmntPrcnt: string;
+  dcrmnt: string;
+  taxValue: string;
+  dtlDsc: string;
+  deleted: boolean;
+}
+
+interface IndentSaveRequest {
+  id: number;
+  ordrId: number;
+  mrsId: number;
+  customerId: number;
+  del: boolean;
+  acc_System: number;
+  acc_Year: number;
+  payDuration: number;
+  dat: string;
+  tim: string;
+  dsc: string;
+  salesPriceId: number;
+  saleFDate: string;
+  saleTDate: string;
+  dtls: Detail[];
+}
+
+interface IndentSaveResponse {
+  systemId: number;
+  id: number;
+  err: number;
+  msg: string;
+  hasFlow: boolean;
 }

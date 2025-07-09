@@ -12,7 +12,6 @@ import {
   convertPersianDate,
   convertToFarsiDigits,
   convertToLatinDigits,
-  convertToPersianDate,
   formatNumberWithCommas,
 } from "../../utilities/general";
 import { useProducts } from "../../hooks/useProducts";
@@ -20,12 +19,19 @@ import { useProductStore } from "../../store/productStore";
 import { useGeneralContext } from "../../context/GeneralContext";
 import TTable, { EditableInput } from "../controls/TTable";
 import { DefaultOptionType, TableColumns } from "../../types/general";
-import { IndentShowProductListResponse } from "../../types/product";
-import { colors } from "../../utilities/color";
+import {
+  Detail,
+  IndentSaveRequest,
+  IndentSaveResponse,
+  IndentShowProductListResponse,
+} from "../../types/product";
 import { grey, red } from "@mui/material/colors";
+import ConfirmCard from "../layout/ConfirmCard";
+import Button from "../controls/Button";
+import { Fields } from "./InvoiceReceiptShow";
 
 type Props = {
-  addList: IndentDtlTable[];
+  addList: IndentDtl[];
   indentMrsResponse: IndentMrsResponse;
   isLoading: boolean;
   handleSubmit: (
@@ -37,11 +43,14 @@ type Props = {
     setData: Dispatch<SetStateAction<IndentDtlTable[]>>
   ) => void;
   showDeleted: boolean;
+  mrsId: number;
+  fields: Fields;
+  newRow: IndentDtlTable;
 };
 
 //type Def = { id: number; title: string };
 
-export const headCells=[
+export const headCells = [
   {
     Header: "ردیف",
     accessor: "index",
@@ -153,21 +162,21 @@ export const headCells=[
         <div className="flex w-full">
           <img
             src={TrashIcon}
-            onClick={() => console.log('hello')}
+            onClick={() => console.log("hello")}
             className="cursor-pointer"
             alt="TrashIcon"
           />
           <img
             src={HistoryIcon}
-            onClick={() => console.log('hello')}
+            onClick={() => console.log("hello")}
             className="cursor-pointer"
             alt="HistoryIcon"
           />
         </div>
       );
     },
-  }
-]
+  },
+];
 
 const InvoiceReceiptShowTable = ({
   addList,
@@ -176,12 +185,15 @@ const InvoiceReceiptShowTable = ({
   handleSubmit,
   handleAddRow,
   showDeleted,
+  mrsId,
+  fields,
+  newRow,
 }: Props) => {
   const [search, setSearch] = useState<string>("");
   const [brandSearch, setBrandSearch] = useState<string>("");
   const [dtlDscSearch, setDtlDscSearch] = useState<string>("");
   const [productSearch, setProductSearch] = useState<string>("");
-  const { products } = useProducts();
+  const { products, saveList, isLoadingSaveList } = useProducts();
   const { systemId, yearId } = useGeneralContext();
   const { setField: setProductField } = useProductStore();
 
@@ -301,7 +313,6 @@ const InvoiceReceiptShowTable = ({
         width: "3%",
 
         Cell: ({ row }) => {
-          console.log("Row object:", row.original.isDeleted);
           return (
             <div className="flex w-full">
               <img
@@ -319,168 +330,94 @@ const InvoiceReceiptShowTable = ({
             </div>
           );
         },
-        /* Cell: ({ row }: any) => (
-          <div className="flex w-full">
-            <img
-              src={TrashIcon}
-              onClick={updateToDeleted}
-              className="cursor-pointer"
-              alt="TrashIcon"
-            />
-            <img
-              src={HistoryIcon}
-              onClick={() => console.log(row)}
-              className="cursor-pointer"
-              alt="HistoryIcon"
-            />
-          </div>
-        ),*/
+
       },
     ],
     []
   );
 
   const updateToDeleted = (row: any) => {
-    // console.log("Received row:", row);
-    const { index } = row;
-    //console.log("Index:", index);
-    //console.log("Original data:", original);
-    setData((old) =>
-      old.map((row, rowIndex) => {
-        if (rowIndex === index) {
-          return { ...row, isDeleted: !row.isDeleted };
+    setOriginalData((old) =>
+      old.map((origRow) => {
+        if (
+          origRow.id === row.original.id &&
+          origRow.pId === row.original.pId
+        ) {
+          return { ...origRow, isDeleted: !origRow.isDeleted };
         }
-        return row;
+        return origRow;
       })
     );
+
   };
-  //const regex = /^[0-9\u06F0-\u06F9]*$/;
-
-  /*const setValue = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    idx: number,
-    setVal: React.Dispatch<React.SetStateAction<string[]>>,
-    fieldType: string = "number"
-  ) => {
-    //Regular expression to allow only numbers
-    const value = convertToFarsiDigits(e.target.value);
-    if ((regex.test(value) && fieldType === "number") || fieldType === "text") {
-      setVal((prev) => {
-        const newArr = [...prev];
-        newArr[idx] = value;
-        return newArr;
-      });
-    }
-  };*/
-
-  /* const debouncedSetVal = useMemo(
-    () =>
-      debounce((valSetter, idx, value) => {
-        valSetter((prev: string[]) => {
-          const newArr = [...prev];
-          newArr[idx] = value;
-          return newArr;
-        });
-      }, 100),
-    []
-  );
-
-  const setValue = useCallback(
-    (
-      e: React.ChangeEvent<HTMLInputElement>,
-      idx: number,
-      setVal: React.Dispatch<React.SetStateAction<string[]>>,
-      fieldType: string = "number"
-    ) => {
-      const value = convertToFarsiDigits(e.target.value);
-      //const value = e.target.value;
-      console.log(e.target.value, "started");
-      if (
-        (regex.test(value) && fieldType === "number") ||
-        fieldType === "text"
-      ) {
-        debouncedSetVal(setVal, idx, value);
-      }
-      console.log(e.target.value, "completed");
-    },
-    []
-  );
-
-  const setValueInitial = (
-    data: IndentDtlTable[],
-    setVal: React.Dispatch<React.SetStateAction<string[]>>,
-    fieldName: string
-  ) => {
-    setVal((prev) => {
-      const newArr = [...prev];
-      data.map((item, idx) => {
-        newArr[idx] = convertToFarsiDigits(
-          item[fieldName as keyof IndentDtlTable] as string
-        );
-      });
-      return newArr;
-    });
-  };
-
-  const [filteredData, setFilteredData] = useState<IndentDtl[]>(
-    indentMrsResponse.indentDtls
-  );
-
-  useEffect(() => {
-    console.log("hello2");
-    console.log(indentMrsResponse.indentDtls);
-    setFilteredData(
-      indentMrsResponse.indentDtls.filter(
-        (d) =>
-          d.bName.includes(brandSearch) &&
-          d.product.includes(productSearch) &&
-          d.dtlDsc.includes(dtlDscSearch)
-      )
-    );
-  }, [brandSearch, productSearch, dtlDscSearch, indentMrsResponse]);
-
-  const toFarsiDigits = (str: string) =>
-    str.replace(/\d/g, (d: string) => "۰۱۲۳۴۵۶۷۸۹"[parseInt(d)]);
-  //fill data
-  const handleRowClick = (
-    item: IndentDtlTable,
-    setSelectedRowId: React.Dispatch<React.SetStateAction<number | null>>
-  ) => {
-    setSelectedRowId(Number(item["id"]));
-  };*/
-
-  /*useEffect(() => {
-    setValueInitial(data, setCnt, "cnt");
-    setValueInitial(data, setOffer, "offer");
-    setValueInitial(data, setCost, "cost");
-    setValueInitial(data, setDcrmnt, "dcrmnt");
-    setValueInitial(data, setDsc, "dtlDsc");
-  }, [filteredData]);*/
 
   const [skipPageReset, setSkipPageReset] = React.useState(false);
-  const [filteredData, setFilteredData] = useState<IndentDtl[]>(
-    indentMrsResponse.indentDtls
-  );
-
+  const [originalData, setOriginalData] = useState<IndentDtlTable[]>([]);
+  const [deletedData, setDeletedData] = useState<IndentDtlTable[]>([]);
+  const [data, setData] = useState<IndentDtlTable[]>([]);
+  ///////////////////////////////////////////////////////
+  // Initialize data when indentMrsResponse changes
   useEffect(() => {
     console.log(skipPageReset);
-    setFilteredData(
-      indentMrsResponse.indentDtls.filter(
-        (d) =>
-          d.bName.includes(brandSearch) &&
-          d.product.includes(productSearch) &&
-          d.dtlDsc.includes(dtlDscSearch)
-      )
-    );
-  }, [brandSearch, productSearch, dtlDscSearch, indentMrsResponse]);
+    if (indentMrsResponse.indentDtls) {
+      let i = 1;
+      let initialData = indentMrsResponse.indentDtls.map((dtl) => ({
+        ...dtl,
+        index: i++,
+        isDeleted: false,
+      }));
+      initialData.push({ ...newRow, index: initialData.length + 1 });
+      setOriginalData(initialData);
+      setData(initialData);
+    }
+  }, [indentMrsResponse]);
+  ////////////////////////////////////////////////////////
+  // Filter data based on search terms
+  useEffect(() => {
+    if (originalData.length > 0) {
+      const filtered = originalData
+        .filter(
+          (dtl) =>
+            dtl.bName.includes(brandSearch) &&
+            dtl.product.includes(productSearch) &&
+            dtl.dtlDsc.includes(dtlDscSearch)
+        )
+        .map((row, idx) => ({ ...row, index: idx + 1 }));
 
-  const [data, setData] = useState<IndentDtlTable[]>([]);
-
+      setData(filtered);
+    }
+  }, [brandSearch, productSearch, dtlDscSearch, originalData]);
+  //////////////////////////////////////////////////////
+  useEffect(() => {
+    setOriginalData((old) => [
+      ...old,
+      ...addList.map((item, idx) => ({
+        ...item,
+        index: old.length + idx + 1,
+        isDeleted: false,
+      })),
+    ]);
+  }, [addList]);
+  ////////////////////////////////////////////////////////
+  useEffect(() => {
+    if (!showDeleted) {
+      // Show only records where isDeleted is false
+      setDeletedData(originalData.filter((row) => row.isDeleted === true)); //save deleted rows in deletedData
+      setOriginalData((old) => old.filter((row) => row.isDeleted === false)); //save undeleted rows in Data
+    } else {
+      // Show all records
+      setOriginalData((old) =>
+        [...old, ...deletedData].sort((a, b) => a.index - b.index)
+      ); //  full dataset
+      setDeletedData([]);
+    }
+  }, [!showDeleted]);
+  ///////////////////////////////////////////////////////
   const updateMyRow = async (rowIndex: number, value: DefaultOptionType) => {
     const productId = value?.id ?? 0;
     if (productId === 0) return;
     const response = await handleSubmit(undefined, productId);
-    setData((old) =>
+    setOriginalData((old) =>
       old.map((row, index) => {
         if (index === rowIndex && response) {
           return {
@@ -517,9 +454,10 @@ const InvoiceReceiptShowTable = ({
         return row;
       })
     );
-    if (rowIndex === data.length - 1) handleAddRow(rowIndex + 2, setData);
+    if (rowIndex === originalData.length - 1)
+      handleAddRow(rowIndex + 2, setOriginalData);
   };
-
+  /////////////////////////////////////////////////////
   const updateMyData = (rowIndex: number, columnId: string, value: string) => {
     // We also turn on the flag to not reset the page
     setSkipPageReset(true);
@@ -534,43 +472,19 @@ const InvoiceReceiptShowTable = ({
         return row;
       })
     );
-  };
-
-  useEffect(() => {
-    let i = 1;
-    if (filteredData) {
-      setData(
-        filteredData.map((dtl) => {
-          return {
-            ...dtl,
-            index: i++,
-            isDeleted: false,
-          };
-        })
+    // Also update the same row in originalData
+    const rowInOriginal = data[rowIndex];
+    if (rowInOriginal) {
+      setOriginalData((origOld) =>
+        origOld.map((row) =>
+          row.id === rowInOriginal.id && row.pId === rowInOriginal.pId
+            ? { ...row, [columnId]: value }
+            : row
+        )
       );
     }
-    //console.log(new Date().toISOString().split('T')[0])
-    handleAddRow(i, setData);
-  }, [filteredData]);
-
-  useEffect(() => {
-    setData((old) => [...old, ...addList]);
-  }, [addList]);
-
-  const [deletedData, setDeletedData] = useState<IndentDtlTable[]>([]);
-
-  useEffect(() => {
-    if (!showDeleted) {
-      // Show only records where isDeleted is false
-      setDeletedData(data.filter((row) => row.isDeleted === true)); //save deleted rows in deletedData
-      setData((old) => old.filter((row) => row.isDeleted === false));//save undeleted rows in Data
-    } else {
-      // Show all records
-      setData((old) => [...old, ...deletedData].sort((a, b) => a.index - b.index)); //  full dataset
-      setDeletedData([]);
-    }
-  }, [!showDeleted]);
-
+  };
+  /////////////////////////////////////////////////////
   // Custom cell click handler for Table
   const handleCellColorChange = (row: any) => {
     if (row.original.isDeleted) {
@@ -578,6 +492,60 @@ const InvoiceReceiptShowTable = ({
     }
     return grey[50];
   };
+  ////////////////////////////////////////////////////////
+  const handleSubmitSave = async (
+    e?: React.MouseEvent<HTMLButtonElement>
+  ): Promise<IndentSaveResponse | undefined> => {
+    if (e) e.preventDefault();
+    let request: IndentSaveRequest;
+    const dtls: Detail[] = originalData.map((item) => {
+      const dtl: Detail = {
+        id: item.id,
+        cId: item.custId,
+        pId: item.pId,
+        cnt: convertToLatinDigits(item.cnt.toString()),
+        offer: convertToLatinDigits(item.offer.toString()),
+        cost: convertToLatinDigits(item.cost.toString()),
+        dcrmntPrcnt: item.dcrmntPrcnt.toString(),
+        dcrmnt: convertToLatinDigits(item.dcrmnt.toString()),
+        taxValue: item.taxValue.toString(),
+        dtlDsc: item.dtlDsc,
+        deleted: item.isDeleted,
+      };
+      return dtl;
+    });
+
+    request = {
+      id: indentMrsResponse.indents[0]?.id,
+      ordrId: indentMrsResponse.indents[0]?.ordrId ?? "",
+      mrsId,
+      customerId: Number(fields.customer?.id) ?? 0,
+      del: showDeleted,
+      acc_System: systemId,
+      acc_Year: yearId,
+      payDuration: indentMrsResponse.indents[0]?.payDuration ?? 0,
+      dat: indentMrsResponse.indents[0]?.dat ?? "",
+      tim: indentMrsResponse.indents[0]?.tim ?? "",
+      dsc: indentMrsResponse.indents[0]?.dsc ?? "",
+      salesPriceId: Number(fields.price?.id ?? 0),
+      saleFDate:
+        fields.fdate === null || !fields.fdate
+          ? ""
+          : convertPersianDate(fields.fdate.toLocaleDateString("fa-IR")),
+      saleTDate:
+        fields.tdate === null || !fields.tdate
+          ? ""
+          : convertPersianDate(fields.tdate.toLocaleDateString("fa-IR")),
+      dtls,
+    };
+    console.log(request)
+    try {
+      return await saveList(request);
+    } catch (error) {
+      console.error("Error ثبت :", error);
+    }
+  };
+
 
   return (
     <>
@@ -659,6 +627,51 @@ const InvoiceReceiptShowTable = ({
             />
           </div>
         )}
+        <ConfirmCard variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end ">
+          <div className="flex justify-evenly items-center text-gray-500 text-sm w-full">
+            <p>
+              تعداد:{" "}
+              {convertToFarsiDigits(
+                data.reduce((acc, row) => acc + Number(convertToLatinDigits(row.cnt.toString())), 0)
+              )}
+            </p>
+            <p>
+              آفر:{" "}
+              {convertToFarsiDigits(
+                data.reduce((acc, row) => acc + Number(convertToLatinDigits(row.offer.toString())), 0)
+              )}
+            </p>
+            <p>
+              مالیات:{" "}
+              {convertToFarsiDigits(
+                data.reduce((acc, row) => acc + row.taxValue, 0)
+              )}
+            </p>
+            <p>
+              تخفیف:{" "}
+              {convertToFarsiDigits(
+                data.reduce((acc, row) => acc +  Number(convertToLatinDigits(row.dcrmnt.toString())), 0)
+              )}
+            </p>
+            <p>
+              جمع:{" "}
+              {convertToFarsiDigits(
+                formatNumberWithCommas(
+                  data.reduce((acc, row) => acc + row.total, 0)
+                )
+              )}
+            </p>
+          </div>
+          <Button
+            text={isLoadingSaveList ? "در حال ثبت اطلاعات..." : "ثبت"}
+            backgroundColor="bg-green-500"
+            color="text-white"
+            backgroundColorHover="bg-green-600"
+            colorHover="text-white"
+            variant="shadow-lg w-64"
+            onClick={handleSubmitSave}
+          />
+        </ConfirmCard>
       </div>
     </>
   );

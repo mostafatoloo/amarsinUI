@@ -17,10 +17,9 @@ import {
 } from "../../types/product";
 import { useGeneralContext } from "../../context/GeneralContext";
 import { useProducts } from "../../hooks/useProducts";
-import { useProductStore } from "../../store/productStore";
-import { IndentDtlTable } from "../../types/invoiceReceipt";
+import { IndentDtl, IndentDtlTable } from "../../types/invoiceReceipt";
 import { handleExport } from "../../utilities/ExcelExport";
-import { headCells } from "./InvoiceReceiptShowTable"
+import { headCells } from "./InvoiceReceiptShowTable";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -41,7 +40,6 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
   const { yearId } = useGeneralContext();
   const { indentMrsResponse, isLoading } = useInvoiceReceipt();
   const { addProductList } = useProducts();
-  const { indentShowProductListResponse } = useProductStore(); // outpu for add list
 
   useEffect(() => {
     if (mrsId !== workFlowRowSelectResponse.workTableRow.formId)
@@ -120,7 +118,6 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
     console.log(request, "request");
     try {
       return await addProductList(request);
-      console.log("response");
     } catch (error) {
       console.error("Error editing indents:", error);
     }
@@ -153,7 +150,7 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
     del: false,
     recieptId: 0,
     recieptDsc: "",
-    isDeleted:false
+    isDeleted: false,
   };
 
   const handleAddRow = (
@@ -163,23 +160,22 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
     setData((prev: IndentDtlTable[]) => [...prev, { ...newRow, index: index }]);
   };
 
-  const [addList, setAddList] = useState<IndentDtlTable[]>([]);
+  const [addList, setAddList] = useState<IndentDtl[]>([]);
   const [showDeleted, setShowDeleted] = useState(true);
 
   const handleSubmitAndAddToTable = async (
     e: React.MouseEvent<HTMLButtonElement>,
     productId: number = 0
   ) => {
-    const rowIndex = indentMrsResponse.indentDtls.length + 1; // from your existing code
     const res = await handleSubmit(e, productId);
 
     if (res && res.indentProducts) {
       // Map through the new products
-      res.indentProducts.forEach((product, i) => {
+      res.indentProducts.forEach((product) => {
         setAddList((prev) => [
           ...prev,
           {
-            index: rowIndex + 1 + i,
+            //index: rowIndex + 1 + i,
             id: product.id,
             ordr: 0,
             custId: 0,
@@ -211,7 +207,11 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
       });
       setAddList((prev) => [
         ...prev,
-        { ...newRow, index: rowIndex + res.indentProducts.length + 1 },
+        {
+          ...newRow,
+          //  index: rowIndex + res.indentProducts.length + 1
+          isDeleted: false,
+        },
       ]);
     }
   };
@@ -261,14 +261,25 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
           backgroundColorHover="bg-green-500"
           colorHover="text-white"
           variant="shadow-lg"
-          onClick={()=>handleExport({data:indentMrsResponse.indentDtls,setIsModalOpen,headCells,fileName})}
+          onClick={() =>
+            handleExport({
+              data: indentMrsResponse.indentDtls,
+              setIsModalOpen,
+              headCells,
+              fileName,
+            })
+          }
         />
       </ConfirmCard>
 
       <div className="flex justify-between items-center">
         <p className="mt-2 px-2 text-sm">اقلام</p>
         <div className="flex gap-2 items-center justify-center">
-          <input type="checkbox" checked={showDeleted} onChange={handleShowDeleted} />
+          <input
+            type="checkbox"
+            checked={showDeleted}
+            onChange={handleShowDeleted}
+          />
           <p>نمایش حذف شده ها</p>
         </div>
       </div>
@@ -280,7 +291,11 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
         addList={addList}
         handleAddRow={handleAddRow}
         showDeleted={showDeleted}
+        mrsId={mrsId}
+        fields={fields}
+        newRow={newRow}
       />
+
     </div>
   );
 };

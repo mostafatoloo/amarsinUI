@@ -33,6 +33,30 @@ export const useProductStore = create<ProductState>()((set) => ({
   salesPriceId:0,
   saleFDate:"",
   saleTDate:"",
+  indentSaveRequest: {
+    id: 0,
+    ordrId: 0,
+    mrsId: 0,
+    customerId: 0,
+    del: false,
+    acc_System: 0,
+    acc_Year: 0,
+    payDuration: 0,
+    dat: '',
+    tim: '',
+    dsc: '',
+    salesPriceId: 0,
+    saleFDate: '',
+    saleTDate: '',
+    dtls: [],
+  },
+  indentSaveResponse: {
+    systemId: 0,
+    id: 0,
+    err: 0,
+    msg: '',
+    hasFlow: false,
+  },
   setField: (field: string, value: any) =>
     set((state) => ({ ...state, [field]: value })),
   setProductSearchResponse: (productSearchResponse) =>
@@ -41,4 +65,8 @@ export const useProductStore = create<ProductState>()((set) => ({
     set({ salesPricesSearchResponse }),
   setIndentShowProductListResponse: (indentShowProductListResponse) =>
     set({ indentShowProductListResponse }),
+  setIndentSaveResponse: (indentSaveResponse) =>
+    set({ indentSaveResponse }),
+  
 }));
+

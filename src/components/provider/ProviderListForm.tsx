@@ -3,9 +3,8 @@ import { useBrandStore } from "../../store/brandStore";
 import Skeleton from "../layout/Skeleton";
 import { useNavigate } from "react-router-dom";
 import { useGeneralContext } from "../../context/GeneralContext";
-import { HeadCell } from "../../hooks/useTable";
 import { useProviderList } from "../../hooks/useProviderList";
-import { ProviderItem, ProviderItemTbl } from "../../types/provider";
+import {  ProviderItemTbl } from "../../types/provider";
 import { useProviderStore } from "../../store/providerStore";
 import {
   convertPersianDate,

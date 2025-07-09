@@ -1,4 +1,3 @@
-import { red } from "@mui/material/colors";
 
 export const colors = { 
     cyan:"bg-cyan-600",
