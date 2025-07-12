@@ -39,7 +39,14 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
   const { setField, mrsId } = useInvoiceReceiptStore();
   const { yearId } = useGeneralContext();
   const { indentMrsResponse, isLoading } = useInvoiceReceipt();
-  const { addProductList } = useProducts();
+  const {
+    salesPricesSearchResponse,
+    addProductList,
+    products,
+    saveList,
+    isLoadingSaveList,
+    isDtHistoryLoading,
+  } = useProducts();
 
   useEffect(() => {
     if (mrsId !== workFlowRowSelectResponse.workTableRow.formId)
@@ -243,6 +250,7 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
         fields={fields}
         setFields={setFields}
         indentMrsResponse={indentMrsResponse}
+        salesPricesSearchResponse={salesPricesSearchResponse}
       />
       <ConfirmCard variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end">
         <Button
@@ -294,8 +302,11 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
         mrsId={mrsId}
         fields={fields}
         newRow={newRow}
+        products={products}
+        saveList={saveList}
+        isLoadingSaveList={isLoadingSaveList}
+        isDtHistoryLoading={isDtHistoryLoading}
       />
-
     </div>
   );
 };

@@ -26,6 +26,7 @@ export const useProductStore = create<ProductState>()((set) => ({
   lastId:0,
   //for indent/showProductList req
   mrsId:0,
+  pId:0,
   productId:0,
   acc_Year:0,
   providers:[],
@@ -57,6 +58,10 @@ export const useProductStore = create<ProductState>()((set) => ({
     msg: '',
     hasFlow: false,
   },
+  indentDtlHistoryResponse: {
+    meta: { errorCode: 0, message: "", type: "" },
+    data: { result: { err: 0, msg: "", indentDtlHistories: [] } },
+  },
   setField: (field: string, value: any) =>
     set((state) => ({ ...state, [field]: value })),
   setProductSearchResponse: (productSearchResponse) =>
@@ -67,6 +72,8 @@ export const useProductStore = create<ProductState>()((set) => ({
     set({ indentShowProductListResponse }),
   setIndentSaveResponse: (indentSaveResponse) =>
     set({ indentSaveResponse }),
+  setIndentDtlHistoryResponse: (indentDtlHistoryResponse) =>
+    set({ indentDtlHistoryResponse }),
   
 }));
 

@@ -13,6 +13,7 @@ type Props<T> = {
   desktopfontsize?: string;
   showLabel?: boolean;
   showBorder?: boolean;
+  showBorderFocused?: boolean;
   showClearIcon?: boolean;
   showPopupIcon?: boolean;
   outlinedInputPadding?: string;
@@ -22,6 +23,7 @@ type Props<T> = {
   placeholder?: string;
   multiple?: boolean;
   changeColorOnFocus?: boolean;
+  textColor?:string;
 };
 
 const AutoComplete = <T extends { id: string | number; title: string }>({
@@ -32,8 +34,9 @@ const AutoComplete = <T extends { id: string | number; title: string }>({
   setSearch,
   mobilefontsize = "0.7rem",
   desktopfontsize = "0.875rem",
-  showLabel = true,
+  showLabel = true, 
   showBorder = true,
+  showBorderFocused = false,
   showClearIcon = true,
   showPopupIcon = true,
   outlinedInputPadding = "10px",
@@ -43,6 +46,7 @@ const AutoComplete = <T extends { id: string | number; title: string }>({
   placeholder = "",
   multiple = false,
   changeColorOnFocus,
+  textColor
 }: Props<T>) => {
   const [isFocused, setIsFocused] = React.useState(false);
   return (
@@ -87,6 +91,7 @@ const AutoComplete = <T extends { id: string | number; title: string }>({
             fontWeight: showBold ? 700 : 400, // <-- root font weight
             "& .MuiInputBase-input": {
               fontSize: { xs: mobilefontsize, sm: desktopfontsize },
+              color:textColor,
               fontWeight: showBold ? 700 : 400, // <-- input font weight
               ...(inputPadding && { padding: inputPadding }),
               textAlign: (textAlign as "left" | "center" | "right") ?? "left",
@@ -99,7 +104,7 @@ const AutoComplete = <T extends { id: string | number; title: string }>({
               fontWeight: showBold ? 700 : 400, // <-- label font weight
             },
             "& .MuiOutlinedInput-notchedOutline": {
-              border: showBorder ? undefined : "none",
+              border: showBorder || (showBorderFocused && isFocused) ? undefined : "none",
             },
             "& .MuiAutocomplete-popupIndicator": {
               display: showPopupIcon ? undefined : "none",

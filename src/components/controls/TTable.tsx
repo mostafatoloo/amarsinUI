@@ -1,13 +1,6 @@
 import React, { Dispatch, SetStateAction, useState } from "react";
-import {
-  DefaultOptionType,
-  TableColumns,
-} from "../../types/general";
-import {
-  CellProps,
-  useTable,
-  useBlockLayout,
-} from "react-table";
+import { DefaultOptionType, TableColumns } from "../../types/general";
+import { CellProps, useTable, useBlockLayout } from "react-table";
 import {
   convertToFarsiDigits,
   convertToLatinDigits,
@@ -31,6 +24,7 @@ type TableProps<T extends object> = {
   setSearchText?: Dispatch<SetStateAction<string>>;
   updateMyData?: (rowIndex: number, columnId: string, value: string) => void;
   updateMyRow?: (rowIndex: number, values: DefaultOptionType) => void;
+  changeRowValues?: (value: string,rowIndex:number,columnId:string) => void;
   skipPageReset?: boolean;
   fontSize?: string;
   wordWrap?: boolean;
@@ -42,17 +36,14 @@ type TableProps<T extends object> = {
 
 // Create an editable cell renderer
 interface EditableCellProps<T extends object> extends CellProps<T, any> {
-  updateMyData: (
-    rowIndex: number,
-    columnId: string,
-    value: string 
-  ) => void;
-  updateMyRow?:(
+  updateMyData: (rowIndex: number, columnId: string, value: string) => void;
+  updateMyRow?: (
     rowIndex: number,
     newValue: DefaultOptionType | DefaultOptionType[] | null
-  )=>void;
+  ) => void;
   options?: DefaultOptionType[];
   setSearchText: Dispatch<SetStateAction<string>>;
+  changeRowValues: (value: string, rowIndex: number,columnId:string) => void;
 }
 
 export function EditableInput<T extends object>({
@@ -63,6 +54,7 @@ export function EditableInput<T extends object>({
   setSearchText,
   updateMyData,
   updateMyRow,
+  changeRowValues,
 }: EditableCellProps<T>) {
   const { id, type, placeholder, isCurrency, backgroundColor } = column as any;
   const [value, setValue] = React.useState<string>(initialValue);
@@ -86,11 +78,11 @@ export function EditableInput<T extends object>({
     event: any,
     newValue: DefaultOptionType | DefaultOptionType[] | null
   ) => {
-    console.log(event)
-    console.log(newValue,"newValue in handleAutoCompleteChange")
+    console.log(event);
+    console.log(newValue, "newValue in handleAutoCompleteChange");
     setValue((newValue as DefaultOptionType)?.title ?? "");
     if (updateMyRow) {
-      updateMyRow(index,newValue as DefaultOptionType)
+      updateMyRow(index, newValue as DefaultOptionType);
     }
     if (newValue) {
       updateMyData(index, id, (newValue as DefaultOptionType)?.title ?? "");
@@ -110,10 +102,12 @@ export function EditableInput<T extends object>({
         outlinedInputPadding="5px"
         placeholder={placeholder}
         showBold={false}
-        desktopfontsize="0.7rem"
+        desktopfontsize="12px"
         showClearIcon={true}
-        showBorder={true}
+        showBorder={false}
         changeColorOnFocus={true}
+        showBorderFocused={true}
+        textColor={colors.gray_600}
       />
     );
   }
@@ -138,7 +132,10 @@ export function EditableInput<T extends object>({
       className="text-inherit p-0 m-0 border-0 w-full focus:outline-none"
       style={{ backgroundColor: isFocused ? "white" : backgroundColor }}
       value={value}
-      onChange={(e) => setValue(convertToFarsiDigits(e.target.value))}
+      onChange={(e) => {
+        setValue(convertToFarsiDigits(e.target.value))
+        changeRowValues(e.target.value,index,id)
+      }}
       onBlur={() => {
         updateMyData(index, id, value);
         setIsFocused(false);
@@ -155,6 +152,7 @@ export default function TTable<T extends object>({
   setSearchText,
   updateMyData = () => {},
   updateMyRow = () => {},
+  changeRowValues= () =>{},
   //skipPageReset,
   fontSize = "0.75rem",
   wordWrap = true,
@@ -179,6 +177,7 @@ export default function TTable<T extends object>({
       //autoResetPage: !skipPageReset,
       updateMyData,
       updateMyRow,
+      changeRowValues,
       options,
       setSearchText,
     } as any,
@@ -228,7 +227,7 @@ export default function TTable<T extends object>({
                 return (
                   <td
                     {...cell.getCellProps()}
-                    className="px-1 py-1 font-medium text-gray-500 border-r border-gray-300"
+                    className="text-gray-500 border-r border-gray-300 flex justify-start items-center px-1"
                     key={cell.column.id}
                     title={wordWrap ? "" : cell.value}
                     style={{

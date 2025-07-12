@@ -1,3 +1,4 @@
+import { IndentDtlHistoryRequest } from './product.d';
 export interface ProductSearchRequest {
   accYear: number;
   accSystem: number;
@@ -11,22 +12,31 @@ export interface SalesPricesSearchRequest {
   lastId: number;
 }
 
+export interface IndentDtlHistoryRequest {
+  pId:number;
+  mrsId:number
+}
+
 export interface ProductState
   extends ProductSearchRequest,
     IndentShowProductListRequest {
   salesPricesSearch: string;
   salesPricesSearchPage: number;
   lastId: number;
+  pId: number;
+  mrsId: number;
   productSearchResponse: ProductSearchResponse;
   salesPricesSearchResponse: SalesPricesSearchResponse;
   indentShowProductListResponse: IndentShowProductListResponse;
   indentSaveRequest: IndentSaveRequest;
   indentSaveResponse: IndentSaveResponse;
+  indentDtlHistoryResponse: IndentDtlHistoryResponse;
   setField: (
     field:
       | keyof ProductSearchRequest
       | keyof SalesPricesSearchRequest
-      | keyof IndentShowProductListRequest,
+      | keyof IndentShowProductListRequest
+      |keyof  IndentDtlHistoryRequest,
     value: any
   ) => void;
   setProductSearchResponse: (
@@ -39,7 +49,8 @@ export interface ProductState
     indentShowProductListResponse: IndentShowProductListResponse
   ) => void;
   setIndentSaveResponse: (indentSaveResponse: IndentSaveResponse) => void;
-  }
+  setIndentDtlHistoryResponse: (indentDtlHistoryResponse: IndentDtlHistoryResponse) => void;
+}
 
 type Product = {
   pId: number;
@@ -113,6 +124,7 @@ interface IndentShowProductListRequest {
   saleFDate: string;
   saleTDate: string;
 }
+// for saveIndent
 export interface Detail {
   id: number;
   cId: number;
@@ -152,3 +164,32 @@ interface IndentSaveResponse {
   msg: string;
   hasFlow: boolean;
 }
+//for Indent/dtlHidtory
+
+type IndentDtlHistory={
+  id: number;
+  dat: string;
+  cnt: number;
+  offer: number;
+  taxValue: number;
+  dcrmnt: number;
+  total: number;
+  dtlDsc: string;
+  fmName: string;
+  fDsc: string;
+}
+
+type IndentDtlHistoryResponse = {
+  meta: {
+    errorCode: number;
+    message: string;
+    type: string; 
+  };
+  data: {
+    result: {
+      err: number;
+      msg: string;
+      indentDtlHistories:IndentDtlHistory[]
+    };
+  };
+};

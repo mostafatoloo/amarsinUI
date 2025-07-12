@@ -12,9 +12,9 @@ import {
   convertPersianDate,
   convertToFarsiDigits,
   convertToLatinDigits,
+  currencyStringToNumber,
   formatNumberWithCommas,
 } from "../../utilities/general";
-import { useProducts } from "../../hooks/useProducts";
 import { useProductStore } from "../../store/productStore";
 import { useGeneralContext } from "../../context/GeneralContext";
 import TTable, { EditableInput } from "../controls/TTable";
@@ -24,11 +24,14 @@ import {
   IndentSaveRequest,
   IndentSaveResponse,
   IndentShowProductListResponse,
+  Product,
 } from "../../types/product";
 import { grey, red } from "@mui/material/colors";
 import ConfirmCard from "../layout/ConfirmCard";
 import Button from "../controls/Button";
 import { Fields } from "./InvoiceReceiptShow";
+import ModalForm from "../layout/ModalForm";
+import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
 
 type Props = {
   addList: IndentDtl[];
@@ -46,6 +49,10 @@ type Props = {
   mrsId: number;
   fields: Fields;
   newRow: IndentDtlTable;
+  products: Product[];
+  saveList: (request: IndentSaveRequest) => Promise<IndentSaveResponse>;
+  isLoadingSaveList: boolean;
+  isDtHistoryLoading: boolean;
 };
 
 //type Def = { id: number; title: string };
@@ -149,7 +156,7 @@ export const headCells = [
     Header: "شرح",
     accessor: "dtlDsc",
     width: "10%",
-    type: "textArea",
+    type: "inputText",
     Cell: EditableInput,
   },
   {
@@ -188,14 +195,20 @@ const InvoiceReceiptShowTable = ({
   mrsId,
   fields,
   newRow,
+  products,
+  saveList,
+  isLoadingSaveList,
+  isDtHistoryLoading,
 }: Props) => {
   const [search, setSearch] = useState<string>("");
+  const [showHistory, setShowHistory] = useState<boolean>(false);
   const [brandSearch, setBrandSearch] = useState<string>("");
   const [dtlDscSearch, setDtlDscSearch] = useState<string>("");
   const [productSearch, setProductSearch] = useState<string>("");
-  const { products, saveList, isLoadingSaveList } = useProducts();
+  //const { products, saveList, isLoadingSaveList } = useProducts();
   const { systemId, yearId } = useGeneralContext();
-  const { setField: setProductField } = useProductStore();
+  const { setField: setProductField, indentDtlHistoryResponse } =
+    useProductStore();
 
   useEffect(() => {
     setProductField("accSystem", systemId);
@@ -304,7 +317,7 @@ const InvoiceReceiptShowTable = ({
         Header: "شرح",
         accessor: "dtlDsc",
         width: "10%",
-        type: "textArea",
+        type: "inputText",
         Cell: EditableInput,
       },
       {
@@ -323,19 +336,83 @@ const InvoiceReceiptShowTable = ({
               />
               <img
                 src={HistoryIcon}
-                onClick={() => console.log(row)}
+                onClick={() => handleShowHistory(row)}
                 className="cursor-pointer"
                 alt="HistoryIcon"
               />
             </div>
           );
         },
-
       },
     ],
     []
   );
 
+  const columnsHistory: TableColumns = [
+    {
+      Header: "ردیف",
+      accessor: "index",
+      width: "5%",
+    },
+    {
+      Header: "شماره",
+      accessor: "id",
+      width: "5%",
+    },
+    {
+      Header: "تاریخ",
+      accessor: "dat",
+      width: "10%",
+    },
+    {
+      Header: "تعداد",
+      accessor: "cnt",
+      width: "5%",
+    },
+    {
+      Header: "آفر",
+      accessor: "offer",
+      width: "5%",
+    },
+    {
+      Header: "مالیات",
+      accessor: "taxValue",
+      width: "10%",
+    },
+    {
+      Header: "تخفیف",
+      accessor: "dcrmnt",
+      width: "10%",
+    },
+    {
+      Header: "مجموع",
+      accessor: "total",
+      width: "10%",
+    },
+    {
+      Header: "شرح",
+      accessor: "dtlDsc",
+      width: "20%",
+    },
+    {
+      Header: "مرحله",
+      accessor: "fmName",
+      width: "15%",
+    },
+    {
+      Header: "هامش",
+      accessor: "fDsc",
+      width: "5%",
+    },
+  ];
+
+  const handleShowHistory = (row: any) => {
+    if (row.original.pId !== 0) {
+      setProductField("pId", row.original.pId);
+      setProductField("mrsId", mrsId);
+      setShowHistory(true);
+    }
+  };
   const updateToDeleted = (row: any) => {
     setOriginalData((old) =>
       old.map((origRow) => {
@@ -348,7 +425,6 @@ const InvoiceReceiptShowTable = ({
         return origRow;
       })
     );
-
   };
 
   const [skipPageReset, setSkipPageReset] = React.useState(false);
@@ -386,6 +462,7 @@ const InvoiceReceiptShowTable = ({
 
       setData(filtered);
     }
+    //console.log(originalData)
   }, [brandSearch, productSearch, dtlDscSearch, originalData]);
   //////////////////////////////////////////////////////
   useEffect(() => {
@@ -476,11 +553,89 @@ const InvoiceReceiptShowTable = ({
     const rowInOriginal = data[rowIndex];
     if (rowInOriginal) {
       setOriginalData((origOld) =>
-        origOld.map((row) =>
-          row.id === rowInOriginal.id && row.pId === rowInOriginal.pId
-            ? { ...row, [columnId]: value }
-            : row
-        )
+        origOld.map((row) => {
+          if (row.id === rowInOriginal.id && row.pId === rowInOriginal.pId) {
+            return {
+              ...row,
+              [columnId]: value,
+              //row.cost*row.cnt + row.taxValue - row.dcrmnt
+              /*total:
+                currencyStringToNumber(
+                  convertToLatinDigits(row.cost.toString())
+                ) *
+                  Number(convertToLatinDigits(row.cnt.toString())) +
+                currencyStringToNumber(
+                  convertToLatinDigits(row.taxValue.toString())
+                ) -
+                currencyStringToNumber(
+                  convertToLatinDigits(row.dcrmnt.toString())
+                ),*/
+            };
+          }
+          return row;
+        })
+      );
+    }
+  };
+  /////////////////////////////////////////////////////
+  const changeRowValues = (
+    value: string,
+    rowIndex: number,
+    columnId: string
+  ) => {
+    if (
+      columnId === "cost" ||
+      columnId === "cnt" ||
+      columnId === "taxValue" ||
+      columnId === "dcrmnt"
+    ) {
+      setOriginalData((old) =>
+        old.map((row, index) => {
+          if (index === rowIndex) {
+            return {
+              ...old[rowIndex],
+              [columnId]: value,
+              total:
+                currencyStringToNumber(
+                  convertToLatinDigits(
+                    columnId === "cost"
+                      ? value === ""
+                        ? "0"
+                        : value
+                      : row.cost.toString()
+                  )
+                ) *
+                  Number(
+                    convertToLatinDigits(
+                      columnId === "cnt"
+                        ? value === ""
+                          ? "0"
+                          : value
+                        : row.cnt.toString()
+                    )
+                  ) +
+                currencyStringToNumber(
+                  convertToLatinDigits(
+                    columnId === "taxValue"
+                      ? value === ""
+                        ? "0"
+                        : value
+                      : row.taxValue.toString()
+                  )
+                ) -
+                currencyStringToNumber(
+                  convertToLatinDigits(
+                    columnId === "dcrmnt"
+                      ? value === ""
+                        ? "0"
+                        : value
+                      : row.dcrmnt.toString()
+                  )
+                ),
+            };
+          }
+          return row;
+        })
       );
     }
   };
@@ -538,15 +693,14 @@ const InvoiceReceiptShowTable = ({
           : convertPersianDate(fields.tdate.toLocaleDateString("fa-IR")),
       dtls,
     };
-    console.log(request)
+    console.log(request);
     try {
       return await saveList(request);
     } catch (error) {
       console.error("Error ثبت :", error);
     }
   };
-
-
+  const { height, width } = useCalculateTableHeight();
   return (
     <>
       <div className="p-2 mt-2 w-full bg-white rounded-md">
@@ -616,7 +770,7 @@ const InvoiceReceiptShowTable = ({
               //skipPageReset={skipPageReset}
               fontSize="0.75rem"
               changeRowSelectColor={true}
-              wordWrap={true}
+              wordWrap={false}
               options={products.map((p) => ({
                 id: p.pId,
                 title: convertToFarsiDigits(p.n),
@@ -624,6 +778,7 @@ const InvoiceReceiptShowTable = ({
               setSearchText={setSearch}
               updateMyRow={updateMyRow}
               CellColorChange={handleCellColorChange}
+              changeRowValues={changeRowValues}
             />
           </div>
         )}
@@ -632,25 +787,41 @@ const InvoiceReceiptShowTable = ({
             <p>
               تعداد:{" "}
               {convertToFarsiDigits(
-                data.reduce((acc, row) => acc + Number(convertToLatinDigits(row.cnt.toString())), 0)
+                data.reduce(
+                  (acc, row) =>
+                    acc + Number(convertToLatinDigits(row.cnt.toString())),
+                  0
+                )
               )}
             </p>
             <p>
               آفر:{" "}
               {convertToFarsiDigits(
-                data.reduce((acc, row) => acc + Number(convertToLatinDigits(row.offer.toString())), 0)
+                data.reduce(
+                  (acc, row) =>
+                    acc + Number(convertToLatinDigits(row.offer.toString())),
+                  0
+                )
               )}
             </p>
             <p>
               مالیات:{" "}
               {convertToFarsiDigits(
-                data.reduce((acc, row) => acc + row.taxValue, 0)
+                formatNumberWithCommas(
+                  data.reduce((acc, row) => acc + row.taxValue, 0)
+                )
               )}
             </p>
             <p>
               تخفیف:{" "}
               {convertToFarsiDigits(
-                data.reduce((acc, row) => acc +  Number(convertToLatinDigits(row.dcrmnt.toString())), 0)
+                formatNumberWithCommas(
+                  data.reduce(
+                    (acc, row) =>
+                      acc + Number(convertToLatinDigits(row.dcrmnt.toString())),
+                    0
+                  )
+                )
               )}
             </p>
             <p>
@@ -673,6 +844,47 @@ const InvoiceReceiptShowTable = ({
           />
         </ConfirmCard>
       </div>
+      <ModalForm
+        isOpen={showHistory}
+        onClose={() => setShowHistory(false)}
+        title="سوابق درخواست خرید"
+        width="2/3"
+      >
+        {isDtHistoryLoading ? (
+          <div className="text-center">{<Skeleton />}</div>
+        ) : (
+          <div
+            className="mt-2 overflow-y-auto"
+            style={width > 640 ? { height: height } : { height: "fit" }}
+          >
+            <TTable
+              columns={columnsHistory}
+              data={indentDtlHistoryResponse.data.result.indentDtlHistories.map(
+                (item, index) => ({
+                  ...item,
+                  index: convertToFarsiDigits(index + 1),
+                  id: convertToFarsiDigits(item.id),
+                  dat: convertToFarsiDigits(item.dat),
+                  cnt: convertToFarsiDigits(formatNumberWithCommas(item.cnt)),
+                  offer: convertToFarsiDigits(item.offer),
+                  taxValue: convertToFarsiDigits(
+                    formatNumberWithCommas(item.taxValue)
+                  ),
+                  dcrmnt: convertToFarsiDigits(
+                    formatNumberWithCommas(item.dcrmnt)
+                  ),
+                  total: convertToFarsiDigits(
+                    formatNumberWithCommas(item.total)
+                  ),
+                  dtlDsc: convertToFarsiDigits(item.dtlDsc),
+                  fmName: convertToFarsiDigits(item.fmName),
+                  fDsc: convertToFarsiDigits(item.fDsc),
+                })
+              )}
+            />
+          </div>
+        )}
+      </ModalForm>
     </>
   );
 };

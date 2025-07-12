@@ -11,23 +11,25 @@ import { useBrand } from "../../hooks/useBrands";
 import { useBrandStore } from "../../store/brandStore";
 import { Fields } from "./InvoiceReceiptShow";
 import { useProductStore } from "../../store/productStore";
-import { useProducts } from "../../hooks/useProducts";
 import {
   DefaultOptionType,
   DefaultOptionTypeStringId,
 } from "../../types/general";
 import PersianDatePicker from "../controls/PersianDatePicker";
 import ModalMessage from "../layout/ModalMessage";
+import { SalesPriceItem } from "../../types/product";
 
 type Props = {
   fields: Fields;
   setFields: React.Dispatch<React.SetStateAction<Fields>>;
   indentMrsResponse: IndentMrsResponse;
+  salesPricesSearchResponse: SalesPriceItem[];
 };
 const InvoiceReceipShowHeader = ({
   fields,
   setFields,
   indentMrsResponse,
+  salesPricesSearchResponse
 }: Props) => {
   const { customers } = useCustomers();
   const [cusomerSearch, setCusomerSearch] = useState<string>("");
@@ -58,7 +60,7 @@ const InvoiceReceipShowHeader = ({
     setSalesPriceField("lastId", 0);
   }, [salesPricesearch]);
 
-  const { salesPricesSearchResponse } = useProducts();
+  //const { salesPricesSearchResponse } = useProducts();
 
   const { isModalOpen, setIsModalOpen } = useGeneralContext();
   useEffect(() => {

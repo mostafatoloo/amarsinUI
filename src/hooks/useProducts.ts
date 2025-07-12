@@ -1,7 +1,9 @@
 import { useMutation, useQuery, UseQueryOptions } from "@tanstack/react-query";
+import { useEffect } from "react";
 import api from "../api/axios";
 import { useProductStore } from "../store/productStore";
 import {
+  IndentDtlHistoryResponse,
   IndentSaveRequest,
   IndentShowProductListRequest,
   ProductSearchRequest,
@@ -20,9 +22,12 @@ export function useProducts() {
     salesPricesSearch,
     salesPricesSearchPage,
     lastId,
+    pId,
+    mrsId,
     setSalesPricesSearchResponse,
     setIndentShowProductListResponse,
-    setIndentSaveResponse
+    setIndentSaveResponse,
+    setIndentDtlHistoryResponse
   } = useProductStore();
   //for indent/showProductList
   const addList = useMutation({
@@ -47,6 +52,24 @@ export function useProducts() {
     },
   });
 
+  //for Indent/dtlHistory
+  const dtlHistoryQuery = useQuery<IndentDtlHistoryResponse>({
+    queryKey: ["dtlHistory", pId, mrsId],
+    queryFn: async () => {
+      const url: string = `api/Indent/dtlHistory?PId=${pId}&MrsId=${mrsId}`;
+      const response = await api.get<IndentDtlHistoryResponse>(url);
+      return response.data;
+    },
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    enabled: !!pId && !!mrsId,
+  });
+
+  useEffect(() => {
+    if (dtlHistoryQuery.data) {
+      setIndentDtlHistoryResponse(dtlHistoryQuery.data);
+    }
+  }, [dtlHistoryQuery.data, setIndentDtlHistoryResponse]);
   //for salesPricesSearch req
   const salesPricesSearchQuery = useQuery<
     SalesPricesSearchResponse,
@@ -77,10 +100,13 @@ export function useProducts() {
     },
     refetchOnWindowFocus: true, // Refetch data when the window is focused
     refetchOnReconnect: true, // Refetch data when the network reconnects
-    onSuccess: (data: any) => {
-      setSalesPricesSearchResponse(data);
-    },
   } as UseQueryOptions<SalesPricesSearchResponse, Error, SalesPricesSearchResponse, unknown[]>);
+
+  useEffect(() => {
+    if (salesPricesSearchQuery.data) {
+      setSalesPricesSearchResponse(salesPricesSearchQuery.data);
+    }
+  }, [salesPricesSearchQuery.data, setSalesPricesSearchResponse]);
 
   //for productSearch req
   const productSearchQuery = useQuery<
@@ -118,10 +144,13 @@ export function useProducts() {
     enabled: !!accSystem, // Only run if accSystem exists
     refetchOnWindowFocus: true, // Refetch data when the window is focused
     refetchOnReconnect: true, // Refetch data when the network reconnects
-    onSuccess: (data: any) => {
-      setProductSearchResponse(data);
-    },
   } as UseQueryOptions<ProductSearchResponse, Error, ProductSearchResponse, unknown[]>);
+
+  useEffect(() => {
+    if (productSearchQuery.data) {
+      setProductSearchResponse(productSearchQuery.data);
+    }
+  }, [productSearchQuery.data, setProductSearchResponse]);
 
   return {
     //output for indent/showProductList
@@ -141,5 +170,9 @@ export function useProducts() {
     isProductSearchLoading: productSearchQuery.isLoading,
     productSearchError: productSearchQuery.error,
     products: productSearchQuery.data?.data.result ?? [],
+
+    isDtHistoryLoading: dtlHistoryQuery.isLoading,
+    dtlHistoryError: dtlHistoryQuery.error,
+    dtlHistoryResponse: dtlHistoryQuery.data?.data.result.indentDtlHistories ?? [],
   };
 }

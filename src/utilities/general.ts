@@ -112,6 +112,12 @@ export const convertPersianDate = (dateStr: string): string => {
 export const formatNumberWithCommas = (num: number): string => {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
+export const currencyStringToNumber = (currencyStr: string): number => {
+  // Remove any non-numeric characters except for the decimal point and minus sign
+  const cleanedString = currencyStr.replace(/[^\d.-]/g, '');
+  // Convert to number
+  return parseFloat(cleanedString);
+};
 ////////////////////////////////////////////////////////////
 // Generic handler for both single and multiple AutoComplete components
 export const handleAutoCompleteChange = <
