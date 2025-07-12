@@ -236,7 +236,7 @@ const WarehouseShowTable = ({
           expire: dtl.expire,
           uId: dtl.uId,
           status: (
-            <div className="flex justify-evenly items-center">
+            <div className="flex justify-evenly items-center w-full">
               {convertToFarsiDigits(dtl.status)}
               <input
                 type="checkbox"

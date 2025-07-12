@@ -7,7 +7,14 @@ import {
 import TrashIcon from "../../assets/images/GrayThem/delete_gray_16.png";
 import HistoryIcon from "../../assets/images/GrayThem/history_gray_16.png";
 import RestoreIcon from "../../assets/images/GrayThem/restore_gray_16.png";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   convertPersianDate,
   convertToFarsiDigits,
@@ -25,6 +32,7 @@ import {
   IndentSaveResponse,
   IndentShowProductListResponse,
   Product,
+  ProductSearchRequest,
 } from "../../types/product";
 import { grey, red } from "@mui/material/colors";
 import ConfirmCard from "../layout/ConfirmCard";
@@ -32,6 +40,7 @@ import Button from "../controls/Button";
 import { Fields } from "./InvoiceReceiptShow";
 import ModalForm from "../layout/ModalForm";
 import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
+import { debounce } from "lodash";
 
 type Props = {
   addList: IndentDtl[];
@@ -209,11 +218,12 @@ const InvoiceReceiptShowTable = ({
   const { systemId, yearId } = useGeneralContext();
   const { setField: setProductField, indentDtlHistoryResponse } =
     useProductStore();
-
+  //send params to /api/Product/search?accSystem=4&accYear=15&page=1&searchTerm=%D8%B3%D9%81
   useEffect(() => {
     setProductField("accSystem", systemId);
     setProductField("accYear", yearId);
-    setProductField("searchTerm", convertToFarsiDigits(search));
+    //setProductField("searchTerm", convertToFarsiDigits(search));
+    handleDebounceFilterChange("searchTerm", convertToFarsiDigits(search));
     setProductField("page", 1);
   }, [search, systemId, yearId]);
 
@@ -431,10 +441,29 @@ const InvoiceReceiptShowTable = ({
   const [originalData, setOriginalData] = useState<IndentDtlTable[]>([]);
   const [deletedData, setDeletedData] = useState<IndentDtlTable[]>([]);
   const [data, setData] = useState<IndentDtlTable[]>([]);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  ///////////////////////////////////////////////////////
+  const handleDebounceFilterChange = useCallback(
+    debounce((field: string, value: string | number) => {
+      // Cancel any existing request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      // Create a new AbortController for this request
+      abortControllerRef.current = new AbortController();
+
+      setProductField(field as keyof ProductSearchRequest, value);
+    }, 500),
+    [setProductField]
+  );
+  //////////////////////////////////////////////////////////
+  useEffect(() => {
+    console.log(skipPageReset);
+  }, []);
+
   ///////////////////////////////////////////////////////
   // Initialize data when indentMrsResponse changes
   useEffect(() => {
-    console.log(skipPageReset);
     if (indentMrsResponse.indentDtls) {
       let i = 1;
       let initialData = indentMrsResponse.indentDtls.map((dtl) => ({
