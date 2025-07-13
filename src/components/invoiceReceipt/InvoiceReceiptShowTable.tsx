@@ -12,6 +12,7 @@ import React, {
   SetStateAction,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -34,13 +35,14 @@ import {
   Product,
   ProductSearchRequest,
 } from "../../types/product";
-import { grey, red } from "@mui/material/colors";
+import { red } from "@mui/material/colors";
 import ConfirmCard from "../layout/ConfirmCard";
 import Button from "../controls/Button";
 import { Fields } from "./InvoiceReceiptShow";
-import ModalForm from "../layout/ModalForm";
-import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
 import { debounce } from "lodash";
+import InvoiceReceiptHistory from "./invoiceReceiptHistory";
+import InvoiceReceiptShowTableHeader from "./InvoiceReceiptShowTableHeader";
+import InvoiceReceiptShowTableSummery from "./InvoiceReceiptShowTableSummery";
 
 type Props = {
   addList: IndentDtl[];
@@ -62,10 +64,8 @@ type Props = {
   saveList: (request: IndentSaveRequest) => Promise<IndentSaveResponse>;
   isLoadingSaveList: boolean;
   isDtHistoryLoading: boolean;
+  getIndentMrsResponse: () => void;
 };
-
-//type Def = { id: number; title: string };
-
 export const headCells = [
   {
     Header: "ردیف",
@@ -208,13 +208,13 @@ const InvoiceReceiptShowTable = ({
   saveList,
   isLoadingSaveList,
   isDtHistoryLoading,
+  getIndentMrsResponse,
 }: Props) => {
   const [search, setSearch] = useState<string>("");
   const [showHistory, setShowHistory] = useState<boolean>(false);
   const [brandSearch, setBrandSearch] = useState<string>("");
   const [dtlDscSearch, setDtlDscSearch] = useState<string>("");
   const [productSearch, setProductSearch] = useState<string>("");
-  //const { products, saveList, isLoadingSaveList } = useProducts();
   const { systemId, yearId } = useGeneralContext();
   const { setField: setProductField, indentDtlHistoryResponse } =
     useProductStore();
@@ -227,136 +227,34 @@ const InvoiceReceiptShowTable = ({
     setProductField("page", 1);
   }, [search, systemId, yearId]);
 
-  const columns: TableColumns = React.useMemo(
-    () => [
-      {
-        Header: "ردیف",
-        accessor: "index",
-        width: "2%",
-        Cell: ({ value }: any) => convertToFarsiDigits(value),
-      },
-      {
-        Header: "برند",
-        accessor: "bName",
-        width: "5%",
-        Cell: ({ value }: any) => convertToFarsiDigits(value),
-      },
-      {
-        Header: "کالا",
-        accessor: "product",
-        width: "25%",
-        type: "autoComplete",
-        placeholder: "کالا را انتخاب کنید...",
-        Cell: EditableInput,
-      },
-      {
-        Header: "موجودی",
-        accessor: "companyStock",
-        width: "5%",
-        Cell: ({ value }: any) => convertToFarsiDigits(value),
-      },
-      {
-        Header: "فروش",
-        accessor: "storeStock",
-        width: "5%",
-        Cell: ({ value }: any) => convertToFarsiDigits(value),
-      },
-      {
-        Header: "موجودی",
-        accessor: "sumCompanyCnt",
-        width: "5%",
-        Cell: ({ value }: any) => convertToFarsiDigits(value),
-      },
-      {
-        Header: "فروش",
-        accessor: "sumStoreCnt",
-        width: "5%",
-        Cell: ({ value }: any) => convertToFarsiDigits(value),
-      },
-      {
-        Header: "خرید",
-        accessor: "lbDate",
-        width: "5%",
-        Cell: ({ value }: any) => convertToFarsiDigits(value),
-      },
-      {
-        Header: "تعداد",
-        accessor: "cnt",
-        width: "5%",
-        type: "inputText",
-        Cell: EditableInput,
-      },
-      {
-        Header: "آفر",
-        accessor: "offer",
-        width: "5%",
-        type: "inputText",
-        Cell: EditableInput,
-      },
-      {
-        Header: "مبلغ",
-        accessor: "cost",
-        width: "5%",
-        type: "inputText",
-        isCurrency: true,
-        Cell: EditableInput,
-      },
-      {
-        Header: "تخفیف",
-        accessor: "dcrmnt",
-        width: "5%",
-        type: "inputText",
-        isCurrency: true,
-        Cell: EditableInput,
-      },
-      {
-        Header: "مالیات",
-        accessor: "taxValue",
-        width: "5%",
-        Cell: ({ value }: any) =>
-          convertToFarsiDigits(formatNumberWithCommas(value)),
-      },
-      {
-        Header: "جمع",
-        accessor: "total",
-        width: "5%",
-        Cell: ({ value }: any) =>
-          convertToFarsiDigits(formatNumberWithCommas(value)),
-      },
-      {
-        Header: "شرح",
-        accessor: "dtlDsc",
-        width: "10%",
-        type: "inputText",
-        Cell: EditableInput,
-      },
-      {
-        Header: " ",
-        accessor: "icons",
-        width: "3%",
-
-        Cell: ({ row }) => {
-          return (
-            <div className="flex w-full">
-              <img
-                src={row.original.isDeleted ? RestoreIcon : TrashIcon}
-                onClick={() => updateToDeleted(row)}
-                className="cursor-pointer"
-                alt="TrashIcon"
-              />
-              <img
-                src={HistoryIcon}
-                onClick={() => handleShowHistory(row)}
-                className="cursor-pointer"
-                alt="HistoryIcon"
-              />
-            </div>
-          );
-        },
-      },
-    ],
-    []
-  );
+  const columns: TableColumns = useMemo(() => {
+    return headCells.map((item) => {
+      return {
+        ...item,
+        Cell:
+          item.accessor === "icons"
+            ? ({ row }: any) => {
+                return (
+                  <div className="flex w-full">
+                    <img
+                      src={row.original.isDeleted ? RestoreIcon : TrashIcon}
+                      onClick={() => updateToDeleted(row)}
+                      className="cursor-pointer"
+                      alt="TrashIcon"
+                    />
+                    <img
+                      src={HistoryIcon}
+                      onClick={() => handleShowHistory(row)}
+                      className="cursor-pointer"
+                      alt="HistoryIcon"
+                    />
+                  </div>
+                );
+              }
+            : item.Cell,
+      };
+    });
+  }, []);
 
   const columnsHistory: TableColumns = [
     {
@@ -587,18 +485,6 @@ const InvoiceReceiptShowTable = ({
             return {
               ...row,
               [columnId]: value,
-              //row.cost*row.cnt + row.taxValue - row.dcrmnt
-              /*total:
-                currencyStringToNumber(
-                  convertToLatinDigits(row.cost.toString())
-                ) *
-                  Number(convertToLatinDigits(row.cnt.toString())) +
-                currencyStringToNumber(
-                  convertToLatinDigits(row.taxValue.toString())
-                ) -
-                currencyStringToNumber(
-                  convertToLatinDigits(row.dcrmnt.toString())
-                ),*/
             };
           }
           return row;
@@ -607,74 +493,75 @@ const InvoiceReceiptShowTable = ({
     }
   };
   /////////////////////////////////////////////////////
-  const changeRowValues = (
-    value: string,
-    rowIndex: number,
-    columnId: string
-  ) => {
-    if (
-      columnId === "cost" ||
-      columnId === "cnt" ||
-      columnId === "taxValue" ||
-      columnId === "dcrmnt"
-    ) {
-      setOriginalData((old) =>
-        old.map((row, index) => {
-          if (index === rowIndex) {
-            return {
-              ...old[rowIndex],
-              [columnId]: value,
-              total:
-                currencyStringToNumber(
-                  convertToLatinDigits(
-                    columnId === "cost"
-                      ? value === ""
-                        ? "0"
-                        : value
-                      : row.cost.toString()
-                  )
-                ) *
-                  Number(
-                    convertToLatinDigits(
-                      columnId === "cnt"
-                        ? value === ""
-                          ? "0"
-                          : value
-                        : row.cnt.toString()
-                    )
-                  ) +
-                currencyStringToNumber(
-                  convertToLatinDigits(
-                    columnId === "taxValue"
-                      ? value === ""
-                        ? "0"
-                        : value
-                      : row.taxValue.toString()
-                  )
-                ) -
-                currencyStringToNumber(
-                  convertToLatinDigits(
-                    columnId === "dcrmnt"
-                      ? value === ""
-                        ? "0"
-                        : value
-                      : row.dcrmnt.toString()
-                  )
-                ),
-            };
-          }
-          return row;
-        })
+  const calculateTotal = useMemo(() => {
+    return (cost: string, cnt: string, taxValue: string, dcrmnt: string) => {
+      return (
+        currencyStringToNumber(convertToLatinDigits(cost)) *
+          Number(convertToLatinDigits(cnt)) +
+          currencyStringToNumber(convertToLatinDigits(taxValue)) -
+          currencyStringToNumber(convertToLatinDigits(dcrmnt))
       );
-    }
-  };
+    };
+  }, []);
+  
+  /////////////////////////////////////////////////////
+  const changeRowValues = useCallback(
+    (value: string, rowIndex: number, columnId: string) => {
+      if (
+        columnId === "cost" ||
+        columnId === "cnt" ||
+        columnId === "taxValue" ||
+        columnId === "dcrmnt"
+      ) {
+        setData((old) =>
+          old.map((row, index) => {
+            if (index === rowIndex) {
+              const total = calculateTotal(
+                columnId === "cost" ? value : row.cost.toString(),
+                columnId === "cnt" ? value : row.cnt.toString(),
+                columnId === "taxValue" ? value : row.taxValue.toString(),
+                columnId === "dcrmnt" ? value : row.dcrmnt.toString()
+              );
+              return {
+                ...old[rowIndex],
+                [columnId]: value,
+                total,
+              };
+            }
+            return row;
+          })
+        );
+        const rowInOriginal = data[rowIndex];
+        setOriginalData((old) =>
+          old.map((row) => {
+            if (row.id === rowInOriginal.id && row.pId === rowInOriginal.pId) {
+              const total = calculateTotal(
+                columnId === "cost" ? value : row.cost.toString(),
+                columnId === "cnt" ? value : row.cnt.toString(),
+                columnId === "taxValue" ? value : row.taxValue.toString(),
+                columnId === "dcrmnt" ? value : row.dcrmnt.toString()
+              );
+              return {
+                ...row,
+                [columnId]: value,
+                total,
+              };
+            }
+            return row;
+          })
+        );
+      }
+    },
+    [calculateTotal, data]
+  );
+  
   /////////////////////////////////////////////////////
   // Custom cell click handler for Table
-  const handleCellColorChange = (row: any) => {
+  const handleCellColorChange = (row: any): string | null => {
     if (row.original.isDeleted) {
       return red[100];
     }
-    return grey[50];
+    return null;
   };
   ////////////////////////////////////////////////////////
   const handleSubmitSave = async (
@@ -700,17 +587,17 @@ const InvoiceReceiptShowTable = ({
     });
 
     request = {
-      id: indentMrsResponse.indents[0]?.id,
+      id: 0,
       ordrId: indentMrsResponse.indents[0]?.ordrId ?? "",
       mrsId,
       customerId: Number(fields.customer?.id) ?? 0,
       del: showDeleted,
       acc_System: systemId,
       acc_Year: yearId,
-      payDuration: indentMrsResponse.indents[0]?.payDuration ?? 0,
+      payDuration: fields.payDuration,
       dat: indentMrsResponse.indents[0]?.dat ?? "",
       tim: indentMrsResponse.indents[0]?.tim ?? "",
-      dsc: indentMrsResponse.indents[0]?.dsc ?? "",
+      dsc: fields.dsc,
       salesPriceId: Number(fields.price?.id ?? 0),
       saleFDate:
         fields.fdate === null || !fields.fdate
@@ -724,66 +611,24 @@ const InvoiceReceiptShowTable = ({
     };
     console.log(request);
     try {
-      return await saveList(request);
+      const response = await saveList(request);
+      getIndentMrsResponse();
+      return response;
     } catch (error) {
       console.error("Error ثبت :", error);
     }
   };
-  const { height, width } = useCalculateTableHeight();
   return (
     <>
       <div className="p-2 mt-2 w-full bg-white rounded-md">
-        <div
-          className="w-full h-8 flex justify-center md:justify-end items-center text-gray-500"
-          style={{
-            fontSize: "12px",
-            fontWeight: "bold",
-            border: "1px solid lightgray",
-          }}
-        >
-          <div className="md:w-[2%] md:h-full border border-x-gray-300 bg-gray-200"></div>
-          <input
-            name="brandSearch"
-            value={convertToFarsiDigits(brandSearch)}
-            onChange={(e) => {
-              setBrandSearch(convertToLatinDigits(e.target.value));
-            }}
-            className={`border p-1 text-sm w-1/4 md:w-[5%]`}
-          />
-          <input
-            name="productSearch"
-            value={convertToFarsiDigits(productSearch)}
-            onChange={(e) => {
-              setProductSearch(convertToLatinDigits(e.target.value));
-            }}
-            className={`border p-1 text-sm w-1/4 md:w-[25%]`}
-          />
-          <div className="md:w-[10%] md:h-full border place-content-center text-center border-x-gray-300 bg-gray-200">
-            شرکت
-          </div>
-          <div className="md:w-[10%] md:h-full border place-content-center text-center border-x-gray-300 bg-gray-200">
-            فروشگاه
-          </div>
-          <div className="md:w-[5%] md:h-full border place-content-center text-center border-x-gray-300 bg-gray-200">
-            آخرین
-          </div>
-          <div className="md:w-[5%] md:h-full border border-x-gray-300 bg-gray-200"></div>
-          <div className="md:w-[5%] md:h-full border border-x-gray-300 bg-gray-200"></div>
-          <div className="md:w-[5%] md:h-full border border-x-gray-300 bg-gray-200"></div>
-          <div className="md:w-[5%] md:h-full border border-x-gray-300 bg-gray-200"></div>
-          <div className="md:w-[5%] md:h-full border border-x-gray-300 bg-gray-200"></div>
-          <div className="md:w-[5%] md:h-full border border-x-gray-300 bg-gray-200"></div>
-          <input
-            name="dtlDscSearch"
-            value={convertToFarsiDigits(dtlDscSearch)}
-            onChange={(e) => {
-              setDtlDscSearch(convertToLatinDigits(e.target.value));
-            }}
-            className={`border p-1 text-sm w-1/4 md:w-[10%]`}
-          />
-          <div className="md:w-[3%] md:h-full border border-x-gray-300 bg-gray-200"></div>
-        </div>
-
+        <InvoiceReceiptShowTableHeader
+          brandSearch={brandSearch}
+          setBrandSearch={setBrandSearch}
+          productSearch={productSearch}
+          setProductSearch={setProductSearch}
+          dtlDscSearch={dtlDscSearch}
+          setDtlDscSearch={setDtlDscSearch}
+        />
         {isLoading ? (
           <div className="text-center">{<Skeleton />}</div>
         ) : indentMrsResponse.err !== 0 ? (
@@ -799,7 +644,7 @@ const InvoiceReceiptShowTable = ({
               //skipPageReset={skipPageReset}
               fontSize="0.75rem"
               changeRowSelectColor={true}
-              wordWrap={false}
+              wordWrap={true}
               options={products.map((p) => ({
                 id: p.pId,
                 title: convertToFarsiDigits(p.n),
@@ -812,56 +657,7 @@ const InvoiceReceiptShowTable = ({
           </div>
         )}
         <ConfirmCard variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end ">
-          <div className="flex justify-evenly items-center text-gray-500 text-sm w-full">
-            <p>
-              تعداد:{" "}
-              {convertToFarsiDigits(
-                data.reduce(
-                  (acc, row) =>
-                    acc + Number(convertToLatinDigits(row.cnt.toString())),
-                  0
-                )
-              )}
-            </p>
-            <p>
-              آفر:{" "}
-              {convertToFarsiDigits(
-                data.reduce(
-                  (acc, row) =>
-                    acc + Number(convertToLatinDigits(row.offer.toString())),
-                  0
-                )
-              )}
-            </p>
-            <p>
-              مالیات:{" "}
-              {convertToFarsiDigits(
-                formatNumberWithCommas(
-                  data.reduce((acc, row) => acc + row.taxValue, 0)
-                )
-              )}
-            </p>
-            <p>
-              تخفیف:{" "}
-              {convertToFarsiDigits(
-                formatNumberWithCommas(
-                  data.reduce(
-                    (acc, row) =>
-                      acc + Number(convertToLatinDigits(row.dcrmnt.toString())),
-                    0
-                  )
-                )
-              )}
-            </p>
-            <p>
-              جمع:{" "}
-              {convertToFarsiDigits(
-                formatNumberWithCommas(
-                  data.reduce((acc, row) => acc + row.total, 0)
-                )
-              )}
-            </p>
-          </div>
+          <InvoiceReceiptShowTableSummery data={data} />
           <Button
             text={isLoadingSaveList ? "در حال ثبت اطلاعات..." : "ثبت"}
             backgroundColor="bg-green-500"
@@ -873,47 +669,13 @@ const InvoiceReceiptShowTable = ({
           />
         </ConfirmCard>
       </div>
-      <ModalForm
-        isOpen={showHistory}
-        onClose={() => setShowHistory(false)}
-        title="سوابق درخواست خرید"
-        width="2/3"
-      >
-        {isDtHistoryLoading ? (
-          <div className="text-center">{<Skeleton />}</div>
-        ) : (
-          <div
-            className="mt-2 overflow-y-auto"
-            style={width > 640 ? { height: height } : { height: "fit" }}
-          >
-            <TTable
-              columns={columnsHistory}
-              data={indentDtlHistoryResponse.data.result.indentDtlHistories.map(
-                (item, index) => ({
-                  ...item,
-                  index: convertToFarsiDigits(index + 1),
-                  id: convertToFarsiDigits(item.id),
-                  dat: convertToFarsiDigits(item.dat),
-                  cnt: convertToFarsiDigits(formatNumberWithCommas(item.cnt)),
-                  offer: convertToFarsiDigits(item.offer),
-                  taxValue: convertToFarsiDigits(
-                    formatNumberWithCommas(item.taxValue)
-                  ),
-                  dcrmnt: convertToFarsiDigits(
-                    formatNumberWithCommas(item.dcrmnt)
-                  ),
-                  total: convertToFarsiDigits(
-                    formatNumberWithCommas(item.total)
-                  ),
-                  dtlDsc: convertToFarsiDigits(item.dtlDsc),
-                  fmName: convertToFarsiDigits(item.fmName),
-                  fDsc: convertToFarsiDigits(item.fDsc),
-                })
-              )}
-            />
-          </div>
-        )}
-      </ModalForm>
+      <InvoiceReceiptHistory
+        showHistory={showHistory}
+        setShowHistory={setShowHistory}
+        isDtHistoryLoading={isDtHistoryLoading}
+        indentDtlHistoryResponse={indentDtlHistoryResponse}
+        columnsHistory={columnsHistory}
+      />
     </>
   );
 };

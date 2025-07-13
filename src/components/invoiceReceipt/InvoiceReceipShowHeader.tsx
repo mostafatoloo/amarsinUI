@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   convertToFarsiDigits,
+  convertToLatinDigits,
 } from "../../utilities/general";
 import AutoComplete from "../controls/AutoComplete";
 import { useCustomers } from "../../hooks/useCustomers";
@@ -108,11 +109,11 @@ const InvoiceReceipShowHeader = ({
         <div className="flex">
           <label className="p-1">سررسید:</label>
           <input
-            value={fields.payDuration}
+            value={convertToFarsiDigits(fields.payDuration.toString())}
             onChange={(e) =>
               setFields((prev: Fields) => ({
                 ...prev,
-                payDuration: Number(e.target.value),
+                payDuration: Number(convertToLatinDigits(e.target.value)),
               }))
             }
             className="text-sm text-gray-800 w-full p-1 border border-gray-300 rounded-md"
@@ -145,9 +146,14 @@ const InvoiceReceipShowHeader = ({
         <label className="p-1 w-24 text-left">توضیحات:</label>
         <input
           type="text"
-          value={convertToFarsiDigits(indentMrsResponse.indents[0]?.dsc ?? "")}
-          disabled
-          className="text-sm text-gray-400 w-full p-1 border border-gray-300 rounded-md"
+          value={convertToFarsiDigits(fields.dsc)}
+          onChange={(e) =>
+            setFields((prev: Fields) => ({
+              ...prev,
+              dsc: e.target.value,
+            }))
+          }
+          className="text-sm text-gray-600 w-full p-1 border border-gray-300 rounded-md"
         />
       </div>
     </div>

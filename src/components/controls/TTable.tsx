@@ -31,7 +31,7 @@ type TableProps<T extends object> = {
   hasSumRow?: boolean;
   changeRowSelectColor?: boolean;
   setSelectedId?: (value: number) => void;
-  CellColorChange?: (cell: any) => string;
+  CellColorChange?: (cell: any) => string|null;
 };
 
 // Create an editable cell renderer
@@ -70,8 +70,6 @@ export function EditableInput<T extends object>({
     [initialValue]
   );
 
-  // State to manage search text if needed
-  //const [searchText, setSearchText] = React.useState("");
 
   // Handle change from AutoComplete
   const handleAutoCompleteChange = (
@@ -250,7 +248,6 @@ export default function TTable<T extends object>({
                         : {}),
                     }}
                     onClick={() => {
-                      //console.log(row.original["id" as keyof T])
                       if (setSelectedId) {
                         const itemId = Number(
                           convertToLatinDigits(row.original["id" as keyof T])

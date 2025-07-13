@@ -31,7 +31,7 @@ export function useInvoiceReceipt() {
   } as UseQueryOptions<IndentMrsResponse, Error, IndentMrsResponse, unknown[]>);
 
   return {
-    //getInventoryList: () => query.refetch(), // Optional manual trigger
+    getIndentMrsResponse: () => query.refetch(), // Optional manual trigger
     isLoading: query.isLoading,
     error: query.error,
     indentMrsResponse: query.data ?? {

@@ -33,12 +33,13 @@ export type Fields = {
   price: { id: number; title: string } | null;
   fdate: Date | null;
   tdate: Date | null;
+  dsc: string;
 };
 
 const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
   const { setField, mrsId } = useInvoiceReceiptStore();
   const { yearId } = useGeneralContext();
-  const { indentMrsResponse, isLoading } = useInvoiceReceipt();
+  const { indentMrsResponse, isLoading, getIndentMrsResponse } = useInvoiceReceipt();
   const {
     salesPricesSearchResponse,
     addProductList,
@@ -61,6 +62,7 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
     customerCondition: [],
     brand: [],
     payDuration: indentMrsResponse.indents[0]?.payDuration ?? 0,
+    dsc: indentMrsResponse.indents[0]?.dsc ?? "",
     price: {
       id: 0,
       title: "",
@@ -81,6 +83,7 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
         title: indentMrsResponse.indents[0]?.srName ?? "",
       },
       payDuration: indentMrsResponse.indents[0]?.payDuration ?? 0,
+      dsc: indentMrsResponse.indents[0]?.dsc ?? "",
       price: {
         id: indentMrsResponse.indents[0]?.salesPriceId ?? 0,
         title: indentMrsResponse.indents[0]?.salesPriceTitle ?? "",
@@ -306,6 +309,7 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
         saveList={saveList}
         isLoadingSaveList={isLoadingSaveList}
         isDtHistoryLoading={isDtHistoryLoading}
+        getIndentMrsResponse={getIndentMrsResponse}
       />
     </div>
   );
