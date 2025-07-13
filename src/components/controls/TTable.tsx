@@ -10,28 +10,21 @@ import { colors } from "../../utilities/color";
 import AutoComplete from "./AutoComplete";
 
 type TableProps<T extends object> = {
-  /*data: T[];
-  headCells: HeadCell<T>[];
-  fontSize?: string;
-  wordWrap?: boolean;
-  cellClickHandler?: (cell: HeadCell<T>, item: T) => void;
-  editableColumns?: (keyof T)[]; // Add this for specifying which columns are editable
-  onCellEdit?: (item: T, field: keyof T, value: string) => void; // Add this for handling edits
-  */
   columns: TableColumns;
   data: T[];
   options?: DefaultOptionType[];
   setSearchText?: Dispatch<SetStateAction<string>>;
   updateMyData?: (rowIndex: number, columnId: string, value: string) => void;
   updateMyRow?: (rowIndex: number, values: DefaultOptionType) => void;
-  changeRowValues?: (value: string,rowIndex:number,columnId:string) => void;
+  changeRowValues?: (value: string, rowIndex: number, columnId: string) => void;
   skipPageReset?: boolean;
   fontSize?: string;
   wordWrap?: boolean;
   hasSumRow?: boolean;
   changeRowSelectColor?: boolean;
   setSelectedId?: (value: number) => void;
-  CellColorChange?: (cell: any) => string|null;
+  CellColorChange?: (cell: any) => string | null;
+  showToolTip?: boolean;
 };
 
 // Create an editable cell renderer
@@ -43,7 +36,7 @@ interface EditableCellProps<T extends object> extends CellProps<T, any> {
   ) => void;
   options?: DefaultOptionType[];
   setSearchText: Dispatch<SetStateAction<string>>;
-  changeRowValues: (value: string, rowIndex: number,columnId:string) => void;
+  changeRowValues: (value: string, rowIndex: number, columnId: string) => void;
 }
 
 export function EditableInput<T extends object>({
@@ -69,7 +62,6 @@ export function EditableInput<T extends object>({
       ),
     [initialValue]
   );
-
 
   // Handle change from AutoComplete
   const handleAutoCompleteChange = (
@@ -131,8 +123,8 @@ export function EditableInput<T extends object>({
       style={{ backgroundColor: isFocused ? "white" : backgroundColor }}
       value={value}
       onChange={(e) => {
-        setValue(convertToFarsiDigits(e.target.value))
-        changeRowValues(e.target.value,index,id)
+        setValue(convertToFarsiDigits(e.target.value));
+        changeRowValues(e.target.value, index, id);
       }}
       onBlur={() => {
         updateMyData(index, id, value);
@@ -150,7 +142,7 @@ export default function TTable<T extends object>({
   setSearchText,
   updateMyData = () => {},
   updateMyRow = () => {},
-  changeRowValues= () =>{},
+  changeRowValues = () => {},
   //skipPageReset,
   fontSize = "0.75rem",
   wordWrap = true,
@@ -158,6 +150,7 @@ export default function TTable<T extends object>({
   changeRowSelectColor = false,
   setSelectedId,
   CellColorChange,
+  showToolTip = false,
 }: TableProps<T>) {
   const [rowSelect, setRowSelect] = useState(0);
 
@@ -227,7 +220,7 @@ export default function TTable<T extends object>({
                     {...cell.getCellProps()}
                     className="text-gray-500 border-r border-gray-300 flex justify-start items-center px-1"
                     key={cell.column.id}
-                    title={wordWrap ? "" : cell.value}
+                    title={showToolTip ? cell.value : ""}
                     style={{
                       width: cell.column.totalWidth || cell.column.width,
                       backgroundColor:

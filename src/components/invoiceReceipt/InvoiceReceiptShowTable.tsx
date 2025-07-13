@@ -653,6 +653,7 @@ const InvoiceReceiptShowTable = ({
               updateMyRow={updateMyRow}
               CellColorChange={handleCellColorChange}
               changeRowValues={changeRowValues}
+              showToolTip={true}
             />
           </div>
         )}

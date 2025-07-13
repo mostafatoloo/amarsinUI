@@ -347,6 +347,7 @@ export default function WorkflowParent({ setSelectedId }: Props) {
               changeRowSelectColor={true}
               setSelectedId={setSelectedId}
               wordWrap={false}
+              showToolTip={true}
             />
             <TablePaginationActions
               page={pageNumber - 1}
