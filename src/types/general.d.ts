@@ -29,3 +29,4 @@ export type DefaultOptionTypeStringId = {
 
 
 export type TableColumns = (ColumnGroup | Column)[];
+

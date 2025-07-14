@@ -1,6 +1,7 @@
 import OkForm from "../../assets/images/GrayThem/img24_3.png";
 import CancelForm from "../../assets/images/GrayThem/img24_4.png";
 import { WorkflowRowSelectResponse } from "../../types/workflow";
+import { convertToFarsiDigits } from "../../utilities/general";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -42,12 +43,12 @@ const WorkflowRowSelectHeader = ({ workFlowRowSelectResponse }: Props) => {
         </div>
       </div>
 
-      <div className="px-2 border border-gray-300 rounded-md w-full md:w-1/3">
+      <div className="px-2 border text-gray-600 border-gray-300 rounded-md w-full md:w-1/3">
         {flowDescriptions.length > 0 &&
           flowDescriptions.map((fd,index) => {
             return (
               <p className="text-sm" key={index}>
-                {fd.usrName}:{fd.dsc}
+                {convertToFarsiDigits(fd.usrName)}: {convertToFarsiDigits(fd.dsc)}
               </p>
             );
           })}

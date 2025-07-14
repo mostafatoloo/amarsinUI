@@ -143,7 +143,7 @@ const AutoComplete = <T extends { id: string | number; title: string }>({
         />
       )}
       style={{
-        backgroundColor: isFocused && changeColorOnFocus ? "white" : "inherit",
+        backgroundColor: isFocused && changeColorOnFocus ? colors.gray50 : "white",
       }}
       value={value}
       onChange={handleChange}

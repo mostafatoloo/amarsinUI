@@ -8,6 +8,11 @@ export default {
   ],
   theme: {
     extend: {
+      width: {
+        'full-minus-24': 'calc(100% - 24px)',
+        '50-minus-24': 'calc(50% - 24px)',
+        '25-minus-24': 'calc(25% - 24px)',
+      },
       height: {
         'screen-minus-500': 'calc(100vh - 500px)',
         'screen-minus-400': 'calc(100vh - 400px)',

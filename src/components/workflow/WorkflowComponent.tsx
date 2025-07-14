@@ -2,6 +2,7 @@ import InvoiceShow from "../invoice/InvoiceShow";
 import WarehouseShow from "../warehouse/WarehouseShow";
 import { WorkflowRowSelectResponse } from "../../types/workflow";
 import InvoiceReceiptShow from "../invoiceReceipt/InvoiceReceiptShow";
+import RegRecievedCheque from "../cheque/RegRecievedCheque";
 
 type Props = {
   formViewPath: string;
@@ -20,6 +21,9 @@ export default function WorkflowComponent({ formViewPath, workFlowRowSelectRespo
       break;
     case "Indent/_CreateIndent":
       componentToRender = <InvoiceReceiptShow workFlowRowSelectResponse={workFlowRowSelectResponse} />;      
+      break;
+    case "Payment/_Cheque":
+      componentToRender = <RegRecievedCheque workFlowRowSelectResponse={workFlowRowSelectResponse} />;      
       break;
     default:
       componentToRender = null;

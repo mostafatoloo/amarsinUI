@@ -20,5 +20,6 @@ export const colors = {
     gray200:"#E5E7EB",
     gray_600:"#4B5563",
     blue50:"#ebf8ff",
-    red50:"#ffebee"
+    red50:"#ffebee",
+    gray50:"#F3F4F6",
 }

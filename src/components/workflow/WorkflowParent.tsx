@@ -323,21 +323,6 @@ export default function WorkflowParent({ setSelectedId }: Props) {
             className="w-full"
             //style={{ height: parentHeight }}
           >
-            {/*<Table
-              data={workFlowResponse.workTables}
-              headCells={headCells}
-              pagination={true}
-              page={pageNumber - 1}
-              setPage={setPageNumber}
-              pageSize={pageSize}
-              setPageSize={setPageSize}
-              totalCount={workFlowResponse.totalCount}
-              setSelectedId={setSelectedId}
-              cellFontSize="0.75rem"
-              wordWrap={false}
-              //rowClickHandler={handleRowClick}
-              cellColorChangeHandler={handleCellColorChange}
-            />*/}
             <TTable
               columns={columns}
               data={data}
