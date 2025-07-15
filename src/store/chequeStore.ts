@@ -48,8 +48,38 @@ export const useChequeStore = create<ChequeState>()((set) => ({
     },
   },
   id: 0,
+  updateFieldsResponse: {
+    meta: { errorCode: 0, message: "", type: "" },
+    data: {
+      result: {
+        id: 0,
+        errorCode: 0,
+        message: "",
+        details: [],
+      },
+    },
+  },
+  updateStatus: {
+    prsn: { errorCode: 0 },
+    sayadi: { errorCode: 0 },
+    srName: { errorCode: 0 },
+    marketerSrName: { errorCode: 0 },
+    transferenceOwner: { errorCode: 0 },
+    sarDate: { errorCode: 0 },
+    accNo: { errorCode: 0 },
+    no: { errorCode: 0 },
+    amount: { errorCode: 0 },
+    dsc: { errorCode: 0 },
+    systemId: { errorCode: 0 },
+    yearId: { errorCode: 0 },
+    bankId: { errorCode: 0 },
+    sayadiMessage: { errorCode: 0 },
+  },
   setField: (field: string, value: any) =>
     set((state) => ({ ...state, [field]: value })),
   setLoadPaymentResponse: (loadPaymentResponse) =>
     set({ loadPaymentResponse }),
+  setUpdateFieldsResponse: (updateFieldsResponse) =>
+    set({ updateFieldsResponse }),
+  setUpdateStatus: (updateStatus) => set({ updateStatus }),
 }));

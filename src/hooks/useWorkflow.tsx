@@ -90,6 +90,7 @@ export function useWorkflow() {
   } as UseQueryOptions<WorkflowResponse, Error, WorkflowResponse, unknown[]>);
 
   return {
+    getWorkTable: query.refetch,
     isLoading: query.isLoading,
     error: query.error,
     workFlowResponse: query.data ?? {

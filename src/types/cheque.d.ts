@@ -49,12 +49,47 @@ interface LoadPaymentResponse {
     sayadiStatus: number;
     sayadiMessage: string;
   }
+//api/Payment/updateFields
+  type UpdateFieldsResponse = {
+    meta: Meta;
+    data: {
+      result: {
+        id: number;
+        errorCode: number;
+        message: string;
+        details: Array<{
+          id: number;
+          errorCode: number;
+          message: string;
+        }>;
+      };
+    };
+  };
+
+  type UpdateFieldsRequest = {
+    fieldName: string;
+    value: string;
+    value2: string;
+  };
+
+  type UpdateStatus = {
+    [key: string]: {
+      errorCode: number;
+    };
+  };
+
   export interface ChequeState {
     id: number;
+    updateStatus: UpdateStatus;
     loadPaymentResponse: LoadPaymentResponse;
+    updateFieldsResponse: UpdateFieldsResponse;
     setField: (field: string, value: any) => void;
     setLoadPaymentResponse: (
       loadPaymentResponse: LoadPaymentResponse
     ) => void;
+    setUpdateFieldsResponse: (
+      updateFieldsResponse: UpdateFieldsResponse
+    ) => void;
+    setUpdateStatus: (updateStatus: UpdateStatus) => void;
   }
   

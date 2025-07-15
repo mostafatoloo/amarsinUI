@@ -24,6 +24,7 @@ type Props<T> = {
   multiple?: boolean;
   changeColorOnFocus?: boolean;
   textColor?:string;
+  backgroundColor?:string;
 };
 
 const AutoComplete = <T extends { id: string | number; title: string }>({
@@ -46,7 +47,8 @@ const AutoComplete = <T extends { id: string | number; title: string }>({
   placeholder = "",
   multiple = false,
   changeColorOnFocus,
-  textColor
+  textColor,
+  backgroundColor
 }: Props<T>) => {
   const [isFocused, setIsFocused] = React.useState(false);
   return (
@@ -143,7 +145,7 @@ const AutoComplete = <T extends { id: string | number; title: string }>({
         />
       )}
       style={{
-        backgroundColor: isFocused && changeColorOnFocus ? colors.gray50 : "white",
+        backgroundColor: isFocused && changeColorOnFocus ? colors.gray50 : backgroundColor ? backgroundColor :"inherit",
       }}
       value={value}
       onChange={handleChange}
