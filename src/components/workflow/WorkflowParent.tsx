@@ -3,7 +3,6 @@ import { Paper } from "@mui/material";
 import Skeleton from "../layout/Skeleton";
 import { useNavigate } from "react-router-dom";
 import { useGeneralContext } from "../../context/GeneralContext";
-import { useWorkflow } from "../../hooks/useWorkflow";
 import {
   useWorkflowStore,
 } from "../../store/workflowStore";
@@ -14,13 +13,16 @@ import { debounce } from "lodash";
 import TTable from "../controls/TTable";
 import { DefaultOptionTypeStringId, TableColumns } from "../../types/general";
 import { TablePaginationActions } from "../controls/TablePaginationActions";
+import { WorkflowResponse } from "../../types/workflow";
 
 type Props = {
   setSelectedId: (value: number) => void;
+  workFlowResponse: WorkflowResponse;
+  error: Error | null;
+  isLoading: boolean;
 };
 
-export default function WorkflowParent({ setSelectedId }: Props) {
-  const { workFlowResponse, error, isLoading } = useWorkflow();
+export default function WorkflowParent({ setSelectedId, workFlowResponse, error, isLoading }: Props) {
   const { flowMapId: flowMapIdStore, setField } = useWorkflowStore();
   const { systemId, chartId, defaultRowsPerPage } = useGeneralContext();
   const [pageNumber, setPageNumber] = useState<number>(1);

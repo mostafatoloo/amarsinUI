@@ -1,26 +1,28 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useGeneralContext } from "../../context/GeneralContext";
 import { useWorkflowRowSelectStore } from "../../store/workflowStore";
 import { useWorkflowStore } from "../../store/workflowStore";
-import { useWorkflow } from "../../hooks/useWorkflow";
 import { useWorkflowRowSelect } from "../../hooks/useWorkflow";
 import WorkflowRowSelect from "./WorkflowRowSelect";
 import WorkflowComponent from "./WorkflowComponent";
+import { WorkflowResponse } from "../../types/workflow";
 
 type Props = {
   selectedId: number;
+  handleSelectedIdChange: (id: number) => void;
+  getWorkTable: () => void;
+  workFlowResponse: WorkflowResponse;
 };
 
-export const WorkflowChild = ({ selectedId }: Props) => {
-  const [currentSelectedId, setCurrentSelectedId] = useState(selectedId);
+export const WorkflowChild = ({ selectedId, handleSelectedIdChange, getWorkTable, workFlowResponse }: Props) => {
+  //const [currentSelectedId, setCurrentSelectedId] = useState(selectedId);
   const { chartId, systemId } = useGeneralContext();
   const { setField } = useWorkflowRowSelectStore();
   const { page, pageSize, dateTime, code, cost, flowMapId, name, dsc } =
     useWorkflowStore();
-  const { workFlowResponse } = useWorkflow();
   const { workFlowRowSelectResponse, isLoading, error } = useWorkflowRowSelect();
 
-  useEffect(() => {
+  /*useEffect(() => {
     const handleSelectedIdChange = (event: CustomEvent) => {
       setCurrentSelectedId(event.detail);
     };
@@ -35,13 +37,15 @@ export const WorkflowChild = ({ selectedId }: Props) => {
         handleSelectedIdChange as EventListener
       );
     };
-  }, []);
+  }, []);*/
 
   useEffect(() => {
+    console.log("selectedId", selectedId);
     setField("chartId", chartId);
-    setField("workTableId", currentSelectedId);
+    setField("workTableId", selectedId)//currentSelectedId);
     //getWorkTableRowSelect()
-  }, [currentSelectedId, chartId]);
+  }, [selectedId,//currentSelectedId, 
+    chartId]);
 
   useEffect(() => {
     setField(
@@ -75,6 +79,8 @@ export const WorkflowChild = ({ selectedId }: Props) => {
       <WorkflowComponent
         formViewPath={workFlowRowSelectResponse.workTableForms.form1ViewPath}
         workFlowRowSelectResponse={workFlowRowSelectResponse}
+        handleSelectedIdChange={handleSelectedIdChange}
+        getWorkTable={getWorkTable}
       />
     </>
   );

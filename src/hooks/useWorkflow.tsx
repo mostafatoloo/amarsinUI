@@ -100,7 +100,6 @@ export function useWorkflow() {
       flowMapTitles: [],
       workTables: [],
     },
-    refetch: query.refetch, // Expose refetch function for manual refreshes
   };
 }
 //for RowSelect

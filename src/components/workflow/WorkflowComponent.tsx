@@ -7,23 +7,44 @@ import RegRecievedCheque from "../cheque/RegRecievedCheque";
 type Props = {
   formViewPath: string;
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  handleSelectedIdChange: (id: number) => void;
+  getWorkTable?: () => void;
 };
 
-export default function WorkflowComponent({ formViewPath, workFlowRowSelectResponse }: Props) {
+export default function WorkflowComponent({
+  formViewPath,
+  workFlowRowSelectResponse,
+  handleSelectedIdChange,
+  getWorkTable,
+}: Props) {
   let componentToRender;
-  
+
   switch (formViewPath) {
     case "Invoice/_Show":
-      componentToRender = <InvoiceShow workFlowRowSelectResponse={workFlowRowSelectResponse} />;
+      componentToRender = (
+        <InvoiceShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
+      );
       break;
     case "WarehouseTemporaryReceipt/_WarehouseTemporaryReceiptIndent":
-      componentToRender = <WarehouseShow workFlowRowSelectResponse={workFlowRowSelectResponse} />;
+      componentToRender = (
+        <WarehouseShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
+      );
       break;
     case "Indent/_CreateIndent":
-      componentToRender = <InvoiceReceiptShow workFlowRowSelectResponse={workFlowRowSelectResponse} />;      
+      componentToRender = (
+        <InvoiceReceiptShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+        />
+      );
       break;
     case "Payment/_Cheque":
-      componentToRender = <RegRecievedCheque workFlowRowSelectResponse={workFlowRowSelectResponse} />;      
+      componentToRender = (
+        <RegRecievedCheque
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          handleSelectedIdChange={handleSelectedIdChange}
+          getWorkTable={getWorkTable}
+        />
+      );
       break;
     default:
       componentToRender = null;

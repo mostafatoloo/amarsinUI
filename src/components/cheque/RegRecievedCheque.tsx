@@ -17,6 +17,7 @@ import Spinner from "../controls/Spinner";
 import {
   convertToFarsiDigits,
   convertToLatinDigits,
+  formatNumberWithCommas,
 } from "../../utilities/general";
 import { useAuthStore } from "../../store/authStore";
 import { useDefinitionInvironment } from "../../hooks/useDefinitionInvironment";
@@ -29,9 +30,13 @@ import { useWorkflow } from "../../hooks/useWorkflow";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  handleSelectedIdChange: (id: number) => void;
+  getWorkTable?: () => void;
 };
 
-const RegRecievedCheque = ({ workFlowRowSelectResponse }: Props) => {
+const RegRecievedCheque = ({ workFlowRowSelectResponse, 
+//  handleSelectedIdChange, getWorkTable 
+}: Props) => {
   const [bankSearch, setBankSearch] = useState("");
   const { banks, isLoading: isLoadingBanks } = useBanks();
   const { setField } = useBankStore();
@@ -44,22 +49,23 @@ const RegRecievedCheque = ({ workFlowRowSelectResponse }: Props) => {
   const initData = authApiResponse?.data.result.initData;
 
   const {
-    id,
+    //id,
     setField: setChequeField,
     updateFieldsResponse,
     setUpdateFieldsResponse,
     updateStatus,
-    setUpdateStatus
+    setUpdateStatus,
   } = useChequeStore();
 
   const {
     loadPaymentResponse,
+    //getPayment,
     //isLoading: isLoadingLoadPayment,
     updateFields,
     isLoadingUpdateFields,
   } = useCheques();
 
-  const { getWorkTable } = useWorkflow();
+  const {workFlowResponse}=useWorkflow()
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFieldChanged, setIsFieldChanged] = useState(false);
@@ -86,8 +92,9 @@ const RegRecievedCheque = ({ workFlowRowSelectResponse }: Props) => {
     sarDate: "",
     accNo: "",
     no: "",
-    amount: "",
+    amountT: "",
     dsc: "",
+    fixSerial: "",
   });
   useEffect(() => {
     setField("page", 1);
@@ -96,25 +103,26 @@ const RegRecievedCheque = ({ workFlowRowSelectResponse }: Props) => {
   }, [bankSearch]);
 
   useEffect(() => {
-    console.log(yearSearch,systemSearch)
-    if (id !== workFlowRowSelectResponse.workTableRow.formId)
-      setChequeField("id", workFlowRowSelectResponse.workTableRow.formId);
+    console.log(yearSearch, systemSearch);
+    console.log("**************************",workFlowRowSelectResponse.workTableRow.formId)
+    //if (idKept!==0) handleSelectedIdChange?.(idKept);
+    setChequeField("id", workFlowRowSelectResponse.workTableRow.formId);
     setUpdateStatus({
       ...updateStatus,
-      prsn: { errorCode: 0 },
-      sayadi: { errorCode: 0 },
-      srName: { errorCode: 0 },
-      marketerSrName: { errorCode: 0 },
-      transferenceOwner: { errorCode: 0 },
-      sarDate: { errorCode: 0 },
-      accNo: { errorCode: 0 },
-      no: { errorCode: 0 },
-      amount: { errorCode: 0 },
-      dsc: { errorCode: 0 },
-      sayadiMessage: { errorCode: 0 },
-      systemId: { errorCode: 0 },
-      yearId: { errorCode: 0 },
-      bankId: { errorCode: 0 },
+      prsn: { errorCode: 0, isUpdating: false },
+      sayadi: { errorCode: 0, isUpdating: false },
+      srName: { errorCode: 0, isUpdating: false },
+      marketerSrName: { errorCode: 0, isUpdating: false },
+      transferenceOwner: { errorCode: 0, isUpdating: false },
+      sarDate: { errorCode: 0, isUpdating: false },
+      accNo: { errorCode: 0, isUpdating: false },
+      no: { errorCode: 0, isUpdating: false },
+      amountT: { errorCode: 0, isUpdating: false },
+      dsc: { errorCode: 0, isUpdating: false },
+      sayadiMessage: { errorCode: 0, isUpdating: false },
+      systemId: { errorCode: 0, isUpdating: false },
+      yearId: { errorCode: 0, isUpdating: false },
+      bankId: { errorCode: 0, isUpdating: false },
     });
     setUpdateFieldsResponse({
       meta: { errorCode: 0, message: "", type: "" },
@@ -127,9 +135,10 @@ const RegRecievedCheque = ({ workFlowRowSelectResponse }: Props) => {
         },
       },
     });
-  }, [workFlowRowSelectResponse.workTableRow.formId]);
+  }, [workFlowRowSelectResponse.workTableRow.formId,workFlowResponse]);
 
   useEffect(() => {
+    console.log("updated Cheque")
     setCheque({
       sayadiMessage: convertToFarsiDigits(
         loadPaymentResponse.data.result.payment.sayadiMessage
@@ -172,12 +181,18 @@ const RegRecievedCheque = ({ workFlowRowSelectResponse }: Props) => {
         loadPaymentResponse.data.result.payment.accNo
       ),
       no: convertToFarsiDigits(loadPaymentResponse.data.result.payment.no),
-      amount: convertToFarsiDigits(
-        loadPaymentResponse.data.result.payment.amount
+      fixSerial: convertToFarsiDigits(
+        loadPaymentResponse.data.result.payment.fixSerial
+      ),
+      amountT: convertToFarsiDigits(
+        formatNumberWithCommas(
+          Number(loadPaymentResponse.data.result.payment.amount)
+        )
       ),
       dsc: convertToFarsiDigits(loadPaymentResponse.data.result.payment.dsc),
     });
   }, [loadPaymentResponse]);
+
 
   //update fields state
   const capitalizeFirstLetter = (string: string): string => {
@@ -193,7 +208,9 @@ const RegRecievedCheque = ({ workFlowRowSelectResponse }: Props) => {
       ...cheque,
       [fieldName]:
         typeof value === "string" || typeof value === "number"
-          ? convertToFarsiDigits(value.toString())
+          ? fieldName === "amountT"
+            ? convertToFarsiDigits(formatNumberWithCommas(value as number))
+            : convertToFarsiDigits(value.toString())
           : value,
     });
     setIsFieldChanged(true);
@@ -204,7 +221,12 @@ const RegRecievedCheque = ({ workFlowRowSelectResponse }: Props) => {
     value: string | number | DefaultOptionType
   ) => {
     if (typeof value === "string" || typeof value === "number") {
-      update(fieldName, convertToLatinDigits(value.toString()));
+      if (fieldName === "amountT") {
+        console.log(convertToLatinDigits(value.toString()));
+        update(fieldName, convertToLatinDigits(value.toString()));
+      } else {
+        update(fieldName, convertToLatinDigits(value.toString()));
+      }
     } else {
       if (fieldName === "system") {
         update("SystemId", value?.id.toString());
@@ -215,23 +237,26 @@ const RegRecievedCheque = ({ workFlowRowSelectResponse }: Props) => {
       }
       setIsModalOpen(true);
     }
-    console.log(isFieldChanged, "isFieldChanged");
-    if (isFieldChanged && fieldName !== "bank" && fieldName !== "year" && fieldName !== "system") {
+
+    if (
+      isFieldChanged &&
+      fieldName !== "bank" &&
+      fieldName !== "year" &&
+      fieldName !== "system"
+    ) {
       setIsModalOpen(true);
     }
     setIsFieldChanged(false);
-
-    getWorkTable();
   };
 
-  const update = (fieldName: string, value: string) => {
+  const update = async(fieldName: string, value: string) => {
+    console.log(fieldName, value, "update");
     updateFields({
       fieldName: capitalizeFirstLetter(fieldName),
       value: value,
       value2: "",
     });
-    /*if (isLoadingUpdateFields)
-      setIsLoadingUpdate({ ...isLoadingUpdate, [fieldName]: true });*/
+    //getWorkTable?.();
   };
 
   useEffect(() => {
@@ -248,14 +273,19 @@ const RegRecievedCheque = ({ workFlowRowSelectResponse }: Props) => {
     };
   }, [isModalOpen]);
 
-  const showIcon = (fieldName: string) => {
-    return updateStatus[fieldName as keyof typeof updateStatus].errorCode ===
-      0 ? ( // if update is successful
-      <img src={Ok} alt="ok" />
-    ) : (
-      // if update is failed
-      <img src={Err} alt="err" />
-    );
+  const showIconForTextField = (fieldName: string) => {
+    if (isLoadingUpdateFields && updateStatus[fieldName]?.isUpdating) {
+      return <Spinner size={4} color={colors.blue500} />;
+    }
+    if (!isLoadingUpdateFields && updateStatus[fieldName]?.errorCode === 0) {
+      return <img src={Ok} alt="ok" title={updateStatus[fieldName]?.message} />;
+    }
+    if (!isLoadingUpdateFields && updateStatus[fieldName]?.errorCode !== 0) {
+      return (
+        <img src={Err} alt="err" title={updateStatus[fieldName]?.message} />
+      );
+    }
+    return null;
   };
   return (
     <div className="flex w-full text-sm gap-2 text-gray-600">
@@ -280,9 +310,6 @@ const RegRecievedCheque = ({ workFlowRowSelectResponse }: Props) => {
           name="sayadiMessage"
           label="صیادی:"
           value={cheque.sayadiMessage}
-          //onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          //  setChequeFields("sayadiMessage", e.target.value)
-          //}
           widthDiv="w-full"
           widthLabel="w-24"
           widthInput="w-full-minus-24"
@@ -306,12 +333,18 @@ const RegRecievedCheque = ({ workFlowRowSelectResponse }: Props) => {
                 inputPadding="0 !important"
                 backgroundColor="white"
               />
-              {isLoadingDefinition ? (
+              {isLoadingDefinition && updateStatus.systemId.isUpdating ? (
                 <Spinner size={4} color={colors.blue500} />
-              ) : cheque.system && !isLoadingDefinition && updateStatus.systemId.errorCode === 0 ? (
-                <img src={Ok} alt="ok" />
+              ) : cheque.system &&
+                !isLoadingDefinition &&
+                updateStatus.systemId.errorCode === 0 ? (
+                <img src={Ok} alt="ok" title={updateStatus.systemId.message} />
               ) : updateStatus.systemId.errorCode !== 0 ? (
-                <img src={Err} alt="err" />
+                <img
+                  src={Err}
+                  alt="err"
+                  title={updateStatus.systemId.message}
+                />
               ) : null}
             </div>
           </div>
@@ -336,10 +369,12 @@ const RegRecievedCheque = ({ workFlowRowSelectResponse }: Props) => {
               />
               {isLoadingDefinition ? (
                 <Spinner size={4} color={colors.blue500} />
-              ) : cheque.year && !isLoadingDefinition && updateStatus.yearId.errorCode === 0 ? (
-                <img src={Ok} alt="ok" />
+              ) : cheque.year &&
+                !isLoadingDefinition &&
+                updateStatus.yearId.errorCode === 0 ? (
+                <img src={Ok} alt="ok" title={updateStatus.yearId.message} />
               ) : updateStatus.yearId.errorCode !== 0 ? (
-                <img src={Err} alt="err" />
+                <img src={Err} alt="err" title={updateStatus.yearId.message} />
               ) : null}
             </div>
           </div>
@@ -361,7 +396,7 @@ const RegRecievedCheque = ({ workFlowRowSelectResponse }: Props) => {
               widthInput="w-full-minus-24"
               variant="outlined"
             />
-            {showIcon("prsn")}
+            {showIconForTextField("prsn")}
           </div>
           <div className="flex w-full justify-center items-center gap-2">
             <Input
@@ -379,7 +414,7 @@ const RegRecievedCheque = ({ workFlowRowSelectResponse }: Props) => {
               widthInput="w-full-minus-24"
               variant="outlined"
             />
-            {showIcon("sayadi")}
+            {showIconForTextField("sayadi")}
           </div>
         </div>
         <div className="flex justify-between w-full">
@@ -439,10 +474,12 @@ const RegRecievedCheque = ({ workFlowRowSelectResponse }: Props) => {
               />
               {isLoadingBanks ? (
                 <Spinner size={4} color={colors.blue500} />
-              ) : cheque.bank && !isLoadingBanks && updateStatus.bankId.errorCode === 0 ? (
-                <img src={Ok} alt="ok" />
+              ) : cheque.bank &&
+                !isLoadingBanks &&
+                updateStatus.bankId.errorCode === 0 ? (
+                <img src={Ok} alt="ok" title={updateStatus.bankId.message} />
               ) : updateStatus.bankId.errorCode !== 0 ? (
-                <img src={Err} alt="err" />
+                <img src={Err} alt="err" title={updateStatus.bankId.message} />
               ) : null}
             </div>
           </div>
@@ -462,7 +499,7 @@ const RegRecievedCheque = ({ workFlowRowSelectResponse }: Props) => {
               widthInput="w-full-minus-24"
               variant="outlined"
             />
-            {showIcon("transferenceOwner")}
+            {showIconForTextField("transferenceOwner")}
           </div>
         </div>
         <div className="flex justify-between w-full">
@@ -482,7 +519,7 @@ const RegRecievedCheque = ({ workFlowRowSelectResponse }: Props) => {
               widthInput="w-full-minus-24"
               variant="outlined"
             />
-            {showIcon("sarDate")}
+            {showIconForTextField("sarDate")}
           </div>
           <div className="flex w-1/2 justify-center items-center gap-2">
             <Input
@@ -500,57 +537,65 @@ const RegRecievedCheque = ({ workFlowRowSelectResponse }: Props) => {
               widthInput="w-full-minus-24"
               variant="outlined"
             />
-            {showIcon("accNo")}
+            {showIconForTextField("accNo")}
           </div>
         </div>
         <div className="flex justify-between items-center w-full">
-          <div className="flex items-center gap-1 w-1/2">
+          <div className="flex w-1/2 items-center gap-1">
             <label className="w-24 text-left">شماره:</label>
-            <Input
-              name="no"
-              value={cheque.no}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setChequeFields("no", e.target.value)
-              }
-              onBlur={(e: React.ChangeEvent<HTMLInputElement>) =>
-                updateCheque("no", e.target.value)
-              }
-              widthDiv="w-50-minus-24"
-              widthInput="w-full"
-              variant="outlined"
-            />
-            <label>/</label>
-            <Input
-              name=""
-              value={cheque.no}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setChequeFields("no", e.target.value)
-              }
-              onBlur={(e: React.ChangeEvent<HTMLInputElement>) =>
-                updateCheque("no", e.target.value)
-              }
-              widthDiv="w-50-minus-24"
-              widthInput="w-full"
-              variant="outlined"
-            />
+            <div className="flex w-full-minus-24 justify-center items-center gap-2">
+              <div className="flex w-full justify-center items-center gap-2">
+                <Input
+                  name="no"
+                  value={cheque.no}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setChequeFields("no", e.target.value)
+                  }
+                  onBlur={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    updateCheque("no", e.target.value)
+                  }
+                  widthDiv="w-full"
+                  widthInput="w-full"
+                  variant="outlined"
+                />
+                {showIconForTextField("no")}
+              </div>
+              <label>/</label>
+              <div className="flex w-full justify-center items-center gap-2">
+                <Input
+                  name="fixSerial"
+                  value={cheque.fixSerial}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setChequeFields("fixSerial", e.target.value)
+                  }
+                  onBlur={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    updateCheque("fixSerial", e.target.value)
+                  }
+                  widthDiv="w-full"
+                  widthInput="w-full"
+                  variant="outlined"
+                />
+                {showIconForTextField("fixSerial")}
+              </div>
+            </div>
           </div>
           <div className="flex w-1/2 justify-center items-center gap-2">
             <Input
-              name="amount"
+              name="amountT"
               label="مبلغ:"
-              value={cheque.amount}
+              value={cheque.amountT}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setChequeFields("amount", e.target.value)
+                setChequeFields("amountT", e.target.value)
               }
               onBlur={(e: React.ChangeEvent<HTMLInputElement>) =>
-                updateCheque("amount", e.target.value)
+                updateCheque("amountT", e.target.value)
               }
               widthDiv="w-full"
               widthLabel="w-24"
               widthInput="w-full-minus-24"
               variant="outlined"
             />
-            {showIcon("amount")}
+            {showIconForTextField("amountT")}
           </div>
         </div>
         <div className="flex justify-between items-center w-full">
@@ -569,7 +614,7 @@ const RegRecievedCheque = ({ workFlowRowSelectResponse }: Props) => {
             widthInput="w-full"
             variant="outlined"
           />
-          {showIcon("dsc")}
+          {showIconForTextField("dsc")}
         </div>
       </div>
       <div className="flex w-1/2 flex-col gap-2">
@@ -601,28 +646,30 @@ const RegRecievedCheque = ({ workFlowRowSelectResponse }: Props) => {
         </div>
         <div></div>
       </div>
-      {!isLoadingUpdateFields && <ModalMessage
-        isOpen={isModalOpen}
-        backgroundColor={
-          updateFieldsResponse.meta.errorCode === 0
-            ? "bg-green-200"
-            : "bg-red-200"
-        }
-        bgColorButton={
-          updateFieldsResponse.meta.errorCode === 0
-            ? "bg-green-500"
-            : "bg-red-500"
-        }
-        bgColorButtonHover={
-          updateFieldsResponse.meta.errorCode === 0
-            ? "bg-green-600"
-            : "bg-red-600"
-        }
-        color="text-white"
-        onClose={() => setIsModalOpen(false)}
-        message={updateFieldsResponse.meta.message}
-        visibleButton={false}
-      />}
+      {!isLoadingUpdateFields && (
+        <ModalMessage
+          isOpen={isModalOpen}
+          backgroundColor={
+            updateFieldsResponse.meta.errorCode === 0
+              ? "bg-green-200"
+              : "bg-red-200"
+          }
+          bgColorButton={
+            updateFieldsResponse.meta.errorCode === 0
+              ? "bg-green-500"
+              : "bg-red-500"
+          }
+          bgColorButtonHover={
+            updateFieldsResponse.meta.errorCode === 0
+              ? "bg-green-600"
+              : "bg-red-600"
+          }
+          color="text-white"
+          onClose={() => setIsModalOpen(false)}
+          message={updateFieldsResponse.meta.message}
+          visibleButton={false}
+        />
+      )}
     </div>
   );
 };

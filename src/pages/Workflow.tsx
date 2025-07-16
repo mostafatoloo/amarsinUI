@@ -8,7 +8,7 @@ import WorkflowForm from "../components/workflow/WorkflowForm";
 
 
 export default function Workflow() {
-const {refetch}=useWorkflow()
+const {getWorkTable}=useWorkflow()
 
   return (
     <div className="h-[calc(100vh-72px)] overflow-y-scroll flex flex-col bg-gray-200 pt-2">
@@ -29,7 +29,7 @@ const {refetch}=useWorkflow()
             <p className="text-xs">گردش</p>
           </div>
           <div className="flex flex-col items-center cursor-pointer"
-          onClick={()=>refetch()}>
+          onClick={()=>getWorkTable()}>
             <img src={Refresh32} alt="Refresh32" className="w-6 h-6" />
             <p className="text-xs">بازخوانی</p>
           </div>

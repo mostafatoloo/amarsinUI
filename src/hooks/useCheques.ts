@@ -1,7 +1,10 @@
 import { useMutation, useQuery, UseQueryOptions } from "@tanstack/react-query";
 import api from "../api/axios";
 
-import { LoadPaymentResponse, UpdateFieldsRequest, UpdateStatus } from "../types/cheque";
+import {
+  LoadPaymentResponse,
+  UpdateFieldsRequest,
+  } from "../types/cheque";
 import { useChequeStore } from "../store/chequeStore";
 
 export function useCheques() {
@@ -16,19 +19,33 @@ export function useCheques() {
   //for Payment/updateFields
   const updateFields = useMutation({
     mutationFn: async (request: UpdateFieldsRequest) => {
-      console.log(request, "request");
+      console.log(request, "request",id);
       const url: string = `api/Payment/updateFields?id=${id}&fieldName=${request.fieldName}&value=${request.value}&value2=${request.value2}`;
+      setUpdateStatus(
+        Object.fromEntries(
+          Object.entries(updateStatus).map(([key, value]) =>
+            key ===
+            request.fieldName.charAt(0).toLowerCase() +
+              request.fieldName.slice(1)
+              ? [key, { ...value, isUpdating: true }]
+              : [key, { ...value, isUpdating: false }]
+          )
+        )
+      );
       const response = await api.post(url, request);
+      console.log(response, "response");
       return response.data;
     },
     onSuccess: (data: any, request: UpdateFieldsRequest) => {
       setUpdateFieldsResponse(data);
-      const fieldName = request.fieldName.charAt(0).toLowerCase() + request.fieldName.slice(1);
-      console.log(fieldName, "fieldName");
+      const fieldName =
+        request.fieldName.charAt(0).toLowerCase() + request.fieldName.slice(1);
       setUpdateStatus({
         ...updateStatus,
-        [fieldName as keyof UpdateStatus]: {
+        [fieldName]: {
+          ...updateStatus[fieldName],
           errorCode: data.meta.errorCode,
+          message: data.meta.message,
         },
       });
     },
