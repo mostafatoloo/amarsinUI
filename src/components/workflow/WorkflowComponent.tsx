@@ -8,6 +8,7 @@ type Props = {
   formViewPath: string;
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   handleSelectedIdChange: (id: number) => void;
+  selectedId: number;
   getWorkTable?: () => void;
 };
 
@@ -15,6 +16,7 @@ export default function WorkflowComponent({
   formViewPath,
   workFlowRowSelectResponse,
   handleSelectedIdChange,
+  selectedId,
   getWorkTable,
 }: Props) {
   let componentToRender;
@@ -43,6 +45,7 @@ export default function WorkflowComponent({
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           handleSelectedIdChange={handleSelectedIdChange}
           getWorkTable={getWorkTable}
+          selectedId={selectedId}
         />
       );
       break;

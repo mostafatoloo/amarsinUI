@@ -74,9 +74,10 @@ interface LoadPaymentResponse {
 
   type UpdateStatus = {
     [key: string]: {
-      errorCode: number;
-      isUpdating: boolean;
+      errorCode?: number;
+      isUpdating?: boolean;
       message?: string;
+      validationError?: boolean;
     };
   };
 

@@ -3,9 +3,7 @@ import { Paper } from "@mui/material";
 import Skeleton from "../layout/Skeleton";
 import { useNavigate } from "react-router-dom";
 import { useGeneralContext } from "../../context/GeneralContext";
-import {
-  useWorkflowStore,
-} from "../../store/workflowStore";
+import { useWorkflowStore } from "../../store/workflowStore";
 
 import AutoComplete from "../controls/AutoComplete";
 import { convertToFarsiDigits } from "../../utilities/general";
@@ -22,7 +20,12 @@ type Props = {
   isLoading: boolean;
 };
 
-export default function WorkflowParent({ setSelectedId, workFlowResponse, error, isLoading }: Props) {
+export default function WorkflowParent({
+  setSelectedId,
+  workFlowResponse,
+  error,
+  isLoading,
+}: Props) {
   const { flowMapId: flowMapIdStore, setField } = useWorkflowStore();
   const { systemId, chartId, defaultRowsPerPage } = useGeneralContext();
   const [pageNumber, setPageNumber] = useState<number>(1);
@@ -92,6 +95,12 @@ export default function WorkflowParent({ setSelectedId, workFlowResponse, error,
   }, [error, navigate]);
 
   useEffect(() => {
+    console.log(
+      "one of these were changed:" + systemId,
+      chartId,
+      pageNumber,
+      pageSize
+    );
     setField("systemId", systemId);
     setField("chartId", chartId);
     setField("page", pageNumber);
@@ -191,16 +200,6 @@ export default function WorkflowParent({ setSelectedId, workFlowResponse, error,
     );
   }, [workFlowResponse]);
 
-  // Custom cell click handler for Table
-  /*const handleCellColorChange = (
-    cell: HeadCell<WorkFlowTable>,
-    item: WorkFlowTable
-  ) => {
-    if (cell.changeColor && item?.["id"] === workTableId) {
-      return blue[50];
-    }
-    return "";
-  };*/
   if (error) return <div>Error: {error.message} </div>;
   const [data, setData] = useState<any[]>([]);
 

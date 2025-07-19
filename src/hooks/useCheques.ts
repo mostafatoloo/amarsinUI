@@ -1,10 +1,7 @@
 import { useMutation, useQuery, UseQueryOptions } from "@tanstack/react-query";
 import api from "../api/axios";
 
-import {
-  LoadPaymentResponse,
-  UpdateFieldsRequest,
-  } from "../types/cheque";
+import { LoadPaymentResponse, UpdateFieldsRequest } from "../types/cheque";
 import { useChequeStore } from "../store/chequeStore";
 
 export function useCheques() {
@@ -19,27 +16,31 @@ export function useCheques() {
   //for Payment/updateFields
   const updateFields = useMutation({
     mutationFn: async (request: UpdateFieldsRequest) => {
-      console.log(request, "request",id);
-      const url: string = `api/Payment/updateFields?id=${id}&fieldName=${request.fieldName}&value=${request.value}&value2=${request.value2}`;
+      console.log(request.value);
+      const url: string = `api/Payment/updateFields?id=${id}&fieldName=${
+        request.fieldName
+      }&value=${encodeURIComponent(request.value)}&value2=${request.value2}`;
+      console.log(url);
+      console.log("updateStatus in updateFields",updateStatus)
       setUpdateStatus(
         Object.fromEntries(
           Object.entries(updateStatus).map(([key, value]) =>
             key ===
             request.fieldName.charAt(0).toLowerCase() +
-              request.fieldName.slice(1)
-              ? [key, { ...value, isUpdating: true }]
+              request.fieldName.slice(1) + "Id"
+              ? [key, { ...value, isUpdating: true, validationError: false }]
               : [key, { ...value, isUpdating: false }]
           )
         )
       );
       const response = await api.post(url, request);
-      console.log(response, "response");
       return response.data;
     },
     onSuccess: (data: any, request: UpdateFieldsRequest) => {
       setUpdateFieldsResponse(data);
       const fieldName =
         request.fieldName.charAt(0).toLowerCase() + request.fieldName.slice(1);
+        console.log("updateStatus in updateFields onSuccess",updateStatus)
       setUpdateStatus({
         ...updateStatus,
         [fieldName]: {

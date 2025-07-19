@@ -1,8 +1,8 @@
 import { Autocomplete, TextField } from "@mui/material";
 import { colors } from "../../utilities/color";
-import React from "react";
+import React, { forwardRef } from "react";
 
-type Props<T> = {
+type Props<T extends { id: string | number; title: string }> = {
   options: T[];
   label?: string;
   value: T | T[] | null;
@@ -25,34 +25,42 @@ type Props<T> = {
   changeColorOnFocus?: boolean;
   textColor?:string;
   backgroundColor?:string;
+  required?:boolean;
+  handleBlur?: () => void;
 };
 
-const AutoComplete = <T extends { id: string | number; title: string }>({
-  options,
-  label,
-  value,
-  handleChange,
-  setSearch,
-  mobilefontsize = "0.7rem",
-  desktopfontsize = "0.875rem",
-  showLabel = true, 
-  showBorder = true,
-  showBorderFocused = false,
-  showClearIcon = true,
-  showPopupIcon = true,
-  outlinedInputPadding = "10px",
-  textAlign,
-  inputPadding,
-  showBold = false, // <-- default to false
-  placeholder = "",
-  multiple = false,
-  changeColorOnFocus,
-  textColor,
-  backgroundColor
-}: Props<T>) => {
+const AutoComplete = forwardRef(<T extends { id: string | number; title: string }>(
+  {
+    options,
+    label,
+    value,
+    handleChange,
+    setSearch,
+    mobilefontsize = "0.7rem",
+    desktopfontsize = "0.875rem",
+    showLabel = true, 
+    showBorder = true,
+    showBorderFocused = false,
+    showClearIcon = true,
+    showPopupIcon = true,
+    outlinedInputPadding = "10px",
+    textAlign,
+    inputPadding,
+    showBold = false, // <-- default to false
+    placeholder = "",
+    multiple = false,
+    changeColorOnFocus,
+    textColor,
+    backgroundColor,
+    required = false,
+    handleBlur,
+  }: Props<T>,
+  ref: React.Ref<any>
+) => {
   const [isFocused, setIsFocused] = React.useState(false);
   return (
     <Autocomplete
+      ref={ref}
       options={options}
       clearIcon={showClearIcon ? undefined : <span />}
       popupIcon={showPopupIcon ? undefined : <span />}
@@ -82,7 +90,7 @@ const AutoComplete = <T extends { id: string | number; title: string }>({
       renderInput={(params) => (
         <TextField
           {...params}
-          //value={convertToFarsiDigits(((value as T)?.title as string))}
+          required={required}
           placeholder={placeholder}
           label={showLabel ? label : undefined}
           onChange={(event) => {
@@ -156,9 +164,15 @@ const AutoComplete = <T extends { id: string | number; title: string }>({
       multiple={multiple}
       className="w-full"
       onFocus={() => setIsFocused(true)}
-      onBlur={() => setIsFocused(false)}
+      onBlur={() => {
+        setIsFocused(false);
+        handleBlur?.();
+      }}
+
     />
   );
-};
+});
+
+AutoComplete.displayName = "AutoComplete";
 
 export default AutoComplete;

@@ -14,13 +14,19 @@ type Props = {
   workFlowResponse: WorkflowResponse;
 };
 
-export const WorkflowChild = ({ selectedId, handleSelectedIdChange, getWorkTable, workFlowResponse }: Props) => {
+export const WorkflowChild = ({
+  selectedId,
+  handleSelectedIdChange,
+  getWorkTable,
+  workFlowResponse,
+}: Props) => {
   //const [currentSelectedId, setCurrentSelectedId] = useState(selectedId);
   const { chartId, systemId } = useGeneralContext();
   const { setField } = useWorkflowRowSelectStore();
   const { page, pageSize, dateTime, code, cost, flowMapId, name, dsc } =
     useWorkflowStore();
-  const { workFlowRowSelectResponse, isLoading, error } = useWorkflowRowSelect();
+  const { workFlowRowSelectResponse, isLoading, error } =
+    useWorkflowRowSelect();
 
   /*useEffect(() => {
     const handleSelectedIdChange = (event: CustomEvent) => {
@@ -42,10 +48,12 @@ export const WorkflowChild = ({ selectedId, handleSelectedIdChange, getWorkTable
   useEffect(() => {
     console.log("selectedId", selectedId);
     setField("chartId", chartId);
-    setField("workTableId", selectedId)//currentSelectedId);
+    setField("workTableId", selectedId); //currentSelectedId);
     //getWorkTableRowSelect()
-  }, [selectedId,//currentSelectedId, 
-    chartId]);
+  }, [
+    selectedId, //currentSelectedId,
+    chartId,
+  ]);
 
   useEffect(() => {
     setField(
@@ -70,7 +78,7 @@ export const WorkflowChild = ({ selectedId, handleSelectedIdChange, getWorkTable
   return (
     <>
       {workFlowResponse.err === 0 && workFlowResponse.workTables.length > 0 && (
-        <WorkflowRowSelect 
+        <WorkflowRowSelect
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           isLoading={isLoading}
           error={error}
@@ -80,6 +88,7 @@ export const WorkflowChild = ({ selectedId, handleSelectedIdChange, getWorkTable
         formViewPath={workFlowRowSelectResponse.workTableForms.form1ViewPath}
         workFlowRowSelectResponse={workFlowRowSelectResponse}
         handleSelectedIdChange={handleSelectedIdChange}
+        selectedId={selectedId}
         getWorkTable={getWorkTable}
       />
     </>

@@ -66,7 +66,7 @@ export function EditableInput<T extends object>({
   // Handle change from AutoComplete
   const handleAutoCompleteChange = (
     event: any,
-    newValue: DefaultOptionType | DefaultOptionType[] | null
+    newValue: { id: string | number; title: string; }  | { id: string | number; title: string; } [] | null
   ) => {
     console.log(event);
     console.log(newValue, "newValue in handleAutoCompleteChange");
