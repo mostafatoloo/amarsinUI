@@ -10,6 +10,7 @@ import { colors } from "../../utilities/color";
 import AutoComplete from "./AutoComplete";
 
 type TableProps<T extends object> = {
+  canEditForm?: boolean;
   columns: TableColumns;
   data: T[];
   options?: DefaultOptionType[];
@@ -37,9 +38,11 @@ interface EditableCellProps<T extends object> extends CellProps<T, any> {
   options?: DefaultOptionType[];
   setSearchText: Dispatch<SetStateAction<string>>;
   changeRowValues: (value: string, rowIndex: number, columnId: string) => void;
+  canEditForm?: boolean;
 }
 
 export function EditableInput<T extends object>({
+  canEditForm,
   value: initialValue,
   row: { index },
   column,
@@ -49,7 +52,7 @@ export function EditableInput<T extends object>({
   updateMyRow,
   changeRowValues,
 }: EditableCellProps<T>) {
-  const { id, type, placeholder, isCurrency, backgroundColor } = column as any;
+  const { id, type, placeholder, isCurrency } = column as any;
   const [value, setValue] = React.useState<string>(initialValue);
   const [isFocused, setIsFocused] = React.useState(false);
 
@@ -82,6 +85,7 @@ export function EditableInput<T extends object>({
   if (type === "autoComplete") {
     return (
       <AutoComplete
+        disabled={!canEditForm}
         options={options || []}
         //value={options?.find((opt) => opt.title === value) || null}
         value={value ? { id: 0, title: value } : null}
@@ -98,12 +102,14 @@ export function EditableInput<T extends object>({
         changeColorOnFocus={true}
         showBorderFocused={true}
         textColor={colors.gray_600}
+        backgroundColor={!canEditForm ? "inherit" : "white"}
       />
     );
   }
   if (type === "textArea") {
     return (
       <textarea
+        disabled={!canEditForm}
         className="text-inherit p-0 m-0 border-0 w-full focus:outline-none"
         value={value}
         onChange={(e) => setValue(convertToFarsiDigits(e.target.value))}
@@ -112,15 +118,16 @@ export function EditableInput<T extends object>({
           setIsFocused(false);
         }}
         onFocus={() => setIsFocused(true)}
-        style={{ backgroundColor: isFocused ? "white" : backgroundColor }}
+        style={{ backgroundColor: isFocused ? "white" : !canEditForm ? "inherit" : "white" }}
       />
     );
   }
 
   return (
     <input
+      disabled={!canEditForm}
       className="text-inherit p-0 m-0 border-0 w-full focus:outline-none"
-      style={{ backgroundColor: isFocused ? "white" : backgroundColor }}
+      style={{ backgroundColor: isFocused ? "white" : !canEditForm ? "inherit" : "white" }}
       value={value}
       onChange={(e) => {
         setValue(convertToFarsiDigits(e.target.value));
@@ -136,6 +143,7 @@ export function EditableInput<T extends object>({
 }
 
 export default function TTable<T extends object>({
+  canEditForm,
   columns,
   data,
   options = [],
@@ -171,6 +179,7 @@ export default function TTable<T extends object>({
       changeRowValues,
       options,
       setSearchText,
+      canEditForm,
     } as any,
     useBlockLayout
   );
@@ -242,7 +251,6 @@ export default function TTable<T extends object>({
                     }}
                     onClick={() => {
                       if (setSelectedId) {
-                        console.log("setSelectedId", convertToLatinDigits(row.original["id" as keyof T]));
                         const itemId = Number(
                           convertToLatinDigits(row.original["id" as keyof T])
                         );

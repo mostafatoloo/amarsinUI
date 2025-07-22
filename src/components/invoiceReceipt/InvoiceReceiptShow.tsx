@@ -22,6 +22,7 @@ import { handleExport } from "../../utilities/ExcelExport";
 import { headCells } from "./InvoiceReceiptShowTable";
 
 type Props = {
+  canEditForm: boolean;
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
 };
 
@@ -36,7 +37,7 @@ export type Fields = {
   dsc: string;
 };
 
-const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
+const InvoiceReceiptShow = ({ workFlowRowSelectResponse, canEditForm }: Props) => {
   const { setField, mrsId } = useInvoiceReceiptStore();
   const { yearId } = useGeneralContext();
   const { indentMrsResponse, isLoading, getIndentMrsResponse } = useInvoiceReceipt();
@@ -250,13 +251,14 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
   return (
     <div className="w-full flex flex-col">
       <InvoiceReceipShowHeader
+        canEditForm={canEditForm}
         fields={fields}
         setFields={setFields}
         indentMrsResponse={indentMrsResponse}
         salesPricesSearchResponse={salesPricesSearchResponse}
       />
       <ConfirmCard variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end">
-        <Button
+        {canEditForm && <Button
           text="ایجاد لیست"
           backgroundColor="bg-white"
           color="text-blue-500"
@@ -264,7 +266,7 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
           colorHover="text-white"
           variant="shadow-lg"
           onClick={handleSubmitAndAddToTable}
-        />
+        />}
         <Button
           text="اکسل"
           backgroundColor="bg-white"
@@ -296,6 +298,7 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
       </div>
 
       <InvoiceReceiptShowTable
+        canEditForm={canEditForm}
         indentMrsResponse={indentMrsResponse}
         isLoading={isLoading}
         handleSubmit={handleSubmit}

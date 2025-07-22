@@ -6,7 +6,7 @@ import { useGeneralContext } from "../../context/GeneralContext";
 import { useWorkflowStore } from "../../store/workflowStore";
 
 import AutoComplete from "../controls/AutoComplete";
-import { convertToFarsiDigits } from "../../utilities/general";
+import { convertToFarsiDigits, formatNumberWithCommas } from "../../utilities/general";
 import { debounce } from "lodash";
 import TTable from "../controls/TTable";
 import { DefaultOptionTypeStringId, TableColumns } from "../../types/general";
@@ -14,6 +14,7 @@ import { TablePaginationActions } from "../controls/TablePaginationActions";
 import { WorkflowResponse } from "../../types/workflow";
 
 type Props = {
+  selectedId: number;
   setSelectedId: (value: number) => void;
   workFlowResponse: WorkflowResponse;
   error: Error | null;
@@ -21,6 +22,7 @@ type Props = {
 };
 
 export default function WorkflowParent({
+  selectedId,
   setSelectedId,
   workFlowResponse,
   error,
@@ -33,6 +35,7 @@ export default function WorkflowParent({
   //const { workTableId } = useWorkflowRowSelectStore();
   const navigate = useNavigate();
   const abortControllerRef = useRef<AbortController | null>(null);
+
 
   const columns: TableColumns = React.useMemo(
     () => [
@@ -193,12 +196,22 @@ export default function WorkflowParent({
   }, []);
 
   useEffect(() => {
-    setSelectedId(
-      workFlowResponse.workTables.length > 0
-        ? workFlowResponse.workTables[0].id
-        : 0
-    );
-  }, [workFlowResponse]);
+    // Only set first record as selected if there's no current selection
+    // This prevents losing selection when data is refetched
+    if (workFlowResponse.workTables.length > 0) {
+      // Check if the current selectedId exists in the new data
+      const currentRecordExists = workFlowResponse.workTables.some(
+        (table) => table.id === selectedId
+      );
+      
+      // Only set to first record if current selection doesn't exist in new data
+      if (!currentRecordExists) {
+        setSelectedId(workFlowResponse.workTables[0].id);
+      }
+    } else {
+      setSelectedId(0);
+    }
+  }, [workFlowResponse, selectedId]);
 
   if (error) return <div>Error: {error.message} </div>;
   const [data, setData] = useState<any[]>([]);
@@ -215,7 +228,7 @@ export default function WorkflowParent({
         regDateTime: convertToFarsiDigits(item.regDateTime),
         formTitle: convertToFarsiDigits(item.formTitle),
         formCode: convertToFarsiDigits(item.formCode),
-        formCost: convertToFarsiDigits(item.formCost),
+        formCost: convertToFarsiDigits(formatNumberWithCommas(item.formCost)),
         flowMapTitle: convertToFarsiDigits(item.flowMapTitle),
         fChartName: convertToFarsiDigits(item.fChartName),
         dsc: convertToFarsiDigits(item.dsc),

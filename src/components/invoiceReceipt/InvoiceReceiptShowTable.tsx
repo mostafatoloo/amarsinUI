@@ -45,6 +45,7 @@ import InvoiceReceiptShowTableHeader from "./InvoiceReceiptShowTableHeader";
 import InvoiceReceiptShowTableSummery from "./InvoiceReceiptShowTableSummery";
 
 type Props = {
+  canEditForm: boolean;
   addList: IndentDtl[];
   indentMrsResponse: IndentMrsResponse;
   isLoading: boolean;
@@ -176,12 +177,12 @@ export const headCells = [
     Cell: () => {
       return (
         <div className="flex w-full">
-          <img
+          {<img
             src={TrashIcon}
             onClick={() => console.log("hello")}
             className="cursor-pointer"
             alt="TrashIcon"
-          />
+          />}
           <img
             src={HistoryIcon}
             onClick={() => console.log("hello")}
@@ -195,6 +196,7 @@ export const headCells = [
 ];
 
 const InvoiceReceiptShowTable = ({
+  canEditForm,
   addList,
   indentMrsResponse,
   isLoading,
@@ -236,12 +238,12 @@ const InvoiceReceiptShowTable = ({
             ? ({ row }: any) => {
                 return (
                   <div className="flex w-full">
-                    <img
+                    {canEditForm ? <img
                       src={row.original.isDeleted ? RestoreIcon : TrashIcon}
                       onClick={() => updateToDeleted(row)}
                       className="cursor-pointer"
                       alt="TrashIcon"
-                    />
+                    />: null}
                     <img
                       src={HistoryIcon}
                       onClick={() => handleShowHistory(row)}
@@ -254,7 +256,7 @@ const InvoiceReceiptShowTable = ({
             : item.Cell,
       };
     });
-  }, []);
+  }, [canEditForm]);
 
   const columnsHistory: TableColumns = [
     {
@@ -638,6 +640,7 @@ const InvoiceReceiptShowTable = ({
         ) : (
           <div className="w-full">
             <TTable
+              canEditForm={canEditForm}
               columns={columns}
               data={data}
               updateMyData={updateMyData}
@@ -659,7 +662,7 @@ const InvoiceReceiptShowTable = ({
         )}
         <ConfirmCard variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end ">
           <InvoiceReceiptShowTableSummery data={data} />
-          <Button
+          {canEditForm && <Button
             text={isLoadingSaveList ? "در حال ثبت اطلاعات..." : "ثبت"}
             backgroundColor="bg-green-500"
             color="text-white"
@@ -667,7 +670,7 @@ const InvoiceReceiptShowTable = ({
             colorHover="text-white"
             variant="shadow-lg w-64"
             onClick={handleSubmitSave}
-          />
+          />}
         </ConfirmCard>
       </div>
       <InvoiceReceiptHistory

@@ -5,54 +5,90 @@ import InvoiceReceiptShow from "../invoiceReceipt/InvoiceReceiptShow";
 import RegRecievedCheque from "../cheque/RegRecievedCheque";
 
 type Props = {
-  formViewPath: string;
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   handleSelectedIdChange: (id: number) => void;
   selectedId: number;
-  getWorkTable?: () => void;
 };
 
 export default function WorkflowComponent({
-  formViewPath,
   workFlowRowSelectResponse,
   handleSelectedIdChange,
   selectedId,
-  getWorkTable,
 }: Props) {
-  let componentToRender;
+  let componentToRender1: React.ReactNode | null = null;
+  let componentToRender2: React.ReactNode | null = null;
 
-  switch (formViewPath) {
+  switch (workFlowRowSelectResponse.workTableForms.form1ViewPath) {
     case "Invoice/_Show":
-      componentToRender = (
+      componentToRender1 = (
         <InvoiceShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
       );
       break;
     case "WarehouseTemporaryReceipt/_WarehouseTemporaryReceiptIndent":
-      componentToRender = (
+      componentToRender1 = (
         <WarehouseShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
       );
       break;
     case "Indent/_CreateIndent":
-      componentToRender = (
+      componentToRender1 = (
         <InvoiceReceiptShow
+          canEditForm={workFlowRowSelectResponse.workTableForms.canEditForm1}
           workFlowRowSelectResponse={workFlowRowSelectResponse}
         />
       );
       break;
     case "Payment/_Cheque":
-      componentToRender = (
+      componentToRender1 = (
         <RegRecievedCheque
+          canEditForm={workFlowRowSelectResponse.workTableForms.canEditForm1}
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           handleSelectedIdChange={handleSelectedIdChange}
-          getWorkTable={getWorkTable}
           selectedId={selectedId}
         />
       );
       break;
     default:
-      componentToRender = null;
+      componentToRender1 = null;
+      break;
+  }
+  switch (workFlowRowSelectResponse.workTableForms.form2ViewPath) {
+    case "Invoice/_Show":
+      componentToRender2 = (
+        <InvoiceShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
+      );
+      break;
+    case "WarehouseTemporaryReceipt/_WarehouseTemporaryReceiptIndent":
+      componentToRender2 = (
+        <WarehouseShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
+      );
+      break;
+    case "Indent/_CreateIndent":
+      componentToRender2 = (
+        <InvoiceReceiptShow
+          canEditForm={workFlowRowSelectResponse.workTableForms.canEditForm2}
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+        />
+      );
+      break;
+    case "Payment/_Cheque":
+      componentToRender2 = (
+        <RegRecievedCheque
+          canEditForm={workFlowRowSelectResponse.workTableForms.canEditForm2}
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          handleSelectedIdChange={handleSelectedIdChange}
+          selectedId={selectedId}
+        />
+      );
+      break;
+    default:
+      componentToRender2 = null;
       break;
   }
 
-  return <div>{componentToRender}</div>;
+  return (
+    <div>
+      {componentToRender1}
+      {componentToRender2}
+    </div>
+  );
 }

@@ -1,4 +1,10 @@
-import { useMutation, useQuery, UseQueryOptions } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  UseQueryOptions,
+} from "@tanstack/react-query";
+import { useEffect } from "react";
 import api from "../api/axios";
 
 import { LoadPaymentResponse, UpdateFieldsRequest } from "../types/cheque";
@@ -7,27 +13,37 @@ import { useChequeStore } from "../store/chequeStore";
 export function useCheques() {
   const {
     id,
+    formId,
+    actCode,
+    curId,
+    includeBase64,
     setLoadPaymentResponse,
     setUpdateFieldsResponse,
     updateStatus,
     setUpdateStatus,
+    search,
+    page,
+    lastId,
+    systemId,
+    PayKind,
+    setCashPosSystemSearchResponse,
+    setPaymentAttachmentResponse,
   } = useChequeStore();
-
+  const queryClient = useQueryClient();
   //for Payment/updateFields
   const updateFields = useMutation({
     mutationFn: async (request: UpdateFieldsRequest) => {
-      console.log(request.value);
       const url: string = `api/Payment/updateFields?id=${id}&fieldName=${
         request.fieldName
       }&value=${encodeURIComponent(request.value)}&value2=${request.value2}`;
       console.log(url);
-      console.log("updateStatus in updateFields",updateStatus)
       setUpdateStatus(
         Object.fromEntries(
           Object.entries(updateStatus).map(([key, value]) =>
             key ===
             request.fieldName.charAt(0).toLowerCase() +
-              request.fieldName.slice(1) + "Id"
+              request.fieldName.slice(1) +
+              "Id"
               ? [key, { ...value, isUpdating: true, validationError: false }]
               : [key, { ...value, isUpdating: false }]
           )
@@ -37,10 +53,10 @@ export function useCheques() {
       return response.data;
     },
     onSuccess: (data: any, request: UpdateFieldsRequest) => {
+      queryClient.invalidateQueries({ queryKey: ["workflow"] });
       setUpdateFieldsResponse(data);
       const fieldName =
         request.fieldName.charAt(0).toLowerCase() + request.fieldName.slice(1);
-        console.log("updateStatus in updateFields onSuccess",updateStatus)
       setUpdateStatus({
         ...updateStatus,
         [fieldName]: {
@@ -51,6 +67,52 @@ export function useCheques() {
       });
     },
   });
+
+  //for Payment/cashPosSystemSearch
+  const cashPosSystemSearch = useQuery({
+    queryKey: ["cashPosSystemSearch", search, page, lastId, systemId, PayKind],
+    queryFn: async () => {
+      const url: string = `/api/Payment/cashPosSystemSearch?page=${page}${
+        search ? `&search=${encodeURIComponent(search)}` : ""
+      }&lastId=${lastId}&systemId=${systemId}&PayKind=${PayKind}`;
+      console.log(url, "url");
+      const response = await api.get(url);
+      return response.data;
+    },
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+  });
+
+  // Handle success for cashPosSystemSearch
+  useEffect(() => {
+    if (cashPosSystemSearch.data) {
+      setCashPosSystemSearchResponse(cashPosSystemSearch.data);
+    }
+  }, [cashPosSystemSearch.data, setCashPosSystemSearchResponse]);
+
+  //for Payment/attachment
+  const paymentAttachment = useQuery({
+    queryKey: ["paymentAttachment", actCode, curId, includeBase64,formId],
+    queryFn: async () => {
+      const url: string = `/api/Payment/attachment?id=${formId}&actCode=${encodeURIComponent(
+        actCode
+      )}&curId=${curId}&includeBase64=${includeBase64}`;
+
+      console.log(url, "url");
+      const response = await api.get(url);
+      return response.data;
+    },
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+  });
+
+  // Handle success for paymentAttachment
+  useEffect(() => {
+    if (paymentAttachment.data) {
+      setPaymentAttachmentResponse(paymentAttachment.data);
+    }
+  }, [paymentAttachment.data, setPaymentAttachmentResponse]);
+
   //for Payment/load
   const query = useQuery<
     LoadPaymentResponse,
@@ -75,6 +137,14 @@ export function useCheques() {
   } as UseQueryOptions<LoadPaymentResponse, Error, LoadPaymentResponse, unknown[]>);
 
   return {
+    //Payment/attachment
+    paymentAttachmentResponse: paymentAttachment.data,
+    isLoadingPaymentAttachment: paymentAttachment.isLoading,
+    errorPaymentAttachment: paymentAttachment.error,
+    //for Payment/cashPosSystemSearch
+    cashPosSystemSearch: cashPosSystemSearch.data?.results ?? [],
+    isLoadingCashPosSystemSearch: cashPosSystemSearch.isLoading,
+    errorCashPosSystemSearch: cashPosSystemSearch.error,
     //for Payment/updateFields
     isLoadingUpdateFields: updateFields.isPending,
     errorUpdateFields: updateFields.error,

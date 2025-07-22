@@ -81,11 +81,19 @@ interface LoadPaymentResponse {
     };
   };
 
-  export interface ChequeState {
+  export interface ChequeState extends CashPosSystemSearchRequest{
     id: number;
+    //PaymentAttachment request parameters
+    formId: number;
+    actCode:string;
+    curId: number;
+    includeBase64: boolean;
+    //end PaymentAttachment request parameters
     updateStatus: UpdateStatus;
     loadPaymentResponse: LoadPaymentResponse;
     updateFieldsResponse: UpdateFieldsResponse;
+    cashPosSystemSearchResponse: CashPosSystemSearchResponse;
+    paymentAttachmentResponse: paymentAttachmentResponse;
     setField: (field: string, value: any) => void;
     setLoadPaymentResponse: (
       loadPaymentResponse: LoadPaymentResponse
@@ -94,5 +102,63 @@ interface LoadPaymentResponse {
       updateFieldsResponse: UpdateFieldsResponse
     ) => void;
     setUpdateStatus: (updateStatus: UpdateStatus) => void;
+    setCashPosSystemSearchResponse: (
+      cashPosSystemSearchResponse: CashPosSystemSearchResponse
+    ) => void;
+    setPaymentAttachmentResponse: (
+      paymentAttachmentResponse: PaymentAttachmentResponse
+    ) => void;
+  }
+  //api/Payment/cashPosSystemSearch?page=1&lastId=0&systemId=0&PayKind=0
+
+  type CashPosSystemSearchRequest = {
+    search: string;
+    page: number;
+    lastId: number;
+    systemId: number;
+    PayKind: number;
+  };
+
+  interface ResultItem {
+    id: number;
+    text: string;
   }
   
+  interface CashPosSystemSearchResponse {
+    total_count: number;
+    results: ResultItem[];
+  }
+
+  //api/Payment/attachment?id=377211&actCode=Last&includeBase64=false
+  interface PaymentAttachmentResponse {
+    meta: Meta;
+    data: Data;
+  }
+  
+  interface Meta {
+    errorCode: number;
+    message: string;
+    type: string;
+  }
+  
+  interface Data {
+    result: Result;
+  }
+  
+  interface Result {
+    ordr: number;
+    id: number;
+    dat: string | null;
+    regTime: string | null;
+    usrDisplayName: string | null;
+    dsc: string | null;
+    path: string;
+    extension: string | null;
+    hasPrev: boolean;
+    hasNext: boolean;
+    imagePath: string | null;
+    downloadPath: string;
+    base64Path: string;
+    base64Data: string | null;
+    fileSize: number;
+  }

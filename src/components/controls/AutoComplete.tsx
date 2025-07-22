@@ -27,6 +27,7 @@ type Props<T extends { id: string | number; title: string }> = {
   backgroundColor?:string;
   required?:boolean;
   handleBlur?: () => void;
+  disabled?:boolean;
 };
 
 const AutoComplete = forwardRef(<T extends { id: string | number; title: string }>(
@@ -54,12 +55,14 @@ const AutoComplete = forwardRef(<T extends { id: string | number; title: string 
     backgroundColor,
     required = false,
     handleBlur,
+    disabled,
   }: Props<T>,
   ref: React.Ref<any>
 ) => {
   const [isFocused, setIsFocused] = React.useState(false);
   return (
     <Autocomplete
+      disabled={disabled}
       ref={ref}
       options={options}
       clearIcon={showClearIcon ? undefined : <span />}
