@@ -70,8 +70,9 @@ export function useCheques() {
 
   //for Payment/cashPosSystemSearch
   const cashPosSystemSearch = useQuery({
-    queryKey: ["cashPosSystemSearch", search, page, lastId, systemId, PayKind],
+    queryKey: ["cashPosSystemSearch", search, page, lastId, systemId, PayKind,formId],
     queryFn: async () => {
+      console.log(formId, "formId in cashPosSystemSearch");
       const url: string = `/api/Payment/cashPosSystemSearch?page=${page}${
         search ? `&search=${encodeURIComponent(search)}` : ""
       }&lastId=${lastId}&systemId=${systemId}&PayKind=${PayKind}`;
@@ -79,8 +80,9 @@ export function useCheques() {
       const response = await api.get(url);
       return response.data;
     },
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
+    enabled: PayKind !== -1 && page !== 1 && lastId !== 0 && systemId !== 0,
+    //refetchOnWindowFocus: true,
+    //refetchOnReconnect: true,
   });
 
   // Handle success for cashPosSystemSearch
@@ -94,6 +96,7 @@ export function useCheques() {
   const paymentAttachment = useQuery({
     queryKey: ["paymentAttachment", actCode, curId, includeBase64,formId],
     queryFn: async () => {
+      console.log(formId,actCode, "formId , actCode in paymentAttachment");
       const url: string = `/api/Payment/attachment?id=${formId}&actCode=${encodeURIComponent(
         actCode
       )}&curId=${curId}&includeBase64=${includeBase64}`;
@@ -102,8 +105,9 @@ export function useCheques() {
       const response = await api.get(url);
       return response.data;
     },
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
+    enabled: formId !== 0,
+    //refetchOnWindowFocus: true,
+    //refetchOnReconnect: true,
   });
 
   // Handle success for paymentAttachment
@@ -129,8 +133,9 @@ export function useCheques() {
       const response = await api.get(url);
       return response.data;
     },
-    refetchOnWindowFocus: true, // Refetch data when the window is focused
-    refetchOnReconnect: true, // Refetch data when the network reconnects
+    enabled: id !== 0,
+    refetchOnWindowFocus: false, // Refetch data when the window is focused
+    refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
       setLoadPaymentResponse(data);
     },

@@ -27,11 +27,16 @@ type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   handleSelectedIdChange: (id: number) => void;
   selectedId: number;
-  loadPaymentResponse: LoadPaymentResponse,
-  isLoadingLoadPayment: boolean,
-  updateFields: UseMutateAsyncFunction<any, Error, UpdateFieldsRequest, unknown>,
-  isLoadingUpdateFields:boolean,
-  cashPosSystemSearch: any,
+  loadPaymentResponse: LoadPaymentResponse;
+  isLoadingLoadPayment: boolean;
+  updateFields: UseMutateAsyncFunction<
+    any,
+    Error,
+    UpdateFieldsRequest,
+    unknown
+  >;
+  isLoadingUpdateFields: boolean;
+  cashPosSystemSearch: any;
 };
 
 const RegRecievedChequeInfo: React.FC<Props> = ({
@@ -71,7 +76,8 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
     setUpdateStatus,
   } = useChequeStore();
 
-  const payKind = loadPaymentResponse.data.result.payment?.payKind ?? 0;
+  //const payKind = loadPaymentResponse.data.result.payment?.payKind ?? 0;
+  let payKind = -1;
 
   const [rowId, setRowId] = useState(selectedId);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -150,16 +156,19 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
   }, [bankSearch]);
   /////////////////////////////////////////////////////////////////////
   useEffect(() => {
-    setChequeField("search", cashPosSystemSerch);
-    setChequeField("page", 1);
-    setChequeField("lastId", 0);
-    setChequeField("systemId", initData?.systemId ?? 0);
-    setChequeField("PayKind", payKind);
+    if (payKind !== -1) {
+      setChequeField("search", cashPosSystemSerch);
+      setChequeField("page", 1);
+      setChequeField("lastId", 0);
+      setChequeField("systemId", initData?.systemId ?? 0);
+      //console.log(payKind, "payKind in RegRecievedChequeInfo useEffect");
+      setChequeField("PayKind", payKind);
+    }
   }, [cashPosSystemSerch, payKind, initData?.systemId]);
   /////////////////////////////////////////////////////////////////////
   useEffect(() => {
     if (rowId !== 0 && isUpdateStatusChanged) {
-      //console.log(rowId, "rowId in RegRecievedChequeInfo");
+      console.log(rowId, "rowId in RegRecievedChequeInfo");
       // Ensure the selection is maintained after field updates
       handleSelectedIdChange(rowId);
     }
@@ -176,6 +185,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
   ///////////////////////////////////////////////////////////////////
   useEffect(() => {
     console.log(yearSearch, systemSearch);
+    console.log(workFlowRowSelectResponse.workTableRow.formId, "workFlowRowSelectResponse.workTableRow.formId in RegRecievedChequeInfo useEffect");
     setChequeField("id", workFlowRowSelectResponse.workTableRow.formId);
     setUpdateStatus({
       ...updateStatus,
@@ -206,9 +216,11 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
         },
       },
     });
-  }, [workFlowRowSelectResponse.workTableRow.formId]);
+  }, [workFlowRowSelectResponse]);
   ///////////////////////////////////////////////////////////////////
   useEffect(() => {
+    //console.log(loadPaymentResponse.data.result.payment?.payKind, "payKind in RegRecievedChequeInfo useEffect");
+    payKind = loadPaymentResponse.data.result.payment?.payKind ?? 0;
     setCheque({
       sayadiMessage: convertToFarsiDigits(
         loadPaymentResponse.data.result.payment?.sayadiMessage ?? ""
@@ -250,7 +262,9 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
       accNo: convertToFarsiDigits(
         loadPaymentResponse.data.result.payment?.accNo ?? ""
       ),
-      no: convertToFarsiDigits(loadPaymentResponse.data.result.payment?.no ?? ""),
+      no: convertToFarsiDigits(
+        loadPaymentResponse.data.result.payment?.no ?? ""
+      ),
       fixSerial: convertToFarsiDigits(
         loadPaymentResponse.data.result.payment?.fixSerial ?? ""
       ),
@@ -259,7 +273,9 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
           Number(loadPaymentResponse.data.result.payment?.amount ?? 0)
         )
       ),
-      dsc: convertToFarsiDigits(loadPaymentResponse.data.result.payment?.dsc ?? ""),
+      dsc: convertToFarsiDigits(
+        loadPaymentResponse.data.result.payment?.dsc ?? ""
+      ),
       cash_PosSystem: {
         id: loadPaymentResponse.data.result.payment?.cash_PosSystem ?? 0,
         title: convertToFarsiDigits(

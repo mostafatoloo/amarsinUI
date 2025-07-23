@@ -35,6 +35,7 @@ const RegRecievedChequeImg = ({
 
   useEffect(() => {
     setField("formId", formId);
+    console.log(formId, "formId");
     setField("actCode", actCode);
     setField("curId", curId);
     setField("includeBase64", false);

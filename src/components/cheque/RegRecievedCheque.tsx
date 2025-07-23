@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useCheques } from "../../hooks/useCheques";
 import { useChequeStore } from "../../store/chequeStore";
 import { WorkflowRowSelectResponse } from "../../types/workflow";
@@ -27,7 +28,12 @@ const RegRecievedCheque = ({
     isLoadingPaymentAttachment,
   } = useCheques();
 
-  const {setField}=useChequeStore()
+  const {setField,}=useChequeStore()
+  
+  useEffect(()=>{
+    console.log(workFlowRowSelectResponse.workTableRow.formId, "workFlowRowSelectResponse.workTableRow.formId in RegRecievedCheque useEffect");
+    setField("formId", workFlowRowSelectResponse.workTableRow.formId);
+  },[workFlowRowSelectResponse.workTableRow.formId])
 
   return (
     <div className="flex flex-col md:flex-row w-full text-sm gap-2 text-gray-600">
@@ -35,7 +41,7 @@ const RegRecievedCheque = ({
         canEditForm={canEditForm}
         workFlowRowSelectResponse={workFlowRowSelectResponse}
         handleSelectedIdChange={handleSelectedIdChange}
-        selectedId={selectedId}
+        selectedId={workFlowRowSelectResponse.workTableRow.id}//{selectedId}
         loadPaymentResponse={loadPaymentResponse}
         isLoadingLoadPayment={isLoadingLoadPayment}
         updateFields={updateFields}
