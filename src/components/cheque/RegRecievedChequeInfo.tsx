@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef } from "react";
 import Input from "../controls/Input";
 import Ok from "../../assets/images/GrayThem/ok16.png";
 import Err from "../../assets/images/GrayThem/err16.png";
@@ -25,25 +25,16 @@ import { UseMutateAsyncFunction } from "@tanstack/react-query";
 type Props = {
   canEditForm: boolean;
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
-  handleSelectedIdChange: (id: number) => void;
-  selectedId: number;
-  loadPaymentResponse: LoadPaymentResponse;
-  isLoadingLoadPayment: boolean;
-  updateFields: UseMutateAsyncFunction<
-    any,
-    Error,
-    UpdateFieldsRequest,
-    unknown
-  >;
-  isLoadingUpdateFields: boolean;
-  cashPosSystemSearch: any;
+  loadPaymentResponse: LoadPaymentResponse,
+  isLoadingLoadPayment: boolean,
+  updateFields: UseMutateAsyncFunction<any, Error, UpdateFieldsRequest, unknown>,
+  isLoadingUpdateFields:boolean,
+  cashPosSystemSearch: any,
 };
 
 const RegRecievedChequeInfo: React.FC<Props> = ({
   canEditForm,
   workFlowRowSelectResponse,
-  handleSelectedIdChange,
-  selectedId,
   loadPaymentResponse,
   isLoadingLoadPayment,
   updateFields,
@@ -75,11 +66,12 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
     updateStatus,
     setUpdateStatus,
   } = useChequeStore();
+  const [payKind, setPayKind] = useState<number>(0);
 
-  //const payKind = loadPaymentResponse.data.result.payment?.payKind ?? 0;
-  let payKind = -1;
+  useEffect(() => {
+    setPayKind(loadPaymentResponse.data.result.payment?.payKind ?? 0);
+  }, [loadPaymentResponse]);
 
-  const [rowId, setRowId] = useState(selectedId);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFieldChanged, setIsFieldChanged] = useState(false);
 
@@ -156,36 +148,15 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
   }, [bankSearch]);
   /////////////////////////////////////////////////////////////////////
   useEffect(() => {
-    if (payKind !== -1) {
-      setChequeField("search", cashPosSystemSerch);
-      setChequeField("page", 1);
-      setChequeField("lastId", 0);
-      setChequeField("systemId", initData?.systemId ?? 0);
-      //console.log(payKind, "payKind in RegRecievedChequeInfo useEffect");
-      setChequeField("PayKind", payKind);
-    }
+    setChequeField("search", cashPosSystemSerch);
+    setChequeField("page", 1);
+    setChequeField("lastId", 0);
+    setChequeField("systemId", initData?.systemId ?? 0);
+    setChequeField("payKind", payKind);
   }, [cashPosSystemSerch, payKind, initData?.systemId]);
-  /////////////////////////////////////////////////////////////////////
-  useEffect(() => {
-    if (rowId !== 0 && isUpdateStatusChanged) {
-      console.log(rowId, "rowId in RegRecievedChequeInfo");
-      // Ensure the selection is maintained after field updates
-      handleSelectedIdChange(rowId);
-    }
-  }, [updateStatus, rowId, handleSelectedIdChange]);
-
-  const isUpdateStatusChanged = useMemo(() => {
-    return Object.values(updateStatus).some(
-      (status) =>
-        status.message !== "" &&
-        status.message !== undefined &&
-        status.errorCode === 0
-    );
-  }, [updateStatus]);
   ///////////////////////////////////////////////////////////////////
   useEffect(() => {
     console.log(yearSearch, systemSearch);
-    console.log(workFlowRowSelectResponse.workTableRow.formId, "workFlowRowSelectResponse.workTableRow.formId in RegRecievedChequeInfo useEffect");
     setChequeField("id", workFlowRowSelectResponse.workTableRow.formId);
     setUpdateStatus({
       ...updateStatus,
@@ -219,8 +190,6 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
   }, [workFlowRowSelectResponse]);
   ///////////////////////////////////////////////////////////////////
   useEffect(() => {
-    //console.log(loadPaymentResponse.data.result.payment?.payKind, "payKind in RegRecievedChequeInfo useEffect");
-    payKind = loadPaymentResponse.data.result.payment?.payKind ?? 0;
     setCheque({
       sayadiMessage: convertToFarsiDigits(
         loadPaymentResponse.data.result.payment?.sayadiMessage ?? ""
@@ -262,9 +231,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
       accNo: convertToFarsiDigits(
         loadPaymentResponse.data.result.payment?.accNo ?? ""
       ),
-      no: convertToFarsiDigits(
-        loadPaymentResponse.data.result.payment?.no ?? ""
-      ),
+      no: convertToFarsiDigits(loadPaymentResponse.data.result.payment?.no ?? ""),
       fixSerial: convertToFarsiDigits(
         loadPaymentResponse.data.result.payment?.fixSerial ?? ""
       ),
@@ -273,9 +240,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
           Number(loadPaymentResponse.data.result.payment?.amount ?? 0)
         )
       ),
-      dsc: convertToFarsiDigits(
-        loadPaymentResponse.data.result.payment?.dsc ?? ""
-      ),
+      dsc: convertToFarsiDigits(loadPaymentResponse.data.result.payment?.dsc ?? ""),
       cash_PosSystem: {
         id: loadPaymentResponse.data.result.payment?.cash_PosSystem ?? 0,
         title: convertToFarsiDigits(
@@ -376,7 +341,6 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
   };
 
   const update = async (fieldName: string, value: string) => {
-    setRowId(selectedId);
     updateFields({
       fieldName: capitalizeFirstLetter(fieldName),
       value: value,

@@ -3,17 +3,14 @@ import WarehouseShow from "../warehouse/WarehouseShow";
 import { WorkflowRowSelectResponse } from "../../types/workflow";
 import InvoiceReceiptShow from "../invoiceReceipt/InvoiceReceiptShow";
 import RegRecievedCheque from "../cheque/RegRecievedCheque";
+import PaymentInvoiceShow from "../paymentInvoices/PaymentInvoiceShow";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
-  handleSelectedIdChange: (id: number) => void;
-  selectedId: number;
 };
 
 export default function WorkflowComponent({
   workFlowRowSelectResponse,
-  handleSelectedIdChange,
-  selectedId,
 }: Props) {
   let componentToRender1: React.ReactNode | null = null;
   let componentToRender2: React.ReactNode | null = null;
@@ -42,11 +39,18 @@ export default function WorkflowComponent({
         <RegRecievedCheque
           canEditForm={workFlowRowSelectResponse.workTableForms.canEditForm1}
           workFlowRowSelectResponse={workFlowRowSelectResponse}
-          handleSelectedIdChange={handleSelectedIdChange}
-          selectedId={selectedId}
         />
       );
       break;
+    case "Payment/_PaymentInvoices":
+      componentToRender1 = (
+        <PaymentInvoiceShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          canEditForm={workFlowRowSelectResponse.workTableForms.canEditForm1}
+        />
+      );
+      break;
+
     default:
       componentToRender1 = null;
       break;
@@ -75,8 +79,14 @@ export default function WorkflowComponent({
         <RegRecievedCheque
           canEditForm={workFlowRowSelectResponse.workTableForms.canEditForm2}
           workFlowRowSelectResponse={workFlowRowSelectResponse}
-          handleSelectedIdChange={handleSelectedIdChange}
-          selectedId={selectedId}
+        />
+      );
+      break;
+    case "Payment/_PaymentInvoices":
+      componentToRender2 = (
+        <PaymentInvoiceShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          canEditForm={workFlowRowSelectResponse.workTableForms.canEditForm2}
         />
       );
       break;

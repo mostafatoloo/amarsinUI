@@ -78,8 +78,8 @@ export function useWorkflow() {
       return response.data;
     },
     enabled: systemId !== 0 && chartId !== 0 ? true : false,
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     /*staleTime: 30000, // Consider data fresh for 30 seconds
     cacheTime: 5 * 60 * 1000, // Keep unused data in cache for 5 minutes
     refetchInterval: 30000, // Refetch every 30 seconds
@@ -128,8 +128,8 @@ export function useWorkflowRowSelect() {
       return response.data;
     },
     enabled: workTableId !== 0 && chartId !== 0 ? true : false,
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     onSuccess: (data: any) => {
       setWorkFlowRowSelectResponse(data);
     },

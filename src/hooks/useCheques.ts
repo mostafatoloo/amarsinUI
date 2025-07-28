@@ -16,6 +16,7 @@ export function useCheques() {
     formId,
     actCode,
     curId,
+    payKind,
     includeBase64,
     setLoadPaymentResponse,
     setUpdateFieldsResponse,
@@ -25,10 +26,10 @@ export function useCheques() {
     page,
     lastId,
     systemId,
-    PayKind,
     setCashPosSystemSearchResponse,
     setPaymentAttachmentResponse,
   } = useChequeStore();
+
   const queryClient = useQueryClient();
   //for Payment/updateFields
   const updateFields = useMutation({
@@ -67,22 +68,29 @@ export function useCheques() {
       });
     },
   });
-
   //for Payment/cashPosSystemSearch
   const cashPosSystemSearch = useQuery({
-    queryKey: ["cashPosSystemSearch", search, page, lastId, systemId, PayKind,formId],
+    queryKey: [
+      "cashPosSystemSearch",
+      search,
+      page,
+      lastId,
+      systemId,
+      payKind,
+    ],
     queryFn: async () => {
-      console.log(formId, "formId in cashPosSystemSearch");
       const url: string = `/api/Payment/cashPosSystemSearch?page=${page}${
         search ? `&search=${encodeURIComponent(search)}` : ""
-      }&lastId=${lastId}&systemId=${systemId}&PayKind=${PayKind}`;
+      }&lastId=${lastId}&systemId=${systemId}&payKind=${
+        payKind
+      }`;
       console.log(url, "url");
       const response = await api.get(url);
       return response.data;
     },
-    enabled: PayKind !== -1 && page !== 1 && lastId !== 0 && systemId !== 0,
-    //refetchOnWindowFocus: true,
-    //refetchOnReconnect: true,
+    enabled: payKind!==-1 && systemId!==0,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
   // Handle success for cashPosSystemSearch
@@ -94,20 +102,19 @@ export function useCheques() {
 
   //for Payment/attachment
   const paymentAttachment = useQuery({
-    queryKey: ["paymentAttachment", actCode, curId, includeBase64,formId],
+    queryKey: ["paymentAttachment", actCode, curId, includeBase64, formId],
     queryFn: async () => {
-      console.log(formId,actCode, "formId , actCode in paymentAttachment");
+      //console.log(formId, "formId in paymentAttachment");
       const url: string = `/api/Payment/attachment?id=${formId}&actCode=${encodeURIComponent(
         actCode
       )}&curId=${curId}&includeBase64=${includeBase64}`;
-
       console.log(url, "url");
       const response = await api.get(url);
       return response.data;
     },
-    enabled: formId !== 0,
-    //refetchOnWindowFocus: true,
-    //refetchOnReconnect: true,
+    enabled: formId!==0,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
   // Handle success for paymentAttachment
@@ -124,16 +131,19 @@ export function useCheques() {
     LoadPaymentResponse,
     unknown[]
   >({
-    queryKey: ["loadPayment", id],
+    queryKey: ["loadPayment",formId],
     queryFn: async () => {
-      const url: string = `/api/Payment/load/${id}`;
+      const url: string = `/api/Payment/load/${formId}`;
 
+      //const {workFlowRowSelectResponse}=useWorkflowRowSelectStore()
+
+      //console.log(workFlowRowSelectResponse, "workFlowRowSelectResponse");
       console.log(url, "url");
 
       const response = await api.get(url);
       return response.data;
     },
-    enabled: id !== 0,
+    enabled: formId!==0,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {

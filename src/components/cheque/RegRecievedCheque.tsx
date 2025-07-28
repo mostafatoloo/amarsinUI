@@ -8,15 +8,11 @@ import RegRecievedChequeInfo from "./RegRecievedChequeInfo";
 type Props = {
   canEditForm: boolean;
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
-  handleSelectedIdChange: (id: number) => void;
-  selectedId: number;
 };
 
 const RegRecievedCheque = ({
   canEditForm,
   workFlowRowSelectResponse,
-  handleSelectedIdChange,
-  selectedId,
 }: Props) => {
   const {
     loadPaymentResponse,
@@ -28,20 +24,17 @@ const RegRecievedCheque = ({
     isLoadingPaymentAttachment,
   } = useCheques();
 
-  const {setField,}=useChequeStore()
-  
-  useEffect(()=>{
-    console.log(workFlowRowSelectResponse.workTableRow.formId, "workFlowRowSelectResponse.workTableRow.formId in RegRecievedCheque useEffect");
-    setField("formId", workFlowRowSelectResponse.workTableRow.formId);
-  },[workFlowRowSelectResponse.workTableRow.formId])
-
+  const {setField,formId:chequeFormId}=useChequeStore()
+  useEffect(() => {
+    if(chequeFormId!==workFlowRowSelectResponse.workTableRow.formId){
+      setField("formId", workFlowRowSelectResponse.workTableRow.formId);
+    }
+  }, [workFlowRowSelectResponse.workTableRow.formId, setField,chequeFormId]);
   return (
     <div className="flex flex-col md:flex-row w-full text-sm gap-2 text-gray-600">
       <RegRecievedChequeInfo
         canEditForm={canEditForm}
         workFlowRowSelectResponse={workFlowRowSelectResponse}
-        handleSelectedIdChange={handleSelectedIdChange}
-        selectedId={workFlowRowSelectResponse.workTableRow.id}//{selectedId}
         loadPaymentResponse={loadPaymentResponse}
         isLoadingLoadPayment={isLoadingLoadPayment}
         updateFields={updateFields}
@@ -49,7 +42,6 @@ const RegRecievedCheque = ({
         cashPosSystemSearch={cashPosSystemSearch}
       />
       <RegRecievedChequeImg
-        formId={workFlowRowSelectResponse.workTableRow.formId}
         paymentAttachmentResponse={paymentAttachmentResponse}
         isLoadingPaymentAttachment={isLoadingPaymentAttachment}
         setField={setField}

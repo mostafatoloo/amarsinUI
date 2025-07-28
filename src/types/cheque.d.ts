@@ -116,7 +116,7 @@ interface LoadPaymentResponse {
     page: number;
     lastId: number;
     systemId: number;
-    PayKind: number;
+    payKind: number;
   };
 
   interface ResultItem {

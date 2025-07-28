@@ -80,7 +80,7 @@ export const useChequeStore = create<ChequeState>()((set) => ({
   page: 1,
   lastId: 0,
   systemId: 0,
-  PayKind: 0,
+  payKind: -1,
   cashPosSystemSearchResponse: {
     total_count: 0,
     results: [],

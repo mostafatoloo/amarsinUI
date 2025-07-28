@@ -15,14 +15,12 @@ type Props = {
   paymentAttachmentResponse: PaymentAttachmentResponse;
   isLoadingPaymentAttachment: boolean;
   setField: (field: string, value: any) => void;
-  formId: number;
 };
 
 const RegRecievedChequeImg = ({
   paymentAttachmentResponse,
   isLoadingPaymentAttachment,
   setField,
-  formId,
 }: Props) => {
   const { authApiResponse } = useAuthStore();
   const token = authApiResponse?.data.result.login.token ?? "";
@@ -34,12 +32,10 @@ const RegRecievedChequeImg = ({
   const [rotation, setRotation] = useState(0); // Initial rotation angle is 0 degrees
 
   useEffect(() => {
-    setField("formId", formId);
-    console.log(formId, "formId");
     setField("actCode", actCode);
     setField("curId", curId);
     setField("includeBase64", false);
-  }, [actCode, curId, formId]);
+  }, [actCode, curId]);
 
   const handleNext = () => {
     if (paymentAttachmentResponse.data.result.hasNext) {

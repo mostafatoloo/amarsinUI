@@ -4,7 +4,6 @@ import {
   SelectIndentsRequest,
   WarehouseTemporaryReceiptIndentTbl,
 } from "../../types/warehouse";
-import { Skeleton } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Button from "../controls/Button";
 import ConfirmCard from "../layout/ConfirmCard";
@@ -15,6 +14,7 @@ import {
 } from "../../utilities/general";
 import TTable, { EditableInput } from "../controls/TTable";
 import { colors } from "../../utilities/color";
+import Skeleton from "../layout/Skeleton";
 
 type Props = {
   iocId: number;

@@ -13,7 +13,6 @@ const InvoiceShowHeader = ({ workFlowRowSelectResponse }: Props) => {
   const { setField } = useInvoiceStore();
 
   useEffect(() => {
-    console.log(workFlowRowSelectResponse.workTableRow.formId, "workFlowRowSelectResponse.workTableRow.formId");
     setField("formId", workFlowRowSelectResponse.workTableRow.formId);
   }, [workFlowRowSelectResponse.workTableRow.formId]);
 

@@ -8,7 +8,7 @@ const WorkflowForm = () => {
   const { workFlowResponse, error, isLoading } = useWorkflow();
 
   const handleSelectedIdChange = (id: number) => {
-    console.log(id, "id in WorkflowForm");
+    //console.log(id, "id in WorkflowForm");
     setSelectedId(id);
   };
 
@@ -23,7 +23,6 @@ const WorkflowForm = () => {
       />
       <WorkflowChild
         selectedId={selectedId} //{selectedIdRef.current}
-        handleSelectedIdChange={handleSelectedIdChange}
         workFlowResponse={workFlowResponse}
       />
     </div>

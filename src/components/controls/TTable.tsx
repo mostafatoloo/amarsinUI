@@ -24,7 +24,7 @@ type TableProps<T extends object> = {
   hasSumRow?: boolean;
   changeRowSelectColor?: boolean;
   setSelectedId?: (value: number) => void;
-  CellColorChange?: (cell: any) => string | null;
+  CellColorChange?: (row: any, columnId: string) => string | null;
   showToolTip?: boolean;
 };
 
@@ -236,7 +236,7 @@ export default function TTable<T extends object>({
                         i === rowSelect && changeRowSelectColor
                           ? colors.blue50
                           : CellColorChange && !cell.column.backgroundColor
-                          ? CellColorChange(row)
+                          ? CellColorChange(row, cell.column.id)
                           : cell.column.backgroundColor || "white",
                       whiteSpace: "pre-wrap",
                       textWrap: !wordWrap ? "nowrap" : "wrap",
@@ -251,6 +251,7 @@ export default function TTable<T extends object>({
                     }}
                     onClick={() => {
                       if (setSelectedId) {
+                        //console.log(row.original["id" as keyof T])
                         const itemId = Number(
                           convertToLatinDigits(row.original["id" as keyof T])
                         );

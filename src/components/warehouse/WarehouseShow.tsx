@@ -29,7 +29,6 @@ const WarehouseShow = ({ workFlowRowSelectResponse }: Props) => {
   const { setField } = useWarehouseStore();
 
   useEffect(() => {
-    console.log(workFlowRowSelectResponse.workTableRow.formId, "workFlowRowSelectResponse.workTableRow.formId in WarehouseShow");
     if (formId !== workFlowRowSelectResponse.workTableRow.formId)
       setField("formId", workFlowRowSelectResponse.workTableRow.formId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
