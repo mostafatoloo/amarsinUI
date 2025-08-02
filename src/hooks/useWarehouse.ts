@@ -7,6 +7,7 @@ import {
   WarehouseIndentListResponse,
   SelectIndentsRequest,
   RegRequest,
+  WarehouseSearchResponse,
 } from "../types/warehouse";
 import axios from "axios";
 import { useGeneralContext } from "../context/GeneralContext";
@@ -16,11 +17,20 @@ export function useWarehouse() {
     formId,
     productId,
     iocId,
+    //for api/Warehouse/WarehouseSearch?search=%D8%A7&page=1&pageSize=30&lastId=0&CustomerTypeId=-1
+    search,
+    page,
+    pageSize,
+    lastId,
+    CustomerTypeId,
+    PartKey,
+    //end of api/Warehouse/WarehouseSearch?search=%D8%A7&page=1&pageSize=30&lastId=0&CustomerTypeId=-1
     setWarehouseShowIdResponse,
     setProductCatalog,
     setWarehouseIndentListResponse,
     setSelectIndentsResponse,
-    setRegResponse
+    setRegResponse,
+    setWarehouseSearchResponse,
   } = useWarehouseStore();
   const { url: apiUrl } = useGeneralContext();
   //console.log("[useWarehouse] Setting formId to", formId)
@@ -39,7 +49,7 @@ export function useWarehouse() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: formId!==0 ? true : false, // Only fetch if param is available
+    enabled: formId !== 0 ? true : false, // Only fetch if param is available
     refetchOnWindowFocus: true, // Refetch data when the window is focused
     refetchOnReconnect: true, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -64,7 +74,7 @@ export function useWarehouse() {
       const response = await axios.get(`${apiUrl}${url}`);
       return response.data;
     },
-    enabled: productId!==0 ? true : false, // Only fetch if param is available
+    enabled: productId !== 0 ? true : false, // Only fetch if param is available
     refetchOnWindowFocus: true, // Refetch data when the window is focused
     refetchOnReconnect: true, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -72,10 +82,38 @@ export function useWarehouse() {
     },
   } as UseQueryOptions<ProductCatalog, Error, ProductCatalog, unknown[]>);
 
-  //for warehouseTemporaryReceiptIndentListResponse
+  //for warehouseSearchResponse
+  const warehouseSearchQuery = useQuery<
+    WarehouseSearchResponse,
+    Error,
+    WarehouseSearchResponse,
+    unknown[]
+  >({
+    queryKey: [
+      "warehouseSearch",
+      search,
+      page,
+      pageSize,
+      lastId,
+      CustomerTypeId,
+      PartKey,
+    ],
+    queryFn: async () => {
+      console.log(
+        `api/Warehouse/WarehouseSearch?search=${search}&page=${page}&pageSize=${pageSize}&lastId=${lastId}&CustomerTypeId=${CustomerTypeId}&PartKey=${PartKey}`
+      );
+      const url: string = `api/Warehouse/WarehouseSearch?search=${encodeURIComponent(search)}&page=${page}&pageSize=${pageSize}&lastId=${lastId}&CustomerTypeId=${CustomerTypeId}&PartKey=${PartKey}`;
+      const response = await api.get(url);
+      return response.data;
+    },
+    onSuccess: (data: any) => {
+      setWarehouseSearchResponse(data);
+    },
+  } as UseQueryOptions<WarehouseSearchResponse, Error, WarehouseSearchResponse, unknown[]>);
 
+  //for warehouseTemporaryReceiptIndentListResponse
   const warehouseIndentListQuery = useQuery<
-  WarehouseIndentListResponse,
+    WarehouseIndentListResponse,
     Error,
     WarehouseIndentListResponse,
     unknown[]
@@ -88,7 +126,7 @@ export function useWarehouse() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: iocId!==0 && iocId!==undefined ? true : false, // Only fetch if param is available
+    enabled: iocId !== 0 && iocId !== undefined ? true : false, // Only fetch if param is available
     refetchOnWindowFocus: true, // Refetch data when the window is focused
     refetchOnReconnect: true, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -102,12 +140,12 @@ export function useWarehouse() {
     mutationFn: async (request: SelectIndentsRequest) => {
       const url: string = `api/WarehouseTemporaryReceipt/SelectIndents`;
       const response = await api.post(url, request);
-      console.log(response.data,"response.data")
+      console.log(response.data, "response.data");
       return response.data;
     },
     onSuccess: (data: any) => {
       setSelectIndentsResponse(data);
-      warehouseShowIdQuery.refetch()
+      warehouseShowIdQuery.refetch();
     },
   });
   //for regResponse
@@ -122,6 +160,15 @@ export function useWarehouse() {
     },
   });
   return {
+    //output for warehouseSearchResponse
+    isLoadingWarehouseSearch: warehouseSearchQuery.isLoading,
+    errorWarehouseSearch: warehouseSearchQuery.error,
+    warehouseSearchResponse: warehouseSearchQuery.data ?? {
+      meta: { errorCode: 0, message: "", type: "" },
+      data: {
+        result: { total_count: 0, err: 0, msg: "", searchResults: [] },
+      },
+    },
     // output for warehouseShowId
     //getInventoryList: () => query.refetch(), // Optional manual trigger
     //getWarehouseShowIdResponse: () => warehouseShowIdQuery.refetch(), // Optional manual trigger
@@ -188,21 +235,18 @@ export function useWarehouse() {
     },
     //output for WarehouseTemporaryReceiptIndentList
     //getWarehouseIndentList: () => warehouseIndentListQuery.refetch(), // Optional manual trigger
-    isLoadingWarehouseIndentList:
-      warehouseIndentListQuery.isLoading,
-    errorWarehouseIndentList:
-    warehouseIndentListQuery.error,
-    warehouseIndentList:
-    warehouseIndentListQuery.data ?? {
-        meta: { errorCode: -1, message: "", type: "" },
-        data: {
-          result: {
-            err: 0,
-            msg: "",
-            warehouseTemporaryReceiptIndentLists: []
-          }
-        }
+    isLoadingWarehouseIndentList: warehouseIndentListQuery.isLoading,
+    errorWarehouseIndentList: warehouseIndentListQuery.error,
+    warehouseIndentList: warehouseIndentListQuery.data ?? {
+      meta: { errorCode: -1, message: "", type: "" },
+      data: {
+        result: {
+          err: 0,
+          msg: "",
+          warehouseTemporaryReceiptIndentLists: [],
+        },
       },
+    },
     //output for selectIndentsResponse
     isLoadingEditIndents: editIndentMutation.isPending,
     errorEditIndents: editIndentMutation.error,

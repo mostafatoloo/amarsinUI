@@ -102,13 +102,14 @@ export interface WarehouseShowIdResponse {
   data: Data;
 }
 
-export interface WarehouseState {
+export interface WarehouseState extends WarehouseSearchRequest {
   formId: number;
   productId: number;
   iocId: number;
   warehouseShowIdResponse: WarehouseShowIdResponse;
   warehouseIndentListResponse: WarehouseIndentListResponse;
   productCatalog: ProductCatalog;
+  warehouseSearchResponse: WarehouseSearchResponse;
   setField: (field: string, value: any) => void;
   setWarehouseShowIdResponse: (
     warehouseShowIdResponse: WarehouseShowIdResponse
@@ -123,6 +124,9 @@ export interface WarehouseState {
   ) => void;
   regResponse: RegResponse;
   setRegResponse: (regResponse: RegResponse) => void;
+  setWarehouseSearchResponse: (
+    warehouseSearchResponse: WarehouseSearchResponse
+  ) => void;
 }
 
 export interface ProductCatalog {
@@ -237,5 +241,36 @@ export interface RegResponse {
       msg: string;
       dtlErrMsgs: any[];
     };
+  };
+}
+
+// for api/Warehouse/WarehouseSearch?search=%D8%A7&page=1&pageSize=30&lastId=0&CustomerTypeId=-1
+
+export interface WarehouseSearchRequest {
+  search: string;
+  page: number;
+  pageSize: number;
+  lastId: number;
+  CustomerTypeId: number;
+  PartKey:number
+}
+export interface WarehouseSearchResult {
+  id: number;
+  text: string;
+}
+
+export interface WarehouseSearchResponse {
+  meta: {
+      errorCode: number;
+      message: string | null;
+      type: string;
+  };
+  data: {
+      result: {
+          total_count: number;
+          err: number;
+          msg: string | null;
+          searchResults: WarehouseSearchResult[];
+      };
   };
 }

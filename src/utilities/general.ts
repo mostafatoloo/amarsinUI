@@ -168,3 +168,21 @@ export function convertToPersianDate(date: Date): string {
 function padZero(num: number): string {
   return num < 10 ? `0${num}` : `${num}`;
 }
+////////////////////////////////////////////////////////////
+// pick up numbers seperated by new line
+export function parsePersianNumerals(input: string): number[] {
+  const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
+
+  return input.split('\n').map(part => {
+    let numberStr = '';
+    for (const char of part) {
+      const index = persianDigits.indexOf(char);
+      if (index !== -1) {
+        numberStr += index.toString();
+      } else {
+        numberStr += char; // fallback in case of unexpected characters
+      }
+    }
+    return parseInt(numberStr, 10);
+  });
+}

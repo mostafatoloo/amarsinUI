@@ -7,10 +7,11 @@ import { WarehouseTemporaryReceiptIndentDtl } from "../../types/warehouse";
 import { useGeneralContext } from "../../context/GeneralContext";
 import ModalMessage from "../layout/ModalMessage";
 import { useWarehouseStore } from "../../store/warehouseStore";
-import WarehouseMessages from "./WarehouseMessages";
 import { WorkflowRowSelectResponse } from "../../types/workflow";
 import { useWarehouse } from "../../hooks/useWarehouse";
 import WarehouseIndentTable from "./WarehouseIndentTable";
+import ShowMessages from "../controls/ShowMessages";
+import { colors } from "../../utilities/color";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -29,6 +30,7 @@ const WarehouseShow = ({ workFlowRowSelectResponse }: Props) => {
   const { setField } = useWarehouseStore();
 
   useEffect(() => {
+    console.log(workFlowRowSelectResponse.workTableRow.formId, "formId in WarehouseShow");
     if (formId !== workFlowRowSelectResponse.workTableRow.formId)
       setField("formId", workFlowRowSelectResponse.workTableRow.formId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -123,7 +125,7 @@ const WarehouseShow = ({ workFlowRowSelectResponse }: Props) => {
         title="پیام ها"
         width="2/3"
       >
-        <WarehouseMessages />
+        <ShowMessages dtlErrMsgs={regResponse.data.result.dtlErrMsgs} color={colors.yellow100} />
       </ModalForm>
 
       <ModalMessage

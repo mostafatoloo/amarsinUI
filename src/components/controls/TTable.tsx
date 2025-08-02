@@ -26,6 +26,7 @@ type TableProps<T extends object> = {
   setSelectedId?: (value: number) => void;
   CellColorChange?: (row: any, columnId: string) => string | null;
   showToolTip?: boolean;
+  showHeader?: boolean;
 };
 
 // Create an editable cell renderer
@@ -72,7 +73,7 @@ export function EditableInput<T extends object>({
     newValue: { id: string | number; title: string; }  | { id: string | number; title: string; } [] | null
   ) => {
     console.log(event);
-    console.log(newValue, "newValue in handleAutoCompleteChange");
+    //console.log(newValue, "newValue in handleAutoCompleteChange");
     setValue((newValue as DefaultOptionType)?.title ?? "");
     if (updateMyRow) {
       updateMyRow(index, newValue as DefaultOptionType);
@@ -97,7 +98,7 @@ export function EditableInput<T extends object>({
         placeholder={placeholder}
         showBold={false}
         desktopfontsize="12px"
-        showClearIcon={true}
+        showClearIcon={false}
         showBorder={false}
         changeColorOnFocus={true}
         showBorderFocused={true}
@@ -128,6 +129,7 @@ export function EditableInput<T extends object>({
       disabled={!canEditForm}
       className="text-inherit p-0 m-0 border-0 w-full focus:outline-none"
       style={{ backgroundColor: isFocused ? "white" : !canEditForm ? "inherit" : "white" }}
+      //style={{ backgroundColor: isFocused && canEditForm ? "white" :  "inherit" }}
       value={value}
       onChange={(e) => {
         setValue(convertToFarsiDigits(e.target.value));
@@ -159,6 +161,7 @@ export default function TTable<T extends object>({
   setSelectedId,
   CellColorChange,
   showToolTip = false,
+  showHeader = true,
 }: TableProps<T>) {
   const [rowSelect, setRowSelect] = useState(0);
 
@@ -216,6 +219,7 @@ export default function TTable<T extends object>({
     <tbody {...getTableBodyProps()} className="bg-white">
       {rows.length > 0 ? (
         rows.map((row: any, i: number) => {
+          //console.log(row,"row in tBody processedData");
           prepareRow(row);
           return (
             <tr
@@ -285,7 +289,7 @@ export default function TTable<T extends object>({
       className="table-fixed w-full border border-gray-300 shadow-lg"
       style={{ fontSize }}
     >
-      {tHead}
+      {showHeader && tHead}
       {tBody}
     </table>
   );

@@ -76,69 +76,6 @@ const InvoiceShowTable = () => {
     []
   );
 
-  /*const headCells: HeadCell<InvoiceDetail>[] = [
-    {
-      id: "index",
-      label: "ردیف",
-      disableSorting: true,
-      cellWidth: "5%",
-      isNumber: true,
-    },
-    {
-      id: "product",
-      label: "کالا",
-      cellWidth: "30%",
-      isNumber: true,
-      disableSorting: true,
-    },
-    {
-      id: "cnt",
-      label: "تعداد",
-      cellWidth: "10%",
-      isNumber: true,
-      disableSorting: true,
-    },
-    {
-      id: "offer",
-      label: "آفر",
-      cellWidth: "10%",
-      isNumber: true,
-      disableSorting: true,
-    },
-    {
-      id: "cost",
-      label: "قیمت",
-      cellWidth: "10%",
-      isNumber: true,
-      disableSorting: true,
-      isCurrency: true,
-    },
-    {
-      id: "valueTax",
-      label: "ارزش افزوده",
-      cellWidth: "10%",
-      isNumber: true,
-      disableSorting: true,
-    },
-    {
-      id: "total",
-      label: "جمع",
-      cellWidth: "25%",
-      isNumber: true,
-      disableSorting: true,
-      isCurrency: true,
-    },
-  ];*/
-
-  //const headerGroups: HeaderGroup[] = [{ label: "اقلام", colSpan: 7 }];
-
-  /*const handleRowClick = (
-    item: InvoiceDetail,
-    setSelectedRowId: React.Dispatch<React.SetStateAction<number | null>>
-  ) => {
-    setSelectedRowId(Number(item["id"]));
-  };*/
-
   const data = invoiceShowIdResponse.data.result.invoiceDtls.map((dtl, i) => ({
     ...dtl,
     index: i + 1,

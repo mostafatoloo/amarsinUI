@@ -90,10 +90,21 @@ export const useWarehouseStore = create<WarehouseState>()((set) => ({
       result: { id: 0, err: 0, msg: "", dtlErrMsgs: [] },
     },
   },
+  warehouseSearchResponse: {
+    meta: { errorCode: 0, message: "", type: "" },
+    data: {
+      result: { total_count: 0, err: 0, msg: "", searchResults: [] },
+    },
+  },
+  //for api/Warehouse/WarehouseSearch?search=%D8%A7&page=1&pageSize=30&lastId=0&CustomerTypeId=-1
+  search: "ا",
+  page: 1,
+  pageSize: 30,
+  lastId: 0,
+  CustomerTypeId: -1,
+  PartKey: 0,
+  //end of api/Warehouse/WarehouseSearch?search=%D8%A7&page=1&pageSize=30&lastId=0&CustomerTypeId=-1
   setField: (field: string, value: any) => {
- /*   if (field === "formId") {
-      console.log("[WarehouseStore] setField called for formId:", value);
-    }*/
     set((state) => ({ ...state, [field]: value }));
   },
   setWarehouseShowIdResponse: (warehouseShowIdResponse) =>
@@ -104,4 +115,6 @@ export const useWarehouseStore = create<WarehouseState>()((set) => ({
   setSelectIndentsResponse: (selectIndentsResponse) =>
     set({ selectIndentsResponse }),
   setRegResponse: (regResponse) => set({ regResponse }),
+  setWarehouseSearchResponse: (warehouseSearchResponse) =>
+    set({ warehouseSearchResponse }),
 }));

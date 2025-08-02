@@ -4,6 +4,8 @@ import { WorkflowRowSelectResponse } from "../../types/workflow";
 import InvoiceReceiptShow from "../invoiceReceipt/InvoiceReceiptShow";
 import RegRecievedCheque from "../cheque/RegRecievedCheque";
 import PaymentInvoiceShow from "../paymentInvoices/PaymentInvoiceShow";
+import OrderRegShow from "../order/OrderRegShow";
+import PayRequestShow from "../payRequest/PayRequestShow";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -50,7 +52,20 @@ export default function WorkflowComponent({
         />
       );
       break;
-
+    case "Order/_Order":
+      componentToRender1 = (
+        <OrderRegShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+        />
+      );
+      break;
+    case "PayRequest/_PayRequest":
+      componentToRender1 = (
+        <PayRequestShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+        />
+      );
+      break;
     default:
       componentToRender1 = null;
       break;
@@ -87,6 +102,13 @@ export default function WorkflowComponent({
         <PaymentInvoiceShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           canEditForm={workFlowRowSelectResponse.workTableForms.canEditForm2}
+        />
+      );
+      break;
+    case "Order/_Order":
+      componentToRender1 = (
+        <OrderRegShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
         />
       );
       break;

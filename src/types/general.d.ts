@@ -15,6 +15,7 @@ export type ColumnGroup = {
   Header: string;
   columns: Column[];
   backgroundColor?: string;
+  width?: string;
 };
 
 export type DefaultOptionType = {

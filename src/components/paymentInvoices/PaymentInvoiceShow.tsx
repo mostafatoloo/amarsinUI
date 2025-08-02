@@ -18,6 +18,8 @@ const PaymentInvoiceShow = ({
   workFlowRowSelectResponse,
   canEditForm,
 }: Props) => {
+  
+  const canEditForm1Mst1= workFlowRowSelectResponse.workTableForms.canEditForm1Mst1
   const [dsc, setDsc] = useState("");
   const [rem, setRem] = useState("");
   const [isEqualSum, setIsEqualSum] = useState(false);
@@ -51,6 +53,7 @@ const PaymentInvoiceShow = ({
     <form className="mt-2 p-1 gap-1 bg-gray-200 border border-gray-300 rounded-md w-full text-gray-600 text-sm ">
       <div className="flex flex-col sm:flex-row w-full">
         <PaymentInvoiceShowHeader
+          canEditForm1Mst1={canEditForm1Mst1}
           isEqualSum={isEqualSum}
           invoiceOutStandingResponse={invoiceOutStandingResponse}
           isLoadingUpdateFields={isLoadingUpdateFields}

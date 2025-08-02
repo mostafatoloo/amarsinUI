@@ -22,8 +22,8 @@ import { handleExport } from "../../utilities/ExcelExport";
 import { headCells } from "./InvoiceReceiptShowTable";
 
 type Props = {
-  canEditForm: boolean;
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  canEditForm: boolean;
 };
 
 export type Fields = {
@@ -37,7 +37,8 @@ export type Fields = {
   dsc: string;
 };
 
-const InvoiceReceiptShow = ({ workFlowRowSelectResponse, canEditForm }: Props) => {
+const InvoiceReceiptShow = ({ workFlowRowSelectResponse,canEditForm}: Props) => {
+  const canEditForm1Mst1= workFlowRowSelectResponse.workTableForms.canEditForm1Mst1
   const { setField, mrsId } = useInvoiceReceiptStore();
   const { yearId } = useGeneralContext();
   const { indentMrsResponse, isLoading, getIndentMrsResponse } = useInvoiceReceipt();
@@ -251,7 +252,7 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse, canEditForm }: Props) =
   return (
     <div className="w-full flex flex-col">
       <InvoiceReceipShowHeader
-        canEditForm={canEditForm}
+        canEditForm1Mst1={canEditForm1Mst1}
         fields={fields}
         setFields={setFields}
         indentMrsResponse={indentMrsResponse}

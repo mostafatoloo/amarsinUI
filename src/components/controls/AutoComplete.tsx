@@ -7,7 +7,9 @@ type Props<T extends { id: string | number; title: string }> = {
   label?: string;
   value: T | T[] | null;
   handleChange: (event: any, newValue: T | T[] | null) => void;
-  setSearch: React.Dispatch<React.SetStateAction<string>>;
+  setSearch?: React.Dispatch<React.SetStateAction<string>>;
+  inputValue?: string;
+  onInputChange?: (event: any, newInputValue: string) => void;
   className?: string;
   mobilefontsize?: string;
   desktopfontsize?: string;
@@ -37,6 +39,8 @@ const AutoComplete = forwardRef(<T extends { id: string | number; title: string 
     value,
     handleChange,
     setSearch,
+    inputValue,
+    onInputChange,
     mobilefontsize = "0.7rem",
     desktopfontsize = "0.875rem",
     showLabel = true, 
@@ -97,7 +101,11 @@ const AutoComplete = forwardRef(<T extends { id: string | number; title: string 
           placeholder={placeholder}
           label={showLabel ? label : undefined}
           onChange={(event) => {
-            setSearch(event.target.value);
+            if (onInputChange) {
+              onInputChange(event, event.target.value);
+            } else if (setSearch) {
+              setSearch(event.target.value);
+            }
           }}
           sx={{
             fontSize: { xs: mobilefontsize, sm: desktopfontsize },
@@ -159,6 +167,8 @@ const AutoComplete = forwardRef(<T extends { id: string | number; title: string 
         backgroundColor: isFocused && changeColorOnFocus ? colors.gray50 : backgroundColor ? backgroundColor :"inherit",
       }}
       value={value}
+      inputValue={inputValue}
+      onInputChange={onInputChange}
       onChange={handleChange}
       getOptionLabel={(option) => option.title || ""}
       isOptionEqualToValue={(option, value) => option.id === value.id}

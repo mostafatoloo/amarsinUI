@@ -179,6 +179,20 @@ const WarehouseIndentTable = ({
       setIsModalOpen(true);
     }
   };
+  /////////////////////////////////////////////////////////
+  const changeRowValues = (value: string, rowIndex: number, columnId: string) => {
+    setData((old) =>
+      old.map((row, index) => {
+        if (index === rowIndex) {
+          return {
+            ...old[rowIndex],
+            [columnId]: value,
+          };
+        }
+        return row;
+      })
+    );
+  };
 
   return (
     <>
@@ -199,6 +213,8 @@ const WarehouseIndentTable = ({
             updateMyData={updateMyData}
             //skipPageReset={skipPageReset}
             changeRowSelectColor={true}
+            canEditForm={true}
+            changeRowValues={changeRowValues}
             fontSize="14px"
           />
 
