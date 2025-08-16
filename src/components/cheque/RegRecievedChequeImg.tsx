@@ -72,33 +72,33 @@ const RegRecievedChequeImg = ({
           <img
             src={RotateLeft}
             alt="rotate-left"
-            className={`${paymentAttachmentResponse?.data.result.path!==null ? "hover:cursor-pointer" : "hover:cursor-not-allowed"}`}
+            className={`${paymentAttachmentResponse?.data?.result?.path!==null ? "hover:cursor-pointer" : "hover:cursor-not-allowed"}`}
             onClick={handleRotateLeft}
           />
           <img
             src={RotateRight}
             alt="rotate-right"
-            className={`${paymentAttachmentResponse?.data.result.path!==null ? "hover:cursor-pointer" : "hover:cursor-not-allowed"}`}
+            className={`${paymentAttachmentResponse?.data?.result?.path!==null ? "hover:cursor-pointer" : "hover:cursor-not-allowed"}`}
             onClick={handleRotateRight}
           />
           <img
             src={
-              paymentAttachmentResponse?.data?.result.hasNext
+              paymentAttachmentResponse?.data?.result?.hasNext
                 ? Next
                 : NextDisabled
             }
             alt="next-disabled"
-            className={`${paymentAttachmentResponse?.data?.result.hasNext ? "hover:cursor-pointer" : "hover:cursor-not-allowed"}`}
+            className={`${paymentAttachmentResponse?.data?.result?.hasNext ? "hover:cursor-pointer" : "hover:cursor-not-allowed"}`}
             onClick={handleNext}
           />
           <img
             src={
-              paymentAttachmentResponse?.data?.result.hasPrev
+              paymentAttachmentResponse?.data?.result?.hasPrev
                 ? Prev
                 : PrevDisabled
             }
             alt="prev-disabled"
-            className={`${paymentAttachmentResponse?.data?.result.hasPrev ? "hover:cursor-pointer" : "hover:cursor-not-allowed"}`}
+            className={`${paymentAttachmentResponse?.data?.result?.hasPrev ? "hover:cursor-pointer" : "hover:cursor-not-allowed"}`}
             onClick={handlePrev}
           />
           <img src={Attach} alt="attach" className="hover:cursor-pointer" />
@@ -120,7 +120,7 @@ const RegRecievedChequeImg = ({
                   style: {
                     maxWidth: "100%",
                     height: "auto",
-                    transform: `rotate(${rotation}deg)`, // Apply rotation here
+                    transform: `rotate(${rotation}deg)`, // rotation is here
                   },
                   onError: (error) =>
                     console.error("Image failed to load:", error),

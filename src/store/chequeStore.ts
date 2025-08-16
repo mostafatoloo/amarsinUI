@@ -85,17 +85,17 @@ export const useChequeStore = create<ChequeState>()((set) => ({
     total_count: 0,
     results: [],
   },
-  paymentAttachmentResponse:{
-    meta:{
+  paymentAttachmentResponse: {
+    meta: {
       errorCode: 0,
       message: "",
-      type: ""
+      type: "",
     },
-    data: 
-      {result:{
+    data: {
+      result: {
         ordr: 0,
         id: 0,
-        dat:  null,
+        dat: null,
         regTime: null,
         usrDisplayName: null,
         dsc: null,
@@ -107,13 +107,15 @@ export const useChequeStore = create<ChequeState>()((set) => ({
         downloadPath: "",
         base64Path: "",
         base64Data: null,
-        fileSize: 0
-      }}
+        fileSize: 0,
+      },
+    },
   },
   formId: 0,
   actCode: "",
   curId: 0,
   includeBase64: false,
+
   setCashPosSystemSearchResponse: (cashPosSystemSearchResponse) =>
     set({ cashPosSystemSearchResponse }),
   setField: (field: string, value: any) =>
@@ -122,6 +124,7 @@ export const useChequeStore = create<ChequeState>()((set) => ({
   setUpdateFieldsResponse: (updateFieldsResponse) =>
     set({ updateFieldsResponse }),
   setUpdateStatus: (updateStatus) => set({ updateStatus }),
-  setPaymentAttachmentResponse:  (paymentAttachmentResponse) =>
+  setPaymentAttachmentResponse: (paymentAttachmentResponse) =>
     set({ paymentAttachmentResponse }),
+
 }));

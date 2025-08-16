@@ -9,6 +9,9 @@ export type Column = {
   visible?:boolean;
   placeholder?:string;
   isCurrency?:boolean;
+  options?:DefaultOptionType[]
+  setSearch?: (search:string)=>void;
+  search?: string;
   Cell?: (props: any) => ReactNode;
 };
 export type ColumnGroup = {
@@ -30,4 +33,3 @@ export type DefaultOptionTypeStringId = {
 
 
 export type TableColumns = (ColumnGroup | Column)[];
-

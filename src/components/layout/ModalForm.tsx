@@ -8,6 +8,7 @@ type ModalProps = {
   title?: string;
   showCloseButton?: boolean;
   width?: string;
+  height?: string;
 };
 
 const ModalForm: React.FC<ModalProps> = ({
@@ -17,6 +18,7 @@ const ModalForm: React.FC<ModalProps> = ({
   title,
   showCloseButton = true,
   width,
+  height,
 }) => {
   if (!isOpen) return null;
 
@@ -41,8 +43,9 @@ const ModalForm: React.FC<ModalProps> = ({
   return (
     <div
       className={`fixed w-full inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 transition-opacity duration-300 opacity-100`}
+      
     >
-      <div className={classname}>
+      <div className={classname} style={{ height: height }}>
         {showCloseButton && (
           <button
             className="absolute top-2 right-2 text-gray-200 hover:text-white text-4xl w-16 h-16"

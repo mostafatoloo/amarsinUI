@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { useState } from "react";
 import { DefaultOptionType, TableColumns } from "../../types/general";
 import { CellProps, useTable, useBlockLayout } from "react-table";
 import {
@@ -13,10 +13,14 @@ type TableProps<T extends object> = {
   canEditForm?: boolean;
   columns: TableColumns;
   data: T[];
-  options?: DefaultOptionType[];
-  setSearchText?: Dispatch<SetStateAction<string>>;
+  //options?: DefaultOptionType[];
+  //setSearchText?: Dispatch<SetStateAction<string>>;
   updateMyData?: (rowIndex: number, columnId: string, value: string) => void;
-  updateMyRow?: (rowIndex: number, values: DefaultOptionType) => void;
+  updateMyRow?: (
+    rowIndex: number,
+    values: DefaultOptionType,
+    columnId?: string
+  ) => void;
   changeRowValues?: (value: string, rowIndex: number, columnId: string) => void;
   skipPageReset?: boolean;
   fontSize?: string;
@@ -34,10 +38,11 @@ interface EditableCellProps<T extends object> extends CellProps<T, any> {
   updateMyData: (rowIndex: number, columnId: string, value: string) => void;
   updateMyRow?: (
     rowIndex: number,
-    newValue: DefaultOptionType | DefaultOptionType[] | null
+    newValue: DefaultOptionType | DefaultOptionType[] | null,
+    columnId?: string
   ) => void;
-  options?: DefaultOptionType[];
-  setSearchText: Dispatch<SetStateAction<string>>;
+  //options?: DefaultOptionType[];
+  //setSearchText: Dispatch<SetStateAction<string>>;
   changeRowValues: (value: string, rowIndex: number, columnId: string) => void;
   canEditForm?: boolean;
 }
@@ -47,51 +52,69 @@ export function EditableInput<T extends object>({
   value: initialValue,
   row: { index },
   column,
-  options,
-  setSearchText,
+  //options,
+  //setSearchText,
   updateMyData,
   updateMyRow,
   changeRowValues,
 }: EditableCellProps<T>) {
-  const { id, type, placeholder, isCurrency } = column as any;
+  const {
+    id,
+    type,
+    placeholder,
+    isCurrency,
+    options: autoOptions,
+    setSearch,
+    //search,
+  } = column as any;
   const [value, setValue] = React.useState<string>(initialValue);
   const [isFocused, setIsFocused] = React.useState(false);
 
-  React.useEffect(
-    () =>
+  React.useEffect(() => {
+    //console.log(initialValue, "initialValue in useEffect"),
       setValue(
         convertToFarsiDigits(
           isCurrency ? formatNumberWithCommas(initialValue) : initialValue
         )
-      ),
-    [initialValue]
-  );
+      );
+  }, [initialValue]);
 
   // Handle change from AutoComplete
   const handleAutoCompleteChange = (
     event: any,
-    newValue: { id: string | number; title: string; }  | { id: string | number; title: string; } [] | null
+    newValue:
+      | { id: string | number; title: string }
+      | { id: string | number; title: string }[]
+      | null
   ) => {
-    console.log(event);
+    console.log(event, "event in handleAutoCompleteChange");
     //console.log(newValue, "newValue in handleAutoCompleteChange");
     setValue((newValue as DefaultOptionType)?.title ?? "");
     if (updateMyRow) {
-      updateMyRow(index, newValue as DefaultOptionType);
+      updateMyRow(index, newValue as DefaultOptionType, id);
     }
     if (newValue) {
       updateMyData(index, id, (newValue as DefaultOptionType)?.title ?? "");
     }
   };
 
+  /*const handleInputChange = (event: any, newInputValue: string) => {
+    if (setSearch && event !== null) {
+      const persianInput = convertToFarsiDigits(newInputValue);
+      setSearch?.(persianInput);
+      //console.log(persianInput, event, "persianInput in handleInputChange");
+    }
+  };*/
+
   if (type === "autoComplete") {
     return (
       <AutoComplete
         disabled={!canEditForm}
-        options={options || []}
+        options={autoOptions || []}
         //value={options?.find((opt) => opt.title === value) || null}
         value={value ? { id: 0, title: value } : null}
         handleChange={handleAutoCompleteChange}
-        setSearch={setSearchText}
+        setSearch={setSearch}
         showLabel={false}
         inputPadding="0 !important"
         outlinedInputPadding="5px"
@@ -104,6 +127,8 @@ export function EditableInput<T extends object>({
         showBorderFocused={true}
         textColor={colors.gray_600}
         backgroundColor={!canEditForm ? "inherit" : "white"}
+        //onInputChange={handleInputChange}
+        //inputValue={search}
       />
     );
   }
@@ -119,7 +144,13 @@ export function EditableInput<T extends object>({
           setIsFocused(false);
         }}
         onFocus={() => setIsFocused(true)}
-        style={{ backgroundColor: isFocused ? "white" : !canEditForm ? "inherit" : "white" }}
+        style={{
+          backgroundColor: isFocused
+            ? "white"
+            : !canEditForm
+            ? "inherit"
+            : "white",
+        }}
       />
     );
   }
@@ -128,7 +159,13 @@ export function EditableInput<T extends object>({
     <input
       disabled={!canEditForm}
       className="text-inherit p-0 m-0 border-0 w-full focus:outline-none"
-      style={{ backgroundColor: isFocused ? "white" : !canEditForm ? "inherit" : "white" }}
+      style={{
+        backgroundColor: isFocused
+          ? "white"
+          : !canEditForm
+          ? "inherit"
+          : "white",
+      }}
       //style={{ backgroundColor: isFocused && canEditForm ? "white" :  "inherit" }}
       value={value}
       onChange={(e) => {
@@ -148,8 +185,8 @@ export default function TTable<T extends object>({
   canEditForm,
   columns,
   data,
-  options = [],
-  setSearchText,
+  //options = [],
+  //setSearchText,
   updateMyData = () => {},
   updateMyRow = () => {},
   changeRowValues = () => {},
@@ -180,8 +217,8 @@ export default function TTable<T extends object>({
       updateMyData,
       updateMyRow,
       changeRowValues,
-      options,
-      setSearchText,
+      //options,
+      //setSearchText,
       canEditForm,
     } as any,
     useBlockLayout
@@ -255,7 +292,7 @@ export default function TTable<T extends object>({
                     }}
                     onClick={() => {
                       if (setSelectedId) {
-                        //console.log(row.original["id" as keyof T])
+                        console.log(row.original["id" as keyof T],"row.original in TTable")
                         const itemId = Number(
                           convertToLatinDigits(row.original["id" as keyof T])
                         );
@@ -286,7 +323,7 @@ export default function TTable<T extends object>({
   return (
     <table
       {...getTableProps()}
-      className="table-fixed w-full border border-gray-300 shadow-lg"
+      className="table-fixed w-full border border-gray-300"// shadow-lg
       style={{ fontSize }}
     >
       {showHeader && tHead}

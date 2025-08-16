@@ -99,10 +99,8 @@ export function useWarehouse() {
       PartKey,
     ],
     queryFn: async () => {
-      console.log(
-        `api/Warehouse/WarehouseSearch?search=${search}&page=${page}&pageSize=${pageSize}&lastId=${lastId}&CustomerTypeId=${CustomerTypeId}&PartKey=${PartKey}`
-      );
       const url: string = `api/Warehouse/WarehouseSearch?search=${encodeURIComponent(search)}&page=${page}&pageSize=${pageSize}&lastId=${lastId}&CustomerTypeId=${CustomerTypeId}&PartKey=${PartKey}`;
+      console.log(url, "url");
       const response = await api.get(url);
       return response.data;
     },

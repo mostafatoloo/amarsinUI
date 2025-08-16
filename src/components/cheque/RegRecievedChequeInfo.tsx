@@ -21,6 +21,7 @@ import ModalMessage from "../layout/ModalMessage";
 import Skeleton from "../layout/Skeleton";
 import { LoadPaymentResponse, UpdateFieldsRequest } from "../../types/cheque";
 import { UseMutateAsyncFunction } from "@tanstack/react-query";
+import RegRecievedChequeInfoSanad from "./RegRecievedChequeInfoSanad";
 
 type Props = {
   canEditForm: boolean;
@@ -104,6 +105,8 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
       id: 0,
       title: "",
     },
+    sanadNum: "",
+    sanadDate: "",
   });
   ///////////////////////////////////////////////////////////////////
   // Validation function
@@ -175,6 +178,8 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
       yearId: {},
       bankId: {},
       cash_PosSystem: {},
+      sanadNum: {},
+      sanadDate: {},
     });
     setUpdateFieldsResponse({
       meta: { errorCode: 0, message: "", type: "" },
@@ -247,6 +252,12 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
           loadPaymentResponse.data.result.payment?.cash_PosSystemTitle ?? ""
         ),
       },
+      sanadNum: convertToFarsiDigits(
+        loadPaymentResponse.data.result.payment?.sanadNum ?? ""
+      ),
+      sanadDate: convertToFarsiDigits(
+        loadPaymentResponse.data.result.payment?.sanadDate ?? ""
+      ),
     });
   }, [loadPaymentResponse]);
   ///////////////////////////////////////////////////////////////////
@@ -758,10 +769,10 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
               />
               {showValidationError("no")}
             </div>
-            <label>/</label>
-            <div className="flex w-full justify-center items-center gap-2">
+            {payKind===2 && <label>/</label>}
+            {payKind===2 && <div className="flex w-full justify-center items-center gap-2">
               <Input
-                disabled={payKind === 1 || !canEditForm}
+                disabled={ !canEditForm} //payKind === 1 ||
                 name="fixSerial"
                 value={cheque.fixSerial}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -775,7 +786,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
                 variant="outlined"
               />
               {showValidationError("fixSerial")}
-            </div>
+            </div>}
           </div>
         </div>
         <div className="flex w-1/2 justify-center items-center gap-2">
@@ -817,6 +828,16 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
         />
         {showValidationError("dsc")}
       </div>
+      <RegRecievedChequeInfoSanad
+        sanadNum={cheque.sanadNum}
+        setSanadNum={(value: string) => setChequeFields("sanadNum", value)}
+        sanadDate={cheque.sanadDate}
+        setSanadDate={(value: string) => setChequeFields("sanadDate", value)}
+        //payKind={payKind}
+        //canEditForm={canEditForm}
+        updateCheque={updateCheque}
+        showValidationError={showValidationError}
+      />
       {!isLoadingUpdateFields && (
         <ModalMessage
           isOpen={isModalOpen}

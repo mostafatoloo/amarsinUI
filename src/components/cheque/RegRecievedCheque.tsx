@@ -1,9 +1,11 @@
+//کمک حسابداری
 import { useEffect } from "react";
 import { useCheques } from "../../hooks/useCheques";
 import { useChequeStore } from "../../store/chequeStore";
 import { WorkflowRowSelectResponse } from "../../types/workflow";
 import RegRecievedChequeImg from "./RegRecievedChequeImg";
 import RegRecievedChequeInfo from "./RegRecievedChequeInfo";
+//import RegRecievedChequeInfoSanad from "./RegRecievedChequeInfoSanad";
 
 type Props = {
   canEditForm: boolean;

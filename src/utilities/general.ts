@@ -1,5 +1,5 @@
-import { toJalaali } from 'jalaali-js';
-import  DateObject  from "react-date-object";
+import { toJalaali } from "jalaali-js";
+import DateObject from "react-date-object";
 import persian from "react-date-object/calendars/persian";
 
 export const convertToLatinDigits = (
@@ -10,7 +10,9 @@ export const convertToLatinDigits = (
   if (str === null || str === undefined) {
     return "";
   }
-
+  if(typeof str === "number"){
+    return str
+  }
   return str.replace(/[۰-۹]/g, (d) => {
     const index = farsiDigits.indexOf(d);
     return index !== -1 ? index.toString() : d;
@@ -114,14 +116,14 @@ export const formatNumberWithCommas = (num: number): string => {
 };
 export const currencyStringToNumber = (currencyStr: string): number => {
   // Remove any non-numeric characters except for the decimal point and minus sign
-  const cleanedString = currencyStr.replace(/[^\d.-]/g, '');
+  const cleanedString = currencyStr.replace(/[^\d.-]/g, "");
   // Convert to number
   return parseFloat(cleanedString);
 };
 ////////////////////////////////////////////////////////////
 // Generic handler for both single and multiple AutoComplete components
 export const handleAutoCompleteChange = <
-  T extends { id: number|string; title: string }
+  T extends { id: number | string; title: string }
 >(
   newValue: T | T[] | null,
   setter: React.Dispatch<React.SetStateAction<T | null>>
@@ -135,7 +137,7 @@ export function parsePersianDateString(dateString: string): Date | null {
   if (dateString === null || dateString === undefined) {
     return null;
   }
-  const parts = dateString.split('/');
+  const parts = dateString.split("/");
   if (parts.length !== 3) {
     return null;
   }
@@ -156,7 +158,11 @@ export function parsePersianDateString(dateString: string): Date | null {
 }
 //////////////////////////////////////////
 export function convertToPersianDate(date: Date): string {
-  const jalaaliDate = toJalaali(date.getFullYear(), date.getMonth() + 1, date.getDate());
+  const jalaaliDate = toJalaali(
+    date.getFullYear(),
+    date.getMonth() + 1,
+    date.getDate()
+  );
   const { jy, jm, jd } = jalaaliDate;
 
   // Format as 'YYYY/MM/DD'
@@ -171,10 +177,10 @@ function padZero(num: number): string {
 ////////////////////////////////////////////////////////////
 // pick up numbers seperated by new line
 export function parsePersianNumerals(input: string): number[] {
-  const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
+  const persianDigits = "۰۱۲۳۴۵۶۷۸۹";
 
-  return input.split('\n').map(part => {
-    let numberStr = '';
+  return input.split("\n").map((part) => {
+    let numberStr = "";
     for (const char of part) {
       const index = persianDigits.indexOf(char);
       if (index !== -1) {

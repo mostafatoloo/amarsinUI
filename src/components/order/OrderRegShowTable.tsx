@@ -553,7 +553,7 @@ const OrderRegShowTable = ({
         message={orderRegResponse?.meta?.message || ""}
         visibleButton={false}
       />
-      {/*open WarehouseMessages if تایید is clicked with errors*/}
+      {/*open ShowMessages if تایید is clicked with errors*/}
       {orderRegResponse.data.result.dtlErrMsgs.length > 0 && (
         <ModalForm
           isOpen={isModalOpen}

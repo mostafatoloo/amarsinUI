@@ -1,3 +1,4 @@
+//کارشناس خرید => دریافت پیش فاکتور
 import Skeleton from "../layout/Skeleton";
 import {
   IndentDtl,
@@ -13,7 +14,6 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import {
@@ -32,14 +32,11 @@ import {
   IndentSaveRequest,
   IndentSaveResponse,
   IndentShowProductListResponse,
-  Product,
-  ProductSearchRequest,
 } from "../../types/product";
 import { red } from "@mui/material/colors";
 import ConfirmCard from "../layout/ConfirmCard";
 import Button from "../controls/Button";
 import { Fields } from "./InvoiceReceiptShow";
-import { debounce } from "lodash";
 import InvoiceReceiptHistory from "./invoiceReceiptHistory";
 import InvoiceReceiptShowTableHeader from "./InvoiceReceiptShowTableHeader";
 import InvoiceReceiptShowTableSummery from "./InvoiceReceiptShowTableSummery";
@@ -61,11 +58,12 @@ type Props = {
   mrsId: number;
   fields: Fields;
   newRow: IndentDtlTable;
-  products: Product[];
+  products: DefaultOptionType[];
   saveList: (request: IndentSaveRequest) => Promise<IndentSaveResponse>;
   isLoadingSaveList: boolean;
   isDtHistoryLoading: boolean;
   getIndentMrsResponse: () => void;
+  setProductSearchinTable: React.Dispatch<React.SetStateAction<string>>
 };
 export const headCells = [
   {
@@ -177,12 +175,14 @@ export const headCells = [
     Cell: () => {
       return (
         <div className="flex w-full">
-          {<img
-            src={TrashIcon}
-            onClick={() => console.log("hello")}
-            className="cursor-pointer"
-            alt="TrashIcon"
-          />}
+          {
+            <img
+              src={TrashIcon}
+              onClick={() => console.log("hello")}
+              className="cursor-pointer"
+              alt="TrashIcon"
+            />
+          }
           <img
             src={HistoryIcon}
             onClick={() => console.log("hello")}
@@ -196,6 +196,7 @@ export const headCells = [
 ];
 
 const InvoiceReceiptShowTable = ({
+  setProductSearchinTable, 
   canEditForm,
   addList,
   indentMrsResponse,
@@ -212,38 +213,34 @@ const InvoiceReceiptShowTable = ({
   isDtHistoryLoading,
   getIndentMrsResponse,
 }: Props) => {
-  const [search, setSearch] = useState<string>("");
   const [showHistory, setShowHistory] = useState<boolean>(false);
   const [brandSearch, setBrandSearch] = useState<string>("");
   const [dtlDscSearch, setDtlDscSearch] = useState<string>("");
   const [productSearch, setProductSearch] = useState<string>("");
-  const { systemId, yearId } = useGeneralContext();
+  const {yearId,systemId} = useGeneralContext();
+
   const { setField: setProductField, indentDtlHistoryResponse } =
     useProductStore();
-  //send params to /api/Product/search?accSystem=4&accYear=15&page=1&searchTerm=%D8%B3%D9%81
-  useEffect(() => {
-    setProductField("accSystem", systemId);
-    setProductField("accYear", yearId);
-    //setProductField("searchTerm", convertToFarsiDigits(search));
-    handleDebounceFilterChange("searchTerm", convertToFarsiDigits(search));
-    setProductField("page", 1);
-  }, [search, systemId, yearId]);
 
   const columns: TableColumns = useMemo(() => {
     return headCells.map((item) => {
       return {
         ...item,
+        options: item.accessor === "product" ? products : undefined,
+        setSearch: item.accessor === "product" ? setProductSearchinTable : undefined,
         Cell:
           item.accessor === "icons"
             ? ({ row }: any) => {
                 return (
                   <div className="flex w-full">
-                    {canEditForm ? <img
-                      src={row.original.isDeleted ? RestoreIcon : TrashIcon}
-                      onClick={() => updateToDeleted(row)}
-                      className="cursor-pointer"
-                      alt="TrashIcon"
-                    />: null}
+                    {canEditForm ? (
+                      <img
+                        src={row.original.isDeleted ? RestoreIcon : TrashIcon}
+                        onClick={() => updateToDeleted(row)}
+                        className="cursor-pointer"
+                        alt="TrashIcon"
+                      />
+                    ) : null}
                     <img
                       src={HistoryIcon}
                       onClick={() => handleShowHistory(row)}
@@ -256,7 +253,7 @@ const InvoiceReceiptShowTable = ({
             : item.Cell,
       };
     });
-  }, [canEditForm]);
+  }, [canEditForm,products,setProductSearchinTable]);
 
   const columnsHistory: TableColumns = [
     {
@@ -341,22 +338,7 @@ const InvoiceReceiptShowTable = ({
   const [originalData, setOriginalData] = useState<IndentDtlTable[]>([]);
   const [deletedData, setDeletedData] = useState<IndentDtlTable[]>([]);
   const [data, setData] = useState<IndentDtlTable[]>([]);
-  const abortControllerRef = useRef<AbortController | null>(null);
-  ///////////////////////////////////////////////////////
-  const handleDebounceFilterChange = useCallback(
-    debounce((field: string, value: string | number) => {
-      // Cancel any existing request
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-      // Create a new AbortController for this request
-      abortControllerRef.current = new AbortController();
 
-      setProductField(field as keyof ProductSearchRequest, value);
-    }, 500),
-    [setProductField]
-  );
-  //////////////////////////////////////////////////////////
   useEffect(() => {
     console.log(skipPageReset);
   }, []);
@@ -500,12 +482,12 @@ const InvoiceReceiptShowTable = ({
       return (
         currencyStringToNumber(convertToLatinDigits(cost)) *
           Number(convertToLatinDigits(cnt)) +
-          currencyStringToNumber(convertToLatinDigits(taxValue)) -
-          currencyStringToNumber(convertToLatinDigits(dcrmnt))
+        currencyStringToNumber(convertToLatinDigits(taxValue)) -
+        currencyStringToNumber(convertToLatinDigits(dcrmnt))
       );
     };
   }, []);
-  
+
   /////////////////////////////////////////////////////
   const changeRowValues = useCallback(
     (value: string, rowIndex: number, columnId: string) => {
@@ -556,7 +538,7 @@ const InvoiceReceiptShowTable = ({
     },
     [calculateTotal, data]
   );
-  
+
   /////////////////////////////////////////////////////
   // Custom cell click handler for Table
   const handleCellColorChange = (row: any): string | null => {
@@ -648,11 +630,11 @@ const InvoiceReceiptShowTable = ({
               fontSize="0.75rem"
               changeRowSelectColor={true}
               wordWrap={true}
-              options={products.map((p) => ({
+              /*options={products.map((p) => ({
                 id: p.pId,
                 title: convertToFarsiDigits(p.n),
-              }))}
-              setSearchText={setSearch}
+              }))}*/
+              //setSearchText={setSearch}
               updateMyRow={updateMyRow}
               CellColorChange={handleCellColorChange}
               changeRowValues={changeRowValues}
@@ -662,15 +644,17 @@ const InvoiceReceiptShowTable = ({
         )}
         <ConfirmCard variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end ">
           <InvoiceReceiptShowTableSummery data={data} />
-          {canEditForm && <Button
-            text={isLoadingSaveList ? "در حال ثبت اطلاعات..." : "ثبت"}
-            backgroundColor="bg-green-500"
-            color="text-white"
-            backgroundColorHover="bg-green-600"
-            colorHover="text-white"
-            variant="shadow-lg w-64"
-            onClick={handleSubmitSave}
-          />}
+          {canEditForm && (
+            <Button
+              text={isLoadingSaveList ? "در حال ثبت اطلاعات..." : "ثبت"}
+              backgroundColor="bg-green-500"
+              color="text-white"
+              backgroundColorHover="bg-green-600"
+              colorHover="text-white"
+              variant="shadow-lg w-64"
+              onClick={handleSubmitSave}
+            />
+          )}
         </ConfirmCard>
       </div>
       <InvoiceReceiptHistory

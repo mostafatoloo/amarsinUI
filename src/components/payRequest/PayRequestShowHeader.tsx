@@ -1,48 +1,65 @@
 import { useEffect, useState } from "react";
 import { useDefinitionInvironment } from "../../hooks/useDefinitionInvironment";
 import { DefaultOptionType } from "../../types/general";
-import { convertToFarsiDigits } from "../../utilities/general";
+import {
+  convertToFarsiDigits,
+  formatNumberWithCommas,
+} from "../../utilities/general";
 import AutoComplete from "../controls/AutoComplete";
 import { PayRequestResponse } from "../../types/payRequest";
 import { WorkflowRowSelectResponse } from "../../types/workflow";
 import { useCustomers } from "../../hooks/useCustomers";
-import { AuthApiResponse } from "../../types/auth";
+//import { AuthApiResponse } from "../../types/auth";
+import { colors } from "../../utilities/color";
+import Button from "../controls/Button";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   payRequestResponse: PayRequestResponse;
-  authApiResponse: AuthApiResponse;
+  //authApiResponse: AuthApiResponse;
+  customer: DefaultOptionType | null;
+  setCustomer: (customer: DefaultOptionType | null) => void;
+  system: DefaultOptionType | null;
+  setSystem: (system: DefaultOptionType | null) => void;
+  year: DefaultOptionType | null;
+  setYear: (year: DefaultOptionType | null) => void;
+  setShowAttachment: (showAttachment: boolean) => void;
 };
 
 const PayRequestShowHeader = ({
   workFlowRowSelectResponse,
   payRequestResponse,
-  authApiResponse,
+  // authApiResponse,
+  customer,
+  setCustomer,
+  system,
+  setSystem,
+  year,
+  setYear,
+  setShowAttachment,
 }: Props) => {
   const canEditForm1Mst1 =
     workFlowRowSelectResponse.workTableForms.canEditForm1Mst1;
   const canEditForm1Mst2 =
     workFlowRowSelectResponse.workTableForms.canEditForm1Mst2;
   const { definitionInvironment } = useDefinitionInvironment();
-  const initData = authApiResponse?.data.result.initData;
+  //const initData = authApiResponse?.data.result.initData;
   const { customers } = useCustomers();
-  const [customer, setCustomer] = useState<DefaultOptionType | null>(null);
   const [customerSearch, setCustomerSearch] = useState<string>("");
   const [systemSearch, setSystemSearch] = useState<string>("");
   const [yearSearch, setYearSearch] = useState<string>("");
-  const [system, setSystem] = useState<{ id: number; title: string } | null>({
-    id: initData?.systemId ?? 0,
-    title: convertToFarsiDigits(initData?.systemTitle) ?? "",
-  });
-  const [year, setYear] = useState<{ id: number; title: string } | null>({
-    id: initData?.yearId ?? 0,
-    title: convertToFarsiDigits(initData?.yearTitle) ?? "",
-  });
 
   useEffect(() => {
-    console.log(customerSearch,systemSearch,yearSearch);
+    console.log(customerSearch, systemSearch, yearSearch);
   }, []);
-  
+
+  useEffect(() => {
+    setCustomer({
+      id: payRequestResponse.data.result.payRequests[0]?.customerId ?? 0,
+      title: payRequestResponse.data.result.payRequests[0]?.srName ?? "",
+    });
+  }, [payRequestResponse]);
+
   return (
     <div className="mt-2 text-sm w-full flex flex-col gap-2 border border-gray-400 rounded-md p-2">
       <div className="flex items-center justify-between gap-2 w-full">
@@ -61,6 +78,7 @@ const PayRequestShowHeader = ({
               showClearIcon={false}
               changeColorOnFocus={true}
               disabled={!canEditForm1Mst1}
+              backgroundColor={canEditForm1Mst2 ? colors.gray100 : "inherit"}
             />
           </div>
         </div>
@@ -86,6 +104,7 @@ const PayRequestShowHeader = ({
               showClearIcon={false}
               changeColorOnFocus={true}
               disabled={!canEditForm1Mst1}
+              backgroundColor={canEditForm1Mst2 ? colors.gray100 : "inherit"}
             />
           </div>
         </div>
@@ -98,6 +117,9 @@ const PayRequestShowHeader = ({
             )}
             disabled={!canEditForm1Mst2}
             className="text-sm text-gray-400 w-full p-1 border border-gray-300 rounded-md"
+            style={{
+              backgroundColor: canEditForm1Mst2 ? colors.gray100 : "inherit",
+            }}
           />
         </div>
         <div className="flex w-1/4">
@@ -109,6 +131,9 @@ const PayRequestShowHeader = ({
             )}
             disabled={!canEditForm1Mst2}
             className="text-sm text-gray-400 w-full p-1 border border-gray-300 rounded-md"
+            style={{
+              backgroundColor: canEditForm1Mst2 ? colors.gray100 : "inherit",
+            }}
           />
         </div>
       </div>
@@ -123,6 +148,9 @@ const PayRequestShowHeader = ({
               )}
               disabled={!canEditForm1Mst1}
               className="text-sm text-gray-400 w-full p-1 border border-gray-300 rounded-md"
+              style={{
+                backgroundColor: canEditForm1Mst2 ? colors.gray100 : "inherit",
+              }}
             />
           </div>
           <div className="flex w-1/3">
@@ -134,6 +162,9 @@ const PayRequestShowHeader = ({
               )}
               disabled={!canEditForm1Mst1}
               className="text-sm text-gray-400 w-full p-1 border border-gray-300 rounded-md"
+              style={{
+                backgroundColor: canEditForm1Mst2 ? colors.gray100 : "inherit",
+              }}
             />
           </div>
           <div className="flex w-1/3">
@@ -145,6 +176,9 @@ const PayRequestShowHeader = ({
               )}
               disabled={!canEditForm1Mst1}
               className="text-sm text-gray-400 w-full p-1 border border-gray-300 rounded-md"
+              style={{
+                backgroundColor: canEditForm1Mst2 ? colors.gray100 : "inherit",
+              }}
             />
           </div>
         </div>
@@ -154,10 +188,18 @@ const PayRequestShowHeader = ({
             <input
               type="text"
               value={convertToFarsiDigits(
-                payRequestResponse.data.result.payRequests[0]?.settleAmnt
+                formatNumberWithCommas(
+                  Number(
+                    payRequestResponse.data.result.payRequests[0]?.settleAmnt ??
+                      0
+                  )
+                )
               )}
               disabled={!canEditForm1Mst1}
               className="text-sm text-gray-400 w-full p-1 border border-gray-300 rounded-md"
+              style={{
+                backgroundColor: canEditForm1Mst2 ? colors.gray100 : "inherit",
+              }}
             />
           </div>
           <div className="flex w-1/2">
@@ -165,10 +207,18 @@ const PayRequestShowHeader = ({
             <input
               type="text"
               value={convertToFarsiDigits(
-                payRequestResponse.data.result.payRequests[0]?.providerAmnt
+                formatNumberWithCommas(
+                  Number(
+                    payRequestResponse.data.result.payRequests[0]
+                      ?.providerAmnt ?? 0
+                  )
+                )
               )}
               disabled={!canEditForm1Mst1}
               className="text-sm text-gray-400 w-full p-1 border border-gray-300 rounded-md"
+              style={{
+                backgroundColor: canEditForm1Mst2 ? colors.gray100 : "inherit",
+              }}
             />
           </div>
         </div>
@@ -191,6 +241,7 @@ const PayRequestShowHeader = ({
             showClearIcon={false}
             changeColorOnFocus={true}
             disabled={!canEditForm1Mst2}
+            backgroundColor={canEditForm1Mst2 ? colors.gray100 : "inherit"}
           />
         </div>
       </div>
@@ -203,6 +254,20 @@ const PayRequestShowHeader = ({
           )}
           disabled={!canEditForm1Mst1}
           className="text-sm text-gray-400 w-full p-1 border border-gray-300 rounded-md"
+          style={{
+            backgroundColor: canEditForm1Mst2 ? colors.gray100 : "inherit",
+          }}
+        />
+        <Button
+          text={`ضمائم (${convertToFarsiDigits(
+            payRequestResponse.data.result.payRequests[0]?.attachCount ?? 0
+          )})`}
+          backgroundColor={colors.blue_400}
+          backgroundColorHover={colors.blue_500}
+          variant="w-32"
+          onClick={() => {
+            setShowAttachment(true);
+          }}
         />
       </div>
     </div>

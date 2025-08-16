@@ -81,7 +81,7 @@ interface LoadPaymentResponse {
     };
   };
 
-  export interface ChequeState extends CashPosSystemSearchRequest{
+  export interface ChequeState extends CashPosSystemSearchRequest,ChequeBookSearchRequest{
     id: number;
     //PaymentAttachment request parameters
     formId: number;
@@ -94,6 +94,7 @@ interface LoadPaymentResponse {
     updateFieldsResponse: UpdateFieldsResponse;
     cashPosSystemSearchResponse: CashPosSystemSearchResponse;
     paymentAttachmentResponse: paymentAttachmentResponse;
+
     setField: (field: string, value: any) => void;
     setLoadPaymentResponse: (
       loadPaymentResponse: LoadPaymentResponse
@@ -108,6 +109,7 @@ interface LoadPaymentResponse {
     setPaymentAttachmentResponse: (
       paymentAttachmentResponse: PaymentAttachmentResponse
     ) => void;
+
   }
   //api/Payment/cashPosSystemSearch?page=1&lastId=0&systemId=0&PayKind=0
 

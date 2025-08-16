@@ -54,9 +54,7 @@ export default function WorkflowComponent({
       break;
     case "Order/_Order":
       componentToRender1 = (
-        <OrderRegShow
-          workFlowRowSelectResponse={workFlowRowSelectResponse}
-        />
+        <OrderRegShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
       );
       break;
     case "PayRequest/_PayRequest":
@@ -107,7 +105,12 @@ export default function WorkflowComponent({
       break;
     case "Order/_Order":
       componentToRender1 = (
-        <OrderRegShow
+        <OrderRegShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
+      );
+      break;
+    case "PayRequest/_PayRequest":
+      componentToRender1 = (
+        <PayRequestShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
         />
       );

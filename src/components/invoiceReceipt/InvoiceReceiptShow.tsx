@@ -1,9 +1,17 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useInvoiceReceipt } from "../../hooks/useInvoiceReceipt";
 import { WorkflowRowSelectResponse } from "../../types/workflow";
 import { useInvoiceReceiptStore } from "../../store/invoiceReceiptStore";
 import {
   convertPersianDate,
+  convertToFarsiDigits,
   parsePersianDateString,
 } from "../../utilities/general";
 import InvoiceReceiptShowTable from "./InvoiceReceiptShowTable";
@@ -14,12 +22,15 @@ import Button from "../controls/Button";
 import {
   IndentShowProductListRequest,
   IndentShowProductListResponse,
+  ProductSearchRequest,
 } from "../../types/product";
 import { useGeneralContext } from "../../context/GeneralContext";
 import { useProducts } from "../../hooks/useProducts";
 import { IndentDtl, IndentDtlTable } from "../../types/invoiceReceipt";
 import { handleExport } from "../../utilities/ExcelExport";
 import { headCells } from "./InvoiceReceiptShowTable";
+import { useProductStore } from "../../store/productStore";
+import { debounce } from "lodash";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -37,11 +48,16 @@ export type Fields = {
   dsc: string;
 };
 
-const InvoiceReceiptShow = ({ workFlowRowSelectResponse,canEditForm}: Props) => {
-  const canEditForm1Mst1= workFlowRowSelectResponse.workTableForms.canEditForm1Mst1
+const InvoiceReceiptShow = ({
+  workFlowRowSelectResponse,
+  canEditForm,
+}: Props) => {
+  const canEditForm1Mst1 =
+    workFlowRowSelectResponse.workTableForms.canEditForm1Mst1;
   const { setField, mrsId } = useInvoiceReceiptStore();
-  const { yearId } = useGeneralContext();
-  const { indentMrsResponse, isLoading, getIndentMrsResponse } = useInvoiceReceipt();
+  const { yearId, systemId } = useGeneralContext();
+  const { indentMrsResponse, isLoading, getIndentMrsResponse } =
+    useInvoiceReceipt();
   const {
     salesPricesSearchResponse,
     addProductList,
@@ -100,7 +116,7 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse,canEditForm}: Props) => 
   }, [isLoading, indentMrsResponse]);
 
   {
-    isLoading && <p>Loading...</p>;
+    isLoading && <p>در حال بارگذاری...</p>;
   }
 
   const handleSubmit = async (
@@ -249,6 +265,32 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse,canEditForm}: Props) => 
     };
   }, [isModalOpen]);
 
+  const [search, setSearch] = useState<string>("");
+  const { setField: setProductField } = useProductStore();
+  //send params to /api/Product/search?accSystem=4&accYear=15&page=1&searchTerm=%D8%B3%D9%81
+  useEffect(() => {
+    setProductField("accSystem", systemId);
+    setProductField("accYear", yearId);
+    //setProductField("searchTerm", convertToFarsiDigits(search));
+    handleDebounceFilterChange("searchTerm", convertToFarsiDigits(search));
+    setProductField("page", 1);
+  }, [search, systemId, yearId]);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  ///////////////////////////////////////////////////////
+  const handleDebounceFilterChange = useCallback(
+    debounce((field: string, value: string | number) => {
+      // Cancel any existing request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      // Create a new AbortController for this request
+      abortControllerRef.current = new AbortController();
+
+      setProductField(field as keyof ProductSearchRequest, value);
+    }, 500),
+    [setProductField]
+  );
+  //////////////////////////////////////////////////////////
   return (
     <div className="w-full flex flex-col">
       <InvoiceReceipShowHeader
@@ -259,15 +301,17 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse,canEditForm}: Props) => 
         salesPricesSearchResponse={salesPricesSearchResponse}
       />
       <ConfirmCard variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end">
-        {canEditForm && <Button
-          text="ایجاد لیست"
-          backgroundColor="bg-white"
-          color="text-blue-500"
-          backgroundColorHover="bg-blue-500"
-          colorHover="text-white"
-          variant="shadow-lg"
-          onClick={handleSubmitAndAddToTable}
-        />}
+        {canEditForm && (
+          <Button
+            text="ایجاد لیست"
+            backgroundColor="bg-white"
+            color="text-blue-500"
+            backgroundColorHover="bg-blue-500"
+            colorHover="text-white"
+            variant="shadow-lg"
+            onClick={handleSubmitAndAddToTable}
+          />
+        )}
         <Button
           text="اکسل"
           backgroundColor="bg-white"
@@ -299,6 +343,7 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse,canEditForm}: Props) => 
       </div>
 
       <InvoiceReceiptShowTable
+        setProductSearchinTable={setSearch}
         canEditForm={canEditForm}
         indentMrsResponse={indentMrsResponse}
         isLoading={isLoading}
@@ -309,7 +354,10 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse,canEditForm}: Props) => 
         mrsId={mrsId}
         fields={fields}
         newRow={newRow}
-        products={products}
+        products={products.map((p) => ({
+          id: p.pId,
+          title: convertToFarsiDigits(p.n),
+        }))}
         saveList={saveList}
         isLoadingSaveList={isLoadingSaveList}
         isDtHistoryLoading={isDtHistoryLoading}

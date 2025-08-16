@@ -27,7 +27,7 @@ export function useProducts() {
     setSalesPricesSearchResponse,
     setIndentShowProductListResponse,
     setIndentSaveResponse,
-    setIndentDtlHistoryResponse
+    setIndentDtlHistoryResponse,
   } = useProductStore();
   //for indent/showProductList
   const addList = useMutation({
@@ -123,34 +123,25 @@ export function useProducts() {
         searchTerm,
         page,
       };
-      console.log(
-        `/api/Product/search?accSystem=${params.accSystem}&accYear=${
-          params.accYear
-        }&page=${params.page}&searchTerm=${encodeURIComponent(
-          params.searchTerm ?? ""
-        )}`,
-        "params.searchTerm"
-      );
-      const response = await api.get(
-        `/api/Product/search?accSystem=${params.accSystem}&accYear=${
-          params.accYear
-        }&page=${params.page}&searchTerm=${encodeURIComponent(
-          params.searchTerm ?? ""
-        )}`
-      );
-
+      const url = `/api/Product/search?accYear=${params.accYear}&accSystem=${
+        params.accSystem
+      }&page=${params.page}${
+        params.searchTerm
+          ? `&searchTerm=${encodeURIComponent(params.searchTerm ?? "")}`
+          : ""
+      }`;
+      console.log(url, "url in useProducts");
+      const response = await api.get(url);
       return response.data;
     },
-    enabled: !!accSystem, // Only run if accSystem exists
-    refetchOnWindowFocus: true, // Refetch data when the window is focused
-    refetchOnReconnect: true, // Refetch data when the network reconnects
+    enabled: !!accSystem && !!accYear, // Only run if accSystem exists
+    refetchOnWindowFocus: false, // Refetch data when the window is focused
+    refetchOnReconnect: false, // Refetch data when the network reconnects
+    onSuccess: (data: any) => {
+      console.log(data, "response.data in useProducts");
+      setProductSearchResponse(data);
+    },
   } as UseQueryOptions<ProductSearchResponse, Error, ProductSearchResponse, unknown[]>);
-
-  useEffect(() => {
-    if (productSearchQuery.data) {
-      setProductSearchResponse(productSearchQuery.data);
-    }
-  }, [productSearchQuery.data, setProductSearchResponse]);
 
   return {
     //output for indent/showProductList
@@ -173,6 +164,7 @@ export function useProducts() {
 
     isDtHistoryLoading: dtlHistoryQuery.isLoading,
     dtlHistoryError: dtlHistoryQuery.error,
-    dtlHistoryResponse: dtlHistoryQuery.data?.data.result.indentDtlHistories ?? [],
+    dtlHistoryResponse:
+      dtlHistoryQuery.data?.data.result.indentDtlHistories ?? [],
   };
 }

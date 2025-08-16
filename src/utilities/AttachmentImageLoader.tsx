@@ -39,7 +39,7 @@ const AttachmentImageLoader: React.FC<AttachmentImageLoaderProps> = ({
                 <!DOCTYPE html>
                 <html>
                 <head>
-                    <title>تصویر چک</title>
+                    <title>تصویر </title>
                     <style>
                         body {
                             margin: 0;
@@ -103,9 +103,10 @@ const AttachmentImageLoader: React.FC<AttachmentImageLoaderProps> = ({
         const loadImage = async () => {
             // Reset error state
             setError(null);
+            console.log(imageUrl, "imageUrl in loadImage");
 
             try {
-                console.log(imageUrl, "imageUrl");
+                //console.log(imageUrl, "imageUrl");
                 
                 // Use fetch instead of axios for better blob handling
                 const response = await fetch(imageUrl, {
@@ -155,7 +156,7 @@ const AttachmentImageLoader: React.FC<AttachmentImageLoaderProps> = ({
     }, [authToken, imageUrl, options]);
 
     if (error) {
-        return <div className='text-red-500'>خطای بارگذاری تصویر چک: {error.message}</div>;
+        return <div className='text-red-500'>خطای بارگذاری تصویر : {error.message}</div>;
     }
 
     if (!imgSrc) {
@@ -167,7 +168,7 @@ const AttachmentImageLoader: React.FC<AttachmentImageLoaderProps> = ({
                     'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjBmMGYwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkxvYWRpbmcuLi48L3RleHQ+PC9zdmc+'
                 }
                 className={options.className}
-                alt={options.alt || 'Loading...'}
+                alt={options.alt || 'در حال بارگذاری...'}
                 style={{
                     ...options.style,
                     cursor: isClickable ? 'pointer' : 'default',
@@ -185,6 +186,7 @@ const AttachmentImageLoader: React.FC<AttachmentImageLoaderProps> = ({
 
     return (
         <img
+            loading="lazy"
             ref={imgRef}
             src={imgSrc}
             className={options.className}

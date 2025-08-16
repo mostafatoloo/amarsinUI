@@ -1,3 +1,4 @@
+//کارشناس خرید => ثبت اولیه رسید موقت
 import { useEffect, useState } from "react";
 import WarehouseShowHeader from "./WarehouseShowHeader";
 import WarehouseShowTable from "./WarehouseShowTable";
