@@ -1,41 +1,43 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from "react";
+//import Skeleton from "../components/layout/Skeleton";
+import Spinner from "../components/controls/Spinner";
 
 interface ImageOptions {
-    className?: string;
-    alt?: string;
-    style?: React.CSSProperties;
-    id?: string;
-    placeholder?: string;
-    onError?: (error: Error) => void;
-    clickable?: boolean; // New option to control clickability
+  className?: string;
+  alt?: string;
+  style?: React.CSSProperties;
+  id?: string;
+  placeholder?: string;
+  onError?: (error: Error) => void;
+  clickable?: boolean; // New option to control clickability
 }
 
 interface AttachmentImageLoaderProps {
-    authToken: string;
-    imageUrl: string;
-    options?: ImageOptions;
+  authToken: string;
+  imageUrl: string;
+  options?: ImageOptions;
 }
 
 const AttachmentImageLoader: React.FC<AttachmentImageLoaderProps> = ({
-    authToken,
-    imageUrl,
-    options = {},
+  authToken,
+  imageUrl,
+  options = {},
 }) => {
-    const [imgSrc, setImgSrc] = useState<string | null>(null);
-    const [error, setError] = useState<Error | null>(null);
-    const imgRef = useRef<HTMLImageElement>(null);
-    const blobUrlRef = useRef<string | null>(null);
+  const [imgSrc, setImgSrc] = useState<string | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const blobUrlRef = useRef<string | null>(null);
 
-    // Default to true for clickable images
-    const isClickable = options.clickable !== false;
+  // Default to true for clickable images
+  const isClickable = options.clickable !== false;
 
-    const handleImageClick = () => {
-        if (!isClickable || !imgSrc) return;
-        
-        // Open image in new window/tab
-        const newWindow = window.open('', '_blank');
-        if (newWindow) {
-            newWindow.document.write(`
+  const handleImageClick = () => {
+    if (!isClickable || !imgSrc) return;
+
+    // Open image in new window/tab
+    const newWindow = window.open("", "_blank");
+    if (newWindow) {
+      newWindow.document.write(`
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -89,121 +91,104 @@ const AttachmentImageLoader: React.FC<AttachmentImageLoaderProps> = ({
                 </body>
                 </html>
             `);
-            newWindow.document.close();
+      newWindow.document.close();
+    }
+  };
+
+  useEffect(() => {
+    // Reset the image source when dependencies change
+    setImgSrc(null);
+    // Clean up previous blob URL
+    if (blobUrlRef.current) {
+      URL.revokeObjectURL(blobUrlRef.current);
+      blobUrlRef.current = null;
+    }
+
+    const loadImage = async () => {
+      // Reset error state
+      setError(null);
+      console.log(imageUrl, "imageUrl in loadImage");
+
+      try {
+        //console.log(imageUrl, "imageUrl");
+
+        // Use fetch instead of axios for better blob handling
+        const response = await fetch(imageUrl, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            Accept: "image/*",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
+
+        // Convert response to blob
+        const blob = await response.blob();
+
+        // Check if blob is valid
+        if (!blob || blob.size === 0) {
+          throw new Error("Invalid or empty image data received");
+        }
+
+        const objectUrl = URL.createObjectURL(blob);
+
+        // Store the blob URL reference for cleanup
+        blobUrlRef.current = objectUrl;
+
+        // Set the blob URL to state
+        setImgSrc(objectUrl);
+      } catch (err) {
+        console.error("Error loading authenticated image:", err);
+        setError(err instanceof Error ? err : new Error(String(err)));
+        if (options.onError)
+          options.onError(err instanceof Error ? err : new Error(String(err)));
+      }
     };
 
-    useEffect(() => {
-        // Clean up previous blob URL
-        if (blobUrlRef.current) {
-            URL.revokeObjectURL(blobUrlRef.current);
-            blobUrlRef.current = null;
-        }
+    loadImage();
 
-        const loadImage = async () => {
-            // Reset error state
-            setError(null);
-            console.log(imageUrl, "imageUrl in loadImage");
+    // Cleanup function
+    return () => {
+      if (blobUrlRef.current) {
+        URL.revokeObjectURL(blobUrlRef.current);
+        blobUrlRef.current = null;
+      }
+    };
+  }, [authToken, imageUrl, options]);
 
-            try {
-                //console.log(imageUrl, "imageUrl");
-                
-                // Use fetch instead of axios for better blob handling
-                const response = await fetch(imageUrl, {
-                    method: 'GET',
-                    headers: {
-                        Authorization: `Bearer ${authToken}`,
-                        Accept: 'image/*',
-                    },
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-
-                // Convert response to blob
-                const blob = await response.blob();
-                
-                // Check if blob is valid
-                if (!blob || blob.size === 0) {
-                    throw new Error('Invalid or empty image data received');
-                }
-
-                const objectUrl = URL.createObjectURL(blob);
-                
-                // Store the blob URL reference for cleanup
-                blobUrlRef.current = objectUrl;
-                
-                // Set the blob URL to state
-                setImgSrc(objectUrl);
-                
-            } catch (err) {
-                console.error('Error loading authenticated image:', err);
-                setError(err instanceof Error ? err : new Error(String(err)));
-                if (options.onError) options.onError(err instanceof Error ? err : new Error(String(err)));
-            }
-        };
-
-        loadImage();
-
-        // Cleanup function
-        return () => {
-            if (blobUrlRef.current) {
-                URL.revokeObjectURL(blobUrlRef.current);
-                blobUrlRef.current = null;
-            }
-        };
-    }, [authToken, imageUrl, options]);
-
-    if (error) {
-        return <div className='text-red-500'>خطای بارگذاری تصویر : {error.message}</div>;
-    }
-
-    if (!imgSrc) {
-        return (
-            <img
-                ref={imgRef}
-                src={
-                    options.placeholder ||
-                    'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjBmMGYwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkxvYWRpbmcuLi48L3RleHQ+PC9zdmc+'
-                }
-                className={options.className}
-                alt={options.alt || 'در حال بارگذاری...'}
-                style={{
-                    ...options.style,
-                    cursor: isClickable ? 'pointer' : 'default',
-                }}
-                id={options.id}
-                onClick={handleImageClick}
-                onError={() => {
-                    const err = new Error('Failed to load placeholder image');
-                    setError(err);
-                    if (options.onError) options.onError(err);
-                }}
-            />
-        );
-    }
-
+  if (error) {
     return (
-        <img
-            loading="lazy"
-            ref={imgRef}
-            src={imgSrc}
-            className={options.className}
-            alt={options.alt || 'Attachment Image'}
-            style={{
-                ...options.style,
-                cursor: isClickable ? 'pointer' : 'default',
-            }}
-            id={options.id}
-            onClick={handleImageClick}
-            onError={() => {
-                const err = new Error('Failed to load image from blob URL');
-                setError(err);
-                if (options.onError) options.onError(err);
-            }}
-        />
+      <div className="text-red-500">خطای بارگذاری تصویر : {error.message}</div>
     );
+  }
+
+  if (!imgSrc) {
+    return <Spinner />;
+  }
+
+  return (
+    <img
+      loading="lazy"
+      ref={imgRef}
+      src={imgSrc}
+      className={options.className}
+      alt={options.alt || "Attachment Image"}
+      style={{
+        ...options.style,
+        cursor: isClickable ? "pointer" : "default",
+      }}
+      id={options.id}
+      onClick={handleImageClick}
+      onError={() => {
+        const err = new Error("Failed to load image from blob URL");
+        setError(err);
+        if (options.onError) options.onError(err);
+      }}
+    />
+  );
 };
 
 export default AttachmentImageLoader;

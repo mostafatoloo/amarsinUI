@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from 'uuid';
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+import { ChangeEvent, SetStateAction, Dispatch, useEffect, useRef, useState } from "react";
 import { useAttachments } from "../../hooks/useAttachments";
 import { useAttachmentStore } from "../../store/attachmentStore";
 import Add32 from "../../assets/images/GrayThem/add32.png";
@@ -15,12 +15,18 @@ import RestoreIcon from "../../assets/images/GrayThem/restore_gray_16.png";
 import { colors } from "../../utilities/color";
 import { useGeneralContext } from "../../context/GeneralContext";
 
-type Props = { formId: number };
+type Props = { formId: number; setCnt: Dispatch<SetStateAction<number>> };
 
-const PayRequestAttachment = ({ formId }: Props) => {
-  const { attachments, refetch, deleteAttachment, restoreAttachment, saveAttachment } =
-    useAttachments();
-  const { setField } = useAttachmentStore();
+const PayRequestAttachment = ({ formId, setCnt }: Props) => {
+  const {
+    attachments,
+    refetch,
+    deleteAttachment,
+    restoreAttachment,
+    saveAttachment,
+  } = useAttachments();
+  const { setField, attachmentSaveResponse, deleteRestoreResponse } =
+    useAttachmentStore();
   const [data, setData] = useState<AttachmentResult[]>([]);
   const { authApiResponse } = useAuthStore();
   const token = authApiResponse?.data.result.login.token ?? "";
@@ -83,7 +89,19 @@ const PayRequestAttachment = ({ formId }: Props) => {
       setData(tempData);
     }
     setSelectedId(tempData[0].id);
-    console.log(tempData);
+    //console.log(tempData);
+  }, [attachments]);
+  ////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    setCnt(attachmentSaveResponse.data.result.cnt ?? 0);
+  }, [attachmentSaveResponse]);
+  ////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    setCnt(deleteRestoreResponse.data.result.cnt ?? 0);
+  }, [deleteRestoreResponse]);
+  ////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    setCnt(attachments.data.result.length ?? 0);
   }, [attachments]);
   ////////////////////////////////////////////////////////////////
   const updateToDeleted = (row: any) => {
@@ -137,38 +155,38 @@ const PayRequestAttachment = ({ formId }: Props) => {
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
-  
+
     Array.from(files).forEach((file) => {
       if (!file.type.startsWith("image/")) {
         console.error("Invalid file type. Please select an image.");
         return;
       }
-  
+
       // Create preview (optional)
       const reader = new FileReader();
       reader.onload = (event) => {
         console.log("Preview URL:", event.target?.result);
       };
       reader.readAsDataURL(file);
-  
+
       // Upload logic
       const guid = uuidv4();
       const formData = new FormData();
       formData.append("img", file); // Keep file in FormData
-      
+
       // Generate query parameters
       const params = new URLSearchParams({
         prefix: "payrequest",
         formId: formId.toString(),
         systemId: systemId.toString(),
         yearId: yearId.toString(),
-        guid: guid
+        guid: guid,
       });
-  
+
       console.log("Request params:", params.toString());
       saveAttachment({ formData, params });
     });
-  
+
     if (e.target) {
       e.target.value = "";
     }

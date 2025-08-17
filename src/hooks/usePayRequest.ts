@@ -191,7 +191,7 @@ export function usePayRequest() {
       }&lastId=${lastIdChequeBookDtlSearch}`;
       console.log(url, "url in chequeBookDtlSearchQuery");
       const response = await api.get(url);
-      console.log(response.data, "data in chequeBookDtlSearchQuery");
+      //console.log(response.data, "data in chequeBookDtlSearchQuery");
       setChequeBookDtlSearchResponse(response.data);
       return response.data;
     },

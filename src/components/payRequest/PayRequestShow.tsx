@@ -50,6 +50,7 @@ const PayRequestShow = ({ workFlowRowSelectResponse }: Props) => {
     id: initData?.yearId ?? 0,
     title: convertToFarsiDigits(initData?.yearTitle) ?? "",
   });
+  const [cnt, setCnt] = useState(0);
   //for tab 0
   const [totalRem, setTotalRem] = useState(0);
   const [sumRem, setSumRem] = useState(0);
@@ -170,6 +171,8 @@ const PayRequestShow = ({ workFlowRowSelectResponse }: Props) => {
     );
   }, [chequeBookDtlSearchResponse.data.result.results]);
   useEffect(() => {
+    //set attachment count
+    setCnt(payRequestResponse.data.result.payRequests[0]?.attachCount ?? 0);
     const invcs = payRequestResponse.data.result.invcs; // keep factors include settles in tempPayRequestResponse
     setDataInTab2(
       payRequestResponse.data.result.payRequestDtls.map((item, index) => {
@@ -213,7 +216,7 @@ const PayRequestShow = ({ workFlowRowSelectResponse }: Props) => {
   /////////////////////////////////////////////////////////////////
   useEffect(() => {
     let newPay = 0;
-    console.log(payRequestDtlId, "payRequestDtlId");
+    //console.log(payRequestDtlId, "payRequestDtlId");
     const tempData = invoicesWithChecks.map((item, index) => {
       //فاکتوری که در آن از چک کلیک شده پرداخت شده است
       const invoicePayByClickedCheck = item.invcs.find(
@@ -357,6 +360,7 @@ const PayRequestShow = ({ workFlowRowSelectResponse }: Props) => {
   return (
     <div>
       <PayRequestShowHeader
+        cnt={cnt}
         system={system}
         setSystem={setSystem}
         year={year}
@@ -460,7 +464,10 @@ const PayRequestShow = ({ workFlowRowSelectResponse }: Props) => {
         width="1/2"
         height="90vh"
       >
-        <PayRequestAttachment formId={workFlowRowSelectResponse.workTableRow.formId} />
+        <PayRequestAttachment
+          formId={workFlowRowSelectResponse.workTableRow.formId}
+          setCnt={setCnt}
+        />
       </ModalForm>
     </div>
   );

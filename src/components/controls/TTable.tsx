@@ -292,7 +292,7 @@ export default function TTable<T extends object>({
                     }}
                     onClick={() => {
                       if (setSelectedId) {
-                        console.log(row.original["id" as keyof T],"row.original in TTable")
+                        //console.log(row.original["id" as keyof T],"row.original in TTable")
                         const itemId = Number(
                           convertToLatinDigits(row.original["id" as keyof T])
                         );

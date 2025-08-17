@@ -14,6 +14,7 @@ import { colors } from "../../utilities/color";
 import Button from "../controls/Button";
 
 type Props = {
+  cnt: number; //attachment count
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   payRequestResponse: PayRequestResponse;
   //authApiResponse: AuthApiResponse;
@@ -27,6 +28,7 @@ type Props = {
 };
 
 const PayRequestShowHeader = ({
+  cnt,
   workFlowRowSelectResponse,
   payRequestResponse,
   // authApiResponse,
@@ -259,9 +261,7 @@ const PayRequestShowHeader = ({
           }}
         />
         <Button
-          text={`ضمائم (${convertToFarsiDigits(
-            payRequestResponse.data.result.payRequests[0]?.attachCount ?? 0
-          )})`}
+          text={`ضمائم (${convertToFarsiDigits(cnt)})`}
           backgroundColor={colors.blue_400}
           backgroundColorHover={colors.blue_500}
           variant="w-32"
