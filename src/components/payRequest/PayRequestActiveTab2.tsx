@@ -1,4 +1,4 @@
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Input from "../controls/Input";
 import { DefaultOptionType, TableColumns } from "../../types/general";
 import { usePayRequestStore } from "../../store/payRequestStore";
@@ -21,6 +21,7 @@ import ModalForm from "../layout/ModalForm";
 import ShowMessages from "../controls/ShowMessages";
 import ModalMessage from "../layout/ModalMessage";
 import PlusIcon from "../../assets/images/GrayThem/plus24.png";
+import { WorkflowRowSelectResponse } from "../../types/workflow";
 
 type Props = {
   data: PayRequestDtlTable[];
@@ -48,6 +49,7 @@ type Props = {
   setPayRequestDtlId: React.Dispatch<React.SetStateAction<number>>;
   setChequeBookId: React.Dispatch<React.SetStateAction<number>>;
   chequeBookId: number;
+  workFlowRowSelectResponse: WorkflowRowSelectResponse;
 };
 
 const PayRequestActiveTab2 = ({
@@ -72,6 +74,7 @@ const PayRequestActiveTab2 = ({
   setPayRequestDtlId,
   setChequeBookId,
   chequeBookId,
+  workFlowRowSelectResponse
 }: Props) => {
   const columns: TableColumns = [
     {
@@ -205,7 +208,7 @@ const PayRequestActiveTab2 = ({
     if (chequeBookId !== 0) {
       setField("chequeBookIdChequeBookDtlSearch", chequeBookId);
     }
-  }, [chequeBookDtlSearch,chequeBookId]);
+  }, [chequeBookDtlSearch, chequeBookId]);
   ////////////////////////////////////////////////////////////////
   //initializing payRequestInvoicesField
   useEffect(() => {
@@ -427,9 +430,16 @@ const PayRequestActiveTab2 = ({
         canEditForm={true}
         CellColorChange={handleCellColorChange}
       />
-      <div className="flex items-center justify-start border border-gray-300 rounded-lg p-2 shadow-lg bg-gray-100 w-10 text-sm text-gray-600">
-        <img src={PlusIcon} alt="PlusIcon" className="cursor-pointer" onClick={() => handleAddRow(data.length+1, setOriginalData)}/>
-      </div>
+      {workFlowRowSelectResponse.workTableForms.canEditForm1Dtl1 && (
+        <div className="flex items-center justify-start border border-gray-300 rounded-lg p-2 shadow-lg bg-gray-100 w-10 text-sm text-gray-600">
+          <img
+            src={PlusIcon}
+            alt="PlusIcon"
+            className="cursor-pointer"
+            onClick={() => handleAddRow(data.length + 1, setOriginalData)}
+          />
+        </div>
+      )}
       <ModalMessage
         isOpen={isModalOpen}
         backgroundColor={

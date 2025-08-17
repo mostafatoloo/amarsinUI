@@ -421,13 +421,14 @@ const PayRequestShow = ({ workFlowRowSelectResponse }: Props) => {
           setAmountTab2={setAmountTab2}
           setChequeBookId={setChequeBookId}
           chequeBookId={chequeBookId}
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
         />
       )}
-      <ConfirmCard
-        backgroundColor="bg-gray-300"
-        variant="flex-row gap-2 rounded-lg justify-end"
-      >
-        {workFlowRowSelectResponse.workTableForms.canEditForm1Dtl1 && (
+      {workFlowRowSelectResponse.workTableForms.canEditForm1Dtl1 && (
+        <ConfirmCard
+          backgroundColor="bg-gray-300"
+          variant="flex-row gap-2 rounded-lg justify-end"
+        >
           <Button
             text={isLoadingPayRequestSave ? "در حال ثبت اطلاعات..." : "ثبت"}
             backgroundColor="bg-green-500"
@@ -437,8 +438,8 @@ const PayRequestShow = ({ workFlowRowSelectResponse }: Props) => {
             variant="shadow-lg w-64"
             onClick={handleSubmitSave}
           />
-        )}
-      </ConfirmCard>
+        </ConfirmCard>
+      )}
       <ModalForm
         isOpen={showInvoices}
         onClose={() => setShowInvoices(false)}
