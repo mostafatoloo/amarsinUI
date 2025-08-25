@@ -167,7 +167,6 @@ export default function ProducerList() {
     setField("accSystem", systemId);
   }, []);
 
-  console.log(data, "data in ProducerList")
   return (
     <div className={`sm:h-[calc(100vh-72px)] flex flex-col bg-gray-200 pt-2`}>
       {/* Top header */}

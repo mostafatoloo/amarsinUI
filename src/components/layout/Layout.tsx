@@ -37,7 +37,7 @@ const Layout: React.FC<Props> = ({ children }) => {
   return (
     <Box
       className="focus:outline-none select-none md:overflow-y-hidden"
-      sx={{ display: "flex" }}
+      sx={{ display: "flex", height: "100vh" }}
     >
       <CssBaseline />
       {!isLoginPage && (
@@ -59,7 +59,10 @@ const Layout: React.FC<Props> = ({ children }) => {
           {/* SideMenu on the Right */}
           <SideMenu />
           {/* Main Content */}
-          <Box
+          <div className="w-full flex-1 overflow-y-auto h-full">
+            {children}
+          </div>
+          {/*<Box
             component="main"
             sx={{
               flexGrow: 1,
@@ -72,18 +75,21 @@ const Layout: React.FC<Props> = ({ children }) => {
             }}
           >
             {children}
-          </Box>
+          </Box>*/}
         </div>
       )}
       {isLoginPage && (
-        <Box
+        <div className="w-full flex flex-col justify-start sm:flex-row mt-12 sm:mt-16">
+          {children}
+        </div>
+        /*<Box
           component="main"
           sx={{
             flexGrow: 1,
           }}
         >
           {children}
-        </Box>
+        </Box>*/
       )}
     </Box>
   );

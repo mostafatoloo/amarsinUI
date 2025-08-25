@@ -210,7 +210,6 @@ const PayRequestShow = ({ workFlowRowSelectResponse }: Props) => {
           ),
         };
       });
-    console.log(tempDate, "PayRequestInvoiceIncludeChecks in PayRequestShow");
     setInvoicesWithChecks(tempDate);
   }, [payRequestInvoicesResponse.data.result.invoices, payRequestResponse]);
   /////////////////////////////////////////////////////////////////

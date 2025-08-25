@@ -31,5 +31,10 @@ export type DefaultOptionTypeStringId = {
   title: string;
 };  
 
+interface Meta {
+  errorCode: number;
+  message: string | null;
+  type: string;
+}
 
 export type TableColumns = (ColumnGroup | Column)[];

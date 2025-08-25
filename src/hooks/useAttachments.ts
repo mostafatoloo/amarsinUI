@@ -36,9 +36,9 @@ export function useAttachments() {
         prefix,
         GUID,
       };
-      const response = await api.get(
-        `/api/Attachment/list?formId=${params.formId}&prefix=${params.prefix}&GUID=${params.GUID}`
-      );
+      const url = `/api/Attachment/list?formId=${params.formId}&prefix=${params.prefix}&GUID=${params.GUID}`;
+      console.log(url, "url");
+      const response = await api.get(url);
 
       return response.data;
     },

@@ -15,6 +15,7 @@ import ProviderList from "./pages/reports/ProviderList";
 import ProducerList from "./pages/reports/ProducerList";
 import Workflow from "./pages/Workflow";
 import Dashboard from "./pages/Dashboard";
+import ProductOffer from "./components/productOffer/ProductOffer";
 
 const queryClient = new QueryClient();
 
@@ -26,7 +27,7 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Layout>
           <Routes>
             <Route path="/login" element={<Login isHomePage={true} />} />
@@ -78,7 +79,14 @@ function App() {
                 </PrivateRoute>
               }
             />
-
+            <Route
+              path="/admin/ProductOffer"
+              element={
+                <PrivateRoute>
+                  <ProductOffer />
+                </PrivateRoute>
+              }
+            />
             <Route path="/" element={<Navigate to="/admin/WFMS/index" />} />
           </Routes>
         </Layout>

@@ -26,8 +26,8 @@ export function useCustomers() {
       return response.data;
     },
     enabled: !!systemId, // Only run if accSystem exists
-    refetchOnWindowFocus: true, // Refetch data when the window is focused
-    refetchOnReconnect: true, // Refetch data when the network reconnects
+    refetchOnWindowFocus: false, // Refetch data when the window is focused
+    refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data:any) => {
       setCustomerSearchResponse(data);
     },

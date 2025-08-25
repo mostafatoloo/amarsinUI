@@ -88,7 +88,8 @@ const PayRequestAttachment = ({ formId, setCnt }: Props) => {
       }));
       setData(tempData);
     }
-    setSelectedId(tempData[0].id);
+    //console.log(attachments, "attachments");
+    setSelectedId(tempData[0]?.id);
     //console.log(tempData);
   }, [attachments]);
   ////////////////////////////////////////////////////////////////
