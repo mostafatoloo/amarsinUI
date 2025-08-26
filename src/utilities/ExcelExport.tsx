@@ -1,7 +1,6 @@
 import * as XLSX from "xlsx";
 
 import ExcelIcon from "../assets/images/GrayThem/excel24.png";
-import ExcelIconDisabled from "../assets/images/GrayThem/ExcelDisable.bmp";
 import React, { useEffect, useState } from "react";
 import ModalMessage from "../components/layout/ModalMessage";
 import { TableColumns } from "../types/general";

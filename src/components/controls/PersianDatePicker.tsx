@@ -8,10 +8,11 @@ interface DatePickerProps {
   label: string;
   value: Date | null;
   disabled?: boolean;
+  fontSize?: string;
   onChange: (event: { target: { name: string; value: Date | null } }) => void;
 }
 
-export default function PersianDatePicker({ name, value, onChange, disabled }: DatePickerProps) {
+export default function PersianDatePicker({ name, value, onChange, disabled, fontSize = "text-base" }: DatePickerProps) {
   return (
     <DatePicker
       value={value}
@@ -20,7 +21,7 @@ export default function PersianDatePicker({ name, value, onChange, disabled }: D
       locale={persian_fa}
       calendarPosition="bottom-right"
       placeholder="اینجا کلیک کنید..."
-      inputClass={`w-full text-sm md:text-base p-1 border-2 border-gray-300 rounded-md ${disabled ? "bg-gray-100 cursor-not-allowed" : ""}`}
+      inputClass={`w-full p-1 border-2 border-gray-300 rounded-md ${fontSize} ${disabled ? "bg-gray-100 cursor-not-allowed" : ""}`}
       style={{ width: "100%" }} 
       disabled={disabled}
     />

@@ -14,7 +14,7 @@ interface Props {
 
 const Layout: React.FC<Props> = ({ children }) => {
   const location = useLocation();
-  const { isMenuOpened, setUrl } = useGeneralContext();
+  const {  setUrl } = useGeneralContext();
   const { isAuthenticated } = useAuthStore();
 
   const customerCode = localStorage.getItem("customerCode");

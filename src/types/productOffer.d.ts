@@ -73,8 +73,69 @@ interface ProductOfferResponse {
   data: Data;
 }
 
-export interface ProductOfferState extends ProductOfferRequest {
+//http://apitest.dotis.ir/api/ProductOffer/ShowProductList
+interface ShowProductListRequest {
+  id: number;
+  productId: number;
+  acc_Year: number;
+  brands: string[];
+}
+
+interface ProductOfferProduct {
+  id: number;
+  ordr: number;
+  pId: number;
+  bName: string;
+  product: string;
+  lastDate: string;
+  s1NO: number;
+  s1DO: number;
+  s2NO: number;
+  s2DO: number;
+  s3NO: number;
+  s3DO: number;
+  s4NO: number;
+  s4DO: number;
+  s5NO: number;
+  s5DO: number;
+  s1N: number;
+  s1D: number;
+  s2N: number;
+  s2D: number;
+  s3N: number;
+  s3D: number;
+  s4N: number;
+  s4D: number;
+  s5N: number;
+  s5D: number;
+  dtlDsc: string;
+  deleted: boolean;
+  isDeleted: boolean;
+}
+
+export interface ProductOfferProductTable extends ProductOfferProduct {
+  index: number;
+}
+
+interface ShowProductListResult {
+  err: number;
+  msg: string;
+  productOfferProducts: ProductOfferProduct[];
+}
+
+interface ShowProductListData {
+  result: ShowProductListResult;
+}
+
+interface ShowProductListResponse {
+  meta: Meta;
+  data: ShowProductListData;
+}
+
+export interface ProductOfferState extends ProductOfferRequest,ShowProductListRequest {
+  showProductListResponse: ShowProductListResponse;
   productOfferResponse: ProductOfferResponse;
   setField: (field: keyof ProductOfferRequest, value: any) => void;
   setProductOfferResponse: (productOfferResponse: ProductOfferResponse) => void;
+  setShowProductListResponse: (showProductListResponse: ShowProductListResponse) => void;
 }

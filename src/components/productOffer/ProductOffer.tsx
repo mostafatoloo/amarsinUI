@@ -15,11 +15,18 @@ import { useGeneralContext } from "../../context/GeneralContext";
 import TTable from "../controls/TTable";
 import { useProductOfferStore } from "../../store/productOfferStore";
 import { useProductOffer } from "../../hooks/useProductOffer";
-import { convertToFarsiDigits } from "../../utilities/general";
+import {
+  convertPersianDate,
+  convertToFarsiDigits,
+  convertToLatinDigits,
+} from "../../utilities/general";
+import ModalMessage from "../layout/ModalMessage";
+import Skeleton from "../layout/Skeleton";
+import ProductOfferParams from "./ProductOfferParams";
+import ModalForm from "../layout/ModalForm";
+import ProductOfferForm from "./ProductOfferForm";
 
-type Props = {};
-
-const ProductOffer = (props: Props) => {
+const ProductOffer = () => {
   const [data, setData] = useState<any>([]);
   const [dataDtl, setDataDtl] = useState<any>([]);
   const columns = [
@@ -82,27 +89,27 @@ const ProductOffer = (props: Props) => {
     },
     {
       Header: "پ 1",
-      accessor: "s1NO",
+      accessor: "s1",
       width: "5%",
     },
     {
       Header: "پ 2",
-      accessor: "s2NO",
+      accessor: "s2",
       width: "5%",
     },
     {
       Header: "پ 3",
-      accessor: "s3NO",
+      accessor: "s3",
       width: "5%",
     },
     {
       Header: "پ 4",
-      accessor: "s4NO",
+      accessor: "s4",
       width: "5%",
     },
     {
       Header: "بدون آفر",
-      accessor: "s5NO",
+      accessor: "s5",
       width: "5%",
     },
     {
@@ -113,23 +120,58 @@ const ProductOffer = (props: Props) => {
   ];
 
   const { setField } = useProductOfferStore();
-  const { productOffer, productOfferDtl } = useProductOffer();
+  const {
+    productOffer,
+    productOfferDtl,
+    productOfferMeta,
+    isLoading,
+    isLoadingDtl,
+    refetch,
+    addProductList,
+  } = useProductOffer();
   const { yearId, systemId } = useGeneralContext();
   const [selectedId, setSelectedId] = useState<number>(1363);
+  const [isNew, setIsNew] = useState<boolean>(false);
+  //for ProductOfferParams params
+  const [regFDate, setRegFDate] = useState<Date | null>(null);
+  const [regTDate, setRegTDate] = useState<Date | null>(null);
+  const [fDate, setFDate] = useState<Date | null>(null);
+  const [tDate, setTDate] = useState<Date | null>(null);
+  const [state, setState] = useState<number>(0);
 
   useEffect(() => {
     setField("acc_Year", yearId);
     setField("acc_System", systemId);
-    setField("state", 0);
-    /*  setField("id", 0);
-    setField("regFDate", "");
-    setField("regTDate", "");
-    setField("fDate", "");
-    setField("tDate", "");*/
-  }, [yearId, systemId]);
+    setField("state", state);
+
+    setField(
+      "regFDate",
+      regFDate === null || !regFDate
+        ? ""
+        : convertPersianDate(regFDate.toLocaleDateString("fa-IR"))
+    );
+    setField(
+      "regTDate",
+      regTDate === null || !regTDate
+        ? ""
+        : convertPersianDate(regTDate.toLocaleDateString("fa-IR"))
+    );
+    setField(
+      "fDate",
+      fDate === null || !fDate
+        ? ""
+        : convertPersianDate(fDate.toLocaleDateString("fa-IR"))
+    );
+    setField(
+      "tDate",
+      tDate === null || !tDate
+        ? ""
+        : convertPersianDate(tDate.toLocaleDateString("fa-IR"))
+    );
+  }, [yearId, systemId, state, regFDate, regTDate, fDate, tDate]);
 
   useEffect(() => {
-    console.log("selectedId", selectedId);
+    //console.log("selectedId", selectedId);
     setField("id", selectedId);
   }, [selectedId]);
 
@@ -149,8 +191,13 @@ const ProductOffer = (props: Props) => {
         index: convertToFarsiDigits(index + 1),
       };
     });
-    
+
     setData(tempData);
+    if (tempData?.[0]?.id) {
+      setSelectedId(Number(convertToLatinDigits(tempData?.[0]?.id)));
+    } else {
+      setSelectedId(0);
+    }
   }, [productOffer]);
 
   useEffect(() => {
@@ -160,21 +207,40 @@ const ProductOffer = (props: Props) => {
         index: convertToFarsiDigits(index + 1),
         bName: convertToFarsiDigits(item.bName),
         product: convertToFarsiDigits(item.product),
-        s1No: convertToFarsiDigits(item.s1NO),
-        s2No: convertToFarsiDigits(item.s2NO),
-        s3No: convertToFarsiDigits(item.s3NO),
-        s4No: convertToFarsiDigits(item.s4NO),
-        s5No: convertToFarsiDigits(item.s5NO),
+        s1: convertToFarsiDigits(item.s1N + item.s1D),
+        s2: convertToFarsiDigits(item.s2N + item.s2D),
+        s3: convertToFarsiDigits(item.s3N + item.s3D),
+        s4: convertToFarsiDigits(item.s4N + item.s4D),
+        s5: item.no ? (
+          <img src={Accept} alt="Accept" className="w-4 h-4" />
+        ) : null,
         dsc: convertToFarsiDigits(item.dtlDsc),
       };
     });
-    setDataDtl(tempDataDtl);
-  }, [selectedId]);
+    if (tempDataDtl) {
+      setDataDtl(tempDataDtl);
+    }
+  }, [productOfferDtl]);
 
   const handleSelectedIdChange = (id: number) => {
     //console.log(id, "id in WorkflowForm");
     setSelectedId(id);
   };
+
+  const { isModalOpen, setIsModalOpen } = useGeneralContext();
+  useEffect(() => {
+    let timeoutId: number;
+    if (isModalOpen) {
+      timeoutId = setTimeout(() => {
+        setIsModalOpen(false);
+      }, 3000);
+    }
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [isModalOpen]);
 
   return (
     <div
@@ -184,7 +250,10 @@ const ProductOffer = (props: Props) => {
       <header className="flex items-center justify-between border-gray-300 border-b pb-2">
         <PageTitle />
         <div className="flex px-4 items-center gap-4">
-          <div className="flex flex-col items-center cursor-pointer">
+          <div
+            className="flex flex-col items-center cursor-pointer"
+            onClick={() => setIsNew(true)}
+          >
             <img src={Add32} alt="Add32" className="w-6 h-6" />
             <p className="text-xs">جدید</p>
           </div>
@@ -217,7 +286,7 @@ const ProductOffer = (props: Props) => {
 
           <div
             className="flex flex-col items-center cursor-pointer"
-            onClick={() => console.log("object")}
+            onClick={() => refetch()}
           >
             <img src={Refresh32} alt="Refresh32" className="w-6 h-6" />
             <p className="text-xs">بازخوانی</p>
@@ -226,46 +295,67 @@ const ProductOffer = (props: Props) => {
       </header>
       <div className="flex gap-2 px-2 h-1/2">
         <div className="w-3/4 overflow-y-scroll bg-white rounded-md">
-          <TTable
-            columns={columns}
-            data={data}
-            fontSize="0.75rem"
-            changeRowSelectColor={true}
-            setSelectedId={handleSelectedIdChange}
-            wordWrap={false}
-            showToolTip={true}
+          {isLoading ? (
+            <Skeleton />
+          ) : (
+            <TTable
+              columns={columns}
+              data={data}
+              fontSize="0.75rem"
+              changeRowSelectColor={true}
+              setSelectedId={handleSelectedIdChange}
+              wordWrap={false}
+              showToolTip={true}
+            />
+          )}
+        </div>
+        {/* ProductOfferParams */}
+        <div className="w-1/4 h-full">
+          <ProductOfferParams
+            regFDate={regFDate}
+            setRegFDate={setRegFDate}
+            regTDate={regTDate}
+            setRegTDate={setRegTDate}
+            fDate={fDate}
+            setFDate={setFDate}
+            tDate={tDate}
+            setTDate={setTDate}
+            setState={setState}
           />
         </div>
-        <div className="w-1/4">something</div>
       </div>
 
       <div className="px-2 h-full">
-        <TTable
-          columns={columnsDtl}
-          data={dataDtl}
-          fontSize="0.75rem"
-          changeRowSelectColor={true}
-          wordWrap={false}
-          showToolTip={true}
-        />
+        {isLoadingDtl ? (
+          <Skeleton />
+        ) : (
+          <TTable
+            columns={columnsDtl}
+            data={dataDtl}
+            fontSize="0.75rem"
+            changeRowSelectColor={true}
+            wordWrap={false}
+            showToolTip={true}
+          />
+        )}
       </div>
-
-      {/* Main content */}
-      {/*<main className="flex flex-col items-center justify-center px-2">
-            <ProducerListForm
-              data={data} //{rpProducts}
-              headCells={allColumns}
-              brand={brand}
-              setBrand={setBrand}
-              sanadKind={sanadKind}
-              setSanadKind={setSanadKind}
-              startDate={startDate}
-              setStartDate={setStartDate}
-              endDate={endDate}
-              setEndDate={setEndDate}
-              //onShowDetails={handleShowDetails}
-            />
-          </main>*/}
+      <ModalMessage
+        isOpen={isModalOpen}
+        backgroundColor="bg-red-200"
+        bgColorButton="bg-red-500"
+        bgColorButtonHover="bg-red-600"
+        color="text-white"
+        onClose={() => setIsModalOpen(false)}
+        message={productOfferMeta?.message || ""}
+      />
+      <ModalForm
+        isOpen={isNew}
+        onClose={() => setIsNew(false)}
+        title="آفرهای کالا"
+        width="5/6"
+      >
+        <ProductOfferForm addProductList={addProductList} />
+      </ModalForm>
     </div>
   );
 };

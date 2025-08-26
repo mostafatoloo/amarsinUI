@@ -211,7 +211,7 @@ export default function TTable<T extends object>({
   } = useTable(
     {
       columns,
-      data,
+      data: data ? data : [],
       //defaultColumn,
       //autoResetPage: !skipPageReset,
       updateMyData,
