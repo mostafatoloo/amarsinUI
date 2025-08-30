@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { DefinitionInvironmentState } from "../types/definitionInvironment";
+import { DefinitionDateTime, DefinitionInvironment, DefinitionInvironmentState } from "../types/definitionInvironment";
 
 export const useDefinitionInvironmentStore = create<DefinitionInvironmentState>()((set) => ({
   definitionInvironment: {
@@ -18,5 +18,11 @@ export const useDefinitionInvironmentStore = create<DefinitionInvironmentState>(
     curMMonth: 0,
     curMDay: 0
   },
-  setDefinitionInvironment: (definitionInvironment) => set({ definitionInvironment }),
+  //http://apitest.dotis.ir/api/Definition/DateTime
+  definitionDateTime: {
+    date: '',
+    time: ''
+  },
+  setDefinitionInvironment: (definitionInvironment: DefinitionInvironment) => set({ definitionInvironment }),
+  setDefinitionDateTime: (definitionDateTime: DefinitionDateTime) => set({ definitionDateTime: definitionDateTime }),
 }));

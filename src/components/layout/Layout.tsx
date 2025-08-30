@@ -14,7 +14,7 @@ interface Props {
 
 const Layout: React.FC<Props> = ({ children }) => {
   const location = useLocation();
-  const {  setUrl } = useGeneralContext();
+  const {  setUrl, isMenuOpened } = useGeneralContext();
   const { isAuthenticated } = useAuthStore();
 
   const customerCode = localStorage.getItem("customerCode");
@@ -59,10 +59,7 @@ const Layout: React.FC<Props> = ({ children }) => {
           {/* SideMenu on the Right */}
           <SideMenu />
           {/* Main Content */}
-          <div className="w-full flex-1 overflow-y-auto h-full">
-            {children}
-          </div>
-          {/*<Box
+          <Box
             component="main"
             sx={{
               flexGrow: 1,
@@ -75,21 +72,18 @@ const Layout: React.FC<Props> = ({ children }) => {
             }}
           >
             {children}
-          </Box>*/}
+          </Box>
         </div>
       )}
       {isLoginPage && (
-        <div className="w-full flex flex-col justify-start sm:flex-row mt-12 sm:mt-16">
-          {children}
-        </div>
-        /*<Box
+        <Box
           component="main"
           sx={{
             flexGrow: 1,
           }}
         >
           {children}
-        </Box>*/
+        </Box>
       )}
     </Box>
   );

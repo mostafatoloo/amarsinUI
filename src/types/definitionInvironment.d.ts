@@ -13,7 +13,7 @@ type DefinitionInvironment = {
   curMYear: number;
   curMMonth: number;
   curMDay: number;
-}
+};
 
 interface Year {
   id: number;
@@ -30,8 +30,14 @@ interface Chart {
   name: string;
 }
 
-export interface DefinitionInvironmentState{
-    definitionInvironment:DefinitionInvironment
-    setDefinitionInvironment:(definitionInvironment) =>void
-    
+interface DefinitionDateTime {
+  date: string;
+  time: string;
+}
+
+export interface DefinitionInvironmentState {
+  definitionDateTime: DefinitionDateTime;
+  definitionInvironment: DefinitionInvironment;
+  setDefinitionInvironment: (definitionInvironment: DefinitionInvironment) => void;
+  setDefinitionDateTime: (definitionDateTime: DefinitionDateTime) => void;
 }

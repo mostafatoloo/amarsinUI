@@ -13,6 +13,8 @@ export type Column = {
   setSearch?: (search:string)=>void;
   search?: string;
   Cell?: (props: any) => ReactNode;
+  noLeftBorder?:boolean;
+  align?:string;
 };
 export type ColumnGroup = {
   Header: string;

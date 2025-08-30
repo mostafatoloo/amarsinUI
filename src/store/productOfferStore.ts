@@ -4,7 +4,9 @@ export const useProductOfferStore = create<ProductOfferState>()((set) => ({
   //productOffer
   productOfferResponse: {
     meta: { errorCode: 0, message: null, type: "" },
-    data: { result: { err: 0, msg: null, productOffers: [], productOfferDtls: [] } },
+    data: {
+      result: { err: 0, msg: null, productOffers: [], productOfferDtls: [] },
+    },
   },
   id: 0,
   acc_Year: 0,
@@ -23,10 +25,29 @@ export const useProductOfferStore = create<ProductOfferState>()((set) => ({
     meta: { errorCode: 0, message: "", type: "" },
     data: { result: { err: 0, msg: "", productOfferProducts: [] } },
   },
-  setShowProductListResponse: (showProductListResponse) => //for showProductList
-    set({ showProductListResponse }),
+  //productOfferDtlHistory
+  pId: 0,
+  productOfferDtlHistoryResponse: {
+    meta: { errorCode: 0, message: null, type: "" },
+    data: { result: [] },
+  },
+  //productOfferSave
+  productOfferSaveResponse: {
+    meta: { errorCode: 0, message: "", type: "" },
+    data: { result: { systemId: 0, id: 0, err: 0, msg: "", hasFlow: false } },
+  },
+  setProductOfferSaveResponse: (
+    productOfferSaveResponse //for productOfferSave
+  ) => set({ productOfferSaveResponse }),
+  setShowProductListResponse: (
+    showProductListResponse //for showProductList
+  ) => set({ showProductListResponse }),
+  setProductOfferDtlHistoryResponse: (
+    productOfferDtlHistoryResponse //for productOfferDtlHistory
+  ) => set({ productOfferDtlHistoryResponse }),
   setField: (field: string, value: any) =>
     set((state) => ({ ...state, [field]: value })),
-  setProductOfferResponse: (productOfferResponse) => //for productOffer
-    set({ productOfferResponse }),
+  setProductOfferResponse: (
+    productOfferResponse //for productOffer
+  ) => set({ productOfferResponse }),
 }));

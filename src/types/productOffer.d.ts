@@ -57,6 +57,22 @@ interface ProductOfferDtl {
   no: boolean;
 }
 
+interface ProductOfferDtlTable {
+  index:string;
+  id:number;
+  bName: string;
+  pId: number;
+  product: string;
+  lastDate: string;
+  s1O: string;
+  s2O: string;
+  s3O: string;
+  s4O: string;
+  dtlDsc: string;
+  no: JSX.Element | null;  
+}
+
+
 interface Result {
   err: number;
   msg: string | null;
@@ -110,10 +126,34 @@ interface ProductOfferProduct {
   s5D: number;
   dtlDsc: string;
   deleted: boolean;
+}
+
+export interface ProductOfferProductTable {
+  //index: number;
+  id:number;
+  bName: string;
+  pId: number;
+  product: string;
+  lastDate: string;
+  s1O: string;
+  s2O: string;
+  s3O: string;
+  s4O: string;
+  s1N: string;
+  s1D: string;
+  s2N: string;
+  s2D: string;
+  s3N: string;
+  s3D: string;
+  s4N: string;
+  s4D: string;
+  no: boolean;
+  dtlDsc: string;  
+  deleted: boolean;
   isDeleted: boolean;
 }
 
-export interface ProductOfferProductTable extends ProductOfferProduct {
+export interface ProductOfferProductTable2 extends ProductOfferProductTable{
   index: number;
 }
 
@@ -131,11 +171,80 @@ interface ShowProductListResponse {
   meta: Meta;
   data: ShowProductListData;
 }
+//http://apitest.dotis.ir/api/ProductOffer/PrductOfferDtlHistory?PId=12483
+interface ProductOfferDtlHistoryResponse {
+  meta: Meta;
+  data: ProductOfferDtlHistoryData;
+}
 
+interface ProductOfferDtlHistoryData {
+  result: ProductOfferDtlHistory[];
+}
+
+interface ProductOfferDtlHistory {
+  id: number;
+  date: string; 
+  accepted: boolean;
+  s1NO: number;
+  s1DO: number;
+  s2NO: number;
+  s2DO: number;
+  s3NO: number;
+  s3DO: number;
+  s4NO: number;
+  s4DO: number;
+  s5NO: number;
+  s5DO: number;
+  no: boolean;
+  dtlDsc: string;
+}
+//http://apitest.dotis.ir/api/ProductOffer/ProductOfferSave
+export interface ProductOfferSaveRequest {
+  chartId: number;
+  id: number;
+  acc_System: number;
+  acc_Year: number;
+  dat: string;
+  tim: string;
+  dsc: string;
+  saveAndSend: boolean;
+  dtls: Dtl[];
+}
+
+// Detail item
+export interface Dtl {
+  id: number;
+  pId: number;
+  s1: string;
+  s2: string;
+  s3: string;
+  s4: string;
+  no: boolean;
+  dtlDsc: string;
+  deleted: boolean;
+}
+
+type ProductOfferSaveResponse = {
+  meta: Meta;
+  data: {
+    result: {
+      systemId: number;
+      id: number;
+      err: number;
+      msg: string;
+      hasFlow: boolean;
+    };
+  };
+};
 export interface ProductOfferState extends ProductOfferRequest,ShowProductListRequest {
-  showProductListResponse: ShowProductListResponse;
-  productOfferResponse: ProductOfferResponse;
-  setField: (field: keyof ProductOfferRequest, value: any) => void;
+  pId: number; //for product offer dtl history request
+  productOfferDtlHistoryResponse: ProductOfferDtlHistoryResponse; //for product offer dtl history
+  showProductListResponse: ShowProductListResponse; //for show product list
+  productOfferResponse: ProductOfferResponse; //for product offer
+  productOfferSaveResponse: ProductOfferSaveResponse; //for product offer save
+  setField: (field: string, value: any) => void;
   setProductOfferResponse: (productOfferResponse: ProductOfferResponse) => void;
   setShowProductListResponse: (showProductListResponse: ShowProductListResponse) => void;
+  setProductOfferDtlHistoryResponse: (productOfferDtlHistoryResponse: ProductOfferDtlHistoryResponse) => void;
+  setProductOfferSaveResponse: (productOfferSaveResponse: ProductOfferSaveResponse) => void;
 }

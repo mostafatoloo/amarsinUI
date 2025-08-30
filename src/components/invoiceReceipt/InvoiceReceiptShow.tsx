@@ -53,8 +53,8 @@ const InvoiceReceiptShow = ({
   workFlowRowSelectResponse,
   canEditForm,
 }: Props) => {
-  const canEditForm1Mst1 =
-    workFlowRowSelectResponse.workTableForms.canEditForm1Mst1;
+  //const canEditForm1Mst1 =
+   // workFlowRowSelectResponse.workTableForms.canEditForm1Mst1;
   const { setField, mrsId } = useInvoiceReceiptStore();
   const { yearId, systemId } = useGeneralContext();
   const { indentMrsResponse, isLoading, getIndentMrsResponse } =
@@ -295,7 +295,8 @@ const InvoiceReceiptShow = ({
   return (
     <div className="w-full flex flex-col">
       <InvoiceReceipShowHeader
-        canEditForm1Mst1={canEditForm1Mst1}
+        //canEditForm1Mst1={canEditForm1Mst1}
+        canEditForm={canEditForm}
         fields={fields}
         setFields={setFields}
         indentMrsResponse={indentMrsResponse}

@@ -28,16 +28,16 @@ export const handleExport = ({
   const exportData = data.map((item: any, rowIndex: number) => {
     const row: Record<string, any> = {};
     headCells.forEach((cell: any) => {
-      console.log(cell);
+      //console.log(cell);
       if (cell.columns) {
         cell.columns.forEach((column: any) => {
           row[column.Header] = (item as any)[column.accessor];
         });
       } else {
         if (cell.accessor === "index") {
-          row[cell.Header] = rowIndex + 1;
+          row[cell.accessor] = rowIndex + 1;
         } else {
-          row[cell.Header] = (item as any)[cell.accessor];
+          row[cell.accessor] = (item as any)[cell.accessor];
         }
       }
     });

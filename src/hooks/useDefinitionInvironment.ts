@@ -1,10 +1,14 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import api from "../api/axios";
 import { useDefinitionInvironmentStore } from "../store/definitionInvironmentStore";
-import { DefinitionInvironment } from "../types/definitionInvironment";
+import {
+  DefinitionDateTime,
+  DefinitionInvironment,
+} from "../types/definitionInvironment";
 
 export function useDefinitionInvironment() {
-  const { setDefinitionInvironment } = useDefinitionInvironmentStore();
+  const { setDefinitionInvironment, setDefinitionDateTime } =
+    useDefinitionInvironmentStore();
 
   const query = useQuery<
     DefinitionInvironment,
@@ -24,6 +28,25 @@ export function useDefinitionInvironment() {
       setDefinitionInvironment(data);
     },
   } as UseQueryOptions<DefinitionInvironment, Error, DefinitionInvironment, unknown[]>);
+
+  //http://apitest.dotis.ir/api/Definition/DateTime
+  const queryDateTime = useQuery<
+    DefinitionDateTime,
+    Error,
+    DefinitionDateTime,
+    unknown[]
+  >({
+    queryKey: ["definitionDateTime"],
+    queryFn: async () => {
+      const response = await api.get(`/api/Definition/DateTime`);
+      return response.data;
+    },
+    refetchOnWindowFocus: true, // Refetch data when the window is focused
+    refetchOnReconnect: true, // Refetch data when the network reconnects
+    onSuccess: (data: DefinitionDateTime) => {
+      setDefinitionDateTime(data);
+    },
+  } as UseQueryOptions<DefinitionDateTime, Error, DefinitionDateTime, unknown[]>);
 
   return {
     //getDefinitionInvironment: () => query.refetch(), // Optional manual trigger
@@ -45,30 +68,6 @@ export function useDefinitionInvironment() {
       curMMonth: 0,
       curMDay: 0,
     },
+    definitionDateTime: queryDateTime.data ?? { date: "", time: "" },
   };
 }
-
-// import { useMutation } from "@tanstack/react-query";
-// import api from "../api/axios";
-// import { useDefinitionInvironmentStore } from "../store/definitionInvironmentStore";
-
-// export function useDefinitionInvironment() {
-//   const { setDefinitionInvironment } = useDefinitionInvironmentStore();
-
-//   const definitionInvironmentMutation = useMutation({
-//     mutationFn: async () => {
-//       const response = await api.get(`/api/Definition/Environment`);
-//       return response.data;
-//     },
-//     onSuccess: (data) => {
-//       //Successful
-//       setDefinitionInvironment(data);
-//     },
-//   });
-
-//   return {
-//     getDefinitionInvironment: definitionInvironmentMutation.mutate,
-//     isLoading: definitionInvironmentMutation.isPending,
-//     error: definitionInvironmentMutation.error,
-//   };
-// }

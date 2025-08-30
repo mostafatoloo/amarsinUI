@@ -21,14 +21,16 @@ import ModalMessage from "../layout/ModalMessage";
 import { SalesPriceItem } from "../../types/product";
 
 type Props = {
-  canEditForm1Mst1: boolean;
+ // canEditForm1Mst1: boolean;
+ canEditForm: boolean;
   fields: Fields;
   setFields: React.Dispatch<React.SetStateAction<Fields>>;
   indentMrsResponse: IndentMrsResponse;
   salesPricesSearchResponse: SalesPriceItem[];
 };
 const InvoiceReceipShowHeader = ({
-  canEditForm1Mst1,
+  //canEditForm1Mst1,
+  canEditForm,
   fields,
   setFields,
   indentMrsResponse,
@@ -87,7 +89,7 @@ const InvoiceReceipShowHeader = ({
           <label className="p-1 w-24 text-left">تامین کننده:</label>
           <div className="bg-slate-50 flex w-full">
             <AutoComplete
-              disabled={!canEditForm1Mst1}
+              disabled={!canEditForm}
               options={customers.map((b) => ({
                 id: b.id,
                 title: b.text,
@@ -101,7 +103,7 @@ const InvoiceReceipShowHeader = ({
                   };
                 });
               }}
-              backgroundColor={!canEditForm1Mst1 ? "inherit" : "white"}
+              backgroundColor={!canEditForm ? "inherit" : "white"}
               setSearch={setCusomerSearch}
               showLabel={false}
               inputPadding="0 !important"
@@ -113,7 +115,7 @@ const InvoiceReceipShowHeader = ({
         <div className="flex">
           <label className="p-1">سررسید:</label>
           <input
-            disabled={!canEditForm1Mst1}
+            disabled={!canEditForm}
             value={convertToFarsiDigits(fields.payDuration.toString())}
             onChange={(e) =>
               setFields((prev: Fields) => ({
@@ -150,7 +152,7 @@ const InvoiceReceipShowHeader = ({
       <div className="flex">
         <label className="p-1 w-24 text-left">توضیحات:</label>
         <input
-          disabled={!canEditForm1Mst1}
+          disabled={!canEditForm}
           type="text"
           value={convertToFarsiDigits(fields.dsc)}
           onChange={(e) =>
@@ -195,7 +197,7 @@ const InvoiceReceipShowHeader = ({
 
   const body2 = (
     <div className="mt-2 text-sm w-full flex flex-col gap-2 border border-gray-400 rounded-md p-2">
-      {canEditForm1Mst1 && <div className="flex items-center justify-between gap-2">
+      {canEditForm && <div className="flex items-center justify-between gap-2">
         <div className="w-full flex items-center">
           <label className="p-1 w-24 text-left">تامین کننده:</label>
           <div className="bg-slate-50 flex w-full">
@@ -228,7 +230,7 @@ const InvoiceReceipShowHeader = ({
           </div>
         </div>
       </div>}
-      {canEditForm1Mst1 && <div className="w-full flex items-center">
+      {canEditForm && <div className="w-full flex items-center">
         <label htmlFor="year" className="p-1 w-24 text-left">
           برند:
         </label>
@@ -264,7 +266,7 @@ const InvoiceReceipShowHeader = ({
           <label className="p-1 w-28 text-left">قیمت:</label>
           <div className="bg-slate-50 flex w-full">
             <AutoComplete
-              disabled={!canEditForm1Mst1}
+              disabled={!canEditForm}
               options={salesPricesSearchResponse.map((b) => ({
                 id: b.id,
                 title: b.text,
@@ -278,7 +280,7 @@ const InvoiceReceipShowHeader = ({
               setSearch={setSalesPriceSearch}
               showLabel={false}
               outlinedInputPadding="10px"
-              backgroundColor={!canEditForm1Mst1 ? "inherit" : "white"}
+              backgroundColor={!canEditForm ? "inherit" : "white"}
             />
           </div>
         </div>
@@ -289,7 +291,7 @@ const InvoiceReceipShowHeader = ({
             label="از:"
             value={fields.fdate}
             onChange={handleDateChange}
-            disabled={canEditForm1Mst1 ? false : true}
+            disabled={canEditForm ? false : true}
           />
         </div>
         <div className="w-1/3 flex items-center">
@@ -299,7 +301,7 @@ const InvoiceReceipShowHeader = ({
             label="تا:"
             value={fields.tdate}
             onChange={handleDateChange}
-            disabled={canEditForm1Mst1 ? false : true}
+            disabled={canEditForm ? false : true}
           />
         </div>
       </div>

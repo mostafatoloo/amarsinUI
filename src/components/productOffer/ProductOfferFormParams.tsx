@@ -2,37 +2,66 @@ import { useBrand } from "../../hooks/useBrands";
 import AutoComplete from "../controls/AutoComplete";
 import Input from "../controls/Input";
 import { DefaultOptionTypeStringId } from "../../types/general";
+import { useDefinitionInvironment } from "../../hooks/useDefinitionInvironment";
+import {
+  convertToFarsiDigits,
+  convertToPersianDate,
+} from "../../utilities/general";
+import { useEffect } from "react";
 
 type Props = {
-    brand: DefaultOptionTypeStringId[] | null,
-    setBrand: (brand: DefaultOptionTypeStringId[]) => void,
-    setBrandSearch: React.Dispatch<React.SetStateAction<string>>,
+  brand: DefaultOptionTypeStringId[] | null;
+  setBrand: (brand: DefaultOptionTypeStringId[]) => void;
+  setBrandSearch: React.Dispatch<React.SetStateAction<string>>;
+  dat: string;
+  tim: string;
+  dsc: string;
+  setDat: React.Dispatch<React.SetStateAction<string>>;
+  setTim: React.Dispatch<React.SetStateAction<string>>;
+  setDsc: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const ProductOfferFormParams = ({brand, setBrand, setBrandSearch}: Props) => {
-    const { brands } = useBrand();    
+const ProductOfferFormParams = ({
+  brand,
+  setBrand,
+  setBrandSearch,
+  dat,
+  tim,
+  dsc,
+  setDat,
+  setTim,
+  setDsc,
+}: Props) => {
+  const { brands } = useBrand();
+  const { definitionDateTime } = useDefinitionInvironment();
+  useEffect(() => {
+    setDat(convertToFarsiDigits(convertToPersianDate(new Date(definitionDateTime.date))));
+    setTim(convertToFarsiDigits(definitionDateTime.time));
+  }, [definitionDateTime]);
   return (
     <form className="flex flex-col gap-2 w-full">
       <div className="flex gap-2 w-1/2">
         <div className="w-full">
           <Input
             name="dat"
+            value={dat}
             label="تاریخ:"
             variant="outlined"
             widthDiv="w-full"
             widthLabel="w-32"
-            widthInput="w-full-minus-32"
+            widthInput="w-full"
             disabled
           />
         </div>
         <div className="w-full">
           <Input
             name="tim"
+            value={tim}
             label="ساعت:"
             variant="outlined"
             widthDiv="w-full"
             widthLabel="w-32"
-            widthInput="w-full-minus-32"
+            widthInput="w-full"
             disabled
           />
         </div>
@@ -40,6 +69,8 @@ const ProductOfferFormParams = ({brand, setBrand, setBrandSearch}: Props) => {
       <div className="w-full">
         <Input
           name="dsc"
+          value={dsc}
+          onChange={(e) => setDsc(e.target.value)}
           label="توضیحات:"
           variant="outlined"
           widthDiv="w-full"

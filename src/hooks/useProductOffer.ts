@@ -1,9 +1,11 @@
-import { useMutation, useQuery, UseQueryOptions } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, UseQueryOptions } from "@tanstack/react-query";
 import api from "../api/axios";
 import { useProductOfferStore } from "../store/productOfferStore";
 import {
+  ProductOfferDtlHistoryResponse,
   ProductOfferRequest,
   ProductOfferResponse,
+  ProductOfferSaveRequest,
   ShowProductListRequest,
 } from "../types/productOffer";
 
@@ -17,9 +19,13 @@ export function useProductOffer() {
     regTDate,
     fDate,
     tDate,
+    pId,
+    setProductOfferDtlHistoryResponse,
     setProductOfferResponse,
     setShowProductListResponse,
+    setProductOfferSaveResponse,
   } = useProductOfferStore();
+
   //for productOffer
   const query = useQuery<
     ProductOfferResponse,
@@ -69,7 +75,7 @@ export function useProductOffer() {
       setProductOfferResponse(data);
     },
   } as UseQueryOptions<ProductOfferResponse, Error, ProductOfferResponse, unknown[]>);
-//for productOfferDtl
+  //for productOfferDtl
   const queryDtl = useQuery<
     ProductOfferResponse,
     Error,
@@ -120,19 +126,54 @@ export function useProductOffer() {
       setProductOfferResponse(data);
     },
   } as UseQueryOptions<ProductOfferResponse, Error, ProductOfferResponse, unknown[]>);
+  
+  //for productOffer/productOfferDtlHistory
+  const productOfferDtlHistory = useQuery<
+    ProductOfferDtlHistoryResponse,
+    Error,
+    ProductOfferDtlHistoryResponse,
+    unknown[]
+  >({
+    queryKey: ["productOfferDtlHistory", pId],
+    queryFn: async () => {
+      const url = `/api/ProductOffer/PrductOfferDtlHistory?PId=${pId}`;
+      console.log("productOfferDtlHistory url", url);
+      const response = await api.get(url);
+      return response.data;
+    },
+    enabled: !!pId,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    onSuccess: (data: any) => {
+      setProductOfferDtlHistoryResponse(data);
+    },
+  } as UseQueryOptions<ProductOfferDtlHistoryResponse, Error, ProductOfferDtlHistoryResponse, unknown[]>);
 
-    // for productOffer/showProductList
-    const addList = useMutation({
-      mutationFn: async (request: ShowProductListRequest) => {
-        const url: string = `api/ProductOffer/ShowProductList `;
-        const response = await api.post(url, request);
-        return response.data;
-      },
-      onSuccess: (data: any) => {
-        console.log("addList data", data);
-        setShowProductListResponse(data);
-      },
-    });
+  // for productOffer/showProductList
+  const addList = useMutation({
+    mutationFn: async (request: ShowProductListRequest) => {
+      const url: string = `api/ProductOffer/ShowProductList `;
+      const response = await api.post(url, request);
+      return response.data;
+    },
+    onSuccess: (data: any) => {
+      setShowProductListResponse(data);
+    },
+  });
+  // for productOffer/productOfferSave
+  const queryClient=useQueryClient()
+  const productOfferSave = useMutation({
+    mutationFn: async (request: ProductOfferSaveRequest) => {
+      const url: string = `api/ProductOffer/ProductOfferSave`;
+      const response = await api.post(url, request);
+      return response.data;
+    },
+    onSuccess: (data: any) => {
+      setProductOfferSaveResponse(data);
+      console.log(data, "data");
+      queryClient.invalidateQueries({ queryKey: ["productOffer"] });
+    },
+  });
 
   return {
     refetch: query.refetch,
@@ -148,5 +189,14 @@ export function useProductOffer() {
     isLoadingAddList: addList.isPending,
     errorAddList: addList.error,
     addProductList: addList.mutateAsync,
+    //for productOffer/productOfferDtlHistory
+    isLoadingProductOfferDtlHistory: productOfferDtlHistory.isLoading,
+    errorProductOfferDtlHistory: productOfferDtlHistory.error,
+    productOfferDtlHistory: productOfferDtlHistory.data?.data.result,
+    //for productOffer/productOfferSave
+    isLoadingProductOfferSave: productOfferSave.isPending,
+    errorProductOfferSave: productOfferSave.error,
+    productOfferSave: productOfferSave.mutateAsync,
+    productOfferSaveResponse: productOfferSave.data,
   };
 }

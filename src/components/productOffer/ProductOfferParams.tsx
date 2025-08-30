@@ -26,8 +26,13 @@ const ProductOfferParams = ({
   setTDate,
   setState,
 }: Props) => {
-  const [hasRegDate, setHasRegDate] = useState<boolean>(false);
+  const [hasRegDate, setHasRegDate] = useState<boolean>(true);
   const [hasFDate, setHasFDate] = useState<boolean>(false);
+
+  useEffect(() => {
+    handleCheckboxChange({target:{name:"DateCheckbox",value:true}},setRegFDate,setRegTDate,setHasRegDate);
+  }, []);
+
   const handleCheckboxChange = (
     event: {
       target: { name: string; value: boolean };
@@ -82,7 +87,7 @@ const ProductOfferParams = ({
   return (
     <div className="w-full flex flex-col items-center gap-2 mb-2 border-gray-300 border-2 rounded-md p-2 h-full text-sm">
       {/* reg */}
-      <div className="w-full flex gap-2">
+      <div className="w-full flex">
         <div className="w-full flex items-center gap-2">
           <Checkbox
             name="DateCheckbox"
@@ -96,7 +101,7 @@ const ProductOfferParams = ({
             }
             value={hasRegDate}
           />
-          <label className="w-10 text-left">ثبت:</label>
+          <label className="w-8 text-left">ثبت:</label>
           <PersianDatePicker
             name="startDate"
             label="از:"
@@ -109,7 +114,7 @@ const ProductOfferParams = ({
           />
         </div>
         <div className="w-full flex items-center gap-2">
-          <label className="w-24 text-left">تا:</label>
+          <label className="w-8 text-left">تا:</label>
           <PersianDatePicker
             name="endDate"
             label="تا:"
@@ -123,7 +128,7 @@ const ProductOfferParams = ({
         </div>
       </div>
       {/* form */}
-      <div className="w-full flex gap-2">
+      <div className="w-full flex">
         <div className="w-full flex items-center gap-2">
           <Checkbox
             name="DateCheckbox"
@@ -132,7 +137,7 @@ const ProductOfferParams = ({
             }
             value={hasFDate}
           />
-          <label className="w-10 text-left">فرم:</label>
+          <label className="w-8 text-left">فرم:</label>
           <PersianDatePicker
             name="startDate"
             label="از:"
@@ -145,7 +150,7 @@ const ProductOfferParams = ({
           />
         </div>
         <div className="w-full flex items-center gap-2">
-          <label className="w-24 text-left">تا:</label>
+          <label className="w-8 text-left">تا:</label>
           <PersianDatePicker
             name="endDate"
             label="تا:"

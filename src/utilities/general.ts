@@ -46,7 +46,8 @@ export const convertToFarsiDigits = (
   }
 };
 /////////////////////////////////////////////////////////////
-export const convertStringToInteger = (str: string) => {
+export const convertStringToInteger = (str: string | null) => {
+  if (str===null) return 0;
   const result = parseInt(str, 10); // Base 10
   return isNaN(result) ? null : result; // Return null for NaN
 };

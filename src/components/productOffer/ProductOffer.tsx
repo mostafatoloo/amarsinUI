@@ -25,10 +25,11 @@ import Skeleton from "../layout/Skeleton";
 import ProductOfferParams from "./ProductOfferParams";
 import ModalForm from "../layout/ModalForm";
 import ProductOfferForm from "./ProductOfferForm";
+import { ProductOfferDtlTable } from "../../types/productOffer";
 
 const ProductOffer = () => {
-  const [data, setData] = useState<any>([]);
-  const [dataDtl, setDataDtl] = useState<any>([]);
+  const [data, setData] = useState<any[]>([]);
+  const [dataDtl, setDataDtl] = useState<ProductOfferDtlTable[]>([]);
   const columns = [
     {
       Header: "ردیف",
@@ -88,28 +89,28 @@ const ProductOffer = () => {
       width: "40%",
     },
     {
-      Header: "پ 1",
-      accessor: "s1",
+      Header: convertToFarsiDigits("پ 1"),
+      accessor: "s1O",
       width: "5%",
     },
     {
-      Header: "پ 2",
-      accessor: "s2",
+      Header: convertToFarsiDigits("پ 2"),
+      accessor: "s2O",
       width: "5%",
     },
     {
-      Header: "پ 3",
-      accessor: "s3",
+      Header: convertToFarsiDigits("پ 3"),
+      accessor: "s3O",
       width: "5%",
     },
     {
-      Header: "پ 4",
-      accessor: "s4",
+      Header: convertToFarsiDigits("پ 4"),
+      accessor: "s4O",
       width: "5%",
     },
     {
       Header: "بدون آفر",
-      accessor: "s5",
+      accessor: "no",
       width: "5%",
     },
     {
@@ -128,6 +129,10 @@ const ProductOffer = () => {
     isLoadingDtl,
     refetch,
     addProductList,
+    productOfferDtlHistory,
+    isLoadingProductOfferDtlHistory,
+    productOfferSave,
+    isLoadingProductOfferSave,
   } = useProductOffer();
   const { yearId, systemId } = useGeneralContext();
   const [selectedId, setSelectedId] = useState<number>(1363);
@@ -192,7 +197,7 @@ const ProductOffer = () => {
       };
     });
 
-    setData(tempData);
+    setData(tempData || []);
     if (tempData?.[0]?.id) {
       setSelectedId(Number(convertToLatinDigits(tempData?.[0]?.id)));
     } else {
@@ -201,24 +206,37 @@ const ProductOffer = () => {
   }, [productOffer]);
 
   useEffect(() => {
-    const tempDataDtl = productOfferDtl?.map((item, index) => {
-      return {
-        ...item,
-        index: convertToFarsiDigits(index + 1),
-        bName: convertToFarsiDigits(item.bName),
-        product: convertToFarsiDigits(item.product),
-        s1: convertToFarsiDigits(item.s1N + item.s1D),
-        s2: convertToFarsiDigits(item.s2N + item.s2D),
-        s3: convertToFarsiDigits(item.s3N + item.s3D),
-        s4: convertToFarsiDigits(item.s4N + item.s4D),
-        s5: item.no ? (
-          <img src={Accept} alt="Accept" className="w-4 h-4" />
-        ) : null,
-        dsc: convertToFarsiDigits(item.dtlDsc),
-      };
-    });
-    if (tempDataDtl) {
-      setDataDtl(tempDataDtl);
+    let tempDataDtl: ProductOfferDtlTable[] = [];
+    if (productOfferDtl) {
+      tempDataDtl = productOfferDtl.map((item, index) => {
+        return {
+          index: convertToFarsiDigits(index + 1),
+          id: item.id,
+          bName: convertToFarsiDigits(item.bName),
+          pId: item.pId,
+          product: convertToFarsiDigits(item.product),
+          lastDate: convertToFarsiDigits(item.lastDate),
+          s1O: item.s1N + item.s1D < 0 ? "" : convertToFarsiDigits(item.s1D.toString() + "+" + item.s1N.toString()),
+          s2O: item.s2N + item.s2D < 0 ? "" : convertToFarsiDigits(item.s2D.toString() + "+" + item.s2N.toString()),
+          s3O: item.s3N + item.s3D < 0 ? "" : convertToFarsiDigits(item.s3D.toString() + "+" + item.s3N.toString()),
+          s4O: item.s4N + item.s4D < 0 ? "" : convertToFarsiDigits(item.s4D.toString() + "+" + item.s4N.toString()),
+          s1N: "",
+          s1D: "",
+          s2N: "",
+          s2D: "",
+          s3N: "",
+          s3D: "",
+          s4N: "",
+          s4D: "",
+          no: item.no ? (
+            <img src={Accept} alt="Accept" className="w-4 h-4" />
+          ) : null,
+          dtlDsc: convertToFarsiDigits(item.dtlDsc),
+        };
+      });
+      if (tempDataDtl) {
+        setDataDtl(tempDataDtl);
+      }
     }
   }, [productOfferDtl]);
 
@@ -352,9 +370,15 @@ const ProductOffer = () => {
         isOpen={isNew}
         onClose={() => setIsNew(false)}
         title="آفرهای کالا"
-        width="5/6"
+        width="1"
       >
-        <ProductOfferForm addProductList={addProductList} />
+        <ProductOfferForm
+          addProductList={addProductList}
+          productOfferDtlHistory={productOfferDtlHistory || []}
+          isLoadingProductOfferDtlHistory={isLoadingProductOfferDtlHistory}
+          productOfferSave={productOfferSave}
+          isLoadingProductOfferSave={isLoadingProductOfferSave}
+        />
       </ModalForm>
     </div>
   );

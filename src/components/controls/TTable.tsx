@@ -43,7 +43,11 @@ interface EditableCellProps<T extends object> extends CellProps<T, any> {
   ) => void;
   //options?: DefaultOptionType[];
   //setSearchText: Dispatch<SetStateAction<string>>;
-  changeRowValues: (value: string, rowIndex: number, columnId: string) => void;
+  changeRowValues: (
+    value: string | boolean,
+    rowIndex: number,
+    columnId: string
+  ) => void;
   canEditForm?: boolean;
 }
 
@@ -67,16 +71,20 @@ export function EditableInput<T extends object>({
     setSearch,
     //search,
   } = column as any;
-  const [value, setValue] = React.useState<string>(initialValue);
+  const [value, setValue] = React.useState<string | boolean>(initialValue);
   const [isFocused, setIsFocused] = React.useState(false);
 
   React.useEffect(() => {
     //console.log(initialValue, "initialValue in useEffect"),
+    if (typeof initialValue === "boolean") {
+      setValue(initialValue);
+    } else {
       setValue(
         convertToFarsiDigits(
           isCurrency ? formatNumberWithCommas(initialValue) : initialValue
         )
       );
+    }
   }, [initialValue]);
 
   // Handle change from AutoComplete
@@ -112,7 +120,7 @@ export function EditableInput<T extends object>({
         disabled={!canEditForm}
         options={autoOptions || []}
         //value={options?.find((opt) => opt.title === value) || null}
-        value={value ? { id: 0, title: value } : null}
+        value={value ? { id: 0, title: value as string } : null}
         handleChange={handleAutoCompleteChange}
         setSearch={setSearch}
         showLabel={false}
@@ -137,10 +145,10 @@ export function EditableInput<T extends object>({
       <textarea
         disabled={!canEditForm}
         className="text-inherit p-0 m-0 border-0 w-full focus:outline-none"
-        value={value}
+        value={value as string}
         onChange={(e) => setValue(convertToFarsiDigits(e.target.value))}
         onBlur={() => {
-          updateMyData(index, id, value);
+          updateMyData(index, id, value as string);
           setIsFocused(false);
         }}
         onFocus={() => setIsFocused(true)}
@@ -150,6 +158,21 @@ export function EditableInput<T extends object>({
             : !canEditForm
             ? "inherit"
             : "white",
+        }}
+      />
+    );
+  }
+
+  if (type === "checkbox") {
+    return (
+      <input
+        type="checkbox"
+        disabled={!canEditForm}
+        className="text-inherit p-0 m-0 border-0 w-full focus:outline-none"
+        checked={value as boolean}
+        onChange={(e) => {
+          setValue(e.target.checked);
+          changeRowValues(e.target.checked, index, id); //rowIndex, columnId
         }}
       />
     );
@@ -167,13 +190,13 @@ export function EditableInput<T extends object>({
           : "white",
       }}
       //style={{ backgroundColor: isFocused && canEditForm ? "white" :  "inherit" }}
-      value={value}
+      value={value as string}
       onChange={(e) => {
         setValue(convertToFarsiDigits(e.target.value));
         changeRowValues(e.target.value, index, id);
       }}
       onBlur={() => {
-        updateMyData(index, id, value);
+        updateMyData(index, id, value as string);
         setIsFocused(false);
       }}
       onFocus={() => setIsFocused(true)}
@@ -236,9 +259,13 @@ export default function TTable<T extends object>({
               <th
                 {...column.getHeaderProps()}
                 scope="col"
-                className="py-1 text-center font-semibold text-gray-500 uppercase tracking-wider border-r border-gray-300 bg-gray-300"
+                className="py-1 text-center font-semibold text-gray-500 uppercase tracking-wider bg-gray-300"
                 key={String(column.id)}
                 style={{
+                  borderLeft: column.noLeftBorder
+                    ? "none"
+                    : "1px solid #D0D0D0",
+                  textAlign: column.align ?? "center",
                   width: column.totalWidth || column.width,
                   backgroundColor: column.backgroundColor ?? colors.gray200,
                 }}
@@ -268,10 +295,13 @@ export default function TTable<T extends object>({
                 return (
                   <td
                     {...cell.getCellProps()}
-                    className="text-gray-500 border-r border-gray-300 flex justify-start items-center px-1"
+                    className="text-gray-500  flex justify-start items-center px-1"
                     key={cell.column.id}
                     title={showToolTip ? cell.value : ""}
                     style={{
+                      borderLeft: cell.column.noLeftBorder
+                        ? "none"
+                        : "1px solid #e0e0e0",
                       width: cell.column.totalWidth || cell.column.width,
                       backgroundColor:
                         i === rowSelect && changeRowSelectColor
@@ -323,7 +353,7 @@ export default function TTable<T extends object>({
   return (
     <table
       {...getTableProps()}
-      className="table-fixed w-full border border-gray-300"// shadow-lg
+      className="table-fixed w-full border border-gray-300" // shadow-lg
       style={{ fontSize }}
     >
       {showHeader && tHead}
