@@ -11,6 +11,22 @@ export interface ProductOfferRequest {
   regTDate: string;
   fDate: string;
   tDate: string;
+  pageNumber:number;
+  srchId:number;
+  srchDate:string;
+  srchTime:string;
+  srchDsc:string;
+  srchAccepted:number;
+  srchUsrName:string;
+  srchStep:string;
+  sortId:number;
+  sortDat:number;
+  sortTime:number;
+  sortDsc:number;
+  sortAccepted:number;
+  sortUsrName:string;
+  sortStep:string; 
+
 }
 
 export interface ProductOffer {
@@ -24,6 +40,7 @@ export interface ProductOffer {
   usrName: string;
   flwId: number;
   flowMapName: string;
+  totalCount:number;
 }
 
 interface ProductOfferDtl {
@@ -236,15 +253,67 @@ type ProductOfferSaveResponse = {
     };
   };
 };
-export interface ProductOfferState extends ProductOfferRequest,ShowProductListRequest {
+
+//http://apitest.dotis.ir/api/ProductOffer/ProductOfferDoFirstFlow?ChartId=1&Acc_System=1&Acc_Year=15&Id=123123
+interface ProductOfferDoFirstFlowRequest {
+  chartIdProductOfferDoFirstFlow: number;
+  acc_SystemProductOfferDoFirstFlow: number;
+  acc_YearProductOfferDoFirstFlow: number;
+  idProductOfferDoFirstFlow: number;
+}
+
+interface FormAfterClick {
+  id: number;
+  title: string | null;
+  viewPath: string | null;
+}
+
+interface ResultProductOfferDoFirstFlow {
+  id: number;
+  err: number;
+  msg: string;
+  formAfterClick: FormAfterClick;
+}
+
+interface DataProductOfferDoFirstFlow {
+  result: ResultProductOfferDoFirstFlow;
+}
+
+interface ProductOfferDoFirstFlowResponse {
+  meta: Meta;
+  data: DataProductOfferDoFirstFlow;
+}
+//http://apitest.dotis.ir/api/ProductOffer/Del?Id=1637
+interface ResultProductOfferDel {
+  systemId: number;
+  id: number;
+  err: number;
+  msg: string;
+  hasFlow: boolean;
+}
+
+interface DataProductOfferDel {
+  result: ResultProductOfferDel;
+}
+
+interface ProductOfferDelResponse {
+  meta: Meta;
+  data: DataProductOfferDel;
+}
+
+export interface ProductOfferState extends ProductOfferRequest,ShowProductListRequest,ProductOfferDoFirstFlowRequest {
   pId: number; //for product offer dtl history request
   productOfferDtlHistoryResponse: ProductOfferDtlHistoryResponse; //for product offer dtl history
   showProductListResponse: ShowProductListResponse; //for show product list
   productOfferResponse: ProductOfferResponse; //for product offer
   productOfferSaveResponse: ProductOfferSaveResponse; //for product offer save
+  productOfferDoFirstFlowResponse: ProductOfferDoFirstFlowResponse; //for product offer do first flow
+  productOfferDelResponse: ProductOfferDelResponse; //for product offer del
   setField: (field: string, value: any) => void;
   setProductOfferResponse: (productOfferResponse: ProductOfferResponse) => void;
   setShowProductListResponse: (showProductListResponse: ShowProductListResponse) => void;
   setProductOfferDtlHistoryResponse: (productOfferDtlHistoryResponse: ProductOfferDtlHistoryResponse) => void;
   setProductOfferSaveResponse: (productOfferSaveResponse: ProductOfferSaveResponse) => void;
+  setProductOfferDoFirstFlowResponse: (productOfferDoFirstFlowResponse: ProductOfferDoFirstFlowResponse) => void;
+  setProductOfferDelResponse: (productOfferDelResponse: ProductOfferDelResponse) => void;
 }

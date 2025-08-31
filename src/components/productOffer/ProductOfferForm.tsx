@@ -17,6 +17,8 @@ import Button from "../controls/Button";
 import { handleExport } from "../../utilities/ExcelExport";
 import {
   Dtl,
+  ProductOffer,
+  ProductOfferDtl,
   ProductOfferDtlHistory,
   ProductOfferProductTable,
   ProductOfferProductTable2,
@@ -49,6 +51,9 @@ type Props = {
     request: ProductOfferSaveRequest
   ) => Promise<ProductOfferSaveResponse>;
   isLoadingProductOfferSave: boolean;
+  selectedProductOffer: ProductOffer | null;
+  productOfferDtls: ProductOfferDtl[] | undefined;
+  isNew: boolean;
 };
 
 export const headCells = [
@@ -218,6 +223,9 @@ const ProductOfferForm = ({
   isLoadingProductOfferDtlHistory,
   productOfferSave,
   isLoadingProductOfferSave,
+  selectedProductOffer,
+  productOfferDtls,
+  isNew,
 }: Props) => {
   const [addList, setAddList] = useState<ProductOfferProductTable[]>([]);
   const [search, setSearch] = useState<string>("");
@@ -346,6 +354,59 @@ const ProductOfferForm = ({
       }
     };
   }, [isModalOpen]);
+
+  ////////////////////////////////////////////////////////
+  useEffect(() => {
+    if (
+      isNew === false &&
+      selectedProductOffer !== null &&
+      selectedProductOffer.flwId === 0 &&
+      productOfferDtls !== undefined
+    ) {
+      //for edit
+      setAddList(
+        productOfferDtls.map((item) => ({
+          ...item,
+          s1O:
+            item.s1NO + item.s1DO > 0
+              ? item.s1DO.toString() + "+" + item.s1NO.toString()
+              : "",
+          s2O:
+            item.s2NO + item.s2DO > 0
+              ? item.s2DO.toString() + "+" + item.s2NO.toString()
+              : "",
+          s3O:
+            item.s3NO + item.s3DO > 0
+              ? item.s3DO.toString() + "+" + item.s3NO.toString()
+              : "",
+          s4O:
+            item.s4NO + item.s4DO > 0
+              ? item.s4DO.toString() + "+" + item.s4NO.toString()
+              : "",
+          isDeleted: false,
+          no: false,
+          dtlDsc: item.dtlDsc,
+          deleted: item.deleted,
+          index: productOfferDtls.length + 1,
+          id: item.id,
+          pId: item.pId,
+          bName: item.bName,
+          product: item.product,
+          lastDate: item.lastDate,
+          s1N: item.s1NO + item.s1DO > 0 ? item.s1NO.toString() : "",
+          s1D: item.s1DO + item.s1NO > 0 ? item.s1DO.toString() : "",
+          s2N: item.s2NO + item.s2DO > 0 ? item.s2NO.toString() : "",
+          s2D: item.s2DO + item.s2NO > 0 ? item.s2DO.toString() : "",
+          s3N: item.s3NO + item.s3DO > 0 ? item.s3NO.toString() : "",
+          s3D: item.s3DO + item.s3NO > 0 ? item.s3DO.toString() : "",
+          s4N: item.s4NO + item.s4DO > 0 ? item.s4NO.toString() : "",
+          s4D: item.s4DO + item.s4NO > 0 ? item.s4DO.toString() : "",
+        }))
+      );
+    }
+  }, [selectedProductOffer]);
+  ////////////////////////////////////////////////////////
+
   //send params to /api/Product/search?accSystem=4&accYear=15&page=1&searchTerm=%D8%B3%D9%81
   useEffect(() => {
     setProductField("accSystem", systemId);
@@ -501,7 +562,7 @@ const ProductOfferForm = ({
       dat: convertToLatinDigits(dat),
       tim: convertToLatinDigits(tim),
       dsc: convertToLatinDigits(dsc),
-      saveAndSend: true,
+      saveAndSend: false,
       dtls: dtls,
     };
     console.log(request);
@@ -518,6 +579,8 @@ const ProductOfferForm = ({
   return (
     <div className="flex flex-col gap-2">
       <ProductOfferFormParams
+        isNew={isNew}
+        selectedProductOffer={selectedProductOffer}
         dat={dat}
         tim={tim}
         dsc={dsc}

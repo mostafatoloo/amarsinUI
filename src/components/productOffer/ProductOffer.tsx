@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import PageTitle from "../layout/PageTitle";
 import ExcelExport from "../../utilities/ExcelExport";
 import Add32 from "../../assets/images/GrayThem/add32.png";
@@ -25,11 +25,16 @@ import Skeleton from "../layout/Skeleton";
 import ProductOfferParams from "./ProductOfferParams";
 import ModalForm from "../layout/ModalForm";
 import ProductOfferForm from "./ProductOfferForm";
-import { ProductOfferDtlTable } from "../../types/productOffer";
+import {
+  ProductOffer as ProductOfferType,
+  ProductOfferDtlTable,
+} from "../../types/productOffer";
+import { debounce } from "lodash";
+import { TablePaginationActions } from "../controls/TablePaginationActions";
+import ProductOfferFilter from "./ProductOfferFilter";
+import ProductOfferHeader from "./ProductOfferHeader";
 
 const ProductOffer = () => {
-  const [data, setData] = useState<any[]>([]);
-  const [dataDtl, setDataDtl] = useState<ProductOfferDtlTable[]>([]);
   const columns = [
     {
       Header: "ردیف",
@@ -120,7 +125,7 @@ const ProductOffer = () => {
     },
   ];
 
-  const { setField } = useProductOfferStore();
+  const { setField, id: prevId ,productOfferDelResponse } = useProductOfferStore();
   const {
     productOffer,
     productOfferDtl,
@@ -133,18 +138,52 @@ const ProductOffer = () => {
     isLoadingProductOfferDtlHistory,
     productOfferSave,
     isLoadingProductOfferSave,
+    productOfferDoFirstFlow,
+    productOfferDel,
   } = useProductOffer();
-  const { yearId, systemId } = useGeneralContext();
+
+  //const { setField: setProductOfferField } = useProductOfferStore();
+  const [data, setData] = useState<any[]>([]);
+  const [dataDtl, setDataDtl] = useState<ProductOfferDtlTable[]>([]);
+  const { yearId, systemId, chartId } = useGeneralContext();
   const [selectedId, setSelectedId] = useState<number>(1363);
-  const [isNew, setIsNew] = useState<boolean>(false);
+  const [isNew, setIsNew] = useState<boolean>(false); //for new
+  const [isEdit, setIsEdit] = useState<boolean>(false); //for edit
   //for ProductOfferParams params
   const [regFDate, setRegFDate] = useState<Date | null>(null);
   const [regTDate, setRegTDate] = useState<Date | null>(null);
   const [fDate, setFDate] = useState<Date | null>(null);
   const [tDate, setTDate] = useState<Date | null>(null);
   const [state, setState] = useState<number>(0);
+  const [selectedProductOffer, setSelectedProductOffer] =
+    useState<ProductOfferType | null>(null);
+  // for pagination
+  const [pageNumber, setPageNumber] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(12);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  //add filter options
+  const [srchId, setSrchId] = useState<number>(-1);
+  const [srchDate, setSrchDate] = useState<string>("");
+  const [srchTime, setSrchTime] = useState<string>("");
+  const [srchDsc, setSrchDsc] = useState<string>("");
+  const [srchAccepted, setSrchAccepted] = useState<number>(-1);
+  const [srchUsrName, setSrchUsrName] = useState<string>("");
+  const [srchStep, setSrchStep] = useState<string>("");
+  const [sortId, setSortId] = useState<number>(0);
+  const [sortDate, setSortDate] = useState<number>(0);
+  const [sortTime, setSortTime] = useState<number>(0);
+  const [sortDsc, setSortDsc] = useState<number>(0);
+  const [sortAccepted, setSortAccepted] = useState<number>(0);
+  const [sortUsrName, setSortUsrName] = useState<number>(0);
+  const [sortStep, setSortStep] = useState<number>(0);
 
   useEffect(() => {
+    console.log(
+      "one of these were changed:" + systemId,
+      chartId,
+      pageNumber,
+      pageSize
+    );
     setField("acc_Year", yearId);
     setField("acc_System", systemId);
     setField("state", state);
@@ -176,8 +215,102 @@ const ProductOffer = () => {
   }, [yearId, systemId, state, regFDate, regTDate, fDate, tDate]);
 
   useEffect(() => {
+    //setSelectedId(0);
+    console.log("srchDsc in useEffect1", srchDsc);
+    setField("srchId", srchId);
+    setField("srchDate", srchDate);
+    setField("srchTime", srchTime);
+    setField("srchDsc", srchDsc);
+    setField("srchAccepted", srchAccepted);
+    setField("srchUsrName", srchUsrName);
+    setField("srchStep", srchStep);
+  }, []);
+
+  useEffect(() => {
+    console.log("sortDsc in useEffect2", sortDsc);
+    setField("sortId", sortId);
+    setField("sortDate", sortDate);
+    setField("sortTime", sortTime);
+    setField("sortDsc", sortDsc);
+    setField("sortAccepted", sortAccepted);
+    setField("sortUsrName", sortUsrName);
+    setField("sortStep", sortStep);
+  }, [
+    sortId,
+    sortDate,
+    sortTime,
+    sortDsc,
+    sortAccepted,
+    sortUsrName,
+    sortStep,
+  ]);
+  ////////////////////////////////////////////////////////////
+  useEffect(() => {
+    //console.log("pageNumber", pageNumber);
+    console.log("pageNumber in useEffect3", pageNumber);
+    setField("pageNumber", pageNumber);
+  }, [pageNumber]);
+  ////////////////////////////////////////////////////////////
+  useEffect(() => {
+    console.log("pageNumber in useEffect4", pageNumber);
+    setPageNumber(1);
+  }, [
+    state,
+    regFDate,
+    regTDate,
+    fDate,
+    tDate,
+    chartId,
+    systemId,
+    srchId,
+    srchDate,
+    srchTime,
+    srchDsc,
+    srchAccepted,
+    srchUsrName,
+    srchStep,
+    yearId,
+    sortId,
+    sortDate,
+    sortTime,
+    sortDsc,
+    sortAccepted,
+    sortUsrName,
+    sortStep,
+  ]);
+
+  const handleDebounceFilterChange = useCallback(
+    debounce((field: string, value: string | number) => {
+      // Cancel any existing request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      // Create a new AbortController for this request
+      abortControllerRef.current = new AbortController();
+
+      setField(field, value);
+    }, 500),
+    [setField]
+  );
+
+  // Cleanup on component unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     //console.log("selectedId", selectedId);
-    setField("id", selectedId);
+    if (prevId !== selectedId) {
+      setField("id", selectedId);
+    }
+    selectedId !== 0 &&
+      setSelectedProductOffer(
+        productOffer?.find((item) => item.id === selectedId) || null
+      );
   }, [selectedId]);
 
   useEffect(() => {
@@ -193,7 +326,7 @@ const ProductOffer = () => {
         ) : null,
         usrName: convertToFarsiDigits(item.usrName),
         flowMapName: convertToFarsiDigits(item.flowMapName),
-        index: convertToFarsiDigits(index + 1),
+        index: convertToFarsiDigits((pageNumber - 1) * pageSize + index + 1),
       };
     });
 
@@ -216,10 +349,30 @@ const ProductOffer = () => {
           pId: item.pId,
           product: convertToFarsiDigits(item.product),
           lastDate: convertToFarsiDigits(item.lastDate),
-          s1O: item.s1N + item.s1D < 0 ? "" : convertToFarsiDigits(item.s1D.toString() + "+" + item.s1N.toString()),
-          s2O: item.s2N + item.s2D < 0 ? "" : convertToFarsiDigits(item.s2D.toString() + "+" + item.s2N.toString()),
-          s3O: item.s3N + item.s3D < 0 ? "" : convertToFarsiDigits(item.s3D.toString() + "+" + item.s3N.toString()),
-          s4O: item.s4N + item.s4D < 0 ? "" : convertToFarsiDigits(item.s4D.toString() + "+" + item.s4N.toString()),
+          s1O:
+            item.s1N + item.s1D < 0
+              ? ""
+              : convertToFarsiDigits(
+                  item.s1D.toString() + "+" + item.s1N.toString()
+                ),
+          s2O:
+            item.s2N + item.s2D < 0
+              ? ""
+              : convertToFarsiDigits(
+                  item.s2D.toString() + "+" + item.s2N.toString()
+                ),
+          s3O:
+            item.s3N + item.s3D < 0
+              ? ""
+              : convertToFarsiDigits(
+                  item.s3D.toString() + "+" + item.s3N.toString()
+                ),
+          s4O:
+            item.s4N + item.s4D < 0
+              ? ""
+              : convertToFarsiDigits(
+                  item.s4D.toString() + "+" + item.s4N.toString()
+                ),
           s1N: "",
           s1D: "",
           s2N: "",
@@ -246,11 +399,15 @@ const ProductOffer = () => {
   };
 
   const { isModalOpen, setIsModalOpen } = useGeneralContext();
+  const [isModalConfirmOpen, setIsModalConfirmOpen] = useState<boolean>(false);
+  const [isModalDeleteOpen, setIsModalDeleteOpen] = useState<boolean>(false);
   useEffect(() => {
     let timeoutId: number;
-    if (isModalOpen) {
+    if (isModalOpen || isModalConfirmOpen || isModalDeleteOpen) {
       timeoutId = setTimeout(() => {
         setIsModalOpen(false);
+        setIsModalConfirmOpen(false);
+        setIsModalDeleteOpen(false);
       }, 3000);
     }
     return () => {
@@ -258,7 +415,24 @@ const ProductOffer = () => {
         clearTimeout(timeoutId);
       }
     };
-  }, [isModalOpen]);
+  }, [isModalOpen, isModalConfirmOpen, isModalDeleteOpen]);
+
+  const handleConfirm = () => {
+    setField("chartIdProductOfferDoFirstFlow", chartId);
+    setField("acc_SystemProductOfferDoFirstFlow", systemId);
+    setField("acc_YearProductOfferDoFirstFlow", yearId);
+    setField("idProductOfferDoFirstFlow", selectedId);
+    setIsModalConfirmOpen(true);
+  };
+
+  const handleEdit = () => {
+    setIsEdit(true);
+  };
+
+  const handleDelete = () => {
+    productOfferDel(selectedId);
+    setIsModalDeleteOpen(true);
+  };
 
   return (
     <div
@@ -270,32 +444,85 @@ const ProductOffer = () => {
         <div className="flex px-4 items-center gap-4">
           <div
             className="flex flex-col items-center cursor-pointer"
-            onClick={() => setIsNew(true)}
+            onClick={() => setIsNew(true)} // for new
           >
             <img src={Add32} alt="Add32" className="w-6 h-6" />
             <p className="text-xs">جدید</p>
           </div>
-          <div className="flex flex-col items-center cursor-pointer">
+          <div
+            className={`flex flex-col items-center ${
+              selectedProductOffer === null || selectedProductOffer.flwId !== 0
+                ? "cursor-not-allowed"
+                : "cursor-pointer"
+            }`}
+            onClick={
+              () =>
+                selectedProductOffer === null ||
+                selectedProductOffer.flwId !== 0
+                  ? null
+                  : handleDelete() //for productOffer/productOfferDel
+            }
+          >
             <img
-              src={data?.length > 0 ? Del24 : Del24Disabled}
+              src={
+                selectedProductOffer === null ||
+                selectedProductOffer.flwId !== 0
+                  ? Del24Disabled
+                  : Del24
+              }
               alt="Del24"
               className="w-6 h-6"
             />
             <p className="text-xs">حذف</p>
           </div>
-          <div className="flex flex-col items-center cursor-pointer">
+          <div
+            className={`flex flex-col items-center ${
+              selectedProductOffer === null || selectedProductOffer.flwId !== 0
+                ? "cursor-not-allowed"
+                : "cursor-pointer"
+            }`}
+            onClick={
+              () =>
+                selectedProductOffer === null ||
+                selectedProductOffer.flwId !== 0
+                  ? null
+                  : handleEdit() // for edit
+            } // for edit
+          >
             <img
-              src={data?.length > 0 ? Edit24 : Edit24Disabled}
+              src={
+                selectedProductOffer === null ||
+                selectedProductOffer.flwId !== 0
+                  ? Edit24Disabled
+                  : Edit24
+              }
               alt="Edit24"
               className="w-6 h-6"
             />
             <p className="text-xs">ویرایش</p>
           </div>
-          <div className="flex flex-col items-center cursor-pointer">
+          <div
+            className={`flex flex-col items-center ${
+              selectedProductOffer === null || selectedProductOffer.flwId !== 0
+                ? "cursor-not-allowed"
+                : "cursor-pointer"
+            }`}
+          >
             <img
-              src={data?.length > 0 ? Accept24 : Accept24Disabled}
+              src={
+                selectedProductOffer === null ||
+                selectedProductOffer.flwId !== 0
+                  ? Accept24Disabled
+                  : Accept24
+              }
               alt="Accept24"
               className="w-6 h-6"
+              onClick={() =>
+                selectedProductOffer === null ||
+                selectedProductOffer.flwId !== 0
+                  ? null
+                  : handleConfirm
+              }
             />
             <p className="text-xs">تایید</p>
           </div>
@@ -312,20 +539,69 @@ const ProductOffer = () => {
         </div>
       </header>
       <div className="flex gap-2 px-2 h-1/2">
-        <div className="w-3/4 overflow-y-scroll bg-white rounded-md">
-          {isLoading ? (
-            <Skeleton />
-          ) : (
-            <TTable
-              columns={columns}
-              data={data}
-              fontSize="0.75rem"
-              changeRowSelectColor={true}
-              setSelectedId={handleSelectedIdChange}
-              wordWrap={false}
-              showToolTip={true}
+        <div className="flex flex-col w-3/4 h-full">
+          <div className="w-full overflow-y-scroll bg-white rounded-md h-full">
+            {isLoading ? (
+              <Skeleton />
+            ) : (
+              <>
+                <ProductOfferFilter
+                  columns={columns}
+                  srchId={srchId}
+                  srchDate={srchDate}
+                  srchTime={srchTime}
+                  srchDsc={srchDsc}
+                  srchAccepted={srchAccepted}
+                  srchUsrName={srchUsrName}
+                  srchStep={srchStep}
+                  setSrchId={setSrchId}
+                  setSrchDate={setSrchDate}
+                  setSrchTime={setSrchTime}
+                  setSrchDsc={setSrchDsc}
+                  setSrchAccepted={setSrchAccepted}
+                  setSrchUsrName={setSrchUsrName}
+                  setSrchStep={setSrchStep}
+                  handleDebounceFilterChange={handleDebounceFilterChange}
+                />
+                <ProductOfferHeader
+                  columns={columns}
+                  sortId={sortId}
+                  sortDate={sortDate}
+                  sortTime={sortTime}
+                  sortDsc={sortDsc}
+                  sortAccepted={sortAccepted}
+                  sortUsrName={sortUsrName}
+                  sortStep={sortStep}
+                  setSortId={setSortId}
+                  setSortDate={setSortDate}
+                  setSortTime={setSortTime}
+                  setSortDsc={setSortDsc}
+                  setSortAccepted={setSortAccepted}
+                  setSortUsrName={setSortUsrName}
+                  setSortStep={setSortStep}
+                />
+                <TTable
+                  columns={columns}
+                  data={data}
+                  fontSize="0.75rem"
+                  changeRowSelectColor={true}
+                  setSelectedId={handleSelectedIdChange}
+                  wordWrap={false}
+                  showToolTip={true}
+                  showHeader={false}
+                />
+              </>
+            )}
+          </div>
+          <div className="w-full bg-white rounded-md">
+            <TablePaginationActions
+              page={pageNumber - 1}
+              setPage={setPageNumber}
+              pageSize={pageSize}
+              setPageSize={setPageSize}
+              totalCount={productOffer?.[0]?.totalCount ?? 0}
             />
-          )}
+          </div>
         </div>
         {/* ProductOfferParams */}
         <div className="w-1/4 h-full">
@@ -367,8 +643,11 @@ const ProductOffer = () => {
         message={productOfferMeta?.message || ""}
       />
       <ModalForm
-        isOpen={isNew}
-        onClose={() => setIsNew(false)}
+        isOpen={isNew || isEdit}
+        onClose={() => {
+          setIsNew(false);
+          setIsEdit(false);
+        }}
         title="آفرهای کالا"
         width="1"
       >
@@ -378,8 +657,42 @@ const ProductOffer = () => {
           isLoadingProductOfferDtlHistory={isLoadingProductOfferDtlHistory}
           productOfferSave={productOfferSave}
           isLoadingProductOfferSave={isLoadingProductOfferSave}
+          selectedProductOffer={selectedProductOffer} //for check if selectedProductOffer.flwId===0 new else edit && sending selectedProductOffer.id in edit
+          productOfferDtls={productOfferDtl}
+          isNew={isNew} //for check if isNew new else edit
         />
       </ModalForm>
+      <ModalMessage
+        isOpen={isModalConfirmOpen}
+        onClose={() => setIsModalConfirmOpen(false)}
+        backgroundColor={
+          productOfferDoFirstFlow?.meta.errorCode === -1
+            ? "bg-green-200"
+            : "bg-red-200"
+        }
+        bgColorButton={
+          productOfferDoFirstFlow?.meta.errorCode === -1
+            ? "bg-green-500"
+            : "bg-red-500"
+        }
+        color="text-white"
+        message={productOfferDoFirstFlow?.meta.message || ""}
+        visibleButton={false}
+      />
+      <ModalMessage
+        isOpen={isModalDeleteOpen}
+        onClose={() => setIsModalDeleteOpen(false)}
+        backgroundColor="bg-red-200"
+        bgColorButton="bg-red-500"
+        bgColorButtonHover="bg-red-600"
+        color="text-white"
+        message={
+          productOfferDelResponse?.meta.errorCode !== -1
+            ? productOfferDelResponse?.meta.message || ""
+            : "اطلاعات با موفقیت حذف شد."
+        }
+        visibleButton={false}
+      />
     </div>
   );
 };

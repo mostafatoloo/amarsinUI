@@ -8,8 +8,11 @@ import {
   convertToPersianDate,
 } from "../../utilities/general";
 import { useEffect } from "react";
+import { ProductOffer } from "../../types/productOffer";
 
 type Props = {
+  isNew: boolean; //for check if isNew new else edit
+  selectedProductOffer: ProductOffer | null; //for edit 
   brand: DefaultOptionTypeStringId[] | null;
   setBrand: (brand: DefaultOptionTypeStringId[]) => void;
   setBrandSearch: React.Dispatch<React.SetStateAction<string>>;
@@ -22,6 +25,8 @@ type Props = {
 };
 
 const ProductOfferFormParams = ({
+  isNew,
+  selectedProductOffer,
   brand,
   setBrand,
   setBrandSearch,
@@ -35,7 +40,11 @@ const ProductOfferFormParams = ({
   const { brands } = useBrand();
   const { definitionDateTime } = useDefinitionInvironment();
   useEffect(() => {
-    setDat(convertToFarsiDigits(convertToPersianDate(new Date(definitionDateTime.date))));
+    setDat(
+      convertToFarsiDigits(
+        convertToPersianDate(new Date(definitionDateTime.date))
+      )
+    );
     setTim(convertToFarsiDigits(definitionDateTime.time));
   }, [definitionDateTime]);
   return (
@@ -44,7 +53,11 @@ const ProductOfferFormParams = ({
         <div className="w-full">
           <Input
             name="dat"
-            value={dat}
+            value={
+              isNew === false && selectedProductOffer !== null
+                ? convertToFarsiDigits(selectedProductOffer.dat)
+                : dat
+            }
             label="تاریخ:"
             variant="outlined"
             widthDiv="w-full"
@@ -56,7 +69,11 @@ const ProductOfferFormParams = ({
         <div className="w-full">
           <Input
             name="tim"
-            value={tim}
+            value={
+              isNew === false && selectedProductOffer !== null
+                ? convertToFarsiDigits(selectedProductOffer.tim)
+                : tim
+            }
             label="ساعت:"
             variant="outlined"
             widthDiv="w-full"
@@ -69,7 +86,11 @@ const ProductOfferFormParams = ({
       <div className="w-full">
         <Input
           name="dsc"
-          value={dsc}
+          value={
+            isNew === false && selectedProductOffer !== null
+              ? selectedProductOffer.dsc
+              : dsc
+          }
           onChange={(e) => setDsc(e.target.value)}
           label="توضیحات:"
           variant="outlined"

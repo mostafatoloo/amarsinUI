@@ -194,14 +194,14 @@ const ProductOfferFormList = ({
       );
     }
   };
-    ////////////////////////////////////////////////////
-    const changeRowValues = (
-      value: string,
-      rowIndex: number,
-      columnId: string
-    ) => {
-      updateMyData(rowIndex, columnId, value);
-    };
+  ////////////////////////////////////////////////////
+  const changeRowValues = (
+    value: string,
+    rowIndex: number,
+    columnId: string
+  ) => {
+    updateMyData(rowIndex, columnId, value);
+  };
   /////////////////////////////////////////////////////
   const updateMyRow = async (rowIndex: number, value: DefaultOptionType) => {
     const productId = value?.id ?? 0;
@@ -294,6 +294,7 @@ const ProductOfferFormList = ({
             dtlDscSearch={dtlDscSearch}
             setDtlDscSearch={setDtlDscSearch}
           />
+
           <TTable
             canEditForm={true}
             columns={columns}

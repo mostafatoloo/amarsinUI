@@ -16,6 +16,21 @@ export const useProductOfferStore = create<ProductOfferState>()((set) => ({
   regTDate: "",
   fDate: "",
   tDate: "",
+  pageNumber: 0,
+  srchId: 0,
+  srchDate: "",
+  srchTime: "",
+  srchDsc: "",
+  srchAccepted: 0,
+  srchUsrName: "",
+  srchStep: "",
+  sortId: 0,
+  sortDat: 0,
+  sortTime: 0,
+  sortDsc: 0,
+  sortAccepted: 0,
+  sortUsrName: "",
+  sortStep: "",
   //showProductList
   idShowProductList: 0,
   productId: 0,
@@ -36,6 +51,20 @@ export const useProductOfferStore = create<ProductOfferState>()((set) => ({
     meta: { errorCode: 0, message: "", type: "" },
     data: { result: { systemId: 0, id: 0, err: 0, msg: "", hasFlow: false } },
   },
+  //productOfferDoFirstFlow
+  productOfferDoFirstFlowResponse: {
+    meta: { errorCode: 0, message: "", type: "" },
+    data: { result: { id: 0, err: 0, msg: "", formAfterClick: { id: 0, title: null, viewPath: null } } },
+  },
+  idProductOfferDoFirstFlow: 0,
+  acc_SystemProductOfferDoFirstFlow: 0,
+  acc_YearProductOfferDoFirstFlow: 0,
+  chartIdProductOfferDoFirstFlow: 0,
+  //productOfferDel
+  productOfferDelResponse: {
+    meta: { errorCode: 0, message: "", type: "" },
+    data: { result: { systemId: 0, id: 0, err: 0, msg: "", hasFlow: false } },
+  },
   setProductOfferSaveResponse: (
     productOfferSaveResponse //for productOfferSave
   ) => set({ productOfferSaveResponse }),
@@ -50,4 +79,10 @@ export const useProductOfferStore = create<ProductOfferState>()((set) => ({
   setProductOfferResponse: (
     productOfferResponse //for productOffer
   ) => set({ productOfferResponse }),
+  setProductOfferDoFirstFlowResponse: (
+    productOfferDoFirstFlowResponse //for productOfferDoFirstFlow
+  ) => set({ productOfferDoFirstFlowResponse }),
+  setProductOfferDelResponse: (
+    productOfferDelResponse //for productOfferDel
+  ) => set({ productOfferDelResponse }),
 }));

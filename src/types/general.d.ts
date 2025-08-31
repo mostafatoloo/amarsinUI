@@ -15,6 +15,7 @@ export type Column = {
   Cell?: (props: any) => ReactNode;
   noLeftBorder?:boolean;
   align?:string;
+  //sort?:string;
 };
 export type ColumnGroup = {
   Header: string;

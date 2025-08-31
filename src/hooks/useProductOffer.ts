@@ -1,7 +1,13 @@
-import { useMutation, useQuery, useQueryClient, UseQueryOptions } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  UseQueryOptions,
+} from "@tanstack/react-query";
 import api from "../api/axios";
 import { useProductOfferStore } from "../store/productOfferStore";
 import {
+  ProductOfferDoFirstFlowResponse,
   ProductOfferDtlHistoryResponse,
   ProductOfferRequest,
   ProductOfferResponse,
@@ -10,6 +16,8 @@ import {
 } from "../types/productOffer";
 
 export function useProductOffer() {
+  const queryClient = useQueryClient();
+
   const {
     id,
     acc_Year,
@@ -19,13 +27,34 @@ export function useProductOffer() {
     regTDate,
     fDate,
     tDate,
+    pageNumber,
+    srchId,
+    srchDate,
+    srchTime,
+    srchDsc,
+    srchAccepted,
+    srchUsrName,
+    srchStep,
+    sortId,
+    sortDat,
+    sortTime,
+    sortDsc,
+    sortAccepted,
+    sortUsrName,
+    sortStep,
     pId,
+    //for productOffer/productOfferDoFirstFlow
+    chartIdProductOfferDoFirstFlow,
+    acc_SystemProductOfferDoFirstFlow,
+    acc_YearProductOfferDoFirstFlow,
+    idProductOfferDoFirstFlow,
     setProductOfferDtlHistoryResponse,
     setProductOfferResponse,
     setShowProductListResponse,
     setProductOfferSaveResponse,
+    setProductOfferDoFirstFlowResponse, //for productOffer/productOfferDoFirstFlow
+    setProductOfferDelResponse,//for productOffer/productOfferDel
   } = useProductOfferStore();
-
   //for productOffer
   const query = useQuery<
     ProductOfferResponse,
@@ -42,6 +71,21 @@ export function useProductOffer() {
       regTDate,
       fDate,
       tDate,
+      pageNumber,
+      srchId,
+      srchDate,
+      srchTime,
+      srchDsc,
+      srchAccepted,
+      srchUsrName,
+      srchStep,
+      sortId,
+      sortDat,
+      sortTime,
+      sortDsc,
+      sortAccepted,
+      sortUsrName,
+      sortStep,
     ],
     queryFn: async () => {
       const params = {
@@ -52,6 +96,21 @@ export function useProductOffer() {
         regTDate,
         fDate,
         tDate,
+        pageNumber,
+        srchId,
+        srchDate,
+        srchTime,
+        srchDsc,
+        srchAccepted,
+        srchUsrName,
+        srchStep,
+        sortId,
+        sortDat,
+        sortTime,
+        sortDsc,
+        sortAccepted,
+        sortUsrName,
+        sortStep,
       };
       const url = `/api/ProductOffer/ProductOffer?Acc_Year=${
         params.acc_Year
@@ -63,12 +122,38 @@ export function useProductOffer() {
         params.regTDate ?? ""
       )}&FDate=${encodeURIComponent(
         params.fDate ?? ""
-      )}&TDate=${encodeURIComponent(params.tDate ?? "")}`;
+      )}&TDate=${encodeURIComponent(params.tDate ?? "")}&PageNumber=${
+        params.pageNumber
+      }&SrchId=${params.srchId}${
+        params.srchDate
+          ? `&SrchDate=${encodeURIComponent(params.srchDate)}`
+          : ""
+      }${
+        params.srchTime
+          ? `&SrchTime=${encodeURIComponent(params.srchTime)}`
+          : ""
+      }${
+        params.srchDsc ? `&SrchDsc=${encodeURIComponent(params.srchDsc)}` : ""
+      }&SrchAccepted=${
+        params.srchAccepted
+      }${
+        params.srchUsrName
+          ? `&SrchUsrName=${encodeURIComponent(params.srchUsrName ?? "")}`
+          : ""
+      }${
+        params.srchStep
+          ? `&SrchStep=${encodeURIComponent(params.srchStep)}`
+          : ""
+      }&SortId=${params.sortId}&SortDat=${params.sortDat}&SortTime=${
+        params.sortTime
+      }&SortDsc=${params.sortDsc}&SortAccepted=${
+        params.sortAccepted
+      }&SortUsrName=${params.sortUsrName}&SortStep=${params.sortStep}`;
       console.log("ProductOffer url", url);
       const response = await api.get(url);
       return response.data;
     },
-    //enabled: !acc_Year || !acc_System,
+    enabled: !!pageNumber,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -92,6 +177,21 @@ export function useProductOffer() {
       regTDate,
       fDate,
       tDate,
+      pageNumber,
+      srchId,
+      srchDate,
+      srchTime,
+      srchDsc,
+      srchAccepted,
+      srchUsrName,
+      srchStep,
+      sortId,
+      sortDat,
+      sortTime,
+      sortDsc,
+      sortAccepted,
+      sortUsrName,
+      sortStep,
     ],
     queryFn: async () => {
       const params: ProductOfferRequest = {
@@ -103,6 +203,21 @@ export function useProductOffer() {
         regTDate,
         fDate,
         tDate,
+        pageNumber,
+        srchId,
+        srchDate,
+        srchTime,
+        srchDsc,
+        srchAccepted,
+        srchUsrName,
+        srchStep,
+        sortId,
+        sortDat,
+        sortTime,
+        sortDsc,
+        sortAccepted,
+        sortUsrName,
+        sortStep,
       };
       const url = `/api/ProductOffer/ProductOffer?Id=${params.id}&Acc_Year=${
         params.acc_Year
@@ -114,19 +229,45 @@ export function useProductOffer() {
         params.regTDate ?? ""
       )}&FDate=${encodeURIComponent(
         params.fDate ?? ""
-      )}&TDate=${encodeURIComponent(params.tDate ?? "")}`;
+      )}&TDate=${encodeURIComponent(params.tDate ?? "")}&PageNumber=${
+        params.pageNumber
+      }&SrchId=${params.srchId}${
+        params.srchDate
+          ? `&SrchDate=${encodeURIComponent(params.srchDate)}`
+          : ""
+      }${
+        params.srchTime
+          ? `&SrchTime=${encodeURIComponent(params.srchTime)}`
+          : ""
+      }${
+        params.srchDsc ? `&SrchDsc=${encodeURIComponent(params.srchDsc)}` : ""
+      }&SrchAccepted=${
+        params.srchAccepted
+      }${
+        params.srchUsrName
+          ? `&SrchUsrName=${encodeURIComponent(params.srchUsrName ?? "")}`
+          : ""
+      }${
+        params.srchStep
+          ? `&SrchStep=${encodeURIComponent(params.srchStep)}`
+          : ""
+      }&SortId=${params.sortId}&SortDat=${params.sortDat}&SortTime=${
+        params.sortTime
+      }&SortDsc=${params.sortDsc}&SortAccepted=${
+        params.sortAccepted
+      }&SortUsrName=${params.sortUsrName}&SortStep=${params.sortStep}`;
       console.log("ProductOfferDtl url", url);
       const response = await api.get(url);
       return response.data;
     },
-    //enabled: !acc_Year || !acc_System,
+    //enabled: id!==0,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
       setProductOfferResponse(data);
     },
   } as UseQueryOptions<ProductOfferResponse, Error, ProductOfferResponse, unknown[]>);
-  
+
   //for productOffer/productOfferDtlHistory
   const productOfferDtlHistory = useQuery<
     ProductOfferDtlHistoryResponse,
@@ -161,20 +302,62 @@ export function useProductOffer() {
     },
   });
   // for productOffer/productOfferSave
-  const queryClient=useQueryClient()
   const productOfferSave = useMutation({
     mutationFn: async (request: ProductOfferSaveRequest) => {
       const url: string = `api/ProductOffer/ProductOfferSave`;
       const response = await api.post(url, request);
+      
       return response.data;
     },
     onSuccess: (data: any) => {
       setProductOfferSaveResponse(data);
-      console.log(data, "data");
+      //console.log(data, "data");
       queryClient.invalidateQueries({ queryKey: ["productOffer"] });
     },
   });
-
+  //for productOffer/productOfferDel
+  const productOfferDel = useMutation({
+    mutationFn: async (requestId: number) => {
+      const response = await api.delete(`api/ProductOffer/Del`, {
+        params: {
+          id: requestId,
+        },
+      });
+      return response.data;
+    },
+    onSuccess: (data: any) => {
+      setProductOfferDelResponse(data);
+      queryClient.invalidateQueries({ queryKey: ["productOffer"] });
+    },
+  });
+  //for productOffer/productOfferDoFirstFlow
+  const productOfferDoFirstFlow = useQuery<
+    ProductOfferDoFirstFlowResponse,
+    Error,
+    ProductOfferDoFirstFlowResponse,
+    unknown[]
+  >({
+    queryKey: [
+      "productOfferDoFirstFlow",
+      chartIdProductOfferDoFirstFlow,
+      acc_SystemProductOfferDoFirstFlow,
+      acc_YearProductOfferDoFirstFlow,
+      idProductOfferDoFirstFlow,
+    ],
+    queryFn: async () => {
+      const url = `/api/ProductOffer/ProductOfferDoFirstFlow?ChartId=${chartIdProductOfferDoFirstFlow}&Acc_System=${acc_SystemProductOfferDoFirstFlow}&Acc_Year=${acc_YearProductOfferDoFirstFlow}&Id=${idProductOfferDoFirstFlow}`;
+      console.log("productOfferDoFirstFlow url", url);
+      const response = await api.get(url);
+      queryClient.invalidateQueries({ queryKey: ["productOffer"] });
+      return response.data;
+    },
+    enabled: !!idProductOfferDoFirstFlow,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    onSuccess: (data: any) => {
+      setProductOfferDoFirstFlowResponse(data);
+    },
+  } as UseQueryOptions<ProductOfferDoFirstFlowResponse, Error, ProductOfferDoFirstFlowResponse, unknown[]>);
   return {
     refetch: query.refetch,
     isLoading: query.isLoading,
@@ -198,5 +381,14 @@ export function useProductOffer() {
     errorProductOfferSave: productOfferSave.error,
     productOfferSave: productOfferSave.mutateAsync,
     productOfferSaveResponse: productOfferSave.data,
+    //for productOffer/productOfferDoFirstFlow
+    isLoadingProductOfferDoFirstFlow: productOfferDoFirstFlow.isLoading,
+    errorProductOfferDoFirstFlow: productOfferDoFirstFlow.error,
+    productOfferDoFirstFlow: productOfferDoFirstFlow.data,
+    //for productOffer/productOfferDel
+    isLoadingProductOfferDel: productOfferDel.isPending,
+    errorProductOfferDel: productOfferDel.error,
+    productOfferDel: productOfferDel.mutateAsync,
+    productOfferDelResponse: productOfferDel.data,
   };
 }
