@@ -1,41 +1,35 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import {
-  ProductOfferDtlHistory,
-  ProductOfferProduct,
-  ProductOfferProductTable,
-  ProductOfferProductTable2,
-  ShowProductListResponse,
-} from "../../types/productOffer";
 import ConfirmCard from "../layout/ConfirmCard";
 import Button from "../controls/Button";
-import ProductOfferFormListHistory from "./ProductOfferFormListHistory";
-import ProductOfferFormListHeader from "./ProductOfferFormListHeader";
 import TTable from "../controls/TTable";
 import { DefaultOptionType, TableColumns } from "../../types/general";
 import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
 import { red } from "@mui/material/colors";
 import ModalMessage from "../layout/ModalMessage";
-import { useProductOfferStore } from "../../store/productOfferStore";
+import { ProductGraceDtlHistory, ProductGraceListItem, ProductGraceListItemTable, ProductGraceListItemTable2, ProductGraceListResponse, ProductGraceSaveResponse } from "../../types/productGrace";
+import { useProductGraceStore } from "../../store/productGraceStore";
+import ProductGraceFormListHistory from "./ProductPermFormListHistory";
+import ProductGraceFormListHeader from "./ProductGraceFormListHeader";
 
 type Props = {
-  setIsNew:(isNew: boolean) => void
+  setIsNew: (isNew: boolean) => void;
   setIsEdit: (isEdit: boolean) => void;
-  addList: ProductOfferProductTable[];
+  addList: ProductGraceListItemTable[];
   showDeleted: boolean;
   handleSubmit: (
     e?: React.MouseEvent<HTMLButtonElement>,
     productId?: number
-  ) => Promise<ShowProductListResponse | undefined>;
+  ) => Promise<ProductGraceListResponse | undefined>;
   isLoadingProductOfferSave: boolean;
-  handleSubmitSave: () => void;
+  handleSubmitSave: () => Promise<ProductGraceSaveResponse | undefined>;
   isDtlHistoryLoading: boolean;
   handleAddRow: (
     index: number,
-    setData: Dispatch<SetStateAction<ProductOfferProductTable2[]>>
+    setData: Dispatch<SetStateAction<ProductGraceListItemTable2[]>>
   ) => void;
-  productOfferDtlHistory: ProductOfferDtlHistory[];
-  originalData: ProductOfferProductTable2[];
-  setOriginalData: Dispatch<SetStateAction<ProductOfferProductTable2[]>>;
+  productGraceDtlHistory: ProductGraceDtlHistory[];
+  originalData: ProductGraceListItemTable2[];
+  setOriginalData: Dispatch<SetStateAction<ProductGraceListItemTable2[]>>;
   columns: TableColumns;
   showHistory: boolean;
   setShowHistory: Dispatch<SetStateAction<boolean>>;
@@ -43,7 +37,7 @@ type Props = {
   setIsModalRegOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-const ProductOfferFormList = ({
+const ProductGraceFormList = ({
   setIsNew,
   setIsEdit,
   addList,
@@ -53,7 +47,7 @@ const ProductOfferFormList = ({
   handleSubmitSave,
   isDtlHistoryLoading,
   handleAddRow,
-  productOfferDtlHistory,
+  productGraceDtlHistory,
   originalData,
   setOriginalData,
   columns,
@@ -62,15 +56,14 @@ const ProductOfferFormList = ({
   isModalRegOpen,
   setIsModalRegOpen,
 }: Props) => {
-  const { productOfferSaveResponse } = useProductOfferStore();
+  const { productGraceSaveResponse } = useProductGraceStore();
   const [brandSearch, setBrandSearch] = useState<string>("");
   const [dtlDscSearch, setDtlDscSearch] = useState<string>("");
   const [productSearch, setProductSearch] = useState<string>("");
-  const [deletedData, setDeletedData] = useState<ProductOfferProductTable2[]>(
+  const [deletedData, setDeletedData] = useState<ProductGraceListItemTable2[]>(
     []
   );
-  const [data, setData] = useState<ProductOfferProductTable2[]>([]);
-  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in productOfferFormList table
+  const [data, setData] = useState<ProductGraceListItemTable2[]>([]);
 
   const columnsHistory: TableColumns = [
     {
@@ -89,39 +82,29 @@ const ProductOfferFormList = ({
       width: "5%",
     },
     {
-      Header: "پ 1",
-      accessor: "s1O",
+      Header: "تعداد روز فرجه",
+      accessor: "graceDays",
       width: "10%",
     },
     {
-      Header: "پ 2",
-      accessor: "s2O",
+      Header: "کمیته فروش ",
+      accessor: "salesCommission",
       width: "10%",
     },
     {
-      Header: "پ 3",
-      accessor: "s3O",
+      Header: "کمیته وصول",
+      accessor: "collectionCommission",
       width: "10%",
     },
     {
-      Header: "پ 4",
-      accessor: "s4O",
-      width: "10%",
-    },
-    {
-      Header: "پ 5",
-      accessor: "s5O",
+      Header: "کمیته مازاد",
+      accessor: "extraCommission",
       width: "10%",
     },
     {
       Header: "شرح",
       accessor: "dtlDsc",
-      width: "25%",
-    },
-    {
-      Header: "بدون آفر",
-      accessor: "no",
-      width: "5%",
+      width: "40%",
     },
   ];
 
@@ -212,42 +195,28 @@ const ProductOfferFormList = ({
     const productId = value?.id ?? 0;
     if (productId === 0) return;
     const response = await handleSubmit(undefined, productId);
-    let productOfferProducts: ProductOfferProduct[] | undefined =
-      response?.data.result;
+    let productGraceProducts: ProductGraceListItem[] | undefined =
+      response?.data.result.productGraceProducts;
+      console.log(productGraceProducts,"productGraceProducts")
     setOriginalData((old) =>
       old.map((row, index) => {
-        if (index === rowIndex && productOfferProducts) {
+        if (index === rowIndex && productGraceProducts) {
           return {
             ...old[rowIndex],
             index: rowIndex + 1,
-            bName: productOfferProducts[0].bName,
-            product: productOfferProducts[0].product,
-            pId: productOfferProducts[0].pId,
-            lastDate: productOfferProducts[0].lastDate,
-            s1O:
-              productOfferProducts[0].s1DO + productOfferProducts[0].s1NO > 0
-                ? productOfferProducts[0].s1DO.toString() +
-                  "+" +
-                  productOfferProducts[0].s1NO.toString()
-                : "",
-            s2O:
-              productOfferProducts[0].s2DO + productOfferProducts[0].s2NO > 0
-                ? productOfferProducts[0].s2DO.toString() +
-                  "+" +
-                  productOfferProducts[0].s2NO.toString()
-                : "",
-            s3O:
-              productOfferProducts[0].s3DO + productOfferProducts[0].s3NO > 0
-                ? productOfferProducts[0].s3DO.toString() +
-                  "+" +
-                  productOfferProducts[0].s3NO.toString()
-                : "",
-            s4O:
-              productOfferProducts[0].s4DO + productOfferProducts[0].s4NO > 0
-                ? productOfferProducts[0].s4DO.toString() +
-                  "+" +
-                  productOfferProducts[0].s4NO.toString()
-                : "",
+            bName: productGraceProducts[0].bName,
+            product: productGraceProducts[0].product,
+            pId: productGraceProducts[0].pId,
+            lastDate: productGraceProducts[0].lastDate,
+            gd: productGraceProducts[0].gdo,
+            sc: productGraceProducts[0].sco,
+            cc: productGraceProducts[0].cco,
+            ec: productGraceProducts[0].eco,
+            gdo: productGraceProducts[0].gdo,
+            sco: 0,
+            cco: 0,
+            eco: 0,
+            dtlDsc: productGraceProducts[0].dtlDsc,
             isDeleted: false,
           };
         }
@@ -285,6 +254,7 @@ const ProductOfferFormList = ({
     };
   }, [isModalRegOpen]);
 
+  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in productGraceFormList table
   return (
     <>
       <div className="mt-2 w-full bg-white rounded-md">
@@ -292,7 +262,7 @@ const ProductOfferFormList = ({
           className="overflow-y-auto"
           style={width > 640 ? { height: height - 400 } : {}}
         >
-          <ProductOfferFormListHeader
+          <ProductGraceFormListHeader
             columns={columns}
             brandSearch={brandSearch}
             setBrandSearch={setBrandSearch}
@@ -305,8 +275,6 @@ const ProductOfferFormList = ({
           <TTable
             canEditForm={true}
             columns={columns}
-            selectedRowIndex={selectedRowIndex}
-            setSelectedRowIndex={setSelectedRowIndex}
             data={data}
             updateMyData={updateMyData}
             fontSize="0.75rem"
@@ -316,6 +284,8 @@ const ProductOfferFormList = ({
             CellColorChange={handleCellColorChange}
             changeRowValues={changeRowValues}
             showToolTip={true}
+            selectedRowIndex={selectedRowIndex}
+            setSelectedRowIndex={setSelectedRowIndex}
           />
         </div>
         <ConfirmCard variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end ">
@@ -330,30 +300,30 @@ const ProductOfferFormList = ({
           />
         </ConfirmCard>
       </div>
-      <ProductOfferFormListHistory
+      <ProductGraceFormListHistory
         showHistory={showHistory}
         setShowHistory={setShowHistory}
         isDtlHistoryLoading={isDtlHistoryLoading}
-        productOfferDtlHistory={productOfferDtlHistory}
+        productGraceDtlHistory={productGraceDtlHistory}
         columnsHistory={columnsHistory}
       />
       <ModalMessage
         isOpen={isModalRegOpen}
         onClose={() => setIsModalRegOpen(false)}
         backgroundColor={
-          productOfferSaveResponse?.meta.errorCode === -1
+          productGraceSaveResponse?.meta.errorCode === -1
             ? "bg-green-200"
             : "bg-red-200"
         }
         bgColorButton={
-          productOfferSaveResponse?.meta.errorCode === -1
+          productGraceSaveResponse?.meta.errorCode === -1
             ? "bg-green-500"
             : "bg-red-500"
         }
         color="text-white"
         message={
-          productOfferSaveResponse?.meta.errorCode !== -1
-            ? productOfferSaveResponse?.meta.message || ""
+          productGraceSaveResponse?.meta.errorCode !== -1
+            ? productGraceSaveResponse?.meta.message || ""
             : "اطلاعات با موفقیت ثبت شد."
         }
         visibleButton={false}
@@ -362,4 +332,4 @@ const ProductOfferFormList = ({
   );
 };
 
-export default ProductOfferFormList;
+export default ProductGraceFormList;

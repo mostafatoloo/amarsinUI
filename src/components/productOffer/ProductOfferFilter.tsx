@@ -50,9 +50,9 @@ const ProductOfferFilter = ({
       />
       <input
         name="srchId"
-        value={srchId===-1 ? "" : srchId ?? 0}
+        value={srchId===-1 ? "" : srchId}
         onChange={(e) => {
-          handleDebounceFilterChange("srchId", e.target.value);
+          handleDebounceFilterChange("srchId", e.target.value === "" ? -1 : e.target.value);
           setSrchId(Number(e.target.value));
         }}
         style={{ width: columns[1].width }}

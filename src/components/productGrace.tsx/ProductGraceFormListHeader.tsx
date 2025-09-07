@@ -15,7 +15,7 @@ type Props = {
   setDtlDscSearch: (dtlDscSearch: string) => void;
 };
 
-const ProductOfferFormListHeader = ({
+const ProductGraceFormListHeader = ({
   columns,
   brandSearch,
   setBrandSearch,
@@ -26,6 +26,7 @@ const ProductOfferFormListHeader = ({
 }: Props) => {
   const [oldWidth, setOldWidth] = useState(0);
   const [emptyWidth, setEmptyWidth] = useState(0);
+  const [graceWidth, setGraceWidth] = useState(0);
   useEffect(() => {
     console.log(oldWidth, emptyWidth);
     if (
@@ -43,25 +44,14 @@ const ProductOfferFormListHeader = ({
           Number(columns[7].width.replace("%", ""))
       );
     }
-    if (
-      columns[8]?.width &&
-      columns[9]?.width &&
-      columns[10]?.width &&
-      columns[11]?.width &&
-      columns[12]?.width &&
-      columns[13]?.width &&
-      columns[14]?.width &&
-      columns[15]?.width
-    ) {
-      setEmptyWidth(
-        Number(columns[8].width.replace("%", "")) +
-          Number(columns[9].width.replace("%", "")) +
+    if (columns[8]?.width) {
+      setEmptyWidth(Number(columns[8].width.replace("%", "")));
+    }
+    if (columns[9].width && columns[10].width && columns[11].width) {
+      setGraceWidth(
+        Number(columns[9].width.replace("%", "")) +
           Number(columns[10].width.replace("%", "")) +
-          Number(columns[11].width.replace("%", "")) +
-          Number(columns[12].width.replace("%", "")) +
-          Number(columns[13].width.replace("%", "")) +
-          Number(columns[14].width.replace("%", "")) +
-          Number(columns[15].width.replace("%", ""))
+          Number(columns[11].width.replace("%", ""))
       );
     }
   }, []);
@@ -107,20 +97,18 @@ const ProductOfferFormListHeader = ({
       <div
         className="md:h-full border place-content-center text-center border-x-gray-300 bg-gray-200"
         style={{
-          width: emptyWidth.toString() + "%",
+          width: emptyWidth.toString() + "%", backgroundColor: columns[8].backgroundColor
         }}
       ></div>
-      {columns[16] && (
-        <div
-          className="md:h-full border place-content-center text-center border-x-gray-300 bg-gray-200"
-          style={{
-            width: columns[16].width ? columns[16].width : "10%",
-          }}
-        >
-          بدون
-        </div>
-      )}
-      {columns[17] && (
+      <div
+        className="md:h-full border place-content-center text-center border-x-gray-300 bg-gray-200"
+        style={{
+          width: graceWidth.toString() + "%", backgroundColor: columns[9].backgroundColor
+        }}
+      >
+        پورسانت
+      </div>
+      {columns[12] && (
         <input
           name="dtlDscSearch"
           value={convertToFarsiDigits(dtlDscSearch)}
@@ -128,17 +116,17 @@ const ProductOfferFormListHeader = ({
             setDtlDscSearch(convertToLatinDigits(e.target.value));
           }}
           className={`border p-1 text-sm`}
-          style={{ width: columns[17].width }}
+          style={{ width: columns[12].width }}
         />
       )}
-      {columns[18] && (
+      {columns[13] && (
         <div
           className="md:h-full border border-x-gray-300 bg-gray-200"
-          style={{ width: columns[18].width }}
+          style={{ width: columns[13].width }}
         ></div>
       )}
     </div>
   );
 };
 
-export default ProductOfferFormListHeader;
+export default ProductGraceFormListHeader;

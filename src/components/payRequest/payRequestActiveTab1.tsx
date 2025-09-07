@@ -6,16 +6,15 @@ import {
 } from "../../utilities/general";
 import { RpCustomerBillsResultWithIndex } from "../../types/sales";
 import Skeleton from "../layout/Skeleton";
+import { useState } from "react";
 
 type Props = {
   data: RpCustomerBillsResultWithIndex[];
   isLoading: boolean;
 };
 
-const PayRequestActiveTab1 = ({
-  data,
-  isLoading,
-}: Props) => {
+const PayRequestActiveTab1 = ({ data, isLoading }: Props) => {
+  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in payRequestActiveTab1 table
   const columns: TableColumns = [
     {
       Header: "ردیف",
@@ -27,7 +26,7 @@ const PayRequestActiveTab1 = ({
       Header: "تاریخ",
       accessor: "dat",
       width: "10%",
-      Cell: ({ value }: any) => convertToFarsiDigits(value),      
+      Cell: ({ value }: any) => convertToFarsiDigits(value),
     },
     {
       Header: "سند",
@@ -45,7 +44,8 @@ const PayRequestActiveTab1 = ({
       Header: "بدهکار",
       accessor: "bed",
       width: "10%",
-      Cell: ({ value }: any) => convertToFarsiDigits(formatNumberWithCommas(Number(value))),
+      Cell: ({ value }: any) =>
+        convertToFarsiDigits(formatNumberWithCommas(Number(value))),
     },
     {
       Header: "بستانکار",
@@ -78,7 +78,13 @@ const PayRequestActiveTab1 = ({
       {isLoading ? (
         <Skeleton />
       ) : (
-        <TTable columns={columns} data={data} changeRowSelectColor={true} />
+        <TTable
+          columns={columns}
+          data={data}
+          changeRowSelectColor={true}
+          selectedRowIndex={selectedRowIndex}
+          setSelectedRowIndex={setSelectedRowIndex}
+        />
       )}
     </div>
   );

@@ -177,6 +177,7 @@ const PayRequestActiveTab2 = ({
   const { id, setField: setPayRequestInvoicesField } = usePayRequestStore();
   const { systemId, yearId } = useGeneralContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in payRequestActiveTab2 table
   //////////////////////////////////////////////////////////////
   useEffect(() => {
     let timeoutId: number;
@@ -419,6 +420,8 @@ const PayRequestActiveTab2 = ({
       </div>
       <TTable
         columns={columns}
+        selectedRowIndex={selectedRowIndex}
+        setSelectedRowIndex={setSelectedRowIndex}
         data={data}
         updateMyData={updateMyData}
         fontSize="0.75rem"

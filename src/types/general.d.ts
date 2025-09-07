@@ -41,3 +41,4 @@ interface Meta {
 }
 
 export type TableColumns = (ColumnGroup | Column)[];
+

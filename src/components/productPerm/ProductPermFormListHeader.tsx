@@ -15,7 +15,7 @@ type Props = {
   setDtlDscSearch: (dtlDscSearch: string) => void;
 };
 
-const ProductOfferFormListHeader = ({
+const ProductPermFormListHeader = ({
   columns,
   brandSearch,
   setBrandSearch,
@@ -28,41 +28,14 @@ const ProductOfferFormListHeader = ({
   const [emptyWidth, setEmptyWidth] = useState(0);
   useEffect(() => {
     console.log(oldWidth, emptyWidth);
-    if (
-      columns[3].width &&
-      columns[4].width &&
-      columns[5].width &&
-      columns[6].width &&
-      columns[7].width
-    ) {
+    if (columns[3]?.width && columns[4]?.width) {
       setOldWidth(
         Number(columns[3].width.replace("%", "")) +
-          Number(columns[4].width.replace("%", "")) +
-          Number(columns[5].width.replace("%", "")) +
-          Number(columns[6].width.replace("%", "")) +
-          Number(columns[7].width.replace("%", ""))
+          Number(columns[4].width.replace("%", ""))
       );
     }
-    if (
-      columns[8]?.width &&
-      columns[9]?.width &&
-      columns[10]?.width &&
-      columns[11]?.width &&
-      columns[12]?.width &&
-      columns[13]?.width &&
-      columns[14]?.width &&
-      columns[15]?.width
-    ) {
-      setEmptyWidth(
-        Number(columns[8].width.replace("%", "")) +
-          Number(columns[9].width.replace("%", "")) +
-          Number(columns[10].width.replace("%", "")) +
-          Number(columns[11].width.replace("%", "")) +
-          Number(columns[12].width.replace("%", "")) +
-          Number(columns[13].width.replace("%", "")) +
-          Number(columns[14].width.replace("%", "")) +
-          Number(columns[15].width.replace("%", ""))
-      );
+    if (columns[5]?.width) {
+      setEmptyWidth(Number(columns[5].width.replace("%", "")));
     }
   }, []);
   return (
@@ -120,7 +93,7 @@ const ProductOfferFormListHeader = ({
           بدون
         </div>
       )}
-      {columns[17] && (
+      {columns[6] && (
         <input
           name="dtlDscSearch"
           value={convertToFarsiDigits(dtlDscSearch)}
@@ -128,17 +101,17 @@ const ProductOfferFormListHeader = ({
             setDtlDscSearch(convertToLatinDigits(e.target.value));
           }}
           className={`border p-1 text-sm`}
-          style={{ width: columns[17].width }}
+          style={{ width: columns[6].width }}
         />
       )}
-      {columns[18] && (
+      {columns[7] && (
         <div
           className="md:h-full border border-x-gray-300 bg-gray-200"
-          style={{ width: columns[18].width }}
+          style={{ width: columns[7].width }}
         ></div>
       )}
     </div>
   );
 };
 
-export default ProductOfferFormListHeader;
+export default ProductPermFormListHeader;

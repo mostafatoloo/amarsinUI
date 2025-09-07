@@ -5,13 +5,13 @@ export const useProductOfferStore = create<ProductOfferState>()((set) => ({
   productOfferResponse: {
     meta: { errorCode: 0, message: null, type: "" },
     data: {
-      result: { err: 0, msg: null, productOffers: [], productOfferDtls: [] },
+      result: { err: 0, msg: null, total_count: 0, productOffers: [], productOfferDtls: [] },
     },
   },
   id: 0,
   acc_Year: 0,
   acc_System: 0,
-  state: 0,
+  state: -1,
   regFDate: "",
   regTDate: "",
   fDate: "",
@@ -38,7 +38,7 @@ export const useProductOfferStore = create<ProductOfferState>()((set) => ({
   brands: [],
   showProductListResponse: {
     meta: { errorCode: 0, message: "", type: "" },
-    data: { result: { err: 0, msg: "", productOfferProducts: [] } },
+    data: { result: [] },
   },
   //productOfferDtlHistory
   pId: 0,
@@ -60,6 +60,7 @@ export const useProductOfferStore = create<ProductOfferState>()((set) => ({
   acc_SystemProductOfferDoFirstFlow: 0,
   acc_YearProductOfferDoFirstFlow: 0,
   chartIdProductOfferDoFirstFlow: 0,
+  dscProductOfferDoFirstFlow: "",
   //productOfferDel
   productOfferDelResponse: {
     meta: { errorCode: 0, message: "", type: "" },

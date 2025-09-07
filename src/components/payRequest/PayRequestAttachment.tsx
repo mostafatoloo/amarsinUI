@@ -34,6 +34,7 @@ const PayRequestAttachment = ({ formId, setCnt }: Props) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { systemId, yearId } = useGeneralContext();
   const [attachmentId, setAttachmentId] = useState<number>(0);
+  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in payRequestAttachment table
 
   const columns: TableColumns = [
     {
@@ -224,6 +225,8 @@ const PayRequestAttachment = ({ formId, setCnt }: Props) => {
         <div className="w-1/2">
           <TTable
             columns={columns}
+            selectedRowIndex={selectedRowIndex}
+            setSelectedRowIndex={setSelectedRowIndex}
             data={data}
             changeRowSelectColor={true}
             fontSize="14px"

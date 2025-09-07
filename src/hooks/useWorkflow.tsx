@@ -1,4 +1,4 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import { useQuery,  UseQueryOptions } from "@tanstack/react-query";
 import api from "../api/axios";
 import {
   useWorkflowRowSelectStore,
@@ -86,6 +86,7 @@ export function useWorkflow() {
     refetchIntervalInBackground: true, // Continue refetching even when tab is not active*/
     onSuccess: (data: any) => {
       setWorkFlowResponse(data);
+      //queryClient.invalidateQueries({ queryKey: ["workflowRowSelect"] });
     },
   } as UseQueryOptions<WorkflowResponse, Error, WorkflowResponse, unknown[]>);
 

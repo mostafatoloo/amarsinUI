@@ -11,6 +11,7 @@ import {
   PayRequestInvoicesTable,
 } from "../../types/payRequest";
 import PayRequestInvoiceSumRow from "./PayRequestInvoiceSumRow";
+import { useState } from "react";
 
 type Props = {
   setInvoicesWithChecks: (data: PayRequestInvoiceIncludeChecks[]) => void;
@@ -35,6 +36,7 @@ const PayRequestInvoices = ({
   setNewPay,
 }: //isConfirmRef,
 Props) => {
+  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in payRequestInvoices table
   const columns: TableColumns = [
     {
       Header: "ردیف",
@@ -185,6 +187,8 @@ Props) => {
     <div>
       <TTable
         columns={columns}
+        selectedRowIndex={selectedRowIndex}
+        setSelectedRowIndex={setSelectedRowIndex}
         data={data}
         fontSize="14px"
         changeRowSelectColor={true}

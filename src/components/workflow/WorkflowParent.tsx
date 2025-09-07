@@ -3,9 +3,13 @@ import { Paper } from "@mui/material";
 import Skeleton from "../layout/Skeleton";
 import { useNavigate } from "react-router-dom";
 import { useGeneralContext } from "../../context/GeneralContext";
-import {  useWorkflowStore } from "../../store/workflowStore";
+import { useWorkflowStore } from "../../store/workflowStore";
 import AutoComplete from "../controls/AutoComplete";
-import { convertToFarsiDigits, formatNumberWithCommas } from "../../utilities/general";
+import {
+  convertToFarsiDigits,
+  convertToLatinDigits,
+  formatNumberWithCommas,
+} from "../../utilities/general";
 import { debounce } from "lodash";
 import TTable from "../controls/TTable";
 import { DefaultOptionTypeStringId, TableColumns } from "../../types/general";
@@ -31,10 +35,10 @@ export default function WorkflowParent({
   const { systemId, chartId, defaultRowsPerPage } = useGeneralContext();
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(defaultRowsPerPage);
+  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in workflowParent table
   //const { workTableId } = useWorkflowRowSelectStore();
   const navigate = useNavigate();
   const abortControllerRef = useRef<AbortController | null>(null);
-
 
   const columns: TableColumns = React.useMemo(
     () => [
@@ -197,20 +201,20 @@ export default function WorkflowParent({
   useEffect(() => {
     // Only set first record as selected if there's no current selection
     // This prevents losing selection when data is refetched
+    console.log(selectedId)
     if (workFlowResponse.workTables.length > 0) {
       // Check if the current selectedId exists in the new data
-      const currentRecordExists = workFlowResponse.workTables.some(
-        (table) => table.id === selectedId
-      );
-      
+      //const currentRecordExists = workFlowResponse.workTables.some(
+      //  (table) => table.id === selectedId
+      //);
       // Only set to first record if current selection doesn't exist in new data
-      if (!currentRecordExists) {
+      //if (!currentRecordExists) {
         setSelectedId(workFlowResponse.workTables[0].id);
-      }
+      //}
     } else {
       setSelectedId(0);
     }
-  }, [workFlowResponse, selectedId]);
+  }, [workFlowResponse]);
 
   if (error) return <div>Error: {error.message} </div>;
   const [data, setData] = useState<any[]>([]);
@@ -239,15 +243,18 @@ export default function WorkflowParent({
     setSkipPageReset(false);
   }, [data]);
   return (
-    <>   
+    <>
       <Paper className="p-2 mt-2 w-full">
         <div className="w-full flex justify-center md:justify-end items-center ">
           <input
             name="dateTime"
-            value={dateTime ?? ""}
+            value={convertToFarsiDigits(dateTime ?? "")}
             onChange={(e) => {
-              handleDebounceFilterChange("dateTime", e.target.value);
-              setDateTime(e.target.value);
+              handleDebounceFilterChange(
+                "dateTime",
+                convertToLatinDigits(e.target.value)
+              );
+              setDateTime(convertToLatinDigits(e.target.value));
             }}
             className={`border p-1 text-sm rounded-sm w-1/4 md:w-[10%]`}
             //style={{width:headCells[1].cellWidth}}
@@ -264,20 +271,26 @@ export default function WorkflowParent({
           />
           <input
             name="code"
-            value={code ?? ""}
+            value={convertToFarsiDigits(code ?? "")}
             onChange={(e) => {
-              handleDebounceFilterChange("code", e.target.value);
-              setCode(e.target.value);
+              handleDebounceFilterChange(
+                "code",
+                convertToLatinDigits(e.target.value)
+              );
+              setCode(convertToLatinDigits(e.target.value));
             }}
             className="border p-1 text-sm rounded-sm hidden md:block"
             style={{ width: "10%" }}
           />
           <input
             name="cost"
-            value={cost ?? ""}
+            value={convertToFarsiDigits(cost ?? "")}
             onChange={(e) => {
-              handleDebounceFilterChange("cost", e.target.value);
-              setCost(e.target.value);
+              handleDebounceFilterChange(
+                "cost",
+                convertToLatinDigits(e.target.value)
+              );
+              setCost(convertToLatinDigits(e.target.value));
             }}
             className="border p-1 text-sm rounded-sm hidden md:block"
             style={{ width: "10%" }}
@@ -301,6 +314,7 @@ export default function WorkflowParent({
               inputPadding="0 !important"
               mobilefontsize="0.6rem"
               desktopfontsize="0.7rem"
+              showClearIcon={false}
             />
           </div>
           <input
@@ -338,6 +352,8 @@ export default function WorkflowParent({
           >
             <TTable
               columns={columns}
+              selectedRowIndex={selectedRowIndex}
+              setSelectedRowIndex={setSelectedRowIndex}
               data={data}
               //updateMyData={updateMyData}
               skipPageReset={skipPageReset}

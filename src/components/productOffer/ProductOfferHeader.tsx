@@ -1,158 +1,141 @@
 import { TableColumns } from "../../types/general";
+import { ProductOffer } from "../../types/productOffer";
+import PageTitle from "../layout/PageTitle";
+import ExcelExport from "../../utilities/ExcelExport";
+import Add32 from "../../assets/images/GrayThem/add32.png";
+//import Add24Disabled from "../../assets/images/GrayThem/add24_disabled.png";
+import Refresh32 from "../../assets/images/GrayThem/rfrsh32.png";
+import Del24 from "../../assets/images/GrayThem/del24.png";
+import Del24Disabled from "../../assets/images/GrayThem/del_disabled24.png";
+import Edit24 from "../../assets/images/GrayThem/edit24.png";
+import Edit24Disabled from "../../assets/images/GrayThem/edit24_disabled.png";
+import Accept24 from "../../assets/images/GrayThem/accept24.png";
+import Accept24Disabled from "../../assets/images/GrayThem/accept24_disabled.png";
+import { ProductPerm } from "../../types/productPerm";
+import { ProductGrace } from "../../types/productGrace";
 
 type Props = {
   columns: TableColumns;
-  sortId: number;
-  sortDate: number;
-  sortTime: number;
-  sortDsc: number;
-  sortAccepted: number;
-  sortUsrName: number;
-  sortStep: number;
-  setSortId: (sortId: number) => void;
-  setSortDate: (sortDate: number) => void;
-  setSortTime: (sortTime: number) => void;
-  setSortDsc: (sortDsc: number) => void;
-  setSortAccepted: (sortAccepted: number) => void;
-  setSortUsrName: (sortUsrName: number) => void;
-  setSortStep: (sortStep: number) => void;
-};
+  setIsNew: (isNew: boolean) => void;
+  handleDelete: () => void;
+  handleEdit: () => void;
+  handleConfirm: () => void;
+  selectedProductOffer: ProductOffer | ProductPerm | ProductGrace;
+  data: any[];
+  refetch: () => void;
+}
 
 const ProductOfferHeader = ({
   columns,
-  sortId,
-  sortDate,
-  sortTime,
-  sortDsc,
-  sortAccepted,
-  sortUsrName,
-  sortStep,
-  setSortId,
-  setSortDate,
-  setSortTime,
-  setSortDsc,
-  setSortAccepted,
-  setSortUsrName,
-  setSortStep,
+  setIsNew,
+  handleDelete,
+  handleEdit,
+  handleConfirm,
+  selectedProductOffer,
+  data,
+  refetch,
 }: Props) => {
-  const setSort = (
-    setHeaderList: ((sort: number) => void)[],
-    sortColumn: number,
-    setSortColumn: (sort: number) => void
-  ) => {
-    setHeaderList.forEach((setHeader) => {
-      setHeader(0);
-    });
-    if (sortColumn === 1) setSortColumn(-1);
-    else setSortColumn(1);
-  };
   return (
-    <div className="flex text-xs font-bold text-gray-500 w-full h-6">
-      {columns.map((column: any) => (
-        <div
-          className="flex bg-gray-200 border border-gray-300 text-center items-center justify-center border-r last:border-l cursor-pointer"
-          key={column.id}
-          style={{ width: column.width }}
-          onClick={() => {
-            if (column.accessor === "id") {
-              setSort(
-                [
-                  setSortDate,
-                  setSortTime,
-                  setSortDsc,
-                  setSortAccepted,
-                  setSortUsrName,
-                  setSortStep,
-                ],
-                sortId,
-                setSortId
-              );
-            } else if (column.accessor === "dat") {
-              setSort(
-                [
-                  setSortId,
-                  setSortTime,
-                  setSortDsc,
-                  setSortAccepted,
-                  setSortUsrName,
-                  setSortStep,
-                ],
-                sortDate,
-                setSortDate
-              );
-            } else if (column.accessor === "tim") {
-              setSort(
-                [
-                  setSortId,
-                  setSortDate,
-                  setSortDsc,
-                  setSortAccepted,
-                  setSortUsrName,
-                  setSortStep,
-                ],
-                sortTime,
-                setSortTime
-              );
-            } else if (column.accessor === "dsc") {
-              setSort(
-                [
-                  setSortId,
-                  setSortDate,
-                  setSortTime,
-                  setSortAccepted,
-                  setSortUsrName,
-                  setSortStep,
-                ],
-                sortDsc,
-                setSortDsc
-              );
-            } else if (column.accessor === "accepted") {
-              setSort(
-                [
-                  setSortId,
-                  setSortDate,
-                  setSortTime,
-                  setSortDsc,
-                  setSortUsrName,
-                  setSortStep,
-                ],
-                sortAccepted,
-                setSortAccepted
-              );
-            } else if (column.accessor === "usrName") {
-              setSort(
-                [
-                  setSortId,
-                  setSortDate,
-                  setSortTime,
-                  setSortDsc,
-                  setSortAccepted,
-                  setSortStep,
-                ],
-                sortUsrName,
-                setSortUsrName
-              );
-            } else if (column.accessor === "flowMapName") {
-              setSort(
-                [
-                  setSortId,
-                  setSortDate,
-                  setSortTime,
-                  setSortDsc,
-                  setSortAccepted,
-                  setSortUsrName,
-                ],
-                sortStep,
-                setSortStep
-              );
-            }
-          }}
-        >
-          {column.Header}
-        </div>
-      ))}
+    <header className="flex items-center justify-between border-gray-300 border-b pb-2">
+    <PageTitle />
+    <div className="flex px-4 items-center gap-4">
+      <div
+        className="flex flex-col items-center cursor-pointer"
+        onClick={() => setIsNew(true)} // for new
+      >
+        <img src={Add32} alt="Add32" className="w-6 h-6" />
+        <p className="text-xs">جدید</p>
+      </div>
+      <div
+        className={`flex flex-col items-center ${
+          selectedProductOffer === null || selectedProductOffer.flwId !== 0
+            ? "cursor-not-allowed"
+            : "cursor-pointer"
+        }`}
+        onClick={
+          () =>
+            selectedProductOffer === null ||
+            selectedProductOffer.flwId !== 0
+              ? null
+              : handleDelete() //for productOffer/productOfferDel
+        }
+      >
+        <img
+          src={
+            selectedProductOffer === null ||
+            selectedProductOffer.flwId !== 0
+              ? Del24Disabled
+              : Del24
+          }
+          alt="Del24"
+          className="w-6 h-6"
+        />
+        <p className="text-xs">حذف</p>
+      </div>
+      <div
+        className={`flex flex-col items-center ${
+          selectedProductOffer === null || selectedProductOffer.flwId !== 0
+            ? "cursor-not-allowed"
+            : "cursor-pointer"
+        }`}
+        onClick={
+          () =>
+            selectedProductOffer === null ||
+            selectedProductOffer.flwId !== 0
+              ? null
+              : handleEdit() // for edit
+        } // for edit
+      >
+        <img
+          src={
+            selectedProductOffer === null ||
+            selectedProductOffer.flwId !== 0
+              ? Edit24Disabled
+              : Edit24
+          }
+          alt="Edit24"
+          className="w-6 h-6"
+        />
+        <p className="text-xs">ویرایش</p>
+      </div>
+      <div
+        className={`flex flex-col items-center ${
+          selectedProductOffer === null || selectedProductOffer.flwId !== 0
+            ? "cursor-not-allowed"
+            : "cursor-pointer"
+        }`}
+      >
+        <img
+          src={
+            selectedProductOffer === null ||
+            selectedProductOffer.flwId !== 0
+              ? Accept24Disabled
+              : Accept24
+          }
+          alt="Accept24"
+          className="w-6 h-6"
+          onClick={() =>
+            selectedProductOffer === null ||
+            selectedProductOffer.flwId !== 0
+              ? null
+              : handleConfirm()
+          }
+        />
+        <p className="text-xs">تایید</p>
+      </div>
+
+      <ExcelExport data={data} headCells={columns} />
+
+      <div
+        className="flex flex-col items-center cursor-pointer"
+        onClick={() => refetch()}
+      >
+        <img src={Refresh32} alt="Refresh32" className="w-6 h-6" />
+        <p className="text-xs">بازخوانی</p>
+      </div>
     </div>
-  );
-};
+  </header>
+  )
+}
 
 export default ProductOfferHeader;

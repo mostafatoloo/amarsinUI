@@ -262,6 +262,7 @@ const OrderRegShowTable = ({
   const [warehouse, setWarehouse] = useState<DefaultOptionType | null>(null);
   const [processedData, setProcessedData] = useState<any[]>([]);
   const [baseData, setBaseData] = useState<any[]>([]);
+  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in orderRegShowTable table
 
   //////////////////////////////////////////////////////////////
   useEffect(() => {
@@ -490,6 +491,8 @@ const OrderRegShowTable = ({
       ) : (
         <TTable
           columns={columns}
+          selectedRowIndex={selectedRowIndex}
+          setSelectedRowIndex={setSelectedRowIndex}
           data={processedData}
           fontSize="0.75rem"
           changeRowSelectColor={true}

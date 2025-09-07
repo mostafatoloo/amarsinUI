@@ -160,7 +160,7 @@ export function useProducts() {
 
     isProductSearchLoading: productSearchQuery.isLoading,
     productSearchError: productSearchQuery.error,
-    products: productSearchQuery.data?.data.result ?? [],
+    products: productSearchQuery.data?.data.result.searchResults ?? [],
 
     isDtHistoryLoading: dtlHistoryQuery.isLoading,
     dtlHistoryError: dtlHistoryQuery.error,

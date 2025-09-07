@@ -1,6 +1,7 @@
 import TrashIcon from "../../assets/images/GrayThem/delete_gray_16.png";
 import HistoryIcon from "../../assets/images/GrayThem/history_gray_16.png";
 import RestoreIcon from "../../assets/images/GrayThem/restore_gray_16.png";
+import Accept from "../../assets/images/GrayThem/img24_3.png";
 import {
   Dispatch,
   SetStateAction,
@@ -10,25 +11,11 @@ import {
   useRef,
   useState,
 } from "react";
-import ProductOfferFormParams from "./ProductOfferFormParams";
 import { DefaultOptionTypeStringId, TableColumns } from "../../types/general";
 import ConfirmCard from "../layout/ConfirmCard";
 import Button from "../controls/Button";
 import { handleExport } from "../../utilities/ExcelExport";
-import {
-  Dtl,
-  ProductOffer,
-  ProductOfferDtl,
-  ProductOfferDtlHistory,
-  ProductOfferProductTable,
-  ProductOfferProductTable2,
-  ProductOfferSaveRequest,
-  ProductOfferSaveResponse,
-  ShowProductListRequest,
-  ShowProductListResponse,
-} from "../../types/productOffer";
 import { useGeneralContext } from "../../context/GeneralContext";
-import ProductOfferFormList from "./ProductOfferFormList";
 import {
   convertToFarsiDigits,
   convertToLatinDigits,
@@ -39,20 +26,33 @@ import { debounce } from "lodash";
 import { ProductSearchRequest } from "../../types/product";
 import { useBrandStore } from "../../store/brandStore";
 import { EditableInput } from "../controls/TTable";
-import { useProductOfferStore } from "../../store/productOfferStore";
+import ProductOfferFormParams from "../productOffer/ProductOfferFormParams";
+import {
+  ProductPerm,
+  ProductPermDtl,
+  ProductPermDtlHistory,
+  ProductPermListItemTable,
+  ProductPermListItemTable2,
+  ProductPermListRequest,
+  ProductPermListResponse,
+  ProductPermSaveRequest,
+  ProductPermSaveResponse,
+} from "../../types/productPerm";
+import ProductPermFormList from "./ProductPermFormList";
+import { useProductPermStore } from "../../store/productPermStore";
 
 type Props = {
   addProductList: (
-    request: ShowProductListRequest 
-  ) => Promise<ShowProductListResponse>;
-  productOfferDtlHistory: ProductOfferDtlHistory[];
-  isLoadingProductOfferDtlHistory: boolean;
-  productOfferSave: (
-    request: ProductOfferSaveRequest
-  ) => Promise<ProductOfferSaveResponse>;
-  isLoadingProductOfferSave: boolean;
-  selectedProductOffer: ProductOffer | null;
-  productOfferDtls: ProductOfferDtl[] | undefined;
+    request: ProductPermListRequest
+  ) => Promise<ProductPermListResponse>;
+  productPermDtlHistory: ProductPermDtlHistory[];
+  isLoadingDtlHistory: boolean;
+  productPermSave: (
+    request: ProductPermSaveRequest
+  ) => Promise<ProductPermSaveResponse>;
+  isLoadingProductPermSave: boolean;
+  selectedProductPerm: ProductPerm | null;
+  productPermDtls: ProductPermDtl[] | undefined;
   isNew: boolean;
   setIsNew: (isNew: boolean) => void;
   setIsEdit: (isEdit: boolean) => void;
@@ -62,7 +62,7 @@ export const headCells = [
   {
     Header: "ردیف",
     accessor: "index",
-    width: "2%",
+    width: "5%",
     Cell: ({ value }: any) => convertToFarsiDigits(value),
   },
   {
@@ -74,7 +74,7 @@ export const headCells = [
   {
     Header: "کالا",
     accessor: "product",
-    width: "33%",
+    width: "40%",
     type: "autoComplete",
     placeholder: "کالا را انتخاب کنید...",
     Cell: EditableInput,
@@ -86,108 +86,22 @@ export const headCells = [
     Cell: ({ value }: any) => convertToFarsiDigits(value),
   },
   {
-    Header: convertToFarsiDigits("پ 1"),
-    accessor: "s1O",
-    width: "3%",
-    Cell: ({ value }: any) => convertToFarsiDigits(value),
+    Header: "نیاز به مجوز",
+    accessor: "npo",
+    width: "5%",
+    Cell: ({ value }: any) => value 
   },
   {
-    Header: convertToFarsiDigits("پ 2"),
-    accessor: "s2O",
-    width: "3%",
-    Cell: ({ value }: any) => convertToFarsiDigits(value),
-  },
-  {
-    Header: convertToFarsiDigits("پ 3"),
-    accessor: "s3O",
-    width: "3%",
-    Cell: ({ value }: any) => convertToFarsiDigits(value),
-  },
-  {
-    Header: convertToFarsiDigits("پ 4"),
-    accessor: "s4O",
-    width: "3%",
-    Cell: ({ value }: any) => convertToFarsiDigits(value),
-  },
-  {
-    Header: "پ",
-    accessor: "s1N",
-    width: "2%",
-    type: "inputText",
-    noLeftBorder: true,
-    align: "left",
-    Cell: EditableInput,
-  },
-  {
-    Header: convertToFarsiDigits("1"),
-    accessor: "s1D",
-    width: "2%",
-    type: "inputText",
-    align: "right",
-    Cell: EditableInput,
-  },
-  {
-    Header: "پ",
-    accessor: "s2N",
-    width: "2%",
-    type: "inputText",
-    noLeftBorder: true,
-    align: "left",
-    Cell: EditableInput,
-  },
-  {
-    Header: convertToFarsiDigits("2"),
-    accessor: "s2D",
-    width: "2%",
-    type: "inputText",
-    align: "right",
-    Cell: EditableInput,
-  },
-  {
-    Header: "پ",
-    accessor: "s3N",
-    width: "2%",
-    type: "inputText",
-    noLeftBorder: true,
-    align: "left",
-    Cell: EditableInput,
-  },
-  {
-    Header: convertToFarsiDigits("3"),
-    accessor: "s3D",
-    width: "2%",
-    type: "inputText",
-    align: "right",
-    Cell: EditableInput,
-  },
-  {
-    Header: "پ",
-    accessor: "s4N",
-    width: "2%",
-    type: "inputText",
-    noLeftBorder: true,
-    align: "left",
-    Cell: EditableInput,
-  },
-  {
-    Header: convertToFarsiDigits("4"),
-    accessor: "s4D",
-    width: "2%",
-    type: "inputText",
-    align: "right",
-    Cell: EditableInput,
-  },
-  {
-    Header: "آفر",
-    accessor: "no",
-    width: "2%",
+    Header: "نیاز به مجوز",
+    accessor: "np",
+    width: "5%",
     type: "checkbox",
     Cell: EditableInput,
   },
   {
-    Header: "توضیح",
+    Header: "شرح",
     accessor: "dtlDsc",
-    width: "18%",
+    width: "27%",
     type: "inputText",
     Cell: EditableInput,
   },
@@ -219,19 +133,19 @@ export const headCells = [
   },
 ];
 
-const ProductOfferForm = ({
+const ProductPermForm = ({
   addProductList,
-  productOfferDtlHistory,
-  isLoadingProductOfferDtlHistory,
-  productOfferSave,
-  isLoadingProductOfferSave,
-  selectedProductOffer,
-  productOfferDtls,
+  productPermDtlHistory,
+  isLoadingDtlHistory,
+  productPermSave,
+  isLoadingProductPermSave,
+  selectedProductPerm,
+  productPermDtls,
   isNew,
   setIsNew,
   setIsEdit,
 }: Props) => {
-  const [addList, setAddList] = useState<ProductOfferProductTable[]>([]);
+  const [addList, setAddList] = useState<ProductPermListItemTable[]>([]);
   const [search, setSearch] = useState<string>("");
   const [showDeleted, setShowDeleted] = useState(true);
   const [brand, setBrand] = useState<DefaultOptionTypeStringId[] | null>([]);
@@ -242,9 +156,9 @@ const ProductOfferForm = ({
   const { setField: setProductField } = useProductStore();
   const { yearId, systemId, chartId } = useGeneralContext();
   const { setField: setBrandField } = useBrandStore();
-  const { setField: setProductOfferDtlHistoryField } = useProductOfferStore();
+  const { setField: setProductPermDtlHistoryField } = useProductPermStore();
   const [showHistory, setShowHistory] = useState<boolean>(false);
-  const [originalData, setOriginalData] = useState<ProductOfferProductTable2[]>(
+  const [originalData, setOriginalData] = useState<ProductPermListItemTable2[]>(
     []
   );
   const [dat, setDat] = useState<string>("");
@@ -252,15 +166,14 @@ const ProductOfferForm = ({
   const [dsc, setDsc] = useState<string>("");
   const [isModalRegOpen, setIsModalRegOpen] = useState(false);
 
-  console.log(products, "products");
-
   const columns: TableColumns = useMemo(() => {
     return headCells.map((item) => {
       return {
         ...item,
         options:
           item.accessor === "product"
-            ? products && products.map((p) => ({
+            ? products &&
+              products.map((p) => ({
                 id: p.pId,
                 title: convertToFarsiDigits(p.n),
               }))
@@ -294,7 +207,8 @@ const ProductOfferForm = ({
   ////////////////////////////////////////////////////////
   const handleShowHistory = (row: any) => {
     if (row.original.pId !== 0) {
-      setProductOfferDtlHistoryField("pId", row.original.pId);
+      console.log(row.original.pId, "row.original.pId");
+      setProductPermDtlHistoryField("pId", row.original.pId);
       setShowHistory(true);
     }
   };
@@ -317,29 +231,18 @@ const ProductOfferForm = ({
     setBrandField("accSystem", systemId);
     setBrandField("search", brandSearch);
   }, [brandSearch, systemId]);
-
-  const newRow: ProductOfferProductTable = {
+  ///////////////////////////////////////////////////////
+  const newRow: ProductPermListItemTable = {
     id: 0,
     pId: 0,
     bName: "",
     product: "",
     lastDate: "",
-    s1O: "",
-    s2O: "",
-    s3O: "",
-    s4O: "",
-    s1N: "",
-    s1D: "",
-    s2N: "",
-    s2D: "",
-    s3N: "",
-    s3D: "",
-    s4N: "",
-    s4D: "",
+    npo: false,
+    np: false,
+    npCk: null,
     dtlDsc: "",
     deleted: false,
-    no: false,
-    //index: 0,
     isDeleted: false,
   };
 
@@ -365,53 +268,33 @@ const ProductOfferForm = ({
   useEffect(() => {
     if (
       isNew === false &&
-      selectedProductOffer !== null &&
-      selectedProductOffer.flwId === 0 &&
-      productOfferDtls !== undefined
+      selectedProductPerm !== null &&
+      selectedProductPerm.flwId === 0 &&
+      productPermDtls !== undefined
     ) {
       //for edit
-      console.log(productOfferDtls, "productOfferDtls");
+      console.log(productPermDtls, "productPermDtls");
       setAddList(
-        productOfferDtls.map((item) => ({
+        productPermDtls.map((item) => ({
           ...item,
-          s1O:
-            item.s1NO + item.s1DO > 0
-              ? item.s1DO.toString() + "+" + item.s1NO.toString()
-              : "",
-          s2O:
-            item.s2NO + item.s2DO > 0
-              ? item.s2DO.toString() + "+" + item.s2NO.toString()
-              : "",
-          s3O:
-            item.s3NO + item.s3DO > 0
-              ? item.s3DO.toString() + "+" + item.s3NO.toString()
-              : "",
-          s4O:
-            item.s4NO + item.s4DO > 0
-              ? item.s4DO.toString() + "+" + item.s4NO.toString()
-              : "",
-          isDeleted: false,
-          no: false,
-          dtlDsc: item.dtlDsc,
-          deleted: item.deleted,
-          index: productOfferDtls.length + 1,
+          npo: item.np,
           id: item.id,
           pId: item.pId,
           bName: item.bName,
           product: item.product,
           lastDate: item.lastDate,
-          s1N: item.s1N + item.s1D > 0 ? item.s1N.toString() : "",
-          s1D: item.s1D + item.s1N > 0 ? item.s1D.toString() : "",
-          s2N: item.s2N + item.s2D > 0 ? item.s2N.toString() : "",  
-          s2D: item.s2D + item.s2N > 0 ? item.s2D.toString() : "",
-          s3N: item.s3N + item.s3D > 0 ? item.s3N.toString() : "",
-          s3D: item.s3D + item.s3N > 0 ? item.s3D.toString() : "",
-          s4N: item.s4N + item.s4D > 0 ? item.s4N.toString() : "",
-          s4D: item.s4D + item.s4N > 0 ? item.s4D.toString() : "",
+          np: item.np,
+          npCk: item.np ? (
+            <img src={Accept} alt="Accept" className="w-4 h-4" />
+          ) : null,
+          dtlDsc: item.dtlDsc,
+          deleted: item.deleted,
+          isDeleted: false,
+          index: productPermDtls.length + 1,
         }))
       );
     }
-  }, [selectedProductOffer]);
+  }, [selectedProductPerm]);
   ////////////////////////////////////////////////////////
 
   //send params to /api/Product/search?accSystem=4&accYear=15&page=1&searchTerm=%D8%B3%D9%81
@@ -441,14 +324,15 @@ const ProductOfferForm = ({
   const handleSubmit = async (
     e?: React.MouseEvent<HTMLButtonElement>,
     productId: number = 0
-  ): Promise<ShowProductListResponse | undefined> => {
+  ): Promise<ProductPermListResponse | undefined> => {
     if (e) e.preventDefault();
-    let request: ShowProductListRequest;
+    let request: ProductPermListRequest;
     request = {
       id: 0,
       productId: productId,
-      acc_Year: yearId,
-      brands: brand?.map((b) => b.id) ?? [],
+      yearId: yearId,
+      systemId: systemId,
+      brands: brand?.map((b) => Number(b.id)) ?? [],
     };
 
     console.log(request, "request");
@@ -476,34 +360,13 @@ const ProductOfferForm = ({
             bName: product.bName,
             product: product.product,
             lastDate: product.lastDate,
-            s1O:
-              product.s1NO + product.s1DO > 0
-                ? product.s1DO.toString() + "+" + product.s1NO.toString()
-                : "",
-            s2O:
-              product.s2NO + product.s2DO > 0
-                ? product.s2DO.toString() + "+" + product.s2NO.toString()
-                : "",
-            s3O:
-              product.s3NO + product.s3DO > 0
-                ? product.s3DO.toString() + "+" + product.s3NO.toString()
-                : "",
-            s4O:
-              product.s4NO + product.s4DO > 0
-                ? product.s4DO.toString() + "+" + product.s4NO.toString()
-                : "",
-            s1N: "",
-            s1D: "",
-            s2N: "",
-            s2D: "",
-            s3N: "",
-            s3D: "",
-            s4N: "",
-            s4D: "",
+            npo: false,
+            np: product.np,
+            npCk: product.np ? (
+              <img src={Accept} alt="Accept" className="w-4 h-4" />
+            ) : null,
             dtlDsc: product.dtlDsc,
             deleted: product.deleted,
-            no: false,
-            //index: index + 1,
             isDeleted: false,
           },
         ]);
@@ -521,40 +384,26 @@ const ProductOfferForm = ({
   ///////////////////////////////////////////////////////
   const handleAddRow = (
     index: number,
-    setData: Dispatch<SetStateAction<ProductOfferProductTable2[]>>
+    setData: Dispatch<SetStateAction<ProductPermListItemTable2[]>>
   ) => {
-    setData((prev: ProductOfferProductTable2[]) => [
+    setData((prev: ProductPermListItemTable2[]) => [
       ...prev,
       { ...newRow, index: index },
     ]);
   };
   ////////////////////////////////////////////////////////
-  const convertToLatinDigitsWithPlus = (value1: string, value2: string) => {
-    return Number(convertToLatinDigits(value1)) +
-      Number(convertToLatinDigits(value2)) >
-      0
-      ? convertToLatinDigits(value1).toString() +
-          "+" +
-          convertToLatinDigits(value2).toString()
-      : "";
-  };
-  ////////////////////////////////////////////////////////
   const handleSubmitSave = async (
     e?: React.MouseEvent<HTMLButtonElement>
-  ): Promise<ProductOfferSaveResponse | undefined> => {
+  ): Promise<ProductPermSaveResponse | undefined> => {
     if (e) e.preventDefault();
-    let request: ProductOfferSaveRequest;
-    const dtls: Dtl[] = originalData
+    let request: ProductPermSaveRequest;
+    const dtls = originalData
       .filter((item) => item.pId !== 0)
       .map((item) => {
-        const dtl: Dtl = {
+        const dtl = {
           id: item.id,
           pId: item.pId,
-          s1: convertToLatinDigitsWithPlus(item.s1N, item.s1D),
-          s2: convertToLatinDigitsWithPlus(item.s2N, item.s2D),
-          s3: convertToLatinDigitsWithPlus(item.s3N, item.s3D),
-          s4: convertToLatinDigitsWithPlus(item.s4N, item.s4D),
-          no: item.no,
+          np: item.np,
           dtlDsc: item.dtlDsc,
           deleted: item.isDeleted,
         };
@@ -563,9 +412,9 @@ const ProductOfferForm = ({
 
     request = {
       chartId: chartId,
-      id: isNew ? 0 : selectedProductOffer?.id ?? 0, //if isNew is true, id is 0, otherwise id is selectedProductOffer?.id for edit
-      acc_System: systemId,
-      acc_Year: yearId,
+      id: isNew ? 0 : selectedProductPerm?.id ?? 0, //if isNew is true, id is 0, otherwise id is selectedProductPerm?.id for edit
+      systemId: systemId,
+      yearId: yearId,
       dsc: convertToLatinDigits(dsc),
       dat: convertToLatinDigits(dat),
       tim: convertToLatinDigits(tim),
@@ -574,11 +423,10 @@ const ProductOfferForm = ({
     };
     console.log(request);
     try {
-      const response = await productOfferSave(request);
+      const response = await productPermSave(request);
       setIsModalRegOpen(true);
       //setIsNew(false);
       //setIsEdit(false);
-
       return response;
       //console.log( "request");
     } catch (error) {
@@ -590,7 +438,7 @@ const ProductOfferForm = ({
     <div className="flex flex-col gap-2">
       <ProductOfferFormParams
         isNew={isNew}
-        selectedProductOffer={selectedProductOffer}
+        selectedProductOffer={selectedProductPerm}
         dat={dat}
         tim={tim}
         dsc={dsc}
@@ -644,20 +492,20 @@ const ProductOfferForm = ({
         </div>
       </div>
 
-      <ProductOfferFormList
+      <ProductPermFormList
         setIsNew={setIsNew}
         setIsEdit={setIsEdit}
         columns={columns}
         originalData={originalData}
         setOriginalData={setOriginalData}
-        isLoadingProductOfferSave={isLoadingProductOfferSave}
+        isLoadingProductOfferSave={isLoadingProductPermSave}
         handleSubmitSave={handleSubmitSave}
-        isDtlHistoryLoading={isLoadingProductOfferDtlHistory}
+        isDtlHistoryLoading={isLoadingDtlHistory}
         handleSubmit={handleSubmit}
         addList={addList}
         handleAddRow={handleAddRow}
         showDeleted={showDeleted}
-        productOfferDtlHistory={productOfferDtlHistory}
+        productPermDtlHistory={productPermDtlHistory}
         showHistory={showHistory}
         setShowHistory={setShowHistory}
         isModalRegOpen={isModalRegOpen}
@@ -667,4 +515,4 @@ const ProductOfferForm = ({
   );
 };
 
-export default ProductOfferForm;
+export default ProductPermForm;

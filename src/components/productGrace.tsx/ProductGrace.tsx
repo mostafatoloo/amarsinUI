@@ -1,119 +1,71 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-
+import { columns } from "../productOffer/ProductOfferGeneral";
 import Accept from "../../assets/images/GrayThem/img24_3.png";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useGeneralContext } from "../../context/GeneralContext";
-import TTable from "../controls/TTable";
-import { useProductOfferStore } from "../../store/productOfferStore";
-import { useProductOffer } from "../../hooks/useProductOffer";
+import {
+  ProductGraceDoFirstFlowRequest,
+  ProductGraceDtl,
+  ProductGrace as ProductGraceType,
+} from "../../types/productGrace";
 import {
   convertPersianDate,
   convertToFarsiDigits,
   convertToLatinDigits,
 } from "../../utilities/general";
-import ModalMessage from "../layout/ModalMessage";
-import Skeleton from "../layout/Skeleton";
-import ProductOfferParams from "./ProductOfferParams";
-import ModalForm from "../layout/ModalForm";
-import ProductOfferForm from "./ProductOfferForm";
-import {
-  ProductOffer as ProductOfferType,
-  ProductOfferDtlTable,
-} from "../../types/productOffer";
 import { debounce } from "lodash";
+import ProductOfferHeader from "../productOffer/ProductOfferHeader";
+import Skeleton from "../layout/Skeleton";
+import ProductOfferTblHeader from "../productOffer/ProductOfferTblHeader";
+import TTable from "../controls/TTable";
 import { TablePaginationActions } from "../controls/TablePaginationActions";
-import ProductOfferTblHeader from "./ProductOfferTblHeader";
-import ProductOfferHeader from "./ProductOfferHeader";
-import { columns } from "./ProductOfferGeneral";
+import ProductOfferParams from "../productOffer/ProductOfferParams";
+import ModalMessage from "../layout/ModalMessage";
+import ModalForm from "../layout/ModalForm";
+import { useProductGraceStore } from "../../store/productGraceStore";
+import { useProductGrace } from "../../hooks/useProductGrace";
+import ProductGraceForm from "./ProductGraceForm";
+import ProductGraceDtlHeader from "./ProductGraceDtlHeader";
+import { colors } from "../../utilities/color";
 
-const ProductOffer = () => {
-  const columnsDtl = React.useMemo(
-    () => [
-      {
-        Header: "ردیف",
-        accessor: "index",
-        width: "5%",
-      },
-      {
-        Header: "برند",
-        accessor: "bName",
-        width: "10%",
-      },
-      {
-        Header: "کالا",
-        accessor: "product",
-        width: "40%",
-      },
-      {
-        Header: convertToFarsiDigits("پ 1"),
-        accessor: "s1O",
-        width: "5%",
-      },
-      {
-        Header: convertToFarsiDigits("پ 2"),
-        accessor: "s2O",
-        width: "5%",
-      },
-      {
-        Header: convertToFarsiDigits("پ 3"),
-        accessor: "s3O",
-        width: "5%",
-      },
-      {
-        Header: convertToFarsiDigits("پ 4"),
-        accessor: "s4O",
-        width: "5%",
-      },
-      {
-        Header: "بدون آفر",
-        accessor: "no",
-        width: "5%",
-      },
-      {
-        Header: "توضیح",
-        accessor: "dtlDsc",
-        width: "20%",
-      },
-    ],
-    []
-  );
-
+const ProductGrace = () => {
   const {
     setField,
     id: prevId,
-    productOfferDelResponse,
-  } = useProductOfferStore();
+    productGraceDoFirstFlowResponse,
+    productGraceDelResponse,
+  } = useProductGraceStore();
   const {
-    productOffer,
-    productOfferTotalCount,
-    productOfferDtl,
-    productOfferMeta,
+    productGrace,
+    productGraceTotalCount,
+    refetch,
     isLoading,
     isLoadingDtl,
-    refetch,
+    productGraceDtl,
+    productGraceMeta,
     addProductList,
-    productOfferDtlHistory,
-    isLoadingProductOfferDtlHistory,
-    productOfferSave,
-    isLoadingProductOfferSave,
-    productOfferDoFirstFlow,
-    productOfferDel,
-  } = useProductOffer();
+    productGraceDtlHistory,
+    isLoadingDtlHistory,
+    productGraceSave,
+    isLoadingProductGraceSave,
+    productGraceDoFirstFlow,
+    productGraceDel,
+  } = useProductGrace();
 
   //const { setField: setProductOfferField } = useProductOfferStore();
   const [data, setData] = useState<any[]>([]);
-  const [dataDtl, setDataDtl] = useState<ProductOfferDtlTable[]>([]);
+  const [dataDtl, setDataDtl] = useState<ProductGraceDtl[]>([]);
   const { yearId, systemId, chartId } = useGeneralContext();
-  const [selectedId, setSelectedId] = useState<number>(1363);
+  const [selectedId, setSelectedId] = useState<number>(589);
   const [isNew, setIsNew] = useState<boolean>(false); //for new
   const [isEdit, setIsEdit] = useState<boolean>(false); //for edit
-  //for ProductOfferParams params
+  //for ProductPermParams params
   const [regFDate, setRegFDate] = useState<Date | null>(null);
   const [regTDate, setRegTDate] = useState<Date | null>(null);
   const [fDate, setFDate] = useState<Date | null>(null);
   const [tDate, setTDate] = useState<Date | null>(null);
   const [state, setState] = useState<number>(-1);
-  const [selectedProductOffer, setSelectedProductOffer] =
-    useState<ProductOfferType | null>(null);
+  const [selectedProductGrace, setSelectedProductGrace] =
+    useState<ProductGraceType | null>(null);
   // for pagination
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(12);
@@ -133,12 +85,61 @@ const ProductOffer = () => {
   const [sortAccepted, setSortAccepted] = useState<number>(0);
   const [sortUsrName, setSortUsrName] = useState<number>(0);
   const [sortStep, setSortStep] = useState<number>(0);
+  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in productGrace table
+  const [selectedRowIndexDtl, setSelectedRowIndexDtl] = useState<number>(0); //for selected row index in productGraceDtl table
 
+  const columnsDtl = React.useMemo(
+    () => [
+      {
+        Header: "ردیف",
+        accessor: "index",
+        width: "5%",
+      },
+      {
+        Header: "برند",
+        accessor: "bName",
+        width: "10%",
+      },
+      {
+        Header: "کالا",
+        accessor: "product",
+        width: "35%",
+      },
+      {
+        Header: "فرجه کالا",
+        accessor: "gd",
+        width: "5%",
+        backgroundColor: colors.indigo50,
+      },
+      {
+        Header: "فروش",
+        accessor: "sc",
+        width: "5%",
+        backgroundColor: colors.indigo50,
+      },
+      {
+        Header: "وصول",
+        accessor: "cc",
+        width: "5%",
+        backgroundColor: colors.indigo50,
+      },
+      {
+        Header: "مازاد",
+        accessor: "ec",
+        width: "5%",
+        backgroundColor: colors.indigo50,
+      },
+      {
+        Header: "شرح",
+        accessor: "dtlDsc",
+        width: "30%",
+      },
+    ],
+    []
+  );
   // Refs for maintaining focus on input elements
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
-  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in productOffer table
-  const [selectedRowIndexDtl, setSelectedRowIndexDtl] = useState<number>(0); //for selected row index in productOfferDtl table
 
   // Function to preserve focus
   const preserveFocus = useCallback((inputName: string) => {
@@ -155,11 +156,11 @@ const ProductOffer = () => {
     if (focusedInput && inputRefs.current[focusedInput]) {
       inputRefs.current[focusedInput]?.focus();
     }
-  }, [focusedInput, data, productOffer]);
+  }, [focusedInput, data, productGrace]);
 
   useEffect(() => {
-    setField("acc_Year", yearId);
-    setField("acc_System", systemId);
+    setField("yearId", yearId);
+    setField("systemId", systemId);
     setField("state", state);
 
     setField(
@@ -223,7 +224,6 @@ const ProductOffer = () => {
   }, [pageNumber]);
   ////////////////////////////////////////////////////////////
   useEffect(() => {
-    console.log("srchDsc", srchDsc);
     setPageNumber(1);
   }, [
     state,
@@ -280,13 +280,13 @@ const ProductOffer = () => {
       setField("id", selectedId);
     }
     selectedId !== 0 &&
-      setSelectedProductOffer(
-        productOffer?.find((item) => item.id === selectedId) || null
+      setSelectedProductGrace(
+        productGrace?.find((item) => item.id === selectedId) || null
       );
-  }, [selectedId]);
+  }, [selectedId, productGrace]);
 
   useEffect(() => {
-    const tempData = productOffer?.map((item, index) => {
+    const tempData = productGrace?.map((item, index) => {
       return {
         ...item,
         id: convertToFarsiDigits(item.id),
@@ -308,54 +308,20 @@ const ProductOffer = () => {
     } else {
       setSelectedId(0);
     }
-  }, [productOffer]);
+  }, [productGrace]);
 
   useEffect(() => {
-    let tempDataDtl: ProductOfferDtlTable[] = [];
-    if (productOfferDtl) {
-      tempDataDtl = productOfferDtl.map((item, index) => {
+    let tempDataDtl: any[] = [];
+    if (productGraceDtl) {
+      tempDataDtl = productGraceDtl.map((item, index) => {
         return {
           index: convertToFarsiDigits(index + 1),
-          id: item.id,
           bName: convertToFarsiDigits(item.bName),
-          pId: item.pId,
           product: convertToFarsiDigits(item.product),
-          lastDate: convertToFarsiDigits(item.lastDate),
-          s1O:
-            item.s1N + item.s1D < 0
-              ? ""
-              : convertToFarsiDigits(
-                  item.s1D.toString() + "+" + item.s1N.toString()
-                ),
-          s2O:
-            item.s2N + item.s2D < 0
-              ? ""
-              : convertToFarsiDigits(
-                  item.s2D.toString() + "+" + item.s2N.toString()
-                ),
-          s3O:
-            item.s3N + item.s3D < 0
-              ? ""
-              : convertToFarsiDigits(
-                  item.s3D.toString() + "+" + item.s3N.toString()
-                ),
-          s4O:
-            item.s4N + item.s4D < 0
-              ? ""
-              : convertToFarsiDigits(
-                  item.s4D.toString() + "+" + item.s4N.toString()
-                ),
-          s1N: "",
-          s1D: "",
-          s2N: "",
-          s2D: "",
-          s3N: "",
-          s3D: "",
-          s4N: "",
-          s4D: "",
-          no: item.no ? (
-            <img src={Accept} alt="Accept" className="w-4 h-4" />
-          ) : null,
+          gd: convertToFarsiDigits(item.gd),
+          sc: convertToFarsiDigits(item.sc),
+          cc: convertToFarsiDigits(item.cc),
+          ec: convertToFarsiDigits(item.ec),
           dtlDsc: convertToFarsiDigits(item.dtlDsc),
         };
       });
@@ -363,7 +329,7 @@ const ProductOffer = () => {
         setDataDtl(tempDataDtl);
       }
     }
-  }, [productOfferDtl]);
+  }, [productGraceDtl]);
 
   const handleSelectedIdChange = (id: number) => {
     //console.log(id, "id in WorkflowForm");
@@ -390,11 +356,13 @@ const ProductOffer = () => {
   }, [isModalOpen, isModalConfirmOpen, isModalDeleteOpen]);
 
   const handleConfirm = () => {
-    setField("chartIdProductOfferDoFirstFlow", chartId);
-    setField("acc_SystemProductOfferDoFirstFlow", systemId);
-    setField("acc_YearProductOfferDoFirstFlow", yearId);
-    setField("idProductOfferDoFirstFlow", selectedId);
-    setField("dscProductOfferDoFirstFlow", selectedProductOffer?.dsc || "");
+    const request: ProductGraceDoFirstFlowRequest = {
+      acc_Year: yearId,
+      acc_System: systemId,
+      id: selectedId,
+      dsc: selectedProductGrace?.dsc || "توضیحات",
+    };
+    productGraceDoFirstFlow(request);
     setIsModalConfirmOpen(true);
   };
 
@@ -403,11 +371,11 @@ const ProductOffer = () => {
   };
 
   const handleDelete = () => {
-    productOfferDel(selectedId);
+    productGraceDel(selectedId);
     setIsModalDeleteOpen(true);
   };
 
-  const ProductOfferInput = (
+  const ProductPermInput = (
     inputName: string,
     inputWidth: string,
     inputValue: string,
@@ -432,19 +400,17 @@ const ProductOffer = () => {
       />
     );
   };
-
   return (
     <div
       className={`sm:h-full overflow-y-scroll flex flex-col bg-gray-200 pt-2 gap-2`}
     >
-      {/* Top header */}
       <ProductOfferHeader
         columns={columns}
         setIsNew={setIsNew}
         handleDelete={handleDelete}
         handleEdit={handleEdit}
         handleConfirm={handleConfirm}
-        selectedProductOffer={selectedProductOffer as ProductOfferType}
+        selectedProductOffer={selectedProductGrace || ({} as ProductGraceType)}
         data={data}
         refetch={refetch}
       />
@@ -479,9 +445,24 @@ const ProductOffer = () => {
                     style={{ width: columns[1].width }}
                     className={`border p-1 text-sm rounded-sm`}
                   />
-                  {ProductOfferInput("srchDate", columns[2].width, srchDate, setSrchDate)}
-                  {ProductOfferInput("srchTime", columns[3].width, srchTime, setSrchTime)}
-                  {ProductOfferInput("srchDsc", columns[4].width, srchDsc, setSrchDsc)}
+                  {ProductPermInput(
+                    "srchDate",
+                    columns[2].width,
+                    srchDate,
+                    setSrchDate
+                  )}
+                  {ProductPermInput(
+                    "srchTime",
+                    columns[3].width,
+                    srchTime,
+                    setSrchTime
+                  )}
+                  {ProductPermInput(
+                    "srchDsc",
+                    columns[4].width,
+                    srchDsc,
+                    setSrchDsc
+                  )}
                   <input
                     name="srchAccepted"
                     type="checkbox"
@@ -496,8 +477,18 @@ const ProductOffer = () => {
                     style={{ width: columns[5].width }}
                     className={`border p-1 text-sm rounded-sm`}
                   />
-                  {ProductOfferInput("srchUsrName", columns[6].width, srchUsrName, setSrchUsrName)}
-                  {ProductOfferInput("srchStep", columns[7].width, srchStep, setSrchStep)}
+                  {ProductPermInput(
+                    "srchUsrName",
+                    columns[6].width,
+                    srchUsrName,
+                    setSrchUsrName
+                  )}
+                  {ProductPermInput(
+                    "srchStep",
+                    columns[7].width,
+                    srchStep,
+                    setSrchStep
+                  )}
                 </div>
                 <ProductOfferTblHeader
                   columns={columns}
@@ -517,9 +508,9 @@ const ProductOffer = () => {
                   setSortStep={setSortStep}
                 />
                 <TTable
-                  columns={columns}
                   selectedRowIndex={selectedRowIndex}
                   setSelectedRowIndex={setSelectedRowIndex}
+                  columns={columns}
                   data={data}
                   fontSize="0.75rem"
                   changeRowSelectColor={true}
@@ -537,7 +528,7 @@ const ProductOffer = () => {
               setPage={setPageNumber}
               pageSize={pageSize}
               setPageSize={setPageSize}
-              totalCount={productOfferTotalCount ?? 0}
+              totalCount={productGraceTotalCount ?? 0}
             />
           </div>
         </div>
@@ -556,21 +547,24 @@ const ProductOffer = () => {
           />
         </div>
       </div>
-
       <div className="px-2 h-full">
         {isLoadingDtl ? (
           <Skeleton />
         ) : (
-          <TTable
-            columns={columnsDtl}
-            selectedRowIndex={selectedRowIndexDtl}
-            setSelectedRowIndex={setSelectedRowIndexDtl}
-            data={dataDtl}
-            fontSize="0.75rem"
-            changeRowSelectColor={true}
-            wordWrap={false}
-            showToolTip={true}
-          />
+          <>
+            <ProductGraceDtlHeader columns={columnsDtl} />
+            <TTable
+              selectedRowIndex={selectedRowIndexDtl}
+              setSelectedRowIndex={setSelectedRowIndexDtl}
+              columns={columnsDtl}
+              data={dataDtl}
+              fontSize="0.75rem"
+              changeRowSelectColor={true}
+              wordWrap={false}
+              showToolTip={true}
+              showHeader={false}
+            />
+          </>
         )}
       </div>
       <ModalMessage
@@ -580,7 +574,7 @@ const ProductOffer = () => {
         bgColorButtonHover="bg-red-600"
         color="text-white"
         onClose={() => setIsModalOpen(false)}
-        message={productOfferMeta?.message || ""}
+        message={productGraceMeta?.message || ""}
       />
       <ModalForm
         isOpen={isNew || isEdit}
@@ -588,17 +582,17 @@ const ProductOffer = () => {
           setIsNew(false);
           setIsEdit(false);
         }}
-        title="آفرهای کالا"
+        title="نیاز به مجوز"
         width="1"
       >
-        <ProductOfferForm
+        <ProductGraceForm
           addProductList={addProductList}
-          productOfferDtlHistory={productOfferDtlHistory || []}
-          isLoadingProductOfferDtlHistory={isLoadingProductOfferDtlHistory}
-          productOfferSave={productOfferSave}
-          isLoadingProductOfferSave={isLoadingProductOfferSave}
-          selectedProductOffer={selectedProductOffer} //for check if selectedProductOffer.flwId===0 new else edit && sending selectedProductOffer.id in edit
-          productOfferDtls={productOfferDtl}
+          productGraceDtlHistory={productGraceDtlHistory || []}
+          isLoadingDtlHistory={isLoadingDtlHistory}
+          productGraceSave={productGraceSave}
+          isLoadingProductGraceSave={isLoadingProductGraceSave}
+          selectedProductGrace={selectedProductGrace} //for check if selectedProductGrace.flwId===0 new else edit && sending selectedProductGrace.id in edit
+          productGraceDtls={productGraceDtl}
           isNew={isNew} //for check if isNew new else edit
           setIsNew={setIsNew}
           setIsEdit={setIsEdit}
@@ -608,17 +602,17 @@ const ProductOffer = () => {
         isOpen={isModalConfirmOpen}
         onClose={() => setIsModalConfirmOpen(false)}
         backgroundColor={
-          productOfferDoFirstFlow?.meta.errorCode === -1
+          productGraceDoFirstFlowResponse?.meta.errorCode === -1
             ? "bg-green-200"
             : "bg-red-200"
         }
         bgColorButton={
-          productOfferDoFirstFlow?.meta.errorCode === -1
+          productGraceDoFirstFlowResponse?.meta.errorCode === -1
             ? "bg-green-500"
             : "bg-red-500"
         }
         color="text-white"
-        message={productOfferDoFirstFlow?.meta.message || ""}
+        message={productGraceDoFirstFlowResponse?.meta.message || ""}
         visibleButton={false}
       />
       <ModalMessage
@@ -629,8 +623,8 @@ const ProductOffer = () => {
         bgColorButtonHover="bg-red-600"
         color="text-white"
         message={
-          productOfferDelResponse?.meta.errorCode !== -1
-            ? productOfferDelResponse?.meta.message || ""
+          productGraceDelResponse?.meta.errorCode !== -1
+            ? productGraceDelResponse?.meta.message || ""
             : "اطلاعات با موفقیت حذف شد."
         }
         visibleButton={false}
@@ -639,4 +633,4 @@ const ProductOffer = () => {
   );
 };
 
-export default ProductOffer;
+export default ProductGrace;

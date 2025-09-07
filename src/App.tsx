@@ -16,6 +16,8 @@ import ProducerList from "./pages/reports/ProducerList";
 import Workflow from "./pages/Workflow";
 import Dashboard from "./pages/Dashboard";
 import ProductOffer from "./components/productOffer/ProductOffer";
+import ProductPerm from "./components/productPerm/ProductPerm";
+import ProductGrace from "./components/productGrace.tsx/ProductGrace";
 
 const queryClient = new QueryClient();
 
@@ -84,6 +86,22 @@ function App() {
               element={
                 <PrivateRoute>
                   <ProductOffer />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="Admin/ProductPerm"
+              element={
+                <PrivateRoute>
+                  <ProductPerm />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="Admin/ProductGrace"
+              element={
+                <PrivateRoute>
+                  <ProductGrace />
                 </PrivateRoute>
               }
             />

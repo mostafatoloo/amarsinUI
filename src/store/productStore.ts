@@ -3,7 +3,7 @@ import { ProductState,  } from "../types/product";
 export const useProductStore = create<ProductState>()((set) => ({
   productSearchResponse: {
     meta: { errorCode: 0, message: "", type: "" },
-    data: { totalCount: 0, result: [] },
+    data: { totalCount: 0, result: { total_count: 0, searchResults: [] } },
   },
   salesPricesSearchResponse: {
     total_count: 0,

@@ -2,26 +2,27 @@ import {
   useMutation,
   useQuery,
   useQueryClient,
+  //useQueryClient,
   UseQueryOptions,
 } from "@tanstack/react-query";
 import api from "../api/axios";
-import { useProductOfferStore } from "../store/productOfferStore";
+import { useProductPermStore } from "../store/productPermStore";
 import {
-  ProductOfferDoFirstFlowResponse,
-  ProductOfferDtlHistoryResponse,
-  ProductOfferRequest,
-  ProductOfferResponse,
-  ProductOfferSaveRequest,
-  ShowProductListRequest,
-} from "../types/productOffer";
+  ProductPermDoFirstFlowRequest,
+  ProductPermDtlHistoryResponse,
+  ProductPermListRequest,
+  ProductPermRequest,
+  ProductPermResponse,
+  ProductPermSaveRequest,
+} from "../types/productPerm";
 
-export function useProductOffer() {
+export function useProductPerm() {
   const queryClient = useQueryClient();
 
   const {
     id,
-    acc_Year,
-    acc_System,
+    yearId,
+    systemId,
     state,
     regFDate,
     regTDate,
@@ -43,30 +44,29 @@ export function useProductOffer() {
     sortUsrName,
     sortStep,
     pId,
-    //for productOffer/productOfferDoFirstFlow
-    chartIdProductOfferDoFirstFlow,
-    acc_SystemProductOfferDoFirstFlow,
-    acc_YearProductOfferDoFirstFlow,
-    idProductOfferDoFirstFlow,
-    dscProductOfferDoFirstFlow,
-    setProductOfferDtlHistoryResponse,
-    setProductOfferResponse,
-    setShowProductListResponse,
-    setProductOfferSaveResponse,
-    setProductOfferDoFirstFlowResponse, //for productOffer/productOfferDoFirstFlow
-    setProductOfferDelResponse, //for productOffer/productOfferDel
-  } = useProductOfferStore();
+    //productPermResponse,
+    setProductPermResponse,
+    setProductPermListResponse,
+    //for productPerm/dtlHistory
+    setProductPermDtlHistoryResponse,
+    //for productPerm/save
+    setProductPermSaveResponse,
+    //for productPerm/del
+    setProductPermDelResponse,
+    //for productPerm/doFirstFlow
+    setProductPermDoFirstFlowResponse,
+  } = useProductPermStore();
   //for productOffer
   const query = useQuery<
-    ProductOfferResponse,
+    ProductPermResponse,
     Error,
-    ProductOfferResponse,
+    ProductPermResponse,
     unknown[]
   >({
     queryKey: [
-      "productOffer",
-      acc_Year,
-      acc_System,
+      "productPerm",
+      yearId,
+      systemId,
       state,
       regFDate,
       regTDate,
@@ -90,8 +90,8 @@ export function useProductOffer() {
     ],
     queryFn: async () => {
       const params = {
-        acc_Year,
-        acc_System,
+        yearId,
+        systemId,
         state,
         regFDate,
         regTDate,
@@ -113,9 +113,9 @@ export function useProductOffer() {
         sortUsrName,
         sortStep,
       };
-      const url = `/api/ProductOffer/ProductOffer?Acc_Year=${
-        params.acc_Year
-      }&Acc_System=${params.acc_System}&State=${
+      const url = `/api/ProductPerm/productPerm?YearId=${
+        params.yearId
+      }&SystemId=${params.systemId}&State=${
         params.state
       }&RegFDate=${encodeURIComponent(
         params.regFDate ?? ""
@@ -148,7 +148,7 @@ export function useProductOffer() {
       }&SortDsc=${params.sortDsc}&SortAccepted=${
         params.sortAccepted
       }&SortUsrName=${params.sortUsrName}&SortStep=${params.sortStep}`;
-      console.log("ProductOffer url", url);
+      console.log("ProductPerm url", url);
       const response = await api.get(url);
       return response.data;
     },
@@ -156,21 +156,22 @@ export function useProductOffer() {
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
-      setProductOfferResponse(data);
+      setProductPermResponse(data);
     },
-  } as UseQueryOptions<ProductOfferResponse, Error, ProductOfferResponse, unknown[]>);
+  } as UseQueryOptions<ProductPermResponse, Error, ProductPermResponse, unknown[]>);
+
   //for productOfferDtl
   const queryDtl = useQuery<
-    ProductOfferResponse,
+    ProductPermResponse,
     Error,
-    ProductOfferResponse,
+    ProductPermResponse,
     unknown[]
   >({
     queryKey: [
-      "productOfferDtl",
+      "productPermDtl",
       id,
-      acc_Year,
-      acc_System,
+      yearId,
+      systemId,
       state,
       regFDate,
       regTDate,
@@ -193,10 +194,10 @@ export function useProductOffer() {
       sortStep,
     ],
     queryFn: async () => {
-      const params: ProductOfferRequest = {
+      const params: ProductPermRequest = {
         id,
-        acc_Year,
-        acc_System,
+        yearId,
+        systemId,
         state,
         regFDate,
         regTDate,
@@ -218,9 +219,9 @@ export function useProductOffer() {
         sortUsrName,
         sortStep,
       };
-      const url = `/api/ProductOffer/ProductOffer?Id=${params.id}&Acc_Year=${
-        params.acc_Year
-      }&Acc_System=${params.acc_System}&State=${
+      const url = `/api/ProductPerm/ProductPerm?Id=${params.id}&Acc_Year=${
+        params.yearId
+      }&Acc_System=${params.systemId}&State=${
         params.state
       }&RegFDate=${encodeURIComponent(
         params.regFDate ?? ""
@@ -253,7 +254,7 @@ export function useProductOffer() {
       }&SortDsc=${params.sortDsc}&SortAccepted=${
         params.sortAccepted
       }&SortUsrName=${params.sortUsrName}&SortStep=${params.sortStep}`;
-      console.log("ProductOfferDtl url", url);
+      console.log("ProductPermDtl url", url);
       const response = await api.get(url);
       return response.data;
     },
@@ -261,21 +262,32 @@ export function useProductOffer() {
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
-      setProductOfferResponse(data);
+      setProductPermResponse(data);
     },
-  } as UseQueryOptions<ProductOfferResponse, Error, ProductOfferResponse, unknown[]>);
+  } as UseQueryOptions<ProductPermResponse, Error, ProductPermResponse, unknown[]>);
 
-  //for productOffer/productOfferDtlHistory
-  const productOfferDtlHistory = useQuery<
-    ProductOfferDtlHistoryResponse,
+  // for productOffer/showProductList
+  const addList = useMutation({
+    mutationFn: async (request: ProductPermListRequest) => {
+      const url: string = `api/ProductPerm/productList `;
+      const response = await api.post(url, request);
+      return response.data;
+    },
+    onSuccess: (data: any) => {
+      setProductPermListResponse(data);
+    },
+  });
+  // for productPerm/dtlHistory
+  const productPermDtlHistory = useQuery<
+    ProductPermDtlHistoryResponse,
     Error,
-    ProductOfferDtlHistoryResponse,
+    ProductPermDtlHistoryResponse,
     unknown[]
   >({
-    queryKey: ["productOfferDtlHistory", pId],
+    queryKey: ["productPermDtlHistory", pId],
     queryFn: async () => {
-      const url = `/api/ProductOffer/dtlHistory?PId=${pId}`;
-      console.log("productOfferDtlHistory url", url);
+      const url = `/api/ProductPerm/dtlHistory?PId=${pId}`;
+      console.log(url, "url");
       const response = await api.get(url);
       return response.data;
     },
@@ -283,40 +295,46 @@ export function useProductOffer() {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     onSuccess: (data: any) => {
-      setProductOfferDtlHistoryResponse(data);
+      setProductPermDtlHistoryResponse(data);
     },
-  } as UseQueryOptions<ProductOfferDtlHistoryResponse, Error, ProductOfferDtlHistoryResponse, unknown[]>);
-
-  // for productOffer/showProductList
-  const addList = useMutation({
-    mutationFn: async (request: ShowProductListRequest) => {
-      const url: string = `api/ProductOffer/productList `;
-      const response = await api.post(url, request);
-      return response.data;
-    },
-    onSuccess: (data: any) => {
-      setShowProductListResponse(data);
-    },
-  });
+  } as UseQueryOptions<ProductPermDtlHistoryResponse, Error, ProductPermDtlHistoryResponse, unknown[]>);
   // for productOffer/productOfferSave
-  const productOfferSave = useMutation({
-    mutationFn: async (request: ProductOfferSaveRequest) => {
-      const url: string = `api/ProductOffer/save`;
+  const productPermSave = useMutation({
+    mutationFn: async (request: ProductPermSaveRequest) => {
+      const url: string = `api/ProductPerm/save`;
       const response = await api.post(url, request);
 
       return response.data;
     },
     onSuccess: (data: any) => {
-      setProductOfferSaveResponse(data);
+      setProductPermSaveResponse(data);
       //console.log(data, "data");
-      queryClient.invalidateQueries({ queryKey: ["productOffer"] });
-      queryClient.invalidateQueries({ queryKey: ["productOfferDtl"] });
+      queryClient.invalidateQueries({ queryKey: ["productPerm"] });
+      queryClient.invalidateQueries({ queryKey: ["productPermDtl"] });
     },
   });
-  //for productOffer/productOfferDel
-  const productOfferDel = useMutation({
+  //for productPerm/productPermDoFirstFlow
+  const productPermDoFirstFlow = useMutation({
+    mutationFn: async (request: ProductPermDoFirstFlowRequest) => {
+      const url: string = `api/ProductPerm/doFirstFlow?ChartId=${
+        request.chartId
+      }&Acc_System=${request.systemId}&Acc_Year=${request.yearId}&Id=${
+        request.id
+      }&Dsc=${encodeURIComponent(request.dsc)}`;
+      console.log(request, "request", url, "url");
+      const response = await api.post(url);
+
+      return response.data;
+    },
+    onSuccess: (data: any) => {
+      setProductPermDoFirstFlowResponse(data);
+      queryClient.invalidateQueries({ queryKey: ["productPerm"] });
+    },
+  });
+  //for productPerm/productPermDel
+  const productPermDel = useMutation({
     mutationFn: async (requestId: number) => {
-      const response = await api.delete(`api/ProductOffer/del`, {
+      const response = await api.delete(`api/ProductPerm/del`, {
         params: {
           id: requestId,
         },
@@ -324,70 +342,44 @@ export function useProductOffer() {
       return response.data;
     },
     onSuccess: (data: any) => {
-      setProductOfferDelResponse(data);
-      queryClient.invalidateQueries({ queryKey: ["productOffer"] });
+      setProductPermDelResponse(data);
+      queryClient.invalidateQueries({ queryKey: ["productPerm"] });
     },
   });
-  //for productOffer/productOfferDoFirstFlow
-  const productOfferDoFirstFlow = useQuery<
-    ProductOfferDoFirstFlowResponse,
-    Error,
-    ProductOfferDoFirstFlowResponse,
-    unknown[]
-  >({
-    queryKey: [
-      "productOfferDoFirstFlow",
-      chartIdProductOfferDoFirstFlow,
-      acc_SystemProductOfferDoFirstFlow,
-      acc_YearProductOfferDoFirstFlow,
-      idProductOfferDoFirstFlow,
-      dscProductOfferDoFirstFlow,
-    ],
-    queryFn: async () => {
-      const url = `/api/ProductOffer/doFirstFlow?ChartId=${chartIdProductOfferDoFirstFlow}&Acc_System=${acc_SystemProductOfferDoFirstFlow}&Acc_Year=${acc_YearProductOfferDoFirstFlow}&Id=${idProductOfferDoFirstFlow}&Dsc=${dscProductOfferDoFirstFlow}`;
-      console.log("productOfferDoFirstFlow url", url);
-      const response = await api.get(url);
-      queryClient.invalidateQueries({ queryKey: ["productOffer"] });
-      return response.data;
-    },
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    onSuccess: (data: any) => {
-      setProductOfferDoFirstFlowResponse(data);
-    },
-  } as UseQueryOptions<ProductOfferDoFirstFlowResponse, Error, ProductOfferDoFirstFlowResponse, unknown[]>);
   return {
+    //for productPerm
     refetch: query.refetch,
     isLoading: query.isLoading,
     error: query.error,
-    productOffer: query.data?.data.result.productOffers,
-    productOfferMeta: query.data?.meta,
-    productOfferTotalCount: query.data?.data.result.total_count,
-    // for productOfferDtl
+    productPerm: query.data?.data.result.productPerms,
+    productPermMeta: query.data?.meta,
+    productPermTotalCount: query.data?.data.result.total_count,
+    //for productPermDtl
     isLoadingDtl: queryDtl.isLoading,
     errorDtl: queryDtl.error,
-    productOfferDtl: queryDtl.data?.data.result.productOfferDtls,
-    //for productOffer/showProductList
+    productPermDtl: queryDtl.data?.data.result.productPermDtls,
+    //for productPerm/productList
     isLoadingAddList: addList.isPending,
     errorAddList: addList.error,
     addProductList: addList.mutateAsync,
-    //for productOffer/productOfferDtlHistory
-    isLoadingProductOfferDtlHistory: productOfferDtlHistory.isLoading,
-    errorProductOfferDtlHistory: productOfferDtlHistory.error,
-    productOfferDtlHistory: productOfferDtlHistory.data?.data.result,
-    //for productOffer/productOfferSave
-    isLoadingProductOfferSave: productOfferSave.isPending,
-    errorProductOfferSave: productOfferSave.error,
-    productOfferSave: productOfferSave.mutateAsync,
-    productOfferSaveResponse: productOfferSave.data,
-    //for productOffer/productOfferDoFirstFlow
-    isLoadingProductOfferDoFirstFlow: productOfferDoFirstFlow.isLoading,
-    errorProductOfferDoFirstFlow: productOfferDoFirstFlow.error,
-    productOfferDoFirstFlow: productOfferDoFirstFlow.data,
-    //for productOffer/productOfferDel
-    isLoadingProductOfferDel: productOfferDel.isPending,
-    errorProductOfferDel: productOfferDel.error,
-    productOfferDel: productOfferDel.mutateAsync,
-    productOfferDelResponse: productOfferDel.data,
+    //for productPerm/dtlHistory
+    isLoadingDtlHistory: productPermDtlHistory.isLoading,
+    errorDtlHistory: productPermDtlHistory.error,
+    productPermDtlHistory: productPermDtlHistory.data?.data.result,
+    //for productPerm/productPermSave
+    isLoadingProductPermSave: productPermSave.isPending,
+    errorProductPermSave: productPermSave.error,
+    productPermSave: productPermSave.mutateAsync,
+    productPermSaveResponse: productPermSave.data,
+    //for productPerm/productPermDel
+    isLoadingProductPermDel: productPermDel.isPending,
+    errorProductPermDel: productPermDel.error,
+    productPermDel: productPermDel.mutateAsync,
+    productPermDelResponse: productPermDel.data,
+    //for productPerm/productPermDoFirstFlow
+    isLoadingProductPermDoFirstFlow: productPermDoFirstFlow.isPending,
+    errorProductPermDoFirstFlow: productPermDoFirstFlow.error,
+    productPermDoFirstFlow: productPermDoFirstFlow.mutateAsync,
+    productPermDoFirstFlowResponse: productPermDoFirstFlow.data ?? {},
   };
 }

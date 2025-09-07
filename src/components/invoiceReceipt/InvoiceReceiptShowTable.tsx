@@ -218,6 +218,7 @@ const InvoiceReceiptShowTable = ({
   const [dtlDscSearch, setDtlDscSearch] = useState<string>("");
   const [productSearch, setProductSearch] = useState<string>("");
   const {yearId,systemId} = useGeneralContext();
+  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in invoiceReceiptShowTable table
 
   const { setField: setProductField, indentDtlHistoryResponse } =
     useProductStore();
@@ -625,8 +626,9 @@ const InvoiceReceiptShowTable = ({
               canEditForm={canEditForm}
               columns={columns}
               data={data}
+              selectedRowIndex={selectedRowIndex}
+              setSelectedRowIndex={setSelectedRowIndex}
               updateMyData={updateMyData}
-              //skipPageReset={skipPageReset}
               fontSize="0.75rem"
               changeRowSelectColor={true}
               wordWrap={true}

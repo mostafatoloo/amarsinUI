@@ -16,7 +16,7 @@ import Button from "../controls/Button";
 import { useAuthStore } from "../../store/authStore";
 import { WorkflowRowSelectResponse } from "../../types/workflow";
 import { useWarehouse } from "../../hooks/useWarehouse";
-import React from "react";
+import React, { useState } from "react";
 import TTable from "../controls/TTable";
 import { colors } from "../../utilities/color";
 
@@ -48,6 +48,7 @@ const WarehouseShowTable = ({
   const { reg } = useWarehouse();
   const { authApiResponse } = useAuthStore();
   const { setField } = useWarehouseStore();
+  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in warehouseShowTable table
 
   const columns = React.useMemo(
     () => [
@@ -327,6 +328,8 @@ const WarehouseShowTable = ({
           <div className="w-full mt-2">
             <TTable
               columns={columns}
+              selectedRowIndex={selectedRowIndex}
+              setSelectedRowIndex={setSelectedRowIndex}
               data={data}
               //updateMyData={updateMyData}
               //skipPageReset={skipPageReset}

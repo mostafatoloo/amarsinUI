@@ -22,10 +22,6 @@ type Props = {
 
 export function TablePaginationActions(props: Props) {
   const { setDefaultRowsPerPage } = useGeneralContext();
-  //const pages = pageNumbers.map((num) => ({
-  //  label: convertToFarsiDigits(num),
-  //  value: num,
-  //}));
 
   const { page = 1, setPage, totalCount, pageSize = 10 } = props;
 
@@ -68,13 +64,6 @@ export function TablePaginationActions(props: Props) {
     setPage?.(newPage + 1);
   };
 
-  //const handleChangeRowsPerPage = (
-  //  event: React.ChangeEvent<HTMLInputElement>
-  //): void => {
-  //  setPageSize?.(parseInt(event.target.value, 10));
-  //  setPage?.(1);
-  //};
-
   return (
     <div className="flex w-full bg-gray-100 justify-center">
       <IconButton
@@ -101,13 +90,6 @@ export function TablePaginationActions(props: Props) {
       </div>
       <input
         className="w-16 m-2 rounded-md border border-gray-200 text-center"
-        /*type="number"
-        min={1}
-        max={
-          totalCount
-            ? Math.ceil(totalCount / (pageSize === undefined ? 10 : pageSize))
-            : 0
-        }*/
         type="text"
         inputMode="decimal"
         pattern="[۰-۹0-9]*"

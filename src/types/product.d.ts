@@ -1,3 +1,4 @@
+import { Meta } from './general';
 import { IndentDtlHistoryRequest } from './product.d';
 export interface ProductSearchRequest {
   accYear: number;
@@ -60,16 +61,14 @@ type Product = {
   s: number;
 };
 
-type Data = {
-  totalCount: number;
-  result: Product[];
-};
+interface SearchResults {
+  total_count: number;
+  searchResults: Product[];
+}
 
-type Meta = {
-  errorCode: number;
-  message: string;
-  type: string;
-};
+interface Data {
+  result: SearchResults;
+}
 
 type ProductSearchResponse = {
   meta: Meta;

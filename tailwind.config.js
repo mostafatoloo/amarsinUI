@@ -8,6 +8,10 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'vazir': ['Vazir', 'Tahoma', 'Arial', 'sans-serif'],
+        'sans': ['Vazir', 'Tahoma', 'Arial', 'sans-serif'],
+      },
       width: {
         'full-minus-40': 'calc(100% - 40px)',
         'full-minus-24': 'calc(100% - 24px)',

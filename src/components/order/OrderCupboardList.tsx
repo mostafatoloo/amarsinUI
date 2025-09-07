@@ -103,6 +103,7 @@ const OrderCupboardList = ({
   );
   ////////////////////////////////////////////////////
   const [error, setError] = useState<string>("");
+  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in orderCupboardList table
 
   const updateMyData = (rowIndex: number, columnId: string, value: string) => {
     setData((old) =>
@@ -216,6 +217,8 @@ const OrderCupboardList = ({
             columns={columns}
             data={data}
             updateMyData={updateMyData}
+            selectedRowIndex={selectedRowIndex}
+            setSelectedRowIndex={setSelectedRowIndex}
             fontSize="0.75rem"
             changeRowSelectColor={true}
             wordWrap={true}

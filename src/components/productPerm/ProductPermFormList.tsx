@@ -1,41 +1,43 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import {
-  ProductOfferDtlHistory,
-  ProductOfferProduct,
-  ProductOfferProductTable,
-  ProductOfferProductTable2,
-  ShowProductListResponse,
-} from "../../types/productOffer";
 import ConfirmCard from "../layout/ConfirmCard";
 import Button from "../controls/Button";
-import ProductOfferFormListHistory from "./ProductOfferFormListHistory";
-import ProductOfferFormListHeader from "./ProductOfferFormListHeader";
 import TTable from "../controls/TTable";
+import Accept from "../../assets/images/GrayThem/img24_3.png";
 import { DefaultOptionType, TableColumns } from "../../types/general";
 import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
 import { red } from "@mui/material/colors";
 import ModalMessage from "../layout/ModalMessage";
-import { useProductOfferStore } from "../../store/productOfferStore";
+import {
+  ProductPermDtlHistory,
+  ProductPermListItem,
+  ProductPermListItemTable,
+  ProductPermListItemTable2,
+  ProductPermListResponse,
+  ProductPermSaveResponse,
+} from "../../types/productPerm";
+import ProductPermFormListHeader from "./ProductPermFormListHeader";
+import ProductPermFormListHistory from "./ProductPermFormListHistory";
+import { useProductPermStore } from "../../store/productPermStore";
 
 type Props = {
-  setIsNew:(isNew: boolean) => void
+  setIsNew: (isNew: boolean) => void;
   setIsEdit: (isEdit: boolean) => void;
-  addList: ProductOfferProductTable[];
+  addList: ProductPermListItemTable[];
   showDeleted: boolean;
   handleSubmit: (
     e?: React.MouseEvent<HTMLButtonElement>,
     productId?: number
-  ) => Promise<ShowProductListResponse | undefined>;
+  ) => Promise<ProductPermListResponse | undefined>;
   isLoadingProductOfferSave: boolean;
-  handleSubmitSave: () => void;
+  handleSubmitSave: () => Promise<ProductPermSaveResponse | undefined>;
   isDtlHistoryLoading: boolean;
   handleAddRow: (
     index: number,
-    setData: Dispatch<SetStateAction<ProductOfferProductTable2[]>>
+    setData: Dispatch<SetStateAction<ProductPermListItemTable2[]>>
   ) => void;
-  productOfferDtlHistory: ProductOfferDtlHistory[];
-  originalData: ProductOfferProductTable2[];
-  setOriginalData: Dispatch<SetStateAction<ProductOfferProductTable2[]>>;
+  productPermDtlHistory: ProductPermDtlHistory[];
+  originalData: ProductPermListItemTable2[];
+  setOriginalData: Dispatch<SetStateAction<ProductPermListItemTable2[]>>;
   columns: TableColumns;
   showHistory: boolean;
   setShowHistory: Dispatch<SetStateAction<boolean>>;
@@ -43,7 +45,7 @@ type Props = {
   setIsModalRegOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-const ProductOfferFormList = ({
+const ProductPermFormList = ({
   setIsNew,
   setIsEdit,
   addList,
@@ -53,7 +55,7 @@ const ProductOfferFormList = ({
   handleSubmitSave,
   isDtlHistoryLoading,
   handleAddRow,
-  productOfferDtlHistory,
+  productPermDtlHistory,
   originalData,
   setOriginalData,
   columns,
@@ -62,15 +64,15 @@ const ProductOfferFormList = ({
   isModalRegOpen,
   setIsModalRegOpen,
 }: Props) => {
-  const { productOfferSaveResponse } = useProductOfferStore();
+  const { productPermSaveResponse } = useProductPermStore();
   const [brandSearch, setBrandSearch] = useState<string>("");
   const [dtlDscSearch, setDtlDscSearch] = useState<string>("");
   const [productSearch, setProductSearch] = useState<string>("");
-  const [deletedData, setDeletedData] = useState<ProductOfferProductTable2[]>(
+  const [deletedData, setDeletedData] = useState<ProductPermListItemTable2[]>(
     []
   );
-  const [data, setData] = useState<ProductOfferProductTable2[]>([]);
-  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in productOfferFormList table
+  const [data, setData] = useState<ProductPermListItemTable2[]>([]);
+  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in productPermFormList table
 
   const columnsHistory: TableColumns = [
     {
@@ -89,39 +91,14 @@ const ProductOfferFormList = ({
       width: "5%",
     },
     {
-      Header: "پ 1",
-      accessor: "s1O",
-      width: "10%",
-    },
-    {
-      Header: "پ 2",
-      accessor: "s2O",
-      width: "10%",
-    },
-    {
-      Header: "پ 3",
-      accessor: "s3O",
-      width: "10%",
-    },
-    {
-      Header: "پ 4",
-      accessor: "s4O",
-      width: "10%",
-    },
-    {
-      Header: "پ 5",
-      accessor: "s5O",
+      Header: "نیاز به مجوز",
+      accessor: "np",
       width: "10%",
     },
     {
       Header: "شرح",
       accessor: "dtlDsc",
-      width: "25%",
-    },
-    {
-      Header: "بدون آفر",
-      accessor: "no",
-      width: "5%",
+      width: "70%",
     },
   ];
 
@@ -212,7 +189,7 @@ const ProductOfferFormList = ({
     const productId = value?.id ?? 0;
     if (productId === 0) return;
     const response = await handleSubmit(undefined, productId);
-    let productOfferProducts: ProductOfferProduct[] | undefined =
+    let productOfferProducts: ProductPermListItem[] | undefined =
       response?.data.result;
     setOriginalData((old) =>
       old.map((row, index) => {
@@ -224,30 +201,11 @@ const ProductOfferFormList = ({
             product: productOfferProducts[0].product,
             pId: productOfferProducts[0].pId,
             lastDate: productOfferProducts[0].lastDate,
-            s1O:
-              productOfferProducts[0].s1DO + productOfferProducts[0].s1NO > 0
-                ? productOfferProducts[0].s1DO.toString() +
-                  "+" +
-                  productOfferProducts[0].s1NO.toString()
-                : "",
-            s2O:
-              productOfferProducts[0].s2DO + productOfferProducts[0].s2NO > 0
-                ? productOfferProducts[0].s2DO.toString() +
-                  "+" +
-                  productOfferProducts[0].s2NO.toString()
-                : "",
-            s3O:
-              productOfferProducts[0].s3DO + productOfferProducts[0].s3NO > 0
-                ? productOfferProducts[0].s3DO.toString() +
-                  "+" +
-                  productOfferProducts[0].s3NO.toString()
-                : "",
-            s4O:
-              productOfferProducts[0].s4DO + productOfferProducts[0].s4NO > 0
-                ? productOfferProducts[0].s4DO.toString() +
-                  "+" +
-                  productOfferProducts[0].s4NO.toString()
-                : "",
+            npo: productOfferProducts[0].npo,
+            npCk: productOfferProducts[0].np ? (
+              <img src={Accept} alt="Accept" className="w-4 h-4" />
+            ) : null,
+            dtlDsc: productOfferProducts[0].dtlDsc,
             isDeleted: false,
           };
         }
@@ -292,7 +250,7 @@ const ProductOfferFormList = ({
           className="overflow-y-auto"
           style={width > 640 ? { height: height - 400 } : {}}
         >
-          <ProductOfferFormListHeader
+          <ProductPermFormListHeader
             columns={columns}
             brandSearch={brandSearch}
             setBrandSearch={setBrandSearch}
@@ -330,30 +288,30 @@ const ProductOfferFormList = ({
           />
         </ConfirmCard>
       </div>
-      <ProductOfferFormListHistory
+      <ProductPermFormListHistory
         showHistory={showHistory}
         setShowHistory={setShowHistory}
         isDtlHistoryLoading={isDtlHistoryLoading}
-        productOfferDtlHistory={productOfferDtlHistory}
+        productPermDtlHistory={productPermDtlHistory}
         columnsHistory={columnsHistory}
       />
       <ModalMessage
         isOpen={isModalRegOpen}
         onClose={() => setIsModalRegOpen(false)}
         backgroundColor={
-          productOfferSaveResponse?.meta.errorCode === -1
+          productPermSaveResponse?.meta.errorCode === -1
             ? "bg-green-200"
             : "bg-red-200"
         }
         bgColorButton={
-          productOfferSaveResponse?.meta.errorCode === -1
+          productPermSaveResponse?.meta.errorCode === -1
             ? "bg-green-500"
             : "bg-red-500"
         }
         color="text-white"
         message={
-          productOfferSaveResponse?.meta.errorCode !== -1
-            ? productOfferSaveResponse?.meta.message || ""
+          productPermSaveResponse?.meta.errorCode !== -1
+            ? productPermSaveResponse?.meta.message || ""
             : "اطلاعات با موفقیت ثبت شد."
         }
         visibleButton={false}
@@ -362,4 +320,4 @@ const ProductOfferFormList = ({
   );
 };
 
-export default ProductOfferFormList;
+export default ProductPermFormList;

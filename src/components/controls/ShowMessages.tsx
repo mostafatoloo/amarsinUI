@@ -35,7 +35,6 @@ function ShowMessages( {dtlErrMsgs,color,heightWindow}: Props ) {
     return "";
   };
   const {height,width}=useCalculateTableHeight()
-//regResponse.data.result.dtlErrMsgs
   const data = dtlErrMsgs?.map((dtlErrMsg: any, index: number) => ({
     index: index + 1,
     dsc: dtlErrMsg.msg,

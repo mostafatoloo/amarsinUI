@@ -9,10 +9,12 @@ import {
 } from "../../utilities/general";
 import { useEffect } from "react";
 import { ProductOffer } from "../../types/productOffer";
+import { ProductPerm } from "../../types/productPerm";
+import { ProductGrace } from "../../types/productGrace";
 
 type Props = {
   isNew: boolean; //for check if isNew new else edit
-  selectedProductOffer: ProductOffer | null; //for edit 
+  selectedProductOffer: ProductOffer | ProductPerm | ProductGrace | null; //for edit
   brand: DefaultOptionTypeStringId[] | null;
   setBrand: (brand: DefaultOptionTypeStringId[]) => void;
   setBrandSearch: React.Dispatch<React.SetStateAction<string>>;
@@ -41,23 +43,30 @@ const ProductOfferFormParams = ({
   const { definitionDateTime } = useDefinitionInvironment();
   useEffect(() => {
     setDat(
-      convertToFarsiDigits(
-        convertToPersianDate(new Date(definitionDateTime.date))
-      )
+      isNew
+        ? convertToFarsiDigits(
+            convertToPersianDate(new Date(definitionDateTime.date))
+          )
+        : convertToFarsiDigits(selectedProductOffer?.dat)
     );
-    setTim(convertToFarsiDigits(definitionDateTime.time));
+    setTim(
+      isNew
+        ? convertToFarsiDigits(definitionDateTime.time)
+        : convertToFarsiDigits(selectedProductOffer?.tim)
+    );
   }, [definitionDateTime]);
+
+  useEffect(() => {
+    setDsc(isNew ? "" : selectedProductOffer?.dsc ?? "");
+  }, []);
+
   return (
     <form className="flex flex-col gap-2 w-full">
       <div className="flex gap-2 w-1/2">
         <div className="w-full">
           <Input
             name="dat"
-            value={
-              isNew === false && selectedProductOffer !== null
-                ? convertToFarsiDigits(selectedProductOffer.dat)
-                : dat
-            }
+            value={dat}
             label="تاریخ:"
             variant="outlined"
             widthDiv="w-full"
@@ -69,11 +78,7 @@ const ProductOfferFormParams = ({
         <div className="w-full">
           <Input
             name="tim"
-            value={
-              isNew === false && selectedProductOffer !== null
-                ? convertToFarsiDigits(selectedProductOffer.tim)
-                : tim
-            }
+            value={tim}
             label="ساعت:"
             variant="outlined"
             widthDiv="w-full"
@@ -86,11 +91,7 @@ const ProductOfferFormParams = ({
       <div className="w-full">
         <Input
           name="dsc"
-          value={
-            isNew === false && selectedProductOffer !== null
-              ? selectedProductOffer.dsc
-              : dsc
-          }
+          value={dsc}
           onChange={(e) => setDsc(e.target.value)}
           label="توضیحات:"
           variant="outlined"

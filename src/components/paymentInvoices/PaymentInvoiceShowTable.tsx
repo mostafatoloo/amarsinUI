@@ -208,6 +208,7 @@ const PaymentInvoiceShowTable = ({
     []
   );
   const [data, setData] = useState<InvoiceOutstandingWithIndex[]>([]);
+  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in paymentInvoiceShowTable table
 
   // Utility function to calculate total allocated amount
   const calculateTotalAllocated = useCallback(
@@ -488,6 +489,8 @@ const PaymentInvoiceShowTable = ({
             updateMyData={updateMyData}
             fontSize="0.75rem"
             changeRowSelectColor={true}
+            selectedRowIndex={selectedRowIndex}
+            setSelectedRowIndex={setSelectedRowIndex}
             wordWrap={true}
             CellColorChange={handleCellColorChange}
             changeRowValues={changeRowValues}

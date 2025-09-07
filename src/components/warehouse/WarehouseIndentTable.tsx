@@ -107,6 +107,7 @@ const WarehouseIndentTable = ({
   );
 
   const [data, setData] = useState<WarehouseTemporaryReceiptIndentTbl[]>([]);
+  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in warehouseIndentTable table
 
   //console.log(data, "data");
   const [skipPageReset, setSkipPageReset] = React.useState(false);
@@ -210,6 +211,8 @@ const WarehouseIndentTable = ({
           <TTable
             columns={columns}
             data={data}
+            selectedRowIndex={selectedRowIndex}
+            setSelectedRowIndex={setSelectedRowIndex}
             updateMyData={updateMyData}
             //skipPageReset={skipPageReset}
             changeRowSelectColor={true}

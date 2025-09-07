@@ -30,7 +30,12 @@ const ProductOfferParams = ({
   const [hasFDate, setHasFDate] = useState<boolean>(false);
 
   useEffect(() => {
-    handleCheckboxChange({target:{name:"DateCheckbox",value:true}},setRegFDate,setRegTDate,setHasRegDate);
+    handleCheckboxChange(
+      { target: { name: "DateCheckbox", value: true } },
+      setRegFDate,
+      setRegTDate,
+      setHasRegDate
+    );
   }, []);
 
   const handleCheckboxChange = (
@@ -165,11 +170,27 @@ const ProductOfferParams = ({
       </div>
       {/* send status */}
       <div className="w-full flex gap-2">
-        <input type="radio" name="sendStatus" id="sendStatus" onChange={() => setState(1)} />
-        <label htmlFor="sendStatus">ارسال شده</label>
-        <input type="radio" name="sendStatus" id="sendStatus" onChange={() => setState(-1)} />
+      <input
+          type="radio"
+          name="sendStatus"
+          id="sendStatus"
+          onChange={() => setState(-1)}
+          defaultChecked={true}
+        />
         <label htmlFor="sendStatus">ارسال نشده</label>
-        <input type="radio" name="sendStatus" id="sendStatus" onChange={() => setState(0)} defaultChecked={true} />
+        <input
+          type="radio"
+          name="sendStatus"
+          id="sendStatus"
+          onChange={() => setState(1)}
+        />
+        <label htmlFor="sendStatus">ارسال شده</label>
+        <input
+          type="radio"
+          name="sendStatus"
+          id="sendStatus"
+          onChange={() => setState(0)}
+        />
         <label htmlFor="sendStatus">همه</label>
       </div>
       <ModalMessage
@@ -179,7 +200,7 @@ const ProductOfferParams = ({
         visibleButton={false}
         backgroundColor="bg-red-200"
         color="text-white"
-      />      
+      />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { DefaultOptionType, TableColumns } from "../../types/general";
 import { CellProps, useTable, useBlockLayout } from "react-table";
 import {
@@ -31,6 +31,8 @@ type TableProps<T extends object> = {
   CellColorChange?: (row: any, columnId: string) => string | null;
   showToolTip?: boolean;
   showHeader?: boolean;
+  selectedRowIndex?: number; // just for background color
+  setSelectedRowIndex?: (value: number) => void; // just for background color
 };
 
 // Create an editable cell renderer
@@ -49,6 +51,7 @@ interface EditableCellProps<T extends object> extends CellProps<T, any> {
     columnId: string
   ) => void;
   canEditForm?: boolean;
+  selectedRowIndex?: number;
 }
 
 export function EditableInput<T extends object>({
@@ -61,12 +64,14 @@ export function EditableInput<T extends object>({
   updateMyData,
   updateMyRow,
   changeRowValues,
+  selectedRowIndex,
 }: EditableCellProps<T>) {
   const {
     id,
     type,
     placeholder,
     isCurrency,
+    backgroundColor: bgColor,
     options: autoOptions,
     setSearch,
     //search,
@@ -153,11 +158,11 @@ export function EditableInput<T extends object>({
         }}
         onFocus={() => setIsFocused(true)}
         style={{
-          backgroundColor: isFocused
+          backgroundColor: isFocused || selectedRowIndex === index
             ? "white"
             : !canEditForm
             ? "inherit"
-            : "white",
+            : bgColor || "white",
         }}
       />
     );
@@ -179,28 +184,33 @@ export function EditableInput<T extends object>({
   }
 
   return (
-    <input
-      disabled={!canEditForm}
-      className="text-inherit p-0 m-0 border-0 w-full focus:outline-none"
-      style={{
-        backgroundColor: isFocused
-          ? "white"
-          : !canEditForm
-          ? "inherit"
-          : "white",
-      }}
-      //style={{ backgroundColor: isFocused && canEditForm ? "white" :  "inherit" }}
-      value={value as string}
-      onChange={(e) => {
-        setValue(convertToFarsiDigits(e.target.value));
-        changeRowValues(e.target.value, index, id);
-      }}
-      onBlur={() => {
-        updateMyData(index, id, value as string);
-        setIsFocused(false);
-      }}
-      onFocus={() => setIsFocused(true)}
-    />
+    <>
+      <input
+        disabled={!canEditForm}
+        className="text-inherit p-0 m-0 border-0 w-full focus:outline-none"
+        style={{
+          backgroundColor:
+            isFocused || selectedRowIndex === index
+              ? "white"
+              : !canEditForm
+              ? "inherit"
+              : bgColor || "white",
+        }}
+        //style={{ backgroundColor: isFocused && canEditForm ? "white" :  "inherit" }}
+        value={value as string}
+        onChange={(e) => {
+          setValue(convertToFarsiDigits(e.target.value));
+          changeRowValues(e.target.value, index, id);
+        }}
+        onBlur={() => {
+          updateMyData(index, id, value as string);
+          setIsFocused(false);
+        }}
+        onFocus={() => {
+          setIsFocused(true);
+        }}
+      />
+    </>
   );
 }
 
@@ -222,8 +232,10 @@ export default function TTable<T extends object>({
   CellColorChange,
   showToolTip = false,
   showHeader = true,
+  selectedRowIndex,
+  setSelectedRowIndex,
 }: TableProps<T>) {
-  const [rowSelect, setRowSelect] = useState(0);
+  //const [rowSelect, setRowSelect] = useState(0);
 
   const {
     getTableProps,
@@ -243,6 +255,8 @@ export default function TTable<T extends object>({
       //options,
       //setSearchText,
       canEditForm,
+      selectedRowIndex,
+      setSelectedRowIndex,
     } as any,
     useBlockLayout
   );
@@ -304,7 +318,7 @@ export default function TTable<T extends object>({
                         : "1px solid #e0e0e0",
                       width: cell.column.totalWidth || cell.column.width,
                       backgroundColor:
-                        i === rowSelect && changeRowSelectColor
+                        i === selectedRowIndex && changeRowSelectColor //rowSelect && changeRowSelectColor
                           ? colors.blue50
                           : CellColorChange && !cell.column.backgroundColor
                           ? CellColorChange(row, cell.column.id)
@@ -328,7 +342,8 @@ export default function TTable<T extends object>({
                         );
                         setSelectedId?.(itemId);
                       }
-                      setRowSelect(i);
+                      //setRowSelect(i);
+                      setSelectedRowIndex?.(i);
                     }}
                   >
                     {hasSumRow &&
