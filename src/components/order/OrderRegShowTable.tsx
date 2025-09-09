@@ -190,24 +190,28 @@ const OrderRegShowTable = ({
           accessor: "cupCode",
           width: "5%",
           backgroundColor: colors.indigo50,
+          except: true,
         },
         {
           Header: "انقضا",
           accessor: "cupEDate",
           width: "5%",
           backgroundColor: colors.indigo50,
+          except: true,
         },
         {
           Header: "تعداد",
           accessor: "cupCnt",
           width: "5%",
           backgroundColor: colors.indigo50,
+          except: true,
         },
         {
           Header: "آفر",
           accessor: "cupOCnt",
           width: "5%",
           backgroundColor: colors.indigo50,
+          except: true,
         },
         {
           Header: " ",
@@ -476,6 +480,44 @@ const OrderRegShowTable = ({
       console.log(error);
     }
   };
+  /////////////////////////////////////////////////////
+  const handleCellColorChange = (row: any, columnId: string): string | null => {
+    const colsInfo = row.cells;
+    //console.log(rowInfo,"rowInfo")
+    //console.log(colsInfo[4],"colsInfo[4]")
+    const cntOfferSumReg =
+      Number(convertToLatinDigits(colsInfo?.[4]?.value ?? 0)) +
+      Number(convertToLatinDigits(colsInfo?.[5]?.value ?? 0));
+    const cntOfferSumOrder =
+      Number(convertToLatinDigits(colsInfo?.[16]?.value ?? 0)) +
+      Number(convertToLatinDigits(colsInfo?.[17]?.value ?? 0));
+    /*if (cntOfferSumReg !== cntOfferSumOrder)
+      console.log(
+        cntOfferSumReg,
+        cntOfferSumOrder,
+        "cntOfferSumReg,cntOfferSumOrder",
+        columnId,
+        cell
+      );*/
+    if (
+      cntOfferSumReg !== cntOfferSumOrder &&
+      (columnId === "cupCode" ||
+        columnId === "cupEDate" ||
+        columnId === "cupCnt" ||
+        columnId === "cupOCnt")
+    ) {
+      return colors.red200;
+    } else if (
+      columnId === "cupCode" ||
+      columnId === "cupEDate" ||
+      columnId === "cupCnt" ||
+      columnId === "cupOCnt" ||
+      columnId === "editIcon2"
+    ) {
+      return colors.indigo50;
+    }
+    return null;
+  };
   return (
     <>
       <OrderRegShowTableHeader
@@ -489,16 +531,19 @@ const OrderRegShowTable = ({
       {isLoadingOrderRegShow ? (
         <div className="text-center">{<Skeleton />}</div>
       ) : (
-        <TTable
-          columns={columns}
-          selectedRowIndex={selectedRowIndex}
-          setSelectedRowIndex={setSelectedRowIndex}
-          data={processedData}
-          fontSize="0.75rem"
-          changeRowSelectColor={true}
-          wordWrap={true}
-          showHeader={false}
-        />
+        <>
+          <TTable
+            columns={columns}
+            selectedRowIndex={selectedRowIndex}
+            setSelectedRowIndex={setSelectedRowIndex}
+            data={processedData}
+            fontSize="0.75rem"
+            changeRowSelectColor={true}
+            wordWrap={true}
+            showHeader={false}
+            CellColorChange={handleCellColorChange}
+          />
+        </>
       )}
       {/*open order edit if editIcon is clicked*/}
       <ModalForm

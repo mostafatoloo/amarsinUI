@@ -6,17 +6,17 @@ import {
     UseQueryOptions,
   } from "@tanstack/react-query";
   import api from "../api/axios";
-  import { useProductGraceStore } from "../store/productGraceStore";
+  import { useProductPriceStore } from "../store/productPriceStore";
   import {
-    ProductGraceDoFirstFlowRequest,
-    ProductGraceDtlHistoryResponse,
-    ProductGraceRequest,
-    ProductGraceSaveRequest,
-    ProductGraceResponse,
-  } from "../types/productGrace";
+    ProductPriceDoFirstFlowRequest,
+    ProductPriceDtlHistoryResponse,
+    ProductPriceRequest,
+    ProductPriceSaveRequest,
+    ProductPriceResponse,
+  } from "../types/productPrice";
 import { ShowProductListRequest } from "../types/productOperation";
   
-  export function useProductGrace() {
+  export function useProductPrice() {
     const queryClient = useQueryClient();
   
     const {
@@ -44,27 +44,27 @@ import { ShowProductListRequest } from "../types/productOperation";
       sortUsrName,
       sortStep,
       pId,
-      //productGraceResponse,
-      setProductGraceResponse,
-      setProductGraceListResponse,
-      //for productGrace/dtlHistory
-      setProductGraceDtlHistoryResponse,
-      //for productPerm/save
-      setProductGraceSaveResponse,
-      //for productGrace/del
-      setProductGraceDelResponse,
-      //for productGrace/doFirstFlow
-      setProductGraceDoFirstFlowResponse,
-    } = useProductGraceStore();
-    //for productOffer
+      //productPriceResponse,
+      setProductPriceResponse,
+      setProductPriceListResponse,
+      //for productPrice/dtlHistory
+      setProductPriceDtlHistoryResponse,
+      //for productPrice/save
+      setProductPriceSaveResponse,
+      //for productPrice/del
+      setProductPriceDelResponse,
+      //for productPrice/doFirstFlow
+      setProductPriceDoFirstFlowResponse,
+    } = useProductPriceStore();
+    //for productPrice
     const query = useQuery<
-      ProductGraceResponse,
+      ProductPriceResponse,
       Error,
-      ProductGraceResponse,
+      ProductPriceResponse,
       unknown[]
     >({
       queryKey: [
-        "productGrace",
+        "productPrice",
         yearId,
         systemId,
         state,
@@ -113,7 +113,7 @@ import { ShowProductListRequest } from "../types/productOperation";
           sortUsrName,
           sortStep,
         };
-        const url = `/api/ProductGrace?YearId=${
+        const url = `/api/ProductPrice?YearId=${
           params.yearId
         }&SystemId=${params.systemId}&State=${
           params.state
@@ -148,7 +148,7 @@ import { ShowProductListRequest } from "../types/productOperation";
         }&SortDsc=${params.sortDsc}&SortAccepted=${
           params.sortAccepted
         }&SortUsrName=${params.sortUsrName}&SortStep=${params.sortStep}`;
-        console.log("ProductGrace url", url);
+        console.log("ProductPrice url", url);   
         const response = await api.get(url);
         return response.data;
       },
@@ -156,19 +156,19 @@ import { ShowProductListRequest } from "../types/productOperation";
       refetchOnWindowFocus: false, // Refetch data when the window is focused
       refetchOnReconnect: false, // Refetch data when the network reconnects
       onSuccess: (data: any) => {
-        setProductGraceResponse(data);
+        setProductPriceResponse(data);
       },
-    } as UseQueryOptions<ProductGraceResponse, Error, ProductGraceResponse, unknown[]>);
+    } as UseQueryOptions<ProductPriceResponse, Error, ProductPriceResponse, unknown[]>);
   
-    //for productOfferDtl
+    //for productPriceDtl
     const queryDtl = useQuery<
-      ProductGraceResponse,
+      ProductPriceResponse,
       Error,
-      ProductGraceResponse,
+      ProductPriceResponse,
       unknown[]
     >({
       queryKey: [
-        "productGraceDtl",
+        "productPriceDtl",  
         id,
         yearId,
         systemId,
@@ -194,7 +194,7 @@ import { ShowProductListRequest } from "../types/productOperation";
         sortStep,
       ],
       queryFn: async () => {
-        const params: ProductGraceRequest = {
+        const params: ProductPriceRequest = {   
           id,
           yearId,
           systemId,
@@ -219,7 +219,7 @@ import { ShowProductListRequest } from "../types/productOperation";
           sortUsrName,
           sortStep,
         };
-        const url = `/api/ProductGrace?Id=${params.id}&Acc_Year=${
+        const url = `/api/ProductPrice?Id=${params.id}&Acc_Year=${
           params.yearId
         }&Acc_System=${params.systemId}&State=${
           params.state
@@ -254,7 +254,7 @@ import { ShowProductListRequest } from "../types/productOperation";
         }&SortDsc=${params.sortDsc}&SortAccepted=${
           params.sortAccepted
         }&SortUsrName=${params.sortUsrName}&SortStep=${params.sortStep}`;
-        console.log("ProductGraceDtl url", url);
+        console.log("ProductPriceDtl url", url);
         const response = await api.get(url);
         return response.data;
       },
@@ -262,31 +262,31 @@ import { ShowProductListRequest } from "../types/productOperation";
       refetchOnWindowFocus: false, // Refetch data when the window is focused
       refetchOnReconnect: false, // Refetch data when the network reconnects
       onSuccess: (data: any) => {
-        setProductGraceResponse(data);
+        setProductPriceResponse(data);
       },
-    } as UseQueryOptions<ProductGraceResponse, Error, ProductGraceResponse, unknown[]>);
+    } as UseQueryOptions<ProductPriceResponse, Error, ProductPriceResponse, unknown[]>);
   
-    // for productGrace/showProductList
+    // for productPrice/showProductList 
     const addList = useMutation({
       mutationFn: async (request: ShowProductListRequest) => {
-        const url: string = `api/ProductGrace/showProductList `;
+        const url: string = `api/ProductPrice/showProductList `;
         const response = await api.post(url, request);
         return response.data;
       },
       onSuccess: (data: any) => {
-        setProductGraceListResponse(data);
+        setProductPriceListResponse(data);
       },
     });
-    // for productGrace/dtlHistory
-    const productGraceDtlHistory = useQuery<
-      ProductGraceDtlHistoryResponse,
+    // for productPrice/history
+    const productPriceDtlHistory = useQuery<
+      ProductPriceDtlHistoryResponse,
       Error,
-      ProductGraceDtlHistoryResponse,
+      ProductPriceDtlHistoryResponse,
       unknown[]
     >({
-      queryKey: ["productGraceDtlHistory", pId],
+      queryKey: ["productPriceDtlHistory", pId],
       queryFn: async () => {
-        const url = `/api/ProductGrace/dtlHistory?PId=${pId}`;
+        const url = `/api/ProductPrice/history/${pId}`;
         console.log(url, "url");
         const response = await api.get(url);
         return response.data;
@@ -295,90 +295,90 @@ import { ShowProductListRequest } from "../types/productOperation";
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
       onSuccess: (data: any) => {
-        setProductGraceDtlHistoryResponse(data);
-      },
-    } as UseQueryOptions<ProductGraceDtlHistoryResponse, Error, ProductGraceDtlHistoryResponse, unknown[]>);
-    // for productGrace/Save
-    const productGraceSave = useMutation({
-      mutationFn: async (request: ProductGraceSaveRequest) => {
-        const url: string = `api/ProductGrace/Save`;
+            setProductPriceDtlHistoryResponse(data);
+        },
+    } as UseQueryOptions<ProductPriceDtlHistoryResponse, Error, ProductPriceDtlHistoryResponse, unknown[]>);
+    // for productPrice/Save
+    const productPriceSave = useMutation({
+      mutationFn: async (request: ProductPriceSaveRequest) => { 
+        const url: string = `api/ProductPrice/Save`;
         const response = await api.post(url, request);
   
         return response.data;
       },
       onSuccess: (data: any) => {
-        setProductGraceSaveResponse(data);
+        setProductPriceSaveResponse(data);
         //console.log(data, "data");
-        queryClient.invalidateQueries({ queryKey: ["productGrace"] });
-        queryClient.invalidateQueries({ queryKey: ["productGraceDtl"] });
+        queryClient.invalidateQueries({ queryKey: ["productPrice"] });
+        queryClient.invalidateQueries({ queryKey: ["productPriceDtl"] });
       },
     });
-    //for productPerm/productPermDoFirstFlow
-    const productGraceDoFirstFlow = useMutation({
-      mutationFn: async (request: ProductGraceDoFirstFlowRequest) => {
-        const url: string = `api/ProductGrace/doFirstFlow?Acc_System=${request.acc_System}&Acc_Year=${request.acc_Year}&Id=${
+    //for productPrice/productPriceDoFirstFlow
+    const productPriceDoFirstFlow = useMutation({
+      mutationFn: async (request: ProductPriceDoFirstFlowRequest) => {
+        const url: string = `api/ProductPrice/doFirstFlow?Acc_System=${request.acc_System}&Acc_Year=${request.acc_Year}&Id=${
           request.id
-        }&Dsc=${encodeURIComponent(request.dsc)}&ChartId=${request.chartId}`;
+        }&Dsc=${encodeURIComponent(request.dsc)}`;
         console.log(request, "request", url, "url");
         const response = await api.post(url);
   
         return response.data;
       },
       onSuccess: (data: any) => {
-        setProductGraceDoFirstFlowResponse(data);
-        queryClient.invalidateQueries({ queryKey: ["productGrace"] });
+        setProductPriceDoFirstFlowResponse(data);
+        queryClient.invalidateQueries({ queryKey: ["productPrice"] });
       },
     });
-    //for productGrace/Del
-    const productGraceDel = useMutation({
+    //for productPrice/Del
+    const productPriceDel = useMutation({
       mutationFn: async (requestId: number) => {
-        const response = await api.delete(`api/ProductGrace/Del`, {
+        const response = await api.delete(`api/ProductPrice/${requestId}`, {
           params: {
-            id: requestId,
+            
           },
         });
         return response.data;
       },
       onSuccess: (data: any) => {
-        setProductGraceDelResponse(data);
-        queryClient.invalidateQueries({ queryKey: ["productGrace"] }); 
+        setProductPriceDelResponse(data);
+        queryClient.invalidateQueries({ queryKey: ["productPrice"] }); 
       },
     });
     return {
-      //for productGrace
+      //for productPrice
       refetch: query.refetch,
       isLoading: query.isLoading,
       error: query.error,
-      productGrace: query.data?.data.result.productGraces,
-      productGraceMeta: query.data?.meta,
-      productGraceTotalCount: query.data?.data.result.total_count,
-      //for productGraceDtl
+      productPrice: query.data?.data.result.productPrices,
+      productPriceMeta: query.data?.meta,
+      productPriceTotalCount: query.data?.data.result.total_count,
+      //for productPriceDtl
       isLoadingDtl: queryDtl.isLoading,
       errorDtl: queryDtl.error,
-      productGraceDtl: queryDtl.data?.data.result.productGraceDtls,
-      //for productGrace/showProductList
+      productPriceDtl: queryDtl.data?.data.result.productPriceDtls,
+      //for productPrice/showProductList
       isLoadingAddList: addList.isPending,
       errorAddList: addList.error,
       addProductList: addList.mutateAsync,
-      //for productGrace/dtlHistory
-      isLoadingDtlHistory: productGraceDtlHistory.isLoading,
-      errorDtlHistory: productGraceDtlHistory.error,
-      productGraceDtlHistory: productGraceDtlHistory.data?.data.result,
-      //for productGrace/Save
-      isLoadingProductGraceSave: productGraceSave.isPending,
-      errorProductGraceSave: productGraceSave.error,
-      productGraceSave: productGraceSave.mutateAsync,
-      productGraceSaveResponse: productGraceSave.data,
-      //for productGrace/Del
-      isLoadingProductGraceDel: productGraceDel.isPending,
-      errorProductGraceDel: productGraceDel.error,
-      productGraceDel: productGraceDel.mutateAsync,
-      productGraceDelResponse: productGraceDel.data,
-      //for productGrace/DoFirstFlow
-      isLoadingProductGraceDoFirstFlow: productGraceDoFirstFlow.isPending,
-      errorProductGraceDoFirstFlow: productGraceDoFirstFlow.error,
-      productGraceDoFirstFlow: productGraceDoFirstFlow.mutateAsync,
-      productGraceDoFirstFlowResponse: productGraceDoFirstFlow.data ?? {},
+      //for productPrice/dtlHistory
+      isLoadingDtlHistory: productPriceDtlHistory.isLoading,
+      errorDtlHistory: productPriceDtlHistory.error,
+      productPriceDtlHistory: productPriceDtlHistory.data?.data.result,
+      //for productPrice/Save
+      isLoadingProductPriceSave: productPriceSave.isPending,
+      errorProductPriceSave: productPriceSave.error,
+      productPriceSave: productPriceSave.mutateAsync,
+      productPriceSaveResponse: productPriceSave.data,
+      //for productPrice/Del
+      isLoadingProductPriceDel: productPriceDel.isPending, 
+      errorProductPriceDel: productPriceDel.error,
+      productPriceDel: productPriceDel.mutateAsync,
+      productPriceDelResponse: productPriceDel.data,
+      //for productPrice/DoFirstFlow
+      isLoadingProductPriceDoFirstFlow: productPriceDoFirstFlow.isPending,
+      errorProductPriceDoFirstFlow: productPriceDoFirstFlow.error,
+      productPriceDoFirstFlow: productPriceDoFirstFlow.mutateAsync,
+      productPriceDoFirstFlowResponse: productPriceDoFirstFlow.data ?? {},
     };
   }
   

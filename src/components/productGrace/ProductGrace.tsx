@@ -357,13 +357,14 @@ const ProductGrace = () => {
 
   const handleConfirm = () => {
     const request: ProductGraceDoFirstFlowRequest = {
+      chartId: chartId,
       acc_Year: yearId,
       acc_System: systemId,
       id: selectedId,
       dsc: selectedProductGrace?.dsc || "توضیحات",
     };
-    productGraceDoFirstFlow(request);
     setIsModalConfirmOpen(true);
+    productGraceDoFirstFlow(request);
   };
 
   const handleEdit = () => {
@@ -410,7 +411,7 @@ const ProductGrace = () => {
         handleDelete={handleDelete}
         handleEdit={handleEdit}
         handleConfirm={handleConfirm}
-        selectedProductOffer={selectedProductGrace || ({} as ProductGraceType)}
+        selectedProductOffer={selectedProductGrace || null}
         data={data}
         refetch={refetch}
       />
@@ -582,7 +583,7 @@ const ProductGrace = () => {
           setIsNew(false);
           setIsEdit(false);
         }}
-        title="نیاز به مجوز"
+        title="فرجه کالا"
         width="1"
       >
         <ProductGraceForm

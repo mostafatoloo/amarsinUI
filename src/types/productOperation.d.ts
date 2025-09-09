@@ -43,3 +43,20 @@ export interface ProductOperationRequest {
     dsc: string;
     saveAndSend: boolean;
   }
+
+  interface ProductItem {
+    id: number;
+    pId: number;
+    bName: string;
+    product: string;
+    lastDate: string;
+    dtlDsc: string;
+    deleted: boolean;
+  }
+
+  interface ShowProductListRequest {
+    id: number;
+    productId: number;
+    acc_Year: number;
+    brands: number[];
+  }

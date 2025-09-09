@@ -238,6 +238,7 @@ const PayRequestAttachment = ({ formId, setCnt }: Props) => {
           {imageUrl && (
             <div className="flex w-full h-full justify-center items-center overflow-y-auto">
               <AttachmentImageLoader
+                key={`${imageUrl}-${Date.now()}`} // Unique key to force re-render
                 authToken={token}
                 imageUrl={imageUrl}
                 options={{

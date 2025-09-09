@@ -8,7 +8,7 @@ import { red } from "@mui/material/colors";
 import ModalMessage from "../layout/ModalMessage";
 import { ProductGraceDtlHistory, ProductGraceListItem, ProductGraceListItemTable, ProductGraceListItemTable2, ProductGraceListResponse, ProductGraceSaveResponse } from "../../types/productGrace";
 import { useProductGraceStore } from "../../store/productGraceStore";
-import ProductGraceFormListHistory from "./ProductPermFormListHistory";
+import ProductGraceFormListHistory from "./ProductGraceFormListHistory";
 import ProductGraceFormListHeader from "./ProductGraceFormListHeader";
 
 type Props = {
@@ -212,7 +212,7 @@ const ProductGraceFormList = ({
             sc: productGraceProducts[0].sco,
             cc: productGraceProducts[0].cco,
             ec: productGraceProducts[0].eco,
-            gdo: productGraceProducts[0].gdo,
+            gdo: 0,
             sco: 0,
             cco: 0,
             eco: 0,

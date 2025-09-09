@@ -320,7 +320,7 @@ export default function TTable<T extends object>({
                       backgroundColor:
                         i === selectedRowIndex && changeRowSelectColor //rowSelect && changeRowSelectColor
                           ? colors.blue50
-                          : CellColorChange && !cell.column.backgroundColor
+                          : CellColorChange && (!cell.column.backgroundColor || cell.column.except === true)
                           ? CellColorChange(row, cell.column.id)
                           : cell.column.backgroundColor || "white",
                       whiteSpace: "pre-wrap",

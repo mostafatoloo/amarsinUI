@@ -15,6 +15,7 @@ export type Column = {
   Cell?: (props: any) => ReactNode;
   noLeftBorder?:boolean;
   align?:string;
+  except?:boolean; // if false, the column will not be colored
   //sort?:string;
 };
 export type ColumnGroup = {

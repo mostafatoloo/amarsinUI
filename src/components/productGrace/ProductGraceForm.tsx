@@ -34,7 +34,6 @@ import {
   ProductGraceListItem,
   ProductGraceListItemTable,
   ProductGraceListItemTable2,
-  ProductGraceListRequest,
   ProductGraceListResponse,
   ProductGraceSaveRequest,
   ProductGraceSaveResponse,
@@ -42,10 +41,11 @@ import {
 import { useProductGraceStore } from "../../store/productGraceStore";
 import ProductGraceFormList from "./ProductGraceFormList";
 import { colors } from "../../utilities/color";
+import { ShowProductListRequest } from "../../types/productOperation";
 
 type Props = {
   addProductList: (
-    request: ProductGraceListRequest
+    request: ShowProductListRequest
   ) => Promise<ProductGraceListResponse>;
   productGraceDtlHistory: ProductGraceDtlHistory[];
   isLoadingDtlHistory: boolean;
@@ -379,7 +379,7 @@ const ProductGraceForm = ({
     productId: number = 0
   ): Promise<ProductGraceListResponse | undefined> => {
     if (e) e.preventDefault();
-    let request: ProductGraceListRequest;
+    let request: ShowProductListRequest;
     request = {
       id: 0,
       productId: productId,

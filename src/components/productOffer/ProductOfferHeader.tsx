@@ -13,6 +13,7 @@ import Accept24 from "../../assets/images/GrayThem/accept24.png";
 import Accept24Disabled from "../../assets/images/GrayThem/accept24_disabled.png";
 import { ProductPerm } from "../../types/productPerm";
 import { ProductGrace } from "../../types/productGrace";
+import { ProductPrice } from "../../types/productPrice";
 
 type Props = {
   columns: TableColumns;
@@ -20,7 +21,7 @@ type Props = {
   handleDelete: () => void;
   handleEdit: () => void;
   handleConfirm: () => void;
-  selectedProductOffer: ProductOffer | ProductPerm | ProductGrace;
+  selectedProductOffer: ProductOffer | ProductPerm | ProductGrace | ProductPrice | null;
   data: any[];
   refetch: () => void;
 }
@@ -117,7 +118,7 @@ const ProductOfferHeader = ({
           onClick={() =>
             selectedProductOffer === null ||
             selectedProductOffer.flwId !== 0
-              ? null
+              ? console.log(selectedProductOffer,"selectedProductOffer is null or flwId is not 0")
               : handleConfirm()
           }
         />

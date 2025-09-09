@@ -1,6 +1,6 @@
 //http://apitest.dotis.ir/api/ProductPerm/productPerm?Id=0&yearId=15&systemId=4&State=0&PageNumber=1&SrchId=-1&SrchAccepted=-1&SortId=0&SortDate=0&SortTime=0&SortDsc=0&SortAccepted=0&SortUsrName=0&SortStep=0
 import { Meta } from "./general";
-import { ProductOperation, ProductOperationRequest, SaveRequest } from "./productOperation";
+import { ProductItem, ProductOperation, ProductOperationRequest, SaveRequest } from "./productOperation";
 
 export interface ProductPermRequest extends ProductOperationRequest {
   yearId: number;
@@ -11,17 +11,7 @@ export interface ProductPerm extends ProductOperation {
   productPermId: number;
 }
 
-interface ProductPermItem {
-  id: number;
-  pId: number;
-  bName: string;
-  product: string;
-  lastDate: string;
-  dtlDsc: string;
-  deleted: boolean;
-}
-
-interface ProductPermDtl extends ProductPermItem {
+interface ProductPermDtl extends ProductItem {
   ordr: number;
   productCode: string;
   np: boolean;
@@ -44,7 +34,7 @@ interface ProductPermResponse {
   data: Data;
 }
 //http://apitest.dotis.ir/api/ProductPerm/productList
-interface ProductPermListRequest {
+interface ProductPermListRequest{
   id: number;
   productId: number;
   systemId: number;
@@ -61,7 +51,7 @@ type DataProductPermList = {
   result: ProductPermListItem[];
 };
 
-interface ProductPermListItem extends ProductPermItem {
+interface ProductPermListItem extends ProductItem {
   np: boolean; //primary value
   npo: boolean;
   npCk: JSX.Element | null;

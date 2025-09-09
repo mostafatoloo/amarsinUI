@@ -1,4 +1,4 @@
-import { ProductOperation, ProductOperationRequest, SaveRequest } from "./productOperation";
+import { ProductItem, ProductOperation, ProductOperationRequest, SaveRequest } from "./productOperation";
 
 //http://apitest.dotis.ir/api/ProductGrace?YearId=15&SystemId=4&State=0&PageNumber=1&SrchId=-1&SrchAccepted=-1&SortId=0&SortDate=0&SortTime=0&SortDsc=0&SortAccepted=0&SortUsrName=0&SortStep=0
 export interface ProductGraceRequest extends ProductOperationRequest {
@@ -9,18 +9,8 @@ export interface ProductGraceRequest extends ProductOperationRequest {
   export interface ProductGrace extends ProductOperation {
     //productPermId: number;
   }
-  
-  interface ProductGraceItem {
-    id: number;
-    pId: number;
-    bName: string;
-    product: string;
-    lastDate: string;
-    dtlDsc: string;
-    deleted: boolean;
-  }
-  
-  interface ProductGraceDtl extends ProductGraceItem {
+ 
+  interface ProductGraceDtl extends ProductItem {
     ordr: number;
     productCode: string;
     gd: number;
@@ -50,16 +40,11 @@ export interface ProductGraceRequest extends ProductOperationRequest {
     data: Data;
   }
   //http://apitest.dotis.ir/api/ProductGrace/showProductList
-interface ProductGraceListRequest {
-    id: number;
-    productId: number;
-    acc_Year: number;
-    brands: number[];
-  }
+//ShowProductListRequest is in productOperation.d.ts
   
   type ProductGraceListResponse = {
     meta: Meta;
-    data: DataProductPermList;
+    data: DataProductGraceList;
   };
   
   type DataProductGraceList = {
@@ -72,7 +57,7 @@ interface ProductGraceListRequest {
     productGraceProducts:ProductGraceListItem[]
   }
   
-  interface ProductGraceListItem extends ProductGraceItem {
+  interface ProductGraceListItem extends ProductItem {
     gdo: number;
     gd: number;
     sc: number;
@@ -81,7 +66,6 @@ interface ProductGraceListRequest {
     cco: number;
     ec: number;
     eco: number;
-    dtlDsc: string;
   }
   
   export interface ProductGraceListItemTable extends ProductGraceListItem {
@@ -92,7 +76,7 @@ interface ProductGraceListRequest {
     index: number;
   }
 
-  //http://apitest.dotis.ir/api/ProductPerm/dtlHistory?PId=589
+  //http://apitest.dotis.ir/api/ProductGrace/dtlHistory?PId=589
   export interface ProductGraceDtlHistoryResponse {
     meta: Meta;
     data: DataProductGraceDtlHistory;
@@ -144,10 +128,11 @@ interface ProductGraceListRequest {
     };
   };
   
-  //http://apitest.dotis.ir/api/ProductPerm/doFirstFlow?ChartId=1&Acc_System=1&Acc_Year=15&Id=123123&Dsc=
+  //http://apitest.dotis.ir/api/ProductGrace/doFirstFlow?ChartId=1&Acc_System=1&Acc_Year=15&Id=123123&Dsc=   
   interface ProductGraceDoFirstFlowRequest {
     acc_System: number;
     acc_Year: number;
+    chartId: number;
     id: number;
     dsc: string;
   }
@@ -168,7 +153,7 @@ interface ProductGraceListRequest {
     meta: Meta;
     data: DataProductGraceDoFirstFlow;
   }
-  //http://apitest.dotis.ir/api/ProductPerm/del?Id=1637
+  //http://apitest.dotis.ir/api/ProductGrace/del?Id=1637
   interface ResultProductGraceDel {
     acc_System: number;
     id: number;
@@ -186,29 +171,29 @@ interface ProductGraceListRequest {
     data: DataProductGraceDel;
   }
   export interface ProductGraceState extends ProductGraceRequest {
-    pId: number; //for productPerm/dtlHistory
+    pId: number; //for productGrace/dtlHistory
     productGraceDoFirstFlowResponse: ProductGraceDoFirstFlowResponse; //for productGrace/doFirstFlow
     setProductGraceDoFirstFlowResponse: (
       productGraceDoFirstFlowResponse: ProductGraceDoFirstFlowResponse
-    ) => void; //for productPerm/doFirstFlow
+    ) => void; //for productGrace/doFirstFlow
     productGraceDelResponse: ProductGraceDelResponse; //for productPerm/del
     setProductGraceDelResponse: (
       productGraceDelResponse: ProductGraceDelResponse
-    ) => void; //for productPerm/del
+    ) => void; //for productGrace/del
     productGraceSaveResponse: ProductGraceSaveResponse; //for productGrace/save
     setProductGraceSaveResponse: (
       productGraceSaveResponse: ProductGraceSaveResponse
-    ) => void; //for productPerm/save
+    ) => void; //for productGrace/save
     productGraceDtlHistoryResponse: ProductGraceDtlHistoryResponse; //for productPerm/dtlHistory
     setProductGraceDtlHistoryResponse: (
       productGraceDtlHistoryResponse: ProductGraceDtlHistoryResponse
-    ) => void; //for productPerm/dtlHistory
+    ) => void; //for productGrace/dtlHistory
     productGraceListResponse: ProductGraceListResponse; //for productGrace/productList
     setProductGraceListResponse: (
       productGraceListResponse: ProductGraceListResponse
-    ) => void; //for productPerm/productList
+    ) => void; //for productGrace/productList
     setField: (field: string, value: any) => void;
-    productGraceResponse: ProductGraceResponse; //for productPerm/productPerm
-    setProductGraceResponse: (productGraceResponse: ProductGraceResponse) => void; //for productPerm/productPerm
+    productGraceResponse: ProductGraceResponse; //for productGrace/productGrace
+    setProductGraceResponse: (productGraceResponse: ProductGraceResponse) => void; //for productGrace/productGrace
   }
   
