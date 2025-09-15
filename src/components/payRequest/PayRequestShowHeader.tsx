@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { useDefinitionInvironment } from "../../hooks/useDefinitionInvironment";
 import { DefaultOptionType } from "../../types/general";
 import {
+  convertPersianDate,
   convertToFarsiDigits,
   convertToLatinDigits,
   convertToPersianDate,
   currencyStringToNumber,
   formatNumberWithCommas,
+  parsePersianDateString,
 } from "../../utilities/general";
 import AutoComplete from "../controls/AutoComplete";
 import { PayRequestResponse } from "../../types/payRequest";
@@ -17,6 +19,7 @@ import { colors } from "../../utilities/color";
 import Button from "../controls/Button";
 import { useCustomerStore } from "../../store/customerStore";
 import { useGeneralContext } from "../../context/GeneralContext";
+import PersianDatePicker from "../controls/PersianDatePicker";
 
 type Props = {
   cnt: number; //attachment count
@@ -64,9 +67,9 @@ const PayRequestShowHeader = ({
   const [dsc, setDsc] = useState<string>("");
   const [dat, setDat] = useState<string>("");
   const [tim, setTim] = useState<string>("");
-  const [fDate, setFDate] = useState<string>("");
-  const [tDate, setTDate] = useState<string>("");
-  const [dueDate, setDueDate] = useState<string>("");
+  const [fDate, setFDate] = useState<Date | null>(null);
+  const [tDate, setTDate] = useState<Date | null>(null);
+  const [dueDate, setDueDate] = useState<Date | null>(null);
   const [settleAmnt, setSettleAmnt] = useState<string>("");
   const [providerAmnt, setProviderAmnt] = useState<string>("");
   const { definitionDateTime } = useDefinitionInvironment();
@@ -122,28 +125,22 @@ const PayRequestShowHeader = ({
     );
     setFDate(
       isNew
-        ? convertToFarsiDigits(
-            convertToPersianDate(new Date(definitionDateTime.date))
-          )
-        : convertToFarsiDigits(
+        ? new Date(definitionDateTime.date)
+        : parsePersianDateString(
             payRequestResponse.data.result.payRequests[0]?.fDate ?? ""
           )
     );
     setTDate(
       isNew
-        ? convertToFarsiDigits(
-            convertToPersianDate(new Date(definitionDateTime.date))
-          )
-        : convertToFarsiDigits(
+        ? new Date(definitionDateTime.date)
+        : parsePersianDateString(
             payRequestResponse.data.result.payRequests[0]?.tDate ?? ""
           )
     );
     setDueDate(
       isNew
-        ? convertToFarsiDigits(
-            convertToPersianDate(new Date(definitionDateTime.date))
-          )
-        : convertToFarsiDigits(
+        ? new Date(definitionDateTime.date)
+        : parsePersianDateString(
             payRequestResponse.data.result.payRequests[0]?.dueDate ?? ""
           )
     );
@@ -255,7 +252,40 @@ const PayRequestShowHeader = ({
       </div>
       <div className="flex items-center justify-between w-full">
         <div className="flex w-1/2">
-          <div className="flex w-1/3">
+          <div className="w-full flex items-center gap-2">
+            <label className="w-8 text-left">از تاریخ:</label>
+            <PersianDatePicker
+              name="fDate"
+              label="تا:"
+              value={fDate}
+              fontSize="text-sm"
+              onChange={(event) => setFDate(event.target.value as Date | null)}
+              disabled={!canEditForm1Mst2}
+            />
+          </div>
+          <div className="w-full flex items-center gap-2">
+            <label className="w-8 text-left">تا تاریخ:</label>
+            <PersianDatePicker
+              name="tDate"
+              label="تا:"
+              value={tDate}
+              fontSize="text-sm"
+              onChange={(event) => setTDate(event.target.value as Date | null)}
+              disabled={!canEditForm1Mst2}
+            />
+          </div>
+          <div className="w-full flex items-center gap-2">
+            <label className="w-8 text-left">سررسید:</label>
+            <PersianDatePicker
+              name="dueDate"
+              label="سررسید:"
+              value={dueDate}
+              fontSize="text-sm"
+              onChange={(event) => setDueDate(event.target.value as Date | null)}
+              disabled={!canEditForm1Mst2}
+            />
+          </div>
+          {/*<div className="flex w-1/3">
             <label className="p-1 w-20 text-left">از تاریخ:</label>
             {inputElement(fDate, !canEditForm1Mst2, (e) => {
               setFDate(convertToLatinDigits(e.target.value));
@@ -272,7 +302,7 @@ const PayRequestShowHeader = ({
             {inputElement(dueDate, !canEditForm1Mst2, (e) => {
               setDueDate(convertToLatinDigits(e.target.value));
             })}
-          </div>
+          </div>*/}
         </div>
         <div className="flex w-1/2">
           <div className="flex w-1/2">

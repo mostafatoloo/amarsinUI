@@ -1,8 +1,6 @@
 import TrashIcon from "../../assets/images/GrayThem/delete_gray_16.png";
 import HistoryIcon from "../../assets/images/GrayThem/history_gray_16.png";
-import {
-  convertToFarsiDigits,
-} from "../../utilities/general";
+import { convertToFarsiDigits } from "../../utilities/general";
 import { EditableInput } from "../controls/TTable";
 import PayRequestShow from "../payRequest/PayRequestShow";
 import { PayRequest } from "../../types/payRequest";
@@ -534,20 +532,7 @@ const ProductPriceForm = ({
       printForm1: true,
       printForm2: true,
     },
-    flowButtons: [
-      {
-        id: 405020302,
-        name: "ارسال به سرپرست خرید",
-        webAPIUrl: "",
-        imageIndex: 3,
-      },
-      {
-        id: 405020382,
-        name: "لغو و بایگانی",
-        webAPIUrl: "",
-        imageIndex: 4,
-      },
-    ],
+    flowButtons: [],
     workTableForms: {
       form1Title: "درخواست پرداخت",
       form1ViewPath: "PayRequest/_PayRequest",
@@ -573,7 +558,10 @@ const ProductPriceForm = ({
 
   return (
     <div>
-      <PayRequestShow workFlowRowSelectResponse={workFlowRowSelectResponse} isNew={isNew}/>
+      <PayRequestShow
+        workFlowRowSelectResponse={workFlowRowSelectResponse}
+        isNew={isNew}
+      />
     </div>
   );
 };

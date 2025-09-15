@@ -326,29 +326,6 @@ export function usePayRequest() {
       setPayRequestResponse(data);
     },
   } as UseQueryOptions<PayRequestResponse, Error, PayRequestResponse, unknown[]>);
-  //using for PayRequestShow.tsx
-  /* const payRequestQuery = useQuery<
-    PayRequestResponse,
-    Error,
-    PayRequestResponse,
-    unknown[]
-  >({
-    queryKey: ["payRequest", id, acc_year, acc_system],
-    queryFn: async () => {
-      console.log(
-        `/api/PayRequest?Id=${id}&YearId=${acc_year}&SystemId=${acc_system}`
-      );
-      const response = await api.get(
-        `/api/PayRequest?Id=${id}&YearId=${acc_year}&SystemId=${acc_system}`
-      );
-      return response.data;
-    },
-    onSuccess: (data: any) => {
-      setPayRequestResponse(data);
-    },
-    enabled: id !== 0 && acc_year !== 0 && acc_system !== 0,
-  } as UseQueryOptions<PayRequestResponse, Error, PayRequestResponse, unknown[]>);*/
-
   //for PayRequest/PayRequestInvoices
   const payRequestInvoicesQuery = useQuery<
     PayRequestInvoicesResponse,
@@ -505,24 +482,6 @@ export function usePayRequest() {
   });
   return {
     //output for PayRequest (using fpr PayRequestShow)
-    /*payRequestResponse: payRequestQuery.data ?? {
-      meta: {
-        errorCode: 0,
-        message: "",
-        type: "",
-      },
-      data: {
-        result: {
-          err: 0,
-          msg: "",
-          total_count: 0,
-          payRequests: [],
-          payRequestDtls: [],
-          invcs: [],
-        },
-      },
-    },*/
-    //output for
     isLoadingPayRequest: payRequest.isLoading,
     errorPayRequest: payRequest.error,
     payRequest: payRequest.data?.data.result.payRequests,
