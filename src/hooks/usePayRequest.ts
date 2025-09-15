@@ -394,7 +394,7 @@ export function usePayRequest() {
       lastIdChequeBookSearch,
     ],
     queryFn: async () => {
-      const url = `http://apitest.dotis.ir/api/Payment/chequeBookSearch?search=${encodeURIComponent(
+      const url = `/api/Payment/chequeBookSearch?search=${encodeURIComponent(
         searchChequeBookSearch
       )}&page=${pageChequeBookSearch}&lastId=${lastIdChequeBookSearch}&Acc_System=${acc_systemChequeBookSearch}`;
       console.log(url, "url in chequeBookSearchQuery");
@@ -422,7 +422,7 @@ export function usePayRequest() {
     ],
     queryFn: async () => {
       console.log(searchChequeBookDtlSearch, "searchChequeBookDtlSearch");
-      const url = `http://apitest.dotis.ir/api/Payment/chequeBookDtlSearch?ChequeBookId=${chequeBookIdChequeBookDtlSearch}&page=${pageChequeBookDtlSearch}${
+      const url = `/api/Payment/chequeBookDtlSearch?ChequeBookId=${chequeBookIdChequeBookDtlSearch}&page=${pageChequeBookDtlSearch}${
         searchChequeBookDtlSearch
           ? `&search=${encodeURIComponent(searchChequeBookDtlSearch)}`
           : ""
@@ -448,7 +448,7 @@ export function usePayRequest() {
   >({
     queryKey: ["chequeBookDtlById", chequeBookDtlId],
     queryFn: async () => {
-      const url = `http://apitest.dotis.ir/api/Payment/chequeBookDtlById?ChequeBookDtlId=${chequeBookDtlId}`;
+      const url = `/api/Payment/chequeBookDtlById?ChequeBookDtlId=${chequeBookDtlId}`;
       console.log(url, "url");
       const response = await api.get(url);
       return response.data;

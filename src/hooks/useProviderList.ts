@@ -107,7 +107,7 @@ export function useProviderDetailList() {
         tDate,
         productId,
       };
-      const url: string = `http://apitest.dotis.ir/api/ProviderReport/details?productId=${
+      const url: string = `/api/ProviderReport/details?productId=${
         params.productId
       }&accSystem=${params.accSystem}&accYear=${params.accYear}&brandId=${
         params.brandId
