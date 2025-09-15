@@ -1,28 +1,37 @@
 import { useEffect } from "react";
 import { useGeneralContext } from "../../context/GeneralContext";
-import { useWorkflowRowSelectStore } from "../../store/workflowStore";
 import { useWorkflowStore } from "../../store/workflowStore";
-import { useWorkflowRowSelect } from "../../hooks/useWorkflow";
 import WorkflowRowSelect from "./WorkflowRowSelect";
 import WorkflowComponent from "./WorkflowComponent";
-import { WorkflowResponse } from "../../types/workflow";
+import { WorkFlowDoFlowRequest, WorkflowResponse, WorkflowRowSelectResponse } from "../../types/workflow";
+import { UseMutateAsyncFunction } from "@tanstack/react-query";
 
 type Props = {
   selectedId: number;
   workFlowResponse: WorkflowResponse;
+  workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  isLoadingRowSelect: boolean;
+  errorRowSelect: Error | null;
+  doFlow: UseMutateAsyncFunction<any, Error, WorkFlowDoFlowRequest, unknown>;
+  isLoadingdoFlow: boolean;
+  getWorkTable: () => void;
 };
 
 export const WorkflowChild = ({
   selectedId,
   workFlowResponse,
+  workFlowRowSelectResponse,
+  isLoadingRowSelect,
+  errorRowSelect,
+  doFlow,
+  isLoadingdoFlow,
+  getWorkTable
 }: Props) => {
   //const [currentSelectedId, setCurrentSelectedId] = useState(selectedId);
   const { chartId, systemId } = useGeneralContext();
-  const { setField } = useWorkflowRowSelectStore();
+  const { setField } = useWorkflowStore();
   const { page, pageSize, dateTime, code, cost, flowMapId, name, dsc } =
     useWorkflowStore();
-  const { workFlowRowSelectResponse, isLoading, error } =
-    useWorkflowRowSelect();
 
   useEffect(() => {
     setField("chartId", chartId);
@@ -59,8 +68,11 @@ export const WorkflowChild = ({
       {workFlowResponse.err === 0 && workFlowResponse.workTables.length > 0 && (
         <WorkflowRowSelect
           workFlowRowSelectResponse={workFlowRowSelectResponse}
-          isLoading={isLoading}
-          error={error}
+          doFlow={doFlow}
+          isLoadingdoFlow={isLoadingdoFlow}
+          isLoading={isLoadingRowSelect}
+          error={errorRowSelect}
+          getWorkTable={getWorkTable}
         />
       )}
       <WorkflowComponent

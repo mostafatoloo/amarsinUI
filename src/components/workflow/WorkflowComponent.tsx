@@ -31,7 +31,6 @@ export default function WorkflowComponent({
     case "Indent/_CreateIndent":
       componentToRender1 = (
         <InvoiceReceiptShow
-          canEditForm={workFlowRowSelectResponse.workTableForms.canEditForm1}
           workFlowRowSelectResponse={workFlowRowSelectResponse}
         />
       );
@@ -39,7 +38,6 @@ export default function WorkflowComponent({
     case "Payment/_Cheque":
       componentToRender1 = (
         <RegRecievedCheque
-          canEditForm={workFlowRowSelectResponse.workTableForms.canEditForm1}
           workFlowRowSelectResponse={workFlowRowSelectResponse}
         />
       );
@@ -48,7 +46,6 @@ export default function WorkflowComponent({
       componentToRender1 = (
         <PaymentInvoiceShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
-          canEditForm={workFlowRowSelectResponse.workTableForms.canEditForm1}
         />
       );
       break;
@@ -61,6 +58,7 @@ export default function WorkflowComponent({
       componentToRender1 = (
         <PayRequestShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          isNew={false}
         />
       );
       break;
@@ -82,7 +80,6 @@ export default function WorkflowComponent({
     case "Indent/_CreateIndent":
       componentToRender2 = (
         <InvoiceReceiptShow
-          canEditForm={workFlowRowSelectResponse.workTableForms.canEditForm2}
           workFlowRowSelectResponse={workFlowRowSelectResponse}
         />
       );
@@ -90,7 +87,6 @@ export default function WorkflowComponent({
     case "Payment/_Cheque":
       componentToRender2 = (
         <RegRecievedCheque
-          canEditForm={workFlowRowSelectResponse.workTableForms.canEditForm2}
           workFlowRowSelectResponse={workFlowRowSelectResponse}
         />
       );
@@ -99,7 +95,6 @@ export default function WorkflowComponent({
       componentToRender2 = (
         <PaymentInvoiceShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
-          canEditForm={workFlowRowSelectResponse.workTableForms.canEditForm2}
         />
       );
       break;
@@ -112,6 +107,7 @@ export default function WorkflowComponent({
       componentToRender1 = (
         <PayRequestShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          isNew={false}
         />
       );
       break;

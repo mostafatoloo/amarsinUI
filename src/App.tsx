@@ -3,6 +3,7 @@ import {
   Routes,
   Route,
   Navigate,
+  useLocation,
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Login from "./pages/Login";
@@ -19,6 +20,7 @@ import ProductOffer from "./components/productOffer/ProductOffer";
 import ProductPerm from "./components/productPerm/ProductPerm";
 import ProductGrace from "./components/productGrace/ProductGrace";
 import ProductPrice from "./components/productPrice/ProductPrice";
+import PayRequestOperation from "./components/payRequestPaybox/PayRequestOperation";
 
 const queryClient = new QueryClient();
 
@@ -31,96 +33,33 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <Layout>
-          <Routes>
-            <Route path="/login" element={<Login isHomePage={true} />} />
-            <Route
-              path="/dashboard"
-              element={
-                <PrivateRoute>
-                  <Dashboard />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/admin/WFMS/index"
-              element={
-                <PrivateRoute>
-                  <Workflow />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/admin/user/index"
-              element={
-                <PrivateRoute>
-                  <User />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/admin/RpProviders/Inventory"
-              element={
-                <PrivateRoute>
-                  <InventoryGoodList />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/admin/RpProviders"
-              element={
-                <PrivateRoute>
-                  <ProviderList />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/admin/RpProducers"
-              element={
-                <PrivateRoute>
-                  <ProducerList />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/admin/ProductOffer"
-              element={
-                <PrivateRoute>
-                  <ProductOffer />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="Admin/ProductPerm"
-              element={
-                <PrivateRoute>
-                  <ProductPerm />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="Admin/ProductGrace"
-              element={
-                <PrivateRoute>
-                  <ProductGrace />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="Admin/ProductPrice"
-              element={
-                <PrivateRoute>
-                  <ProductPrice />
-                </PrivateRoute>
-              }
-            />
-            <Route path="/" element={<Navigate to="/admin/WFMS/index" />} />
-          </Routes>
-        </Layout>
+        <AppContent />
       </Router>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }
 
+function AppContent() {
+  const location = useLocation(); // Now this is inside <Router>
+  return (
+    <Layout key={location.pathname}>
+      <Routes>
+      <Route path="/login" element={<Login isHomePage={true} />} />
+        <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+        <Route path="/admin/WFMS/index" element={<PrivateRoute><Workflow /></PrivateRoute>} />
+        <Route path="/admin/user/index" element={<PrivateRoute><User /></PrivateRoute>} />
+        <Route path="/admin/RpProviders/Inventory" element={<PrivateRoute><InventoryGoodList /></PrivateRoute>} />
+        <Route path="/admin/RpProviders" element={<PrivateRoute><ProviderList /></PrivateRoute>} />
+        <Route path="/admin/RpProducers" element={<PrivateRoute><ProducerList /></PrivateRoute>} />
+        <Route path="/admin/ProductOffer" element={<PrivateRoute><ProductOffer /></PrivateRoute>} />
+        <Route path="/admin/ProductPerm" element={<PrivateRoute><ProductPerm /></PrivateRoute>} />
+        <Route path="/admin/ProductGrace" element={<PrivateRoute><ProductGrace /></PrivateRoute>} />
+        <Route path="/admin/ProductPrice" element={<PrivateRoute><ProductPrice /></PrivateRoute>} />
+        <Route path="/admin/PayRequest" element={<PrivateRoute><PayRequestOperation /></PrivateRoute>} />
+        <Route path="/" element={<Navigate to="/admin/WFMS/index" />} />
+      </Routes>
+    </Layout>
+  );
+}
 export default App;

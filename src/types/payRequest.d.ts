@@ -1,11 +1,7 @@
-// for http://apitest.dotis.ir/api/PayRequest/PayRequest?Id=1513&Acc_Year=15&Acc_System=4&State=0
+// for http://apitest.dotis.ir/api/PayRequest?Id=1513&Acc_Year=15&Acc_System=4&State=0
+import { ProductOperationRequest } from './productOperation';
 import { RpCustomerBillsResponse, RpCustomerBillsRequest } from './sales';
-interface Meta {
-  errorCode: number;
-  message: null | string;
-  type: string;
-}
-
+import { Meta } from './general';
 interface PayRequest {
   id: number;
   guid: string;
@@ -65,6 +61,7 @@ interface InvcsItem {
 interface Result {
   err: number;
   msg: null | string;
+  total_count:number;
   payRequests: PayRequest[];
   payRequestDtls: PayRequestDtl[];
   invcs: InvcsItem[];
@@ -79,12 +76,12 @@ interface PayRequestResponse {
   data: Data;
 }
 
-interface PayRequestRequest {
-  id: number;
+export interface PayRequestRequest extends ProductOperationRequest {
   acc_year: number;
   acc_system: number;
 }
-//for http://apitest.dotis.ir/api/PayRequest/PayRequestInvoices?PayRequestId=1513&SystemId=4&YearId=15&CustomerId=787
+
+//for http://apitest.dotis.ir/api/PayRequest/Invoices?PayRequestId=1513&SystemId=4&YearId=15&CustomerId=787
 
 interface PayRequestInvoicesResponse {
   meta: Meta;
@@ -219,7 +216,7 @@ interface ChequeBookDtlByIdResponse {
     };
   };
 };
-//http://apitest.dotis.ir/api/PayRequest/PayRequestSave
+//http://apitest.dotis.ir/api/PayRequest/save
 interface PayRequestSaveDetail {
   ordr: number;
   id: number;
@@ -247,8 +244,8 @@ interface PayRequestSaveRequest {
   guid: string;
   usrId: number;
   id: number;
-  acc_System: number;
-  acc_Year: number;
+  systemId: number;
+  yearId: number;
   customerId: number;
   dat: string;
   tim: string;
@@ -276,8 +273,52 @@ interface PayRequestSaveResponse {
     };
   };
 }
+//http://apitest.dotis.ir/api/PayRequest/doFirstFlow?ChartId=1&Acc_System=1&Acc_Year=15&Id=123123&Dsc=
+interface PayRequestDoFirstFlowRequest {
+  chartId: number;
+  systemId: number;
+  yearId: number;
+  id: number;
+  dsc: string;
+  flowNo:number;
+  wFMS_FlowMapId:number;
+}
+
+interface ResultPayRequestDoFirstFlow {
+  systemId: number;
+  id: number;
+  err: number;
+  msg: string;
+  hasFlow: boolean;
+}
+
+interface DataPayRequestDoFirstFlow {
+  result: ResultPayRequestDoFirstFlow;
+}
+
+interface PayRequestDoFirstFlowResponse {
+  meta: Meta;
+  data: DataPayRequestDoFirstFlow;
+}
+//http://apitest.dotis.ir/api/PayRequest/del?Id=1637
+interface ResultPayRequestDel {
+  systemId: number;
+  id: number;
+  err: number;
+  msg: string;
+  hasFlow: boolean;
+}
+
+interface DataPayRequestDel {
+  result: ResultPayRequestDel;
+}
+
+interface PayRequestDelResponse {
+  meta: Meta;
+  data: DataPayRequestDel;
+}
 export interface PayRequestState
-  extends PayRequestRequest,
+  extends PayRequestRequest ,
     PayRequestInvoicesRequest,
     RpCustomerBillsRequest,ChequeBookSearchRequest,ChequeBookDtlSearchRequest,ChequeBookDtlByIdRequest  {
   payRequestResponse: PayRequestResponse;
@@ -287,6 +328,8 @@ export interface PayRequestState
   chequeBookDtlSearchResponse:ChequeBookDtlSearchResponse; // for Payment/chequeBookDtlSearch
   chequeBookDtlByIdResponse:ChequeBookDtlByIdResponse; // for Payment/chequeBookDtlById
   payRequestSaveResponse:PayRequestSaveResponse; // for PayRequest/PayRequestSave
+  payRequestDoFirstFlowResponse:PayRequestDoFirstFlowResponse; // for PayRequest/doFirstFlow
+  payRequestDelResponse:PayRequestDelResponse; // for PayRequest/del
   setField: (field: string | number | symbol, value: any) => void;
   setPayRequestResponse: (payRequestResponse: PayRequestResponse) => void;
   setPayRequestInvoicesResponse: (
@@ -297,4 +340,6 @@ export interface PayRequestState
   setChequeBookDtlSearchResponse:(chequeBookDtlSearchResponse)=>void//for Payment/chequeBookDtlSearch
   setChequeBookDtlByIdResponse:(chequeBookDtlByIdResponse:ChequeBookDtlByIdResponse)=>void//for Payment/chequeBookDtlById
   setPayRequestSaveResponse:(payRequestSaveResponse:PayRequestSaveResponse)=>void//for PayRequest/PayRequestSave
+  setPayRequestDoFirstFlowResponse:(payRequestDoFirstFlowResponse:PayRequestDoFirstFlowResponse)=>void//for PayRequest/doFirstFlow
+  setPayRequestDelResponse:(payRequestDelResponse:PayRequestDelResponse)=>void//for PayRequest/del
 }

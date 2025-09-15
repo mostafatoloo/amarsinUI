@@ -308,9 +308,10 @@ import { ShowProductListRequest } from "../types/productOperation";
       },
       onSuccess: (data: any) => {
         setProductPriceSaveResponse(data);
-        //console.log(data, "data");
         queryClient.invalidateQueries({ queryKey: ["productPrice"] });
         queryClient.invalidateQueries({ queryKey: ["productPriceDtl"] });
+        //console.log(data, "data");
+
       },
     });
     //for productPrice/productPriceDoFirstFlow

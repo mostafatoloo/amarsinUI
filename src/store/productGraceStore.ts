@@ -35,8 +35,8 @@ export const useProductGraceStore = create<ProductGraceState>()((set) => ({
   sortTime: 0,
   sortDsc: 0,
   sortAccepted: 0,
-  sortUsrName: "",
-  sortStep: "",
+  sortUsrName: 0,
+  sortStep: 0,
   //productOfferDtlHistory
   pId: 0,
   productGraceDtlHistoryResponse: {

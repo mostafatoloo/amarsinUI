@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 //import Skeleton from "../components/layout/Skeleton";
 import Spinner from "../components/controls/Spinner";
 
@@ -28,8 +28,17 @@ const AttachmentImageLoader: React.FC<AttachmentImageLoaderProps> = ({
   const imgRef = useRef<HTMLImageElement>(null);
   const blobUrlRef = useRef<string | null>(null);
 
+  // Memoize options to prevent infinite re-renders
+  const memoizedOptions = useMemo(() => options, [
+    options.className,
+    options.alt,
+    options.id,
+    options.placeholder,
+    options.clickable
+  ]);
+
   // Default to true for clickable images
-  const isClickable = options.clickable !== false;
+  const isClickable = memoizedOptions.clickable !== false;
 
   const handleImageClick = () => {
     if (!isClickable || !imgSrc) return;
@@ -107,11 +116,8 @@ const AttachmentImageLoader: React.FC<AttachmentImageLoaderProps> = ({
     const loadImage = async () => {
       // Reset error state
       setError(null);
-      console.log(imageUrl, "imageUrl in loadImage");
 
       try {
-        //console.log(imageUrl, "imageUrl");
-
         // Use fetch instead of axios for better blob handling
         const response = await fetch(imageUrl, {
           method: "GET",
@@ -134,12 +140,12 @@ const AttachmentImageLoader: React.FC<AttachmentImageLoaderProps> = ({
         }
 
         const objectUrl = URL.createObjectURL(blob);
-
         // Store the blob URL reference for cleanup
         blobUrlRef.current = objectUrl;
 
         // Set the blob URL to state
         setImgSrc(objectUrl);
+        //console.log(authToken,imageUrl,options)
       } catch (err) {
         console.error("Error loading authenticated image:", err);
         setError(err instanceof Error ? err : new Error(String(err)));
@@ -157,7 +163,7 @@ const AttachmentImageLoader: React.FC<AttachmentImageLoaderProps> = ({
         blobUrlRef.current = null;
       }
     };
-  }, [authToken, imageUrl, options]);
+  }, [authToken, imageUrl, memoizedOptions]);
 
   if (error) {
     return (
@@ -174,13 +180,13 @@ const AttachmentImageLoader: React.FC<AttachmentImageLoaderProps> = ({
       loading="lazy"
       ref={imgRef}
       src={imgSrc}
-      className={options.className}
-      alt={options.alt || "Attachment Image"}
+      className={memoizedOptions.className}
+      alt={memoizedOptions.alt || "Attachment Image"}
       style={{
-        ...options.style,
+        ...memoizedOptions.style,
         cursor: isClickable ? "pointer" : "default",
       }}
-      id={options.id}
+      id={memoizedOptions.id}
       onClick={handleImageClick}
       onError={() => {
         const err = new Error("Failed to load image from blob URL");

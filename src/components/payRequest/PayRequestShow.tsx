@@ -1,3 +1,4 @@
+// مدیرمالی ->
 import { useEffect, useState } from "react";
 import { usePayRequest } from "../../hooks/usePayRequest";
 import { WorkflowRowSelectResponse } from "../../types/workflow";
@@ -34,9 +35,10 @@ import PayRequestAttachment from "./PayRequestAttachment";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  isNew: boolean;
 };
 
-const PayRequestShow = ({ workFlowRowSelectResponse }: Props) => {
+const PayRequestShow = ({ workFlowRowSelectResponse, isNew }: Props) => {
   const [customer, setCustomer] = useState<DefaultOptionType | null>(null);
   const { setField: setPayRequestField } = usePayRequestStore();
   const { authApiResponse } = useAuthStore();
@@ -170,11 +172,13 @@ const PayRequestShow = ({ workFlowRowSelectResponse }: Props) => {
       })
     );
   }, [chequeBookDtlSearchResponse.data.result.results]);
+  /////////////////////////////////////////////////////////////
   useEffect(() => {
     //set attachment count
+    console.log(payRequestResponse.data.result.payRequestDtls, "payRequestResponse.data.result.payRequestDtls in PayRequestShow");
     setCnt(payRequestResponse.data.result.payRequests[0]?.attachCount ?? 0);
     const invcs = payRequestResponse.data.result.invcs; // keep factors include settles in tempPayRequestResponse
-    setDataInTab2(
+    setDataInTab2(isNew ? [] :
       payRequestResponse.data.result.payRequestDtls.map((item, index) => {
         const tempItem = invcs.find((p) => p.payRequestDtlId === item.id);
         return {
@@ -330,8 +334,8 @@ const PayRequestShow = ({ workFlowRowSelectResponse }: Props) => {
       guid: payRequestResponse.data.result.payRequests[0]?.guid ?? "",
       usrId: authApiResponse?.data.result.login.usrId ?? 0,
       id: payRequestResponse.data.result.payRequests[0]?.id ?? 0,
-      acc_System: system?.id ?? 0,
-      acc_Year: year?.id ?? 0,
+      systemId: system?.id ?? 0,
+      yearId: year?.id ?? 0,
       customerId: customer?.id ?? 0,
       dat: payRequestResponse.data.result.payRequests[0]?.dat ?? "",
       tim: payRequestResponse.data.result.payRequests[0]?.tim ?? "",
@@ -369,6 +373,7 @@ const PayRequestShow = ({ workFlowRowSelectResponse }: Props) => {
         workFlowRowSelectResponse={workFlowRowSelectResponse}
         payRequestResponse={payRequestResponse}
         setShowAttachment={setShowAttachment}
+        isNew={isNew}
         //authApiResponse={authApiResponse as AuthApiResponse}
       />
       <PayRequestShowTableHeader
@@ -411,9 +416,6 @@ const PayRequestShow = ({ workFlowRowSelectResponse }: Props) => {
           chequeBookDtlByIdResponse={chequeBookDtlByIdResponse}
           options1={options1}
           options2={options2}
-          canEditForm={
-            workFlowRowSelectResponse.workTableForms.canEditForm1Dtl1
-          }
           originalData={dataInTab2}
           setOriginalData={setDataInTab2}
           customerId={customer?.id ?? 0}
@@ -423,7 +425,7 @@ const PayRequestShow = ({ workFlowRowSelectResponse }: Props) => {
           workFlowRowSelectResponse={workFlowRowSelectResponse}
         />
       )}
-      {workFlowRowSelectResponse.workTableForms.canEditForm1Dtl1 && (
+      {workFlowRowSelectResponse.workTableForms.canEditForm1Dtl2 && (
         <ConfirmCard
           backgroundColor="bg-gray-300"
           variant="flex-row gap-2 rounded-lg justify-end"
@@ -465,7 +467,7 @@ const PayRequestShow = ({ workFlowRowSelectResponse }: Props) => {
         height="90vh"
       >
         <PayRequestAttachment
-          formId={workFlowRowSelectResponse.workTableRow.formId}
+          formId={isNew ? 0 : workFlowRowSelectResponse.workTableRow.formId}
           setCnt={setCnt}
         />
       </ModalForm>

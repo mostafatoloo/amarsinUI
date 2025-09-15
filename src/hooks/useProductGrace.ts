@@ -308,9 +308,9 @@ import { ShowProductListRequest } from "../types/productOperation";
       },
       onSuccess: (data: any) => {
         setProductGraceSaveResponse(data);
-        //console.log(data, "data");
         queryClient.invalidateQueries({ queryKey: ["productGrace"] });
         queryClient.invalidateQueries({ queryKey: ["productGraceDtl"] });
+        //console.log(data, "data");
       },
     });
     //for productPerm/productPermDoFirstFlow

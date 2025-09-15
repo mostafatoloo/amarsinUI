@@ -8,12 +8,10 @@ import RegRecievedChequeInfo from "./RegRecievedChequeInfo";
 //import RegRecievedChequeInfoSanad from "./RegRecievedChequeInfoSanad";
 
 type Props = {
-  canEditForm: boolean;
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
 };
 
 const RegRecievedCheque = ({
-  canEditForm,
   workFlowRowSelectResponse,
 }: Props) => {
   const {
@@ -27,6 +25,7 @@ const RegRecievedCheque = ({
   } = useCheques();
 
   const {setField,formId:chequeFormId}=useChequeStore()
+  const canEditForm = workFlowRowSelectResponse.workTableForms.canEditForm1;
   useEffect(() => {
     if(chequeFormId!==workFlowRowSelectResponse.workTableRow.formId){
       setField("formId", workFlowRowSelectResponse.workTableRow.formId);

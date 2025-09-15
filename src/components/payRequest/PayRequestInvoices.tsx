@@ -107,15 +107,18 @@ Props) => {
       accessor: "checked",
       width: "2%",
       Cell: ({ value, row }: any) => (
-        <div className="flex justify-evenly items-center w-full">
+        <button className="flex justify-evenly items-center w-full" onMouseDown={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          handleCheckClick(value, row.original);
+        }}>
           <input
             className="cursor-pointer"
             type="checkbox"
             checked={value}
             readOnly
-            onClick={() => handleCheckClick(value, row.original)}
           />
-        </div>
+        </button>
       ),
     },
   ];

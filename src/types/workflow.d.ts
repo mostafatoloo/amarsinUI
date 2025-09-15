@@ -1,3 +1,4 @@
+import { Data, Meta } from './general';
 import { WorkTable } from './workflow.d';
 export type FlowMapTitle = {
   id: number;
@@ -60,10 +61,17 @@ export interface WorkFlowRequest {
   dsc?: string;
 }
 
-export interface WorkFlowState extends WorkFlowRequest {
+export interface WorkFlowState extends WorkFlowRequest, WorkFlowRowSelectRequest{
   workFlowResponse: WorkflowResponse;
   setField: (field: string | number | symbol, value: any) => void;
   setWorkFlowResponse: (workFlowResponse: WorkflowResponse) => void;
+  workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  workFlowDoFlowResponse:WorkFlowDoFlowResponse; // for doFlow
+  setWorkFlowRowSelectResponse: (
+    workFlowRowSelectResponse: WorkflowRowSelectResponse
+  ) => void;
+  setWorkFlowDoFlowResponse:(workFlowDoFlowResponse:WorkFlowDoFlowResponse)=>void //for doFlow  
+
 }
 
 export interface FlowButton {
@@ -108,10 +116,33 @@ export interface WorkFlowRowSelectRequest {
   workTableId: number;
 }
 
-export interface WorkFlowRowSelectState extends WorkFlowRowSelectRequest {
+//http://apitest.dotis.ir/api/WFMS/doFlow
+export interface WorkFlowDoFlowRequest {
+  chartId: number;
+  systemId: number;
+  yearId: number;
+  workTableId: number;
+  flowMapId: number;
+  formId: number;
+  flowNo: number;
+  flowId: number;
+  dsc: string;
+  date: string;
+  params: string;
+  idempotencyKey: string;
+}
+
+interface WorkFlowDoFlowResponse {
+  meta: Meta;
+  data: Data;
+}
+
+export interface WorkFlowRowSelectState extends WorkFlowRowSelectRequest{
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  workFlowDoFlowResponse:WorkFlowDoFlowResponse; // for doFlow
   setField: (field: string | number | symbol, value: any) => void;
   setWorkFlowRowSelectResponse: (
     workFlowRowSelectResponse: WorkflowRowSelectResponse
   ) => void;
+  setWorkFlowDoFlowResponse:(workFlowDoFlowResponse:WorkFlowDoFlowResponse)=>void //for doFlow
 }

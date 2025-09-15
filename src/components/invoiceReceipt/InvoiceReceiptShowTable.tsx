@@ -322,6 +322,7 @@ const InvoiceReceiptShowTable = ({
     }
   };
   const updateToDeleted = (row: any) => {
+    console.log("updateToDeleted", row.original.id);
     setOriginalData((old) =>
       old.map((origRow) => {
         if (

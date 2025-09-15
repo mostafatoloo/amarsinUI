@@ -12,12 +12,10 @@ import { useAuthStore } from "../../store/authStore";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
-  canEditForm: boolean;
 };
 
 const PaymentInvoiceShow = ({
   workFlowRowSelectResponse,
-  canEditForm,
 }: Props) => {
   
   const canEditForm1Mst1= workFlowRowSelectResponse.workTableForms.canEditForm1Mst1
@@ -36,7 +34,7 @@ const PaymentInvoiceShow = ({
   const { systemId, yearId } = useGeneralContext();
   const { setField } = usePaymentInvoiceStore();
   const { authApiResponse } = useAuthStore();
-
+  const canEditForm = workFlowRowSelectResponse.workTableForms.canEditForm1;
   const usrId = authApiResponse?.data?.result?.login?.usrId ?? 0;
 
   useEffect(() => {

@@ -35,7 +35,6 @@ import { debounce } from "lodash";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
-  canEditForm: boolean;
 };
 
 export type Fields = {
@@ -49,12 +48,8 @@ export type Fields = {
   dsc: string;
 };
 
-const InvoiceReceiptShow = ({
-  workFlowRowSelectResponse,
-  canEditForm,
-}: Props) => {
-  //const canEditForm1Mst1 =
-   // workFlowRowSelectResponse.workTableForms.canEditForm1Mst1;
+const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
+  const canEditForm = workFlowRowSelectResponse.workTableForms.canEditForm1;
   const { setField, mrsId } = useInvoiceReceiptStore();
   const { yearId, systemId } = useGeneralContext();
   const { indentMrsResponse, isLoading, getIndentMrsResponse } =

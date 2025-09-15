@@ -18,8 +18,8 @@ export interface ProductOperationRequest {
     sortTime:number;
     sortDsc:number;
     sortAccepted:number;
-    sortUsrName:string;
-    sortStep:string; 
+    sortUsrName:number;
+    sortStep:number; 
   
   }
 

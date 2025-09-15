@@ -1,5 +1,12 @@
 import { v4 as uuidv4 } from "uuid";
-import { ChangeEvent, SetStateAction, Dispatch, useEffect, useRef, useState } from "react";
+import {
+  ChangeEvent,
+  SetStateAction,
+  Dispatch,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useAttachments } from "../../hooks/useAttachments";
 import { useAttachmentStore } from "../../store/attachmentStore";
 import Add32 from "../../assets/images/GrayThem/add32.png";
@@ -61,12 +68,19 @@ const PayRequestAttachment = ({ formId, setCnt }: Props) => {
       accessor: "del",
       width: "10%",
       Cell: ({ row }: any) => (
-        <img
-          src={row.original.isDeleted ? RestoreIcon : TrashIcon}
-          onClick={() => updateToDeleted(row)}
-          className="cursor-pointer"
-          alt="TrashIcon"
-        />
+        <button
+          onMouseDown={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            updateToDeleted(row);
+          }}
+        >
+          <img
+            src={row.original.isDeleted ? RestoreIcon : TrashIcon}
+            style={{ width: "16px", height: "16px" }}
+            alt="TrashIcon"
+          />
+        </button>
       ),
     },
   ];
@@ -107,6 +121,7 @@ const PayRequestAttachment = ({ formId, setCnt }: Props) => {
   }, [attachments]);
   ////////////////////////////////////////////////////////////////
   const updateToDeleted = (row: any) => {
+    console.log("updateToDeleted", row.original.id);
     setData((old) =>
       old.map((origRow) => {
         if (origRow.id === row.original.id) {
@@ -138,6 +153,7 @@ const PayRequestAttachment = ({ formId, setCnt }: Props) => {
   ////////////////////////////////////////////////////////////////
   // Custom cell click handler for Table
   const handleCellColorChange = (row: any): string | null => {
+    //    console.log("handleCellColorChange", row.original);
     if (row.original.isDeleted) {
       return colors.red100;
     }
@@ -238,7 +254,7 @@ const PayRequestAttachment = ({ formId, setCnt }: Props) => {
           {imageUrl && (
             <div className="flex w-full h-full justify-center items-center overflow-y-auto">
               <AttachmentImageLoader
-                key={`${imageUrl}-${Date.now()}`} // Unique key to force re-render
+                key={imageUrl} // Use imageUrl as key, only changes when imageUrl changes
                 authToken={token}
                 imageUrl={imageUrl}
                 options={{

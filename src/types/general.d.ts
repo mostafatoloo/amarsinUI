@@ -15,8 +15,7 @@ export type Column = {
   Cell?: (props: any) => ReactNode;
   noLeftBorder?:boolean;
   align?:string;
-  except?:boolean; // if false, the column will not be colored
-  //sort?:string;
+  except?:boolean; // if false, the column will not be colored used just in OrderRegShowTable.tsx
 };
 export type ColumnGroup = {
   Header: string;
@@ -40,6 +39,24 @@ interface Meta {
   message: string | null;
   type: string;
 }
+// define a general response data
+interface FormAfterClick {
+  id: number;
+  title: string | null;
+  viewPath: string | null;
+}
+
+interface Result {
+  id: number;
+  err: number;
+  msg: string;
+  formAfterClick: FormAfterClick;
+}
+
+interface Data {
+  result: Result;
+}
+//end define a general response data
 
 export type TableColumns = (ColumnGroup | Column)[];
 

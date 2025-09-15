@@ -5,7 +5,17 @@ import { useWorkflow } from "../../hooks/useWorkflow";
 
 const WorkflowForm = () => {
   const [selectedId, setSelectedId] = useState<number>(148201);
-  const { workFlowResponse, error, isLoading } = useWorkflow();
+  const {
+    workFlowResponse,
+    error,
+    isLoading,
+    isLoadingRowSelect,
+    workFlowRowSelectResponse,
+    errorRowSelect,
+    doFlow,
+    isLoadingdoFlow,
+    getWorkTable,
+  } = useWorkflow();
 
   const handleSelectedIdChange = (id: number) => {
     //console.log(id, "id in WorkflowForm");
@@ -24,6 +34,12 @@ const WorkflowForm = () => {
       <WorkflowChild
         selectedId={selectedId} //{selectedIdRef.current}
         workFlowResponse={workFlowResponse}
+        workFlowRowSelectResponse={workFlowRowSelectResponse}
+        isLoadingRowSelect={isLoadingRowSelect}
+        errorRowSelect={errorRowSelect}
+        doFlow={doFlow}
+        isLoadingdoFlow={isLoadingdoFlow}
+        getWorkTable={getWorkTable}
       />
     </div>
   );

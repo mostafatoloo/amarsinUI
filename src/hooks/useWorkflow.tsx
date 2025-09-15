@@ -1,10 +1,13 @@
-import { useQuery,  UseQueryOptions } from "@tanstack/react-query";
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  UseQueryOptions,
+} from "@tanstack/react-query";
 import api from "../api/axios";
+import { useWorkflowStore } from "../store/workflowStore";
 import {
-  useWorkflowRowSelectStore,
-  useWorkflowStore,
-} from "../store/workflowStore";
-import {
+  WorkFlowDoFlowRequest,
   WorkFlowRequest,
   WorkflowResponse,
   WorkFlowRowSelectRequest,
@@ -13,7 +16,6 @@ import {
 
 export function useWorkflow() {
   const {
-    chartId,
     systemId,
     page,
     pageSize,
@@ -25,7 +27,13 @@ export function useWorkflow() {
     name,
     dsc,
     setWorkFlowResponse,
+    chartId,
+    workTableId,
+    setWorkFlowRowSelectResponse,
+    setWorkFlowDoFlowResponse,
   } = useWorkflowStore();
+
+  const queryClient = new QueryClient();
 
   const query = useQuery<WorkflowResponse, Error, WorkflowResponse, unknown[]>({
     queryKey: [
@@ -90,24 +98,6 @@ export function useWorkflow() {
     },
   } as UseQueryOptions<WorkflowResponse, Error, WorkflowResponse, unknown[]>);
 
-  return {
-    getWorkTable: query.refetch,
-    isLoading: query.isLoading,
-    error: query.error,
-    workFlowResponse: query.data ?? {
-      err: 0,
-      msg: "",
-      totalCount: 0,
-      flowMapTitles: [],
-      workTables: [],
-    },
-  };
-}
-//for RowSelect
-export function useWorkflowRowSelect() {
-  const { chartId, workTableId, setWorkFlowRowSelectResponse } =
-    useWorkflowRowSelectStore();
-
   const queryRowSelect = useQuery<
     WorkflowRowSelectResponse,
     Error,
@@ -136,10 +126,36 @@ export function useWorkflowRowSelect() {
     },
   } as UseQueryOptions<WorkflowRowSelectResponse, Error, WorkflowRowSelectResponse, unknown[]>);
 
+  //for doFlow
+  const doFlow = useMutation({
+    mutationFn: async (request: WorkFlowDoFlowRequest) => {
+      const url: string = `api/WFMS/doFlow`;
+      const response = await api.post(url, request);
+      return response.data;
+    },
+    onSuccess: (data: any) => {
+      queryClient.refetchQueries({ queryKey: ["workflow"] });
+      queryClient.refetchQueries({ queryKey: ["workflowRowSelect"] });
+      setWorkFlowDoFlowResponse(data);
+      console.log("Data refetched and response set:", data);
+    },
+  });
+
   return {
+    getWorkTable: query.refetch,
+    isLoading: query.isLoading,
+    error: query.error,
+    workFlowResponse: query.data ?? {
+      err: 0,
+      msg: "",
+      totalCount: 0,
+      flowMapTitles: [],
+      workTables: [],
+    },
+
     getWorkTableRowSelect: queryRowSelect.refetch,
-    isLoading: queryRowSelect.isLoading,
-    error: queryRowSelect.error,
+    isLoadingRowSelect: queryRowSelect.isLoading,
+    errorRowSelect: queryRowSelect.error,
     workFlowRowSelectResponse: queryRowSelect.data ?? {
       err: 0,
       msg: "",
@@ -182,5 +198,9 @@ export function useWorkflowRowSelect() {
       },
       flowDescriptions: [],
     },
+    // for doFlow
+    isLoadingdoFlow: doFlow.isPending,
+    errordoFlow: doFlow.error,
+    doFlow: doFlow.mutateAsync,
   };
 }

@@ -35,8 +35,8 @@ export const useProductPriceStore = create<ProductPriceState>()((set) => ({
   sortTime: 0,
   sortDsc: 0,
   sortAccepted: 0,
-  sortUsrName: "",
-  sortStep: "",
+  sortUsrName: 0, 
+  sortStep: 0,
    //productPriceDtlHistory
   pId: 0,
   productPriceDtlHistoryResponse: {

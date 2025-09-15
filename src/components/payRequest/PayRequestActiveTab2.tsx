@@ -34,7 +34,6 @@ type Props = {
   chequeBookDtlSearch: string;
   setChequeBookSearch: React.Dispatch<React.SetStateAction<string>>;
   setChequeBookDtlSearch: React.Dispatch<React.SetStateAction<string>>;
-  canEditForm: boolean;
   customerId: number;
   originalData: PayRequestDtlTable[];
   setOriginalData: (
@@ -66,7 +65,6 @@ const PayRequestActiveTab2 = ({
   originalData,
   setOriginalData,
   customerId,
-  canEditForm,
   chequeBookDtlByIdResponse,
   setShowInvoices,
   setPay,
@@ -74,8 +72,12 @@ const PayRequestActiveTab2 = ({
   setPayRequestDtlId,
   setChequeBookId,
   chequeBookId,
-  workFlowRowSelectResponse
+  workFlowRowSelectResponse,
 }: Props) => {
+  const CanEditForm1Dtl1 =
+    workFlowRowSelectResponse.workTableForms.canEditForm1Dtl1;
+  const CanEditForm1Dtl2 =
+    workFlowRowSelectResponse.workTableForms.canEditForm1Dtl2;
   const columns: TableColumns = [
     {
       Header: "ردیف",
@@ -92,7 +94,7 @@ const PayRequestActiveTab2 = ({
       setSearch: setChequeBookSearch,
       search: chequeBookSearch,
       placeholder: "دسته چک را انتخاب کنید...",
-      Cell: canEditForm
+      Cell: CanEditForm1Dtl1
         ? EditableInput
         : ({ value }: any) => convertToFarsiDigits(value),
     },
@@ -105,7 +107,7 @@ const PayRequestActiveTab2 = ({
       setSearch: setChequeBookDtlSearch,
       search: chequeBookDtlSearch,
       placeholder: "شماره چک را انتخاب کنید...",
-      Cell: canEditForm
+      Cell: CanEditForm1Dtl1
         ? EditableInput
         : ({ value }: any) => convertToFarsiDigits(value),
     },
@@ -113,7 +115,7 @@ const PayRequestActiveTab2 = ({
       Header: "در وجه",
       accessor: "prsn",
       width: "22%",
-      Cell: canEditForm
+      Cell: CanEditForm1Dtl2
         ? EditableInput
         : ({ value }: any) => convertToFarsiDigits(value),
     },
@@ -121,7 +123,7 @@ const PayRequestActiveTab2 = ({
       Header: "صیادی",
       accessor: "chqBkNo",
       width: "8%",
-      Cell: canEditForm
+      Cell: CanEditForm1Dtl1
         ? EditableInput
         : ({ value }: any) => convertToFarsiDigits(value),
     },
@@ -129,7 +131,7 @@ const PayRequestActiveTab2 = ({
       Header: "سررسید",
       accessor: "dat",
       width: "5%",
-      Cell: canEditForm
+      Cell: CanEditForm1Dtl2
         ? EditableInput
         : ({ value }: any) => convertToFarsiDigits(value),
     },
@@ -137,13 +139,13 @@ const PayRequestActiveTab2 = ({
       Header: "مبلغ",
       accessor: "amount",
       width: "8%",
-      Cell: canEditForm ? EditableInput : ({ value }: any) => value,
+      Cell: CanEditForm1Dtl2 ? EditableInput : ({ value }: any) => value,
     },
     {
       Header: "شرح",
       accessor: "dtlDsc",
       width: "15%",
-      Cell: canEditForm
+      Cell: CanEditForm1Dtl2
         ? EditableInput
         : ({ value }: any) => convertToFarsiDigits(value),
     },
@@ -152,21 +154,36 @@ const PayRequestActiveTab2 = ({
       accessor: "lastColumn",
       width: "3%",
       Cell: ({ row }: any) => (
-        <div className="flex w-full">
-          {canEditForm && (
+        <div className="flex w-full items-center justify-center">
+          {CanEditForm1Dtl2 && (
             <>
-              <img
-                src={row.original.del ? RestoreIcon : TrashIcon}
-                onClick={() => updateToDeleted(row)}
-                className="cursor-pointer"
-                alt="TrashIcon"
-              />
-              <input
-                type="checkbox"
-                checked={row.original.checked}
-                onChange={() => showInvoices(row)}
-                className="cursor-pointer"
-              />
+              <button
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  updateToDeleted(row);
+                }}
+              >
+                <img
+                  src={row.original.del ? RestoreIcon : TrashIcon}
+                  style={{ width: "16px", height: "16px" }}
+                  alt="TrashIcon"
+                />
+              </button>
+              <button onMouseDown={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  showInvoices(row);
+                }}
+                className="flex items-center justify-center"
+              >
+                <input
+                  type="checkbox"
+                  checked={row.original.checked}
+                  className="cursor-pointer place-content-center"
+                  onChange={() => console.log("checked", row.original.checked)}       
+                />
+              </button> 
             </>
           )}
         </div>
@@ -252,6 +269,7 @@ const PayRequestActiveTab2 = ({
   };
   ////////////////////////////////////////////////////////////////
   const updateToDeleted = (row: any) => {
+    console.log(row.original.id, "row.original.id in updateToDeleted");
     setOriginalData((old: PayRequestDtlTable[]) =>
       old.map((origRow) => {
         if (origRow.id === row.original.id) {
@@ -264,7 +282,6 @@ const PayRequestActiveTab2 = ({
 
   ////////////////////////////////////////////////////////////////
   const showInvoices = (row: any) => {
-    console.log(row.original.id, "row.original.id in showInvoices");
     setPayRequestDtlId(row.original.id);
     setOriginalData((old: PayRequestDtlTable[]) => {
       return old.map((origRow) => {
@@ -397,7 +414,7 @@ const PayRequestActiveTab2 = ({
           widthDiv="w-full"
           widthLabel="w-40"
           widthInput="w-full-minus-40"
-          disabled={true}
+          disabled={!workFlowRowSelectResponse.workTableForms.canEditForm1Dtl2}
           variant="outlined"
         />
         <a
@@ -430,10 +447,10 @@ const PayRequestActiveTab2 = ({
         wordWrap={true}
         changeRowValues={changeRowValues}
         showToolTip={true}
-        canEditForm={true}
+        canEditForm={workFlowRowSelectResponse.workTableForms.canEditForm1Dtl2}
         CellColorChange={handleCellColorChange}
       />
-      {workFlowRowSelectResponse.workTableForms.canEditForm1Dtl1 && (
+      {workFlowRowSelectResponse.workTableForms.canEditForm1Dtl2 && (
         <div className="flex items-center justify-start border border-gray-300 rounded-lg p-2 shadow-lg bg-gray-100 w-10 text-sm text-gray-600">
           <img
             src={PlusIcon}

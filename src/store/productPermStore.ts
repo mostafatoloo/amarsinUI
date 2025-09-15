@@ -31,8 +31,8 @@ export const useProductPermStore = create<ProductPermState>()((set) => ({
   sortTime: 0,
   sortDsc: 0,
   sortAccepted: 0,
-  sortUsrName: "",
-  sortStep: "",
+  sortUsrName: 0,
+  sortStep: 0,
   productPermResponse: {
     meta: { errorCode: 0, message: null, type: "" },
     data: {
