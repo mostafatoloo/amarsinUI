@@ -10,6 +10,8 @@ type Props = {
   sortAccepted: number;
   sortUsrName: number;
   sortStep: number;
+  sortSrName?: number | undefined;
+  sortAmount?: number | undefined;
   setSortId: (sortId: number) => void;
   setSortDate: (sortDate: number) => void;
   setSortTime: (sortTime: number) => void;
@@ -17,6 +19,8 @@ type Props = {
   setSortAccepted: (sortAccepted: number) => void;
   setSortUsrName: (sortUsrName: number) => void;
   setSortStep: (sortStep: number) => void;
+  setSortSrName?: (sortSrName: number) => void;
+  setSortAmount?: (sortAmount: number) => void;
 };
 
 const ProductOfferTblHeader = React.memo(({
@@ -28,6 +32,8 @@ const ProductOfferTblHeader = React.memo(({
   sortAccepted,
   sortUsrName,
   sortStep,
+  sortSrName,
+  sortAmount,
   setSortId,
   setSortDate,
   setSortTime,
@@ -35,6 +41,8 @@ const ProductOfferTblHeader = React.memo(({
   setSortAccepted,
   setSortUsrName,
   setSortStep,
+  setSortSrName,
+  setSortAmount,
 }: Props) => {
   const setSort = (
     setHeaderList: ((sort: number) => void)[],
@@ -145,6 +153,32 @@ const ProductOfferTblHeader = React.memo(({
                 ],
                 sortStep,
                 setSortStep
+              );
+            } else if (column.accessor === "amount" && sortAmount !== undefined && setSortAmount !== undefined) {
+              setSort(
+                [
+                  setSortId,
+                  setSortDate,
+                  setSortTime,
+                  setSortDsc,
+                  setSortAccepted,
+                  setSortUsrName,
+                ],
+                sortAmount,
+                setSortAmount
+              );
+            } else if (column.accessor === "srName" && sortSrName !== undefined && setSortSrName !== undefined) {
+              setSort(
+                [
+                  setSortId,
+                  setSortDate,
+                  setSortTime,
+                  setSortDsc,
+                  setSortAccepted,
+                  setSortUsrName,
+                ],
+                sortSrName,
+                setSortSrName
               );
             }
           }}

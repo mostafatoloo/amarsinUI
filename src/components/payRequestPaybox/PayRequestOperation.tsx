@@ -72,7 +72,7 @@ const PayRequestOperation = () => {
   const [srchUsrName, setSrchUsrName] = useState<string>("");
   const [srchStep, setSrchStep] = useState<string>("");
   const [srchSrName, setSrchSrName] = useState<string>("");
-  const [srchAmount, setSrchAmount] = useState<string>("");
+  const [srchAmount, setSrchAmount] = useState<number>(-1);
   const [sortId, setSortId] = useState<number>(0);
   const [sortDate, setSortDate] = useState<number>(0);
   const [sortTime, setSortTime] = useState<number>(0);
@@ -80,8 +80,8 @@ const PayRequestOperation = () => {
   const [sortAccepted, setSortAccepted] = useState<number>(0);
   const [sortUsrName, setSortUsrName] = useState<number>(0);
   const [sortStep, setSortStep] = useState<number>(0);
-  //const [sortSrName, setSortSrName] = useState<number>(0);
-  //const [sortAmount, setSortAmount] = useState<number>(0);
+  const [sortSrName, setSortSrName] = useState<number>(0);
+  const [sortAmount, setSortAmount] = useState<number>(0);
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in productGrace table
   const [selectedRowIndexDtl, setSelectedRowIndexDtl] = useState<number>(0); //for selected row index in productGraceDtl table
 
@@ -206,8 +206,8 @@ const PayRequestOperation = () => {
 
   useEffect(() => {
     console.log("yearId in PayRequestOperation", yearId);
-    setField("acc_year", yearId);
-    setField("acc_system", systemId);
+    setField("yearId", yearId);
+    setField("systemId", systemId);
     setField("state", state);
 
     setField(
@@ -245,6 +245,8 @@ const PayRequestOperation = () => {
     setField("srchAccepted", srchAccepted);
     setField("srchUsrName", srchUsrName);
     setField("srchStep", srchStep);
+    setField("srchAmount", srchAmount);
+    setField("srchSrName", srchSrName);
   }, []);
 
   useEffect(() => {
@@ -255,6 +257,8 @@ const PayRequestOperation = () => {
     setField("sortAccepted", sortAccepted);
     setField("sortUsrName", sortUsrName);
     setField("sortStep", sortStep);
+    setField("sortSrName", sortSrName);
+    setField("sortAmount", sortAmount);
   }, [
     sortId,
     sortDate,
@@ -263,6 +267,8 @@ const PayRequestOperation = () => {
     sortAccepted,
     sortUsrName,
     sortStep,
+    sortSrName,
+    sortAmount,
   ]);
   ////////////////////////////////////////////////////////////
   useEffect(() => {
@@ -287,6 +293,8 @@ const PayRequestOperation = () => {
     srchAccepted,
     srchUsrName,
     srchStep,
+    srchSrName,
+    srchAmount,
     yearId,
     sortId,
     sortDate,
@@ -295,6 +303,8 @@ const PayRequestOperation = () => {
     sortAccepted,
     sortUsrName,
     sortStep,
+    sortSrName,
+    sortAmount,
   ]);
 
   const handleDebounceFilterChange = useCallback(
@@ -306,7 +316,7 @@ const PayRequestOperation = () => {
       }
       // Create a new AbortController for this request
       abortControllerRef.current = new AbortController();
-
+      console.log(field, value, "field, value in handleDebounceFilterChange");
       setField(field, value);
     }, 500),
     [setField]
@@ -518,12 +528,22 @@ const PayRequestOperation = () => {
                     srchSrName,
                     setSrchSrName
                   )}
-                  {ProductPermInput(
-                    "srchAmount",
-                    columns[5].width,
-                    srchAmount,
-                    setSrchAmount
-                  )}
+                  <input
+                    ref={(el) => (inputRefs.current["srchAmount"] = el)}
+                    name="srchAmount"
+                    value={srchAmount === -1 ? "" : srchAmount}
+                    onChange={(e) => {
+                      preserveFocus("srchAmount");
+                      handleDebounceFilterChange(
+                        "srchAmount",
+                        e.target.value === "" ? -1 : e.target.value
+                      );
+                      setSrchAmount(Number(e.target.value));
+                    }}
+                    onFocus={() => setFocusedInput("srchAmount")}
+                    style={{ width: columns[5].width }}
+                    className={`border p-1 text-sm rounded-sm`}
+                  />                  
                   {ProductPermInput(
                     "srchDsc",
                     columns[6].width,
@@ -573,6 +593,8 @@ const PayRequestOperation = () => {
                   setSortAccepted={setSortAccepted}
                   setSortUsrName={setSortUsrName}
                   setSortStep={setSortStep}
+                  setSortSrName={setSortSrName}
+                  setSortAmount={setSortAmount}
                 />
                 <TTable
                   selectedRowIndex={selectedRowIndex}

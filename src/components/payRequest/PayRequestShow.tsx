@@ -32,6 +32,8 @@ import PayRequestInvoices from "./PayRequestInvoices";
 import ConfirmCard from "../layout/ConfirmCard";
 import Button from "../controls/Button";
 import PayRequestAttachment from "./PayRequestAttachment";
+import ShowMessages from "../controls/ShowMessages";
+import { colors } from "../../utilities/color";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -40,9 +42,11 @@ type Props = {
 
 const PayRequestShow = ({ workFlowRowSelectResponse, isNew }: Props) => {
   const [customer, setCustomer] = useState<DefaultOptionType | null>(null);
-  const { setField: setPayRequestField } = usePayRequestStore();
+  const { setField: setPayRequestField , payRequestSaveResponse : payRequestSaveResponseStore} = usePayRequestStore();
   const { authApiResponse } = useAuthStore();
   const initData = authApiResponse?.data.result.initData;
+  const { id, setField } = usePayRequestStore();
+  const { systemId, yearId } = useGeneralContext();
   //for PayRequestShowHeader.tsx
   const [system, setSystem] = useState<{ id: number; title: string } | null>({
     id: initData?.systemId ?? 0,
@@ -75,6 +79,7 @@ const PayRequestShow = ({ workFlowRowSelectResponse, isNew }: Props) => {
   const [chequeBookDtlSearch, setChequeBookDtlSearch] = useState("");
   const [showInvoices, setShowInvoices] = useState(false);
   const [showAttachment, setShowAttachment] = useState(false);
+  const [isModalRegOpen, setIsModalRegOpen] = useState(false);
   const [pay, setPay] = useState(0);
   const [dataInTab2, setDataInTab2] = useState<PayRequestDtlTable[]>([]);
   const [data, setData] = useState<PayRequestDtlTable[]>([]);
@@ -105,16 +110,31 @@ const PayRequestShow = ({ workFlowRowSelectResponse, isNew }: Props) => {
     isLoadingRpCustomerBills,
   } = usePayRequest();
 
+  ////////////////////////////////////////////////////////
+  useEffect(() => {
+    let timeoutId: number;
+    if (isModalRegOpen) {
+      timeoutId = setTimeout(() => {
+        setIsModalRegOpen(false);
+      }, 3000);
+    }
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [isModalRegOpen]);
+
   useEffect(() => {
     //console.log(workFlowRowSelectResponse?.workTableRow.formId);
     setActiveTab(2);
     setPayRequestField("id", workFlowRowSelectResponse?.workTableRow.formId);
-    setPayRequestField("acc_year", initData?.yearId);
-    setPayRequestField("acc_system", initData?.systemId);
+    setPayRequestField("yearId", yearId);
+    setPayRequestField("systemId", systemId);
   }, [
     workFlowRowSelectResponse?.workTableRow.formId,
-    initData?.yearId,
-    initData?.systemId,
+    yearId,
+    systemId,
   ]);
   //initializing tab 0
   useEffect(() => {
@@ -176,7 +196,7 @@ const PayRequestShow = ({ workFlowRowSelectResponse, isNew }: Props) => {
   useEffect(() => {
     //set attachment count
     console.log(payRequestResponse.data.result.payRequestDtls, "payRequestResponse.data.result.payRequestDtls in PayRequestShow");
-    setCnt(payRequestResponse.data.result.payRequests[0]?.attachCount ?? 0);
+    setCnt(payRequestResponse.data.result.payRequest.payRequests?.[0]?.attachCount ?? 0);
     const invcs = payRequestResponse.data.result.invcs; // keep factors include settles in tempPayRequestResponse
     setDataInTab2(isNew ? [] :
       payRequestResponse.data.result.payRequestDtls.map((item, index) => {
@@ -261,9 +281,8 @@ const PayRequestShow = ({ workFlowRowSelectResponse, isNew }: Props) => {
     //setOriginalInvoices(tempData);
   }, [payRequestResponse, payRequestDtlId, invoicesWithChecks]);
   ////////////////////////////////////////////////////////////////////////////
-  const { id, setField } = usePayRequestStore();
-  const { systemId, yearId } = useGeneralContext();
   useEffect(() => {
+    console.log(payRequestResponse.data.result)
     console.log(customer, "customer in PayRequestShow");
     setField("idRpCustomerBills", id);
     setField("customerIdRpCustomerBills", customer?.id ?? 0);
@@ -271,24 +290,24 @@ const PayRequestShow = ({ workFlowRowSelectResponse, isNew }: Props) => {
     setField("yearIdRpCustomerBills", yearId);
     setField(
       "fDateRpCustomerBills",
-      payRequestResponse.data.result.payRequests[0]?.fDate ?? ""
+      payRequestResponse.data.result.payRequest.payRequests?.[0]?.fDate ?? ""
     );
     setField(
       "tDateRpCustomerBills",
-      payRequestResponse.data.result.payRequests[0]?.tDate ?? ""
+      payRequestResponse.data.result.payRequest.payRequests?.[0]?.tDate ?? ""
     );
   }, [
     systemId,
     yearId,
     id,
     customer?.id,
-    payRequestResponse.data.result.payRequests[0]?.fDate,
-    payRequestResponse.data.result.payRequests[0]?.tDate,
+    payRequestResponse.data.result.payRequest.payRequests?.[0]?.fDate ?? "",
+    payRequestResponse.data.result.payRequest.payRequests?.[0]?.tDate ?? "",
   ]);
   ////////////////////////////////////////////////////////////////////////////
   const handleSubmitSave = async (
     e?: React.MouseEvent<HTMLButtonElement>
-  ): Promise<any> => {
+  ): Promise<string | undefined> => {
     if (e) e.preventDefault();
     let request: PayRequestSaveRequest;
     const dtls: PayRequestSaveDetail[] = [];
@@ -331,30 +350,31 @@ const PayRequestShow = ({ workFlowRowSelectResponse, isNew }: Props) => {
       });
     });
     request = {
-      guid: payRequestResponse.data.result.payRequests[0]?.guid ?? "",
+      guid: payRequestResponse.data.result.payRequest.payRequests?.[0]?.guid ?? "",
       usrId: authApiResponse?.data.result.login.usrId ?? 0,
-      id: payRequestResponse.data.result.payRequests[0]?.id ?? 0,
+      id: payRequestResponse.data.result.payRequest.payRequests?.[0]?.id ?? 0,
       systemId: system?.id ?? 0,
       yearId: year?.id ?? 0,
       customerId: customer?.id ?? 0,
-      dat: payRequestResponse.data.result.payRequests[0]?.dat ?? "",
-      tim: payRequestResponse.data.result.payRequests[0]?.tim ?? "",
-      fDate: payRequestResponse.data.result.payRequests[0]?.fDate ?? "",
-      tDate: payRequestResponse.data.result.payRequests[0]?.tDate ?? "",
-      dueDate: payRequestResponse.data.result.payRequests[0]?.dueDate ?? "",
+      dat: payRequestResponse.data.result.payRequest.payRequests?.[0]?.dat ?? "",
+      tim: payRequestResponse.data.result.payRequest.payRequests?.[0]?.tim ?? "",
+      fDate: payRequestResponse.data.result.payRequest.payRequests?.[0]?.fDate ?? "",
+      tDate: payRequestResponse.data.result.payRequest.payRequests?.[0]?.tDate ?? "",
+      dueDate: payRequestResponse.data.result.payRequest.payRequests?.[0]?.dueDate ?? "",
       settleAmnt:
-        payRequestResponse.data.result.payRequests[0]?.settleAmnt ?? "",
+        payRequestResponse.data.result.payRequest.payRequests?.[0]?.settleAmnt ?? "",
       providerAmnt:
-        payRequestResponse.data.result.payRequests[0]?.providerAmnt ?? "",
-      dsc: payRequestResponse.data.result.payRequests[0]?.dsc ?? "",
+        payRequestResponse.data.result.payRequest.payRequests?.[0]?.providerAmnt ?? "",
+      dsc: payRequestResponse.data.result.payRequest.payRequests?.[0]?.dsc ?? "",
       dtls: dtls,
       invcs: invcs,
     };
     console.log(request);
     try {
-      const response = await payRequestSave(request);
+      await payRequestSave(request);
+      setIsModalRegOpen(true);
       //setIsModalOpen(true);
-      return response;
+      return "اطلاعات با موفقیت ثبت شد.";
       //console.log("response in handleSubmitSave");
     } catch (error) {
       console.error("Error ثبت :", error);
@@ -471,6 +491,20 @@ const PayRequestShow = ({ workFlowRowSelectResponse, isNew }: Props) => {
           setCnt={setCnt}
         />
       </ModalForm>
+      {payRequestSaveResponseStore?.data.result.dtlErrMsgs?.length > 0 && (
+        <ModalForm
+          isOpen={isModalRegOpen}
+          onClose={() => setIsModalRegOpen(false)}
+          title="پیام ها"
+          width="1/2"
+        >
+          <ShowMessages
+            dtlErrMsgs={payRequestSaveResponseStore.data.result.dtlErrMsgs || []}
+            color={colors.red100}
+            heightWindow={300}
+          />
+        </ModalForm>
+      )}
     </div>
   );
 };

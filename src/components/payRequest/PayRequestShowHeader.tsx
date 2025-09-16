@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useDefinitionInvironment } from "../../hooks/useDefinitionInvironment";
 import { DefaultOptionType } from "../../types/general";
 import {
-  convertPersianDate,
   convertToFarsiDigits,
   convertToLatinDigits,
   convertToPersianDate,
@@ -95,8 +94,12 @@ const PayRequestShowHeader = ({
       isNew
         ? null
         : {
-            id: payRequestResponse.data.result.payRequests[0]?.customerId ?? 0,
-            title: payRequestResponse.data.result.payRequests[0]?.srName ?? "",
+            id:
+              payRequestResponse.data.result.payRequest.payRequests?.[0]
+                ?.customerId ?? 0,
+            title:
+              payRequestResponse.data.result.payRequest.payRequests?.[0]
+                ?.srName ?? "",
           }
     );
     //initializing variables
@@ -104,7 +107,8 @@ const PayRequestShowHeader = ({
       isNew
         ? ""
         : convertToFarsiDigits(
-            payRequestResponse.data.result.payRequests[0]?.dsc ?? ""
+            payRequestResponse.data.result.payRequest.payRequests?.[0]?.dsc ??
+              ""
           )
     );
     setDat(
@@ -113,35 +117,40 @@ const PayRequestShowHeader = ({
             convertToPersianDate(new Date(definitionDateTime.date))
           )
         : convertToFarsiDigits(
-            payRequestResponse.data.result.payRequests[0]?.dat ?? ""
+            payRequestResponse.data.result.payRequest.payRequests?.[0]?.dat ??
+              ""
           )
     );
     setTim(
       isNew
         ? convertToFarsiDigits(definitionDateTime.time)
         : convertToFarsiDigits(
-            payRequestResponse.data.result.payRequests[0]?.tim ?? ""
+            payRequestResponse.data.result.payRequest.payRequests?.[0]?.tim ??
+              ""
           )
     );
     setFDate(
       isNew
         ? new Date(definitionDateTime.date)
         : parsePersianDateString(
-            payRequestResponse.data.result.payRequests[0]?.fDate ?? ""
+            payRequestResponse.data.result.payRequest.payRequests?.[0]?.fDate ??
+              ""
           )
     );
     setTDate(
       isNew
         ? new Date(definitionDateTime.date)
         : parsePersianDateString(
-            payRequestResponse.data.result.payRequests[0]?.tDate ?? ""
+            payRequestResponse.data.result.payRequest.payRequests?.[0]?.tDate ??
+              ""
           )
     );
     setDueDate(
       isNew
         ? new Date(definitionDateTime.date)
         : parsePersianDateString(
-            payRequestResponse.data.result.payRequests[0]?.dueDate ?? ""
+            payRequestResponse.data.result.payRequest.payRequests?.[0]
+              ?.dueDate ?? ""
           )
     );
     setSettleAmnt(
@@ -150,7 +159,8 @@ const PayRequestShowHeader = ({
         : convertToFarsiDigits(
             formatNumberWithCommas(
               Number(
-                payRequestResponse.data.result.payRequests[0]?.settleAmnt ?? 0
+                payRequestResponse.data.result.payRequest.payRequests?.[0]
+                  ?.settleAmnt ?? 0
               )
             )
           )
@@ -161,7 +171,8 @@ const PayRequestShowHeader = ({
         : convertToFarsiDigits(
             formatNumberWithCommas(
               Number(
-                payRequestResponse.data.result.payRequests[0]?.providerAmnt ?? 0
+                payRequestResponse.data.result.payRequest.payRequests?.[0]
+                  ?.providerAmnt ?? 0
               )
             )
           )
@@ -193,7 +204,7 @@ const PayRequestShowHeader = ({
     <div className="mt-2 text-sm w-full flex flex-col gap-2 border border-gray-400 rounded-md p-2">
       <div className="flex items-center justify-between gap-2 w-full">
         <div className="w-1/4 flex justify-center items-center">
-          <label className="p-1 w-20 text-left">سیستم:</label>
+          <label className="p-1 w-28 text-left">سیستم:</label>
           <div className="bg-slate-50 flex w-full rounded-md">
             <AutoComplete
               options={definitionInvironment?.systems ?? []}
@@ -253,7 +264,7 @@ const PayRequestShowHeader = ({
       <div className="flex items-center justify-between w-full">
         <div className="flex w-1/2">
           <div className="w-full flex items-center gap-2">
-            <label className="w-8 text-left">از تاریخ:</label>
+            <label className="w-28 text-left">از تاریخ:</label>
             <PersianDatePicker
               name="fDate"
               label="تا:"
@@ -264,7 +275,7 @@ const PayRequestShowHeader = ({
             />
           </div>
           <div className="w-full flex items-center gap-2">
-            <label className="w-8 text-left">تا تاریخ:</label>
+            <label className="w-20 text-left">تا تاریخ:</label>
             <PersianDatePicker
               name="tDate"
               label="تا:"
@@ -275,34 +286,18 @@ const PayRequestShowHeader = ({
             />
           </div>
           <div className="w-full flex items-center gap-2">
-            <label className="w-8 text-left">سررسید:</label>
+            <label className="w-20 text-left">سررسید:</label>
             <PersianDatePicker
               name="dueDate"
               label="سررسید:"
               value={dueDate}
               fontSize="text-sm"
-              onChange={(event) => setDueDate(event.target.value as Date | null)}
+              onChange={(event) =>
+                setDueDate(event.target.value as Date | null)
+              }
               disabled={!canEditForm1Mst2}
             />
           </div>
-          {/*<div className="flex w-1/3">
-            <label className="p-1 w-20 text-left">از تاریخ:</label>
-            {inputElement(fDate, !canEditForm1Mst2, (e) => {
-              setFDate(convertToLatinDigits(e.target.value));
-            })}
-          </div>
-          <div className="flex w-1/3">
-            <label className="p-1 w-20 text-left">تا تاریخ:</label>
-            {inputElement(tDate, !canEditForm1Mst2, (e) => {
-              setTDate(convertToLatinDigits(e.target.value));
-            })}
-          </div>
-          <div className="flex w-1/3">
-            <label className="p-1 w-20 text-left">سررسید:</label>
-            {inputElement(dueDate, !canEditForm1Mst2, (e) => {
-              setDueDate(convertToLatinDigits(e.target.value));
-            })}
-          </div>*/}
         </div>
         <div className="flex w-1/2">
           <div className="flex w-1/2">
@@ -328,7 +323,7 @@ const PayRequestShowHeader = ({
         </div>
       </div>
       <div className="flex w-full">
-        <label className="p-1 w-20 text-left">خریدار:</label>
+        <label className="p-1 w-24 text-left">طرف حساب:</label>
         <div className="bg-slate-50 flex w-full rounded-md">
           <AutoComplete
             options={customers.map((b) => ({
@@ -350,7 +345,7 @@ const PayRequestShowHeader = ({
         </div>
       </div>
       <div className="flex w-full items-center gap-2">
-        <label className="p-1 w-20 text-left">توضیحات:</label>
+        <label className="p-1 w-24 text-left">توضیحات:</label>
         {inputElement(dsc, !canEditForm1Mst2, (e) => {
           setDsc(convertToLatinDigits(e.target.value));
         })}

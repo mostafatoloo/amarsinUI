@@ -4,8 +4,8 @@ import { RpCustomerBillsResponse } from "../types/sales";
 export const usePayRequestStore = create<PayRequestState>()((set) => ({
   //for PayRequest
   id: 0,
-  acc_year: 0,
-  acc_system: 0,
+  yearId: 0,
+  systemId: 0,
   state: -1,
   regFDate: "",
   regTDate: "",
@@ -26,6 +26,10 @@ export const usePayRequestStore = create<PayRequestState>()((set) => ({
   sortAccepted: 0,
   sortUsrName: 0,
   sortStep: 0,  
+  srchSrName: "",
+  srchAmount: 0,
+  sortSrName: 0,
+  sortAmount: 0,
   payRequestResponse: {
     meta: {
       errorCode: 0,
@@ -36,7 +40,10 @@ export const usePayRequestStore = create<PayRequestState>()((set) => ({
       result: {
         err: 0,
         msg: "",
-        total_count: 0,
+        payRequest: {
+          total_count: 0,
+          payRequests: [],
+        },
         payRequests: [],
         payRequestDtls: [],
         invcs: [],

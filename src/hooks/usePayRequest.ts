@@ -17,12 +17,13 @@ import {
   PayRequestSaveRequest,
 } from "../types/payRequest";
 import { RpCustomerBillsResponse } from "../types/sales";
+import { v4 as uuidv4 } from "uuid";
 
 export function usePayRequest() {
   const {
     id,
-    acc_year,
-    acc_system,
+    yearId,
+    systemId,
     state,
     regFDate,
     regTDate,
@@ -43,6 +44,10 @@ export function usePayRequest() {
     sortAccepted,
     sortUsrName,
     sortStep,
+    srchSrName,
+    srchAmount,
+    sortSrName,
+    sortAmount,
     setPayRequestResponse,
     payRequestId,
     systemIdPayRequestInvoice,
@@ -107,7 +112,6 @@ export function usePayRequest() {
       return response.data;
     },
     onSuccess: (data: any) => {
-      console.log(data, "data");
       setRpCustomerBillsResponse(data);
     },
     enabled:
@@ -125,8 +129,8 @@ export function usePayRequest() {
   >({
     queryKey: [
       "payRequest",
-      acc_year,
-      acc_system,
+      yearId,
+      systemId,
       state,
       regFDate,
       regTDate,
@@ -140,6 +144,10 @@ export function usePayRequest() {
       srchAccepted,
       srchUsrName,
       srchStep,
+      srchSrName,
+      srchAmount,
+      sortSrName,
+      sortAmount,
       sortId,
       sortDat,
       sortTime,
@@ -150,8 +158,8 @@ export function usePayRequest() {
     ],
     queryFn: async () => {
       const params = {
-        acc_year,
-        acc_system,
+        yearId,
+        systemId,
         state,
         regFDate,
         regTDate,
@@ -172,10 +180,13 @@ export function usePayRequest() {
         sortAccepted,
         sortUsrName,
         sortStep,
+        srchSrName,
+        srchAmount,
+        sortSrName,
+        sortAmount,
       };
-      console.log(params.sortUsrName, "params.sortUsrName in payRequestQuery");
-      const url = `/api/PayRequest?YearId=${params.acc_year}&SystemId=${
-        params.acc_system
+      const url = `/api/PayRequest?YearId=${params.yearId}&SystemId=${
+        params.systemId
       }&State=${params.state}&RegFDate=${encodeURIComponent(
         params.regFDate ?? ""
       )}&RegTDate=${encodeURIComponent(
@@ -184,6 +195,8 @@ export function usePayRequest() {
         params.fDate ?? ""
       )}&TDate=${encodeURIComponent(params.tDate ?? "")}&PageNumber=${
         params.pageNumber
+      }&SrchSrName=${encodeURIComponent(params.srchSrName)}&SrchAmount=${
+        params.srchAmount
       }&SrchId=${params.srchId}${
         params.srchDate
           ? `&SrchDate=${encodeURIComponent(params.srchDate)}`
@@ -206,10 +219,11 @@ export function usePayRequest() {
         params.sortTime
       }&SortDsc=${params.sortDsc}&SortAccepted=${params.sortAccepted}${
         params.sortUsrName ? `&SortUsrName=${params.sortUsrName}` : ""
-      }${params.sortStep ? `&SortStep=${params.sortStep}` : ""}`;
+      }${params.sortStep ? `&SortStep=${params.sortStep}` : ""}&SortSrName=${
+        params.sortSrName
+      }&SortAmount=${params.sortAmount}`;
       console.log("PayRequest url", url);
       const response = await api.get(url);
-      console.log(response.data, "response.data in payRequestQuery");
       return response.data;
     },
     //enabled: acc_year !== 0 && acc_system !== 0,
@@ -230,8 +244,8 @@ export function usePayRequest() {
     queryKey: [
       "payRequestDtl",
       id,
-      acc_year,
-      acc_system,
+      yearId,
+      systemId,
       state,
       regFDate,
       regTDate,
@@ -252,12 +266,16 @@ export function usePayRequest() {
       sortAccepted,
       sortUsrName,
       sortStep,
+      srchSrName,
+      srchAmount,
+      sortSrName,
+      sortAmount,
     ],
     queryFn: async () => {
       const params: PayRequestRequest = {
         id,
-        acc_year,
-        acc_system,
+        yearId,
+        systemId,
         state,
         regFDate,
         regTDate,
@@ -278,12 +296,14 @@ export function usePayRequest() {
         sortAccepted,
         sortUsrName,
         sortStep,
+        srchSrName,
+        srchAmount,
+        sortSrName,
+        sortAmount,
       };
-      const url = `/api/PayRequest?Id=${params.id}&YearId=${
-        params.acc_year
-      }&SystemId=${params.acc_system}&State=${
-        params.state
-      }&RegFDate=${encodeURIComponent(
+      const url = `/api/PayRequest?Id=${params.id}&YearId=${params.yearId}&SystemId=${
+        params.systemId
+      }&State=${params.state}&RegFDate=${encodeURIComponent(
         params.regFDate ?? ""
       )}&RegTDate=${encodeURIComponent(
         params.regTDate ?? ""
@@ -291,6 +311,8 @@ export function usePayRequest() {
         params.fDate ?? ""
       )}&TDate=${encodeURIComponent(params.tDate ?? "")}&PageNumber=${
         params.pageNumber
+      }&SrchSrName=${encodeURIComponent(params.srchSrName)}&SrchAmount=${
+        params.srchAmount
       }&SrchId=${params.srchId}${
         params.srchDate
           ? `&SrchDate=${encodeURIComponent(params.srchDate)}`
@@ -313,10 +335,11 @@ export function usePayRequest() {
         params.sortTime
       }&SortDsc=${params.sortDsc}&SortAccepted=${params.sortAccepted}${
         params.sortUsrName ? `&SortUsrName=${params.sortUsrName}` : ""
-      }${params.sortStep ? `&SortStep=${params.sortStep}` : ""}`;
+      }${params.sortStep ? `&SortStep=${params.sortStep}` : ""}&SortSrName=${
+        params.sortSrName
+      }&SortAmount=${params.sortAmount}`;
       console.log("PayRequestDtl url", url);
       const response = await api.get(url);
-      console.log(response.data, "response.data in payRequestDtlQuery");
       return response.data;
     },
     //enabled: id !== 0 && acc_year !== 0 && acc_system !== 0,
@@ -326,6 +349,7 @@ export function usePayRequest() {
       setPayRequestResponse(data);
     },
   } as UseQueryOptions<PayRequestResponse, Error, PayRequestResponse, unknown[]>);
+
   //for PayRequest/PayRequestInvoices
   const payRequestInvoicesQuery = useQuery<
     PayRequestInvoicesResponse,
@@ -398,7 +422,6 @@ export function usePayRequest() {
       searchChequeBookDtlSearch,
     ],
     queryFn: async () => {
-      console.log(searchChequeBookDtlSearch, "searchChequeBookDtlSearch");
       const url = `/api/Payment/chequeBookDtlSearch?ChequeBookId=${chequeBookIdChequeBookDtlSearch}&page=${pageChequeBookDtlSearch}${
         searchChequeBookDtlSearch
           ? `&search=${encodeURIComponent(searchChequeBookDtlSearch)}`
@@ -406,7 +429,6 @@ export function usePayRequest() {
       }&lastId=${lastIdChequeBookDtlSearch}`;
       console.log(url, "url in chequeBookDtlSearchQuery");
       const response = await api.get(url);
-      //console.log(response.data, "data in chequeBookDtlSearchQuery");
       setChequeBookDtlSearchResponse(response.data);
       return response.data;
     },
@@ -437,8 +459,15 @@ export function usePayRequest() {
   } as UseQueryOptions<ChequeBookDtlByIdResponse, Error, ChequeBookDtlByIdResponse, unknown[]>);
   //for PayRequest/Save
   const payRequestSaveFn = useMutation({
-    mutationFn: async (request: PayRequestSaveRequest) => {
-      const response = await api.post(`/api/PayRequest/Save`, request);
+    mutationFn: async (param: PayRequestSaveRequest) => {
+      // Generate a proper GUID if it's empty
+      const requestData = {
+        ...param,
+        guid: param.guid || uuidv4(),
+      };
+      const response = await api.post(`/api/PayRequest/Save`, {
+        param: requestData,
+      });
       return response.data;
     },
     onSuccess: (data: any) => {
@@ -452,8 +481,6 @@ export function usePayRequest() {
         request.chartId
       }&Acc_System=${request.systemId}&Acc_Year=${request.yearId}&Id=${
         request.id
-      }&WFMS_FlowMapId=${request.wFMS_FlowMapId}&FlowNo=${
-        request.flowNo
       }&Dsc=${encodeURIComponent(request.dsc)}`;
       console.log(request, "request", url, "url");
       const response = await api.post(url);
@@ -484,9 +511,9 @@ export function usePayRequest() {
     //output for PayRequest (using fpr PayRequestShow)
     isLoadingPayRequest: payRequest.isLoading,
     errorPayRequest: payRequest.error,
-    payRequest: payRequest.data?.data.result.payRequests,
+    payRequest: payRequest.data?.data.result.payRequest.payRequests,
     payRequestMeta: payRequest.data?.meta,
-    payRequestTotalCount: payRequest.data?.data.result.total_count,
+    payRequestTotalCount: payRequest.data?.data.result.payRequest.total_count,
     refetch: payRequest.refetch,
     //for productPriceDtl
     isLoadingDtl: payRequestDtl.isLoading,
@@ -502,7 +529,10 @@ export function usePayRequest() {
         result: {
           err: 0,
           msg: "",
-          total_count: 0,
+          payRequest: {
+            total_count: 0,
+            payRequests: [],
+          },
           payRequests: [],
           payRequestDtls: [],
           invcs: [],

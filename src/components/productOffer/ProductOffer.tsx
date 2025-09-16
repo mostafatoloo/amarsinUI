@@ -102,7 +102,7 @@ const ProductOffer = () => {
   //const { setField: setProductOfferField } = useProductOfferStore();
   const [data, setData] = useState<any[]>([]);
   const [dataDtl, setDataDtl] = useState<ProductOfferDtlTable[]>([]);
-  const { yearId, systemId, chartId } = useGeneralContext();
+  const { yearId, systemId, chartId} = useGeneralContext();
   const [selectedId, setSelectedId] = useState<number>(1363);
   const [isNew, setIsNew] = useState<boolean>(false); //for new
   const [isEdit, setIsEdit] = useState<boolean>(false); //for edit

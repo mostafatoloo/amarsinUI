@@ -5,6 +5,7 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
+import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Login from "./pages/Login";
 import { useAuthStore } from "./store/authStore";
@@ -24,6 +25,7 @@ import PayRequestOperation from "./components/payRequestPaybox/PayRequestOperati
 
 const queryClient = new QueryClient();
 
+
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
@@ -32,7 +34,7 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <Router>
         <AppContent />
       </Router>
       <ReactQueryDevtools initialIsOpen={false} />
@@ -43,21 +45,23 @@ function App() {
 function AppContent() {
   const location = useLocation(); // Now this is inside <Router>
   return (
-    <Layout key={location.pathname}>
+    <Layout>
       <Routes>
-      <Route path="/login" element={<Login isHomePage={true} />} />
+        <Route path="/login" element={<Login isHomePage={true} />} />
         <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+        <Route path="/admin/ProductOffer" element={<PrivateRoute><ProductOffer /></PrivateRoute>} />
+        <Route path="/Admin/ProductOffer" element={<PrivateRoute><ProductOffer /></PrivateRoute>} />
+        <Route path="/admin/ProductPerm" element={<PrivateRoute><ProductPerm /></PrivateRoute>} />
+        <Route path="/admin/ProductGrace" element={<PrivateRoute><ProductGrace /></PrivateRoute>} />
+        <Route path="/admin/ProductPrice" element={<PrivateRoute><ProductPrice /></PrivateRoute>} />
+        <Route path="/admin/PayRequest" element={<PrivateRoute><PayRequestOperation /></PrivateRoute>} />
         <Route path="/admin/WFMS/index" element={<PrivateRoute><Workflow /></PrivateRoute>} />
         <Route path="/admin/user/index" element={<PrivateRoute><User /></PrivateRoute>} />
         <Route path="/admin/RpProviders/Inventory" element={<PrivateRoute><InventoryGoodList /></PrivateRoute>} />
         <Route path="/admin/RpProviders" element={<PrivateRoute><ProviderList /></PrivateRoute>} />
         <Route path="/admin/RpProducers" element={<PrivateRoute><ProducerList /></PrivateRoute>} />
-        <Route path="/admin/ProductOffer" element={<PrivateRoute><ProductOffer /></PrivateRoute>} />
-        <Route path="/admin/ProductPerm" element={<PrivateRoute><ProductPerm /></PrivateRoute>} />
-        <Route path="/admin/ProductGrace" element={<PrivateRoute><ProductGrace /></PrivateRoute>} />
-        <Route path="/admin/ProductPrice" element={<PrivateRoute><ProductPrice /></PrivateRoute>} />
-        <Route path="/admin/PayRequest" element={<PrivateRoute><PayRequestOperation /></PrivateRoute>} />
         <Route path="/" element={<Navigate to="/admin/WFMS/index" />} />
+        <Route path="*" element={<div>Route not found: {location.pathname}</div>} />
       </Routes>
     </Layout>
   );

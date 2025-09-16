@@ -1,7 +1,7 @@
 // for http://apitest.dotis.ir/api/PayRequest?Id=1513&Acc_Year=15&Acc_System=4&State=0
-import { ProductOperationRequest } from './productOperation';
-import { RpCustomerBillsResponse, RpCustomerBillsRequest } from './sales';
-import { Meta } from './general';
+import { ProductOperationRequest } from "./productOperation";
+import { RpCustomerBillsResponse, RpCustomerBillsRequest } from "./sales";
+import { Meta } from "./general";
 interface PayRequest {
   id: number;
   guid: string;
@@ -61,8 +61,7 @@ interface InvcsItem {
 interface Result {
   err: number;
   msg: null | string;
-  total_count:number;
-  payRequests: PayRequest[];
+  payRequest: { payRequests: PayRequest[]; total_count: number };
   payRequestDtls: PayRequestDtl[];
   invcs: InvcsItem[];
 }
@@ -77,8 +76,12 @@ interface PayRequestResponse {
 }
 
 export interface PayRequestRequest extends ProductOperationRequest {
-  acc_year: number;
-  acc_system: number;
+  yearId: number;
+  systemId: number;
+  srchSrName: string;
+  srchAmount: number;
+  sortSrName: number;
+  sortAmount: number;
 }
 
 //for http://apitest.dotis.ir/api/PayRequest/Invoices?PayRequestId=1513&SystemId=4&YearId=15&CustomerId=787
@@ -120,14 +123,14 @@ interface PayRequestInvoices {
 interface PayRequestInvoicesTable extends PayRequestInvoices {
   index: number;
   settle: number;
-  dcrmntPercent: number;  
+  dcrmntPercent: number;
 }
 
 //برای فاکتورهای تسویه نشده
 interface PayRequestInvoiceIncludeChecks extends PayRequestInvoices {
   index: number;
   settle: number;
-  dcrmntPercent: number;  
+  dcrmntPercent: number;
   invcs: InvcsItem[];
 }
 interface PayRequestInvoicesRequest {
@@ -137,34 +140,34 @@ interface PayRequestInvoicesRequest {
   customerId: number;
 }
 //http://apitest.dotis.ir/api/Payment/chequeBookSearch?page=1&lastId=0&Acc_System=1
-  interface ChequeBookSearchResult {
-    id: number;
-    text: string;
+interface ChequeBookSearchResult {
+  id: number;
+  text: string;
 }
 
 interface ChequeBookSearchData {
-    result: {
-        total_count: number;
-        results: ChequeBookSearchResult[];
-    };
+  result: {
+    total_count: number;
+    results: ChequeBookSearchResult[];
+  };
 }
 
 interface ChequeBookSearchMeta {
-    errorCode: number;
-    message: string;
-    type: string;
+  errorCode: number;
+  message: string;
+  type: string;
 }
 
 interface ChequeBookSearchResponse {
-    meta: ChequeBookSearchMeta;
-    data: ChequeBookSearchData;
+  meta: ChequeBookSearchMeta;
+  data: ChequeBookSearchData;
 }
 
 interface ChequeBookSearchRequest {
-  acc_systemChequeBookSearch:number;
-  searchChequeBookSearch:string;
-  pageChequeBookSearch:number
-  lastIdChequeBookSearch:number
+  acc_systemChequeBookSearch: number;
+  searchChequeBookSearch: string;
+  pageChequeBookSearch: number;
+  lastIdChequeBookSearch: number;
 }
 
 //http://apitest.dotis.ir/api/Payment/chequeBookDtlSearch?ChequeBookId=174&page=1&lastId=0
@@ -188,7 +191,7 @@ interface ChequeBookDtlSearchResponse {
   data: ChequeBookDtlSearchData;
 }
 interface ChequeBookDtlSearchRequest {
-  searchChequeBookDtlSearch:string;
+  searchChequeBookDtlSearch: string;
   chequeBookIdChequeBookDtlSearch: number;
   pageChequeBookDtlSearch: number;
   lastIdChequeBookDtlSearch: number;
@@ -203,7 +206,7 @@ interface ChequeBookDtlByIdResponse {
   meta: {
     errorCode: number;
     message: string;
-    type: string; 
+    type: string;
   };
   data: {
     result: {
@@ -215,7 +218,7 @@ interface ChequeBookDtlByIdResponse {
       };
     };
   };
-};
+}
 //http://apitest.dotis.ir/api/PayRequest/save
 interface PayRequestSaveDetail {
   ordr: number;
@@ -280,8 +283,8 @@ interface PayRequestDoFirstFlowRequest {
   yearId: number;
   id: number;
   dsc: string;
-  flowNo:number;
-  wFMS_FlowMapId:number;
+  flowNo: number;
+  wFMS_FlowMapId: number;
 }
 
 interface ResultPayRequestDoFirstFlow {
@@ -318,28 +321,41 @@ interface PayRequestDelResponse {
   data: DataPayRequestDel;
 }
 export interface PayRequestState
-  extends PayRequestRequest ,
+  extends PayRequestRequest,
     PayRequestInvoicesRequest,
-    RpCustomerBillsRequest,ChequeBookSearchRequest,ChequeBookDtlSearchRequest,ChequeBookDtlByIdRequest  {
+    RpCustomerBillsRequest,
+    ChequeBookSearchRequest,
+    ChequeBookDtlSearchRequest,
+    ChequeBookDtlByIdRequest {
   payRequestResponse: PayRequestResponse;
   payRequestInvoicesResponse: PayRequestInvoicesResponse;
-  rpCustomerBillsResponse: RpCustomerBillsResponse;//for SaleReport/RpCustomerBills 
-  chequeBookSearchResponse:ChequeBookSearchResponse; // for Payment/chequeBookSearch
-  chequeBookDtlSearchResponse:ChequeBookDtlSearchResponse; // for Payment/chequeBookDtlSearch
-  chequeBookDtlByIdResponse:ChequeBookDtlByIdResponse; // for Payment/chequeBookDtlById
-  payRequestSaveResponse:PayRequestSaveResponse; // for PayRequest/PayRequestSave
-  payRequestDoFirstFlowResponse:PayRequestDoFirstFlowResponse; // for PayRequest/doFirstFlow
-  payRequestDelResponse:PayRequestDelResponse; // for PayRequest/del
+  rpCustomerBillsResponse: RpCustomerBillsResponse; //for SaleReport/RpCustomerBills
+  chequeBookSearchResponse: ChequeBookSearchResponse; // for Payment/chequeBookSearch
+  chequeBookDtlSearchResponse: ChequeBookDtlSearchResponse; // for Payment/chequeBookDtlSearch
+  chequeBookDtlByIdResponse: ChequeBookDtlByIdResponse; // for Payment/chequeBookDtlById
+  payRequestSaveResponse: PayRequestSaveResponse; // for PayRequest/PayRequestSave
+  payRequestDoFirstFlowResponse: PayRequestDoFirstFlowResponse; // for PayRequest/doFirstFlow
+  payRequestDelResponse: PayRequestDelResponse; // for PayRequest/del
   setField: (field: string | number | symbol, value: any) => void;
   setPayRequestResponse: (payRequestResponse: PayRequestResponse) => void;
   setPayRequestInvoicesResponse: (
     payRequestInvoicesResponse: PayRequestInvoicesResponse
   ) => void;
-  setRpCustomerBillsResponse: (rpCustomerBillsResponse: RpCustomerBillsResponse) => void;//for SaleReport/RpCustomerBills
-  setChequeBookSearchResponse:(chequeBookSearchResponse)=>void//for Payment/chequeBookSearch
-  setChequeBookDtlSearchResponse:(chequeBookDtlSearchResponse)=>void//for Payment/chequeBookDtlSearch
-  setChequeBookDtlByIdResponse:(chequeBookDtlByIdResponse:ChequeBookDtlByIdResponse)=>void//for Payment/chequeBookDtlById
-  setPayRequestSaveResponse:(payRequestSaveResponse:PayRequestSaveResponse)=>void//for PayRequest/PayRequestSave
-  setPayRequestDoFirstFlowResponse:(payRequestDoFirstFlowResponse:PayRequestDoFirstFlowResponse)=>void//for PayRequest/doFirstFlow
-  setPayRequestDelResponse:(payRequestDelResponse:PayRequestDelResponse)=>void//for PayRequest/del
+  setRpCustomerBillsResponse: (
+    rpCustomerBillsResponse: RpCustomerBillsResponse
+  ) => void; //for SaleReport/RpCustomerBills
+  setChequeBookSearchResponse: (chequeBookSearchResponse) => void; //for Payment/chequeBookSearch
+  setChequeBookDtlSearchResponse: (chequeBookDtlSearchResponse) => void; //for Payment/chequeBookDtlSearch
+  setChequeBookDtlByIdResponse: (
+    chequeBookDtlByIdResponse: ChequeBookDtlByIdResponse
+  ) => void; //for Payment/chequeBookDtlById
+  setPayRequestSaveResponse: (
+    payRequestSaveResponse: PayRequestSaveResponse
+  ) => void; //for PayRequest/PayRequestSave
+  setPayRequestDoFirstFlowResponse: (
+    payRequestDoFirstFlowResponse: PayRequestDoFirstFlowResponse
+  ) => void; //for PayRequest/doFirstFlow
+  setPayRequestDelResponse: (
+    payRequestDelResponse: PayRequestDelResponse
+  ) => void; //for PayRequest/del
 }
