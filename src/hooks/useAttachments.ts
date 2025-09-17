@@ -1,4 +1,9 @@
-import {  useMutation, useQuery, useQueryClient, UseQueryOptions } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  UseQueryOptions,
+} from "@tanstack/react-query";
 import api from "../api/axios";
 import { useAttachmentStore } from "../store/attachmentStore";
 import {
@@ -27,7 +32,7 @@ export function useAttachments() {
     AttachmentListResponse,
     unknown[]
   >({
-    queryKey: ["attachments", formId, prefix, GUID],
+    queryKey: ["attachments", formId, prefix, GUID,yearId,systemId],
     queryFn: async () => {
       const params: AttachmentListRequest = {
         systemId,
@@ -36,13 +41,12 @@ export function useAttachments() {
         prefix,
         GUID,
       };
-      const url = `/api/Attachment/list?formId=${params.formId}&prefix=${params.prefix}&GUID=${params.GUID}`;
-      console.log(url, "url");
+      const url = `/api/Attachment/list?formId=${params.formId}&prefix=${params.prefix}&GUID=${params.GUID}&yearId=${params.yearId}&systemId=${params.systemId}`;
       const response = await api.get(url);
-
+      console.log(url,response.data, "url,response.data in attachments");
       return response.data;
     },
-    enabled: !!formId, // Only run if formId exists
+    enabled: !!GUID, // Only run if GUID exists
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -80,14 +84,26 @@ export function useAttachments() {
   });
   //http://apitest.dotis.ir/api/Attachment/save?prefix=payrequest&formId=1513&systemId=1&yearId=1&guid=
   const saveAttachment = useMutation({
-    mutationFn: async (payload: { formData: FormData; params: URLSearchParams }) => {
-      const response = await api.post(`/api/Attachment/save?${payload.params.toString()}`, payload.formData);
+    mutationFn: async (payload: {
+      formData: FormData;
+      params: URLSearchParams;
+    }) => {
+      const response = await api.post(
+        `/api/Attachment/save?${payload.params.toString()}`,
+        payload.formData
+      );
+      //queryClient.refetchQueries({
+      //  queryKey: ["attachments", { formId, prefix, GUID }],
+      //});
       return response.data;
     },
     onSuccess: (data: any) => {
       setAttachmentSaveResponse(data);
       // Refresh the attachments list after success
-      queryClient.invalidateQueries({ queryKey: ["attachments"] });
+      console.log("saveAttachment success", GUID, formId, prefix);
+      queryClient.invalidateQueries({
+        queryKey: ["attachments"],
+      });
     },
     onError: (error: any) => {
       console.error("خطای بارگذاری فایل", error);
@@ -100,6 +116,7 @@ export function useAttachments() {
     saveAttachmentLoading: saveAttachment.isPending,
     saveAttachmentError: saveAttachment.error,
     saveAttachmentSuccess: saveAttachment.isSuccess,
+    attachmentSaveResponse: saveAttachment.data,
     //////////////////////////////////////////////////////////////
     restoreAttachment: restoreAttachment.mutate,
     restoreAttachmentLoading: restoreAttachment.isPending,

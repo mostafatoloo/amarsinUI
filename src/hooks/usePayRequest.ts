@@ -17,7 +17,6 @@ import {
   PayRequestSaveRequest,
 } from "../types/payRequest";
 import { RpCustomerBillsResponse } from "../types/sales";
-import { v4 as uuidv4 } from "uuid";
 
 export function usePayRequest() {
   const {
@@ -459,19 +458,14 @@ export function usePayRequest() {
   } as UseQueryOptions<ChequeBookDtlByIdResponse, Error, ChequeBookDtlByIdResponse, unknown[]>);
   //for PayRequest/Save
   const payRequestSaveFn = useMutation({
-    mutationFn: async (param: PayRequestSaveRequest) => {
-      // Generate a proper GUID if it's empty
-      const requestData = {
-        ...param,
-        guid: param.guid || uuidv4(),
-      };
-      const response = await api.post(`/api/PayRequest/Save`, {
-        param: requestData,
-      });
+    mutationFn: async (request: PayRequestSaveRequest) => {
+      const response = await api.post(`/api/PayRequest/Save`, request);
       return response.data;
     },
     onSuccess: (data: any) => {
       setPayRequestSaveResponse(data);
+      queryClient.invalidateQueries({ queryKey: ["payRequest"] });
+      queryClient.invalidateQueries({ queryKey: ["payRequestDtl"] });
     },
   });
   //for payRequest/DoFirstFlow
@@ -481,7 +475,7 @@ export function usePayRequest() {
         request.chartId
       }&Acc_System=${request.systemId}&Acc_Year=${request.yearId}&Id=${
         request.id
-      }&Dsc=${encodeURIComponent(request.dsc)}`;
+      }&Dsc=${encodeURIComponent(request.dsc)} &FlowNo=${request.flowNo}&WFMS_FlowMapId=${request.wFMS_FlowMapId}`;
       console.log(request, "request", url, "url");
       const response = await api.post(url);
 

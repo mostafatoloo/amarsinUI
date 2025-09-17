@@ -219,7 +219,6 @@ const PayRequestActiveTab2 = ({
     //console.log(chequeBookSearch, "chequeBookSearch in useEffect");
   }, [chequeBookSearch]);
   useEffect(() => {
-    console.log(chequeBookId, "chequeBookId in useEffect");
     setField("searchChequeBookDtlSearch", chequeBookDtlSearch);
     setField("pageChequeBookDtlSearch", 1);
     setField("lastIdChequeBookDtlSearch", 0);

@@ -59,6 +59,8 @@ export default function WorkflowComponent({
         <PayRequestShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           isNew={false}
+          setIsNew={() => {}}
+          setIsEdit={() => {}}
         />
       );
       break;
@@ -108,6 +110,8 @@ export default function WorkflowComponent({
         <PayRequestShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           isNew={false}
+          setIsNew={() => {}}
+          setIsEdit={() => {}}
         />
       );
       break;

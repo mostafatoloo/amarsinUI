@@ -33,6 +33,22 @@ type Props = {
   setYear: (year: DefaultOptionType | null) => void;
   setShowAttachment: (showAttachment: boolean) => void;
   isNew: boolean;
+  dsc: string;
+  setDsc: (dsc: string) => void;
+  dat: string;
+  setDat: (dat: string) => void;
+  tim: string;
+  setTim: (tim: string) => void;
+  fDate: Date | null;
+  setFDate: (fDate: Date | null) => void;
+  tDate: Date | null;
+  setTDate: (tDate: Date | null) => void;
+  dueDate: Date | null;
+  setDueDate: (dueDate: Date | null) => void;
+  settleAmnt: string;
+  setSettleAmnt: (settleAmnt: string) => void;
+  providerAmnt: string;
+  setProviderAmnt: (providerAmnt: string) => void;
 };
 
 const PayRequestShowHeader = ({
@@ -48,6 +64,22 @@ const PayRequestShowHeader = ({
   setYear,
   setShowAttachment,
   isNew,
+  dsc,
+  setDsc,
+  dat,
+  setDat,
+  tim,
+  setTim,
+  fDate,
+  setFDate,
+  tDate,
+  setTDate,
+  dueDate,
+  setDueDate,
+  settleAmnt,
+  setSettleAmnt,
+  providerAmnt,
+  setProviderAmnt,
 }: Props) => {
   const canEditForm1Mst1 =
     workFlowRowSelectResponse.workTableForms.canEditForm1Mst1;
@@ -62,15 +94,6 @@ const PayRequestShowHeader = ({
   const [systemSearch, setSystemSearch] = useState<string>("");
   const [yearSearch, setYearSearch] = useState<string>("");
 
-  //edit variables
-  const [dsc, setDsc] = useState<string>("");
-  const [dat, setDat] = useState<string>("");
-  const [tim, setTim] = useState<string>("");
-  const [fDate, setFDate] = useState<Date | null>(null);
-  const [tDate, setTDate] = useState<Date | null>(null);
-  const [dueDate, setDueDate] = useState<Date | null>(null);
-  const [settleAmnt, setSettleAmnt] = useState<string>("");
-  const [providerAmnt, setProviderAmnt] = useState<string>("");
   const { definitionDateTime } = useDefinitionInvironment();
   useEffect(() => {
     setCustomerField("systemId", systemId);
@@ -350,7 +373,7 @@ const PayRequestShowHeader = ({
           setDsc(convertToLatinDigits(e.target.value));
         })}
         <Button
-          text={`ضمائم ${isNew ? "" : `(${convertToFarsiDigits(cnt)})`}`}
+          text={`ضمائم ${ `(${convertToFarsiDigits(cnt)})`}`}
           backgroundColor={colors.blue_400}
           backgroundColorHover={colors.blue_500}
           variant="w-32"

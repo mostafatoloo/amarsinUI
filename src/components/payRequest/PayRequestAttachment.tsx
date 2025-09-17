@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
 import {
   ChangeEvent,
   SetStateAction,
@@ -22,15 +21,24 @@ import RestoreIcon from "../../assets/images/GrayThem/restore_gray_16.png";
 import { colors } from "../../utilities/color";
 import { useGeneralContext } from "../../context/GeneralContext";
 
-type Props = { formId: number; setCnt: Dispatch<SetStateAction<number>> };
+type Props = {
+  formId: number;
+  setCnt: Dispatch<SetStateAction<number>>;
+  guid: string;
+};
 
-const PayRequestAttachment = ({ formId, setCnt }: Props) => {
+const PayRequestAttachment = ({
+  formId,
+  setCnt,
+  guid,
+}: Props) => {
   const {
     attachments,
     refetch,
     deleteAttachment,
     restoreAttachment,
     saveAttachment,
+    //attachmentSaveResponse : attachmentSaveResponseHook,
   } = useAttachments();
   const { setField, attachmentSaveResponse, deleteRestoreResponse } =
     useAttachmentStore();
@@ -85,13 +93,13 @@ const PayRequestAttachment = ({ formId, setCnt }: Props) => {
     },
   ];
   /////////////////////////////////////////////////////////////////
-  useEffect(() => {
+ /* useEffect(() => {
     setField("systemId", systemId);
     setField("yearId", yearId);
     setField("formId", formId);
     setField("prefix", "payrequest");
-    setField("GUID", "");
-  }, [formId]);
+    setField("GUID", guid);
+  }, [formId,attachmentSaveResponseHook,systemId,yearId,guid]);*/
 
   useEffect(() => {
     let tempData: AttachmentResult[] = [];
@@ -188,7 +196,6 @@ const PayRequestAttachment = ({ formId, setCnt }: Props) => {
       reader.readAsDataURL(file);
 
       // Upload logic
-      const guid = uuidv4();
       const formData = new FormData();
       formData.append("img", file); // Keep file in FormData
 
@@ -201,8 +208,9 @@ const PayRequestAttachment = ({ formId, setCnt }: Props) => {
         guid: guid,
       });
 
+      setField("GUID", guid);
       console.log("Request params:", params.toString());
-      saveAttachment({ formData, params });
+      saveAttachment({ formData, params});
     });
 
     if (e.target) {

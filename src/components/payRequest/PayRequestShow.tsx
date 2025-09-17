@@ -22,6 +22,7 @@ import PayRequestActiveTab1 from "./payRequestActiveTab1";
 import {
   convertToFarsiDigits,
   convertToLatinDigits,
+  convertToPersianDate,
   currencyStringToNumber,
   formatNumberWithCommas,
 } from "../../utilities/general";
@@ -34,15 +35,29 @@ import Button from "../controls/Button";
 import PayRequestAttachment from "./PayRequestAttachment";
 import ShowMessages from "../controls/ShowMessages";
 import { colors } from "../../utilities/color";
+import ModalMessage from "../layout/ModalMessage";
+import { v4 as uuidv4 } from "uuid";
+import { useAttachments } from "../../hooks/useAttachments";
+import { useAttachmentStore } from "../../store/attachmentStore";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   isNew: boolean;
+  setIsNew: (isNew: boolean) => void;
+  setIsEdit: (isEdit: boolean) => void;
 };
 
-const PayRequestShow = ({ workFlowRowSelectResponse, isNew }: Props) => {
+const PayRequestShow = ({
+  workFlowRowSelectResponse,
+  isNew,
+  setIsNew,
+  setIsEdit,
+}: Props) => {
   const [customer, setCustomer] = useState<DefaultOptionType | null>(null);
-  const { setField: setPayRequestField , payRequestSaveResponse : payRequestSaveResponseStore} = usePayRequestStore();
+  const {
+    setField: setPayRequestField,
+    payRequestSaveResponse: payRequestSaveResponseStore,
+  } = usePayRequestStore();
   const { authApiResponse } = useAuthStore();
   const initData = authApiResponse?.data.result.initData;
   const { id, setField } = usePayRequestStore();
@@ -56,7 +71,18 @@ const PayRequestShow = ({ workFlowRowSelectResponse, isNew }: Props) => {
     id: initData?.yearId ?? 0,
     title: convertToFarsiDigits(initData?.yearTitle) ?? "",
   });
+  //for PayRequestAttachment.tsx
+  const [guid, setGuid] = useState<string>("");
+  //for PayRequestShowHeader props
   const [cnt, setCnt] = useState(0);
+  const [dsc, setDsc] = useState<string>("");
+  const [dat, setDat] = useState<string>("");
+  const [tim, setTim] = useState<string>("");
+  const [fDate, setFDate] = useState<Date | null>(null);
+  const [tDate, setTDate] = useState<Date | null>(null);
+  const [dueDate, setDueDate] = useState<Date | null>(null);
+  const [settleAmnt, setSettleAmnt] = useState<string>("");
+  const [providerAmnt, setProviderAmnt] = useState<string>("");
   //for tab 0
   const [totalRem, setTotalRem] = useState(0);
   const [sumRem, setSumRem] = useState(0);
@@ -109,6 +135,8 @@ const PayRequestShow = ({ workFlowRowSelectResponse, isNew }: Props) => {
     rpCustomerBillsResponse,
     isLoadingRpCustomerBills,
   } = usePayRequest();
+  const { attachments } = useAttachments();
+  const { setField: setAttachmentField } = useAttachmentStore();
 
   ////////////////////////////////////////////////////////
   useEffect(() => {
@@ -116,6 +144,10 @@ const PayRequestShow = ({ workFlowRowSelectResponse, isNew }: Props) => {
     if (isModalRegOpen) {
       timeoutId = setTimeout(() => {
         setIsModalRegOpen(false);
+        if (payRequestSaveResponseStore?.meta.errorCode === -1) {
+          setIsNew(false);
+          setIsEdit(false);
+        }
       }, 3000);
     }
     return () => {
@@ -124,18 +156,14 @@ const PayRequestShow = ({ workFlowRowSelectResponse, isNew }: Props) => {
       }
     };
   }, [isModalRegOpen]);
-
+  ////////////////////////////////////////////////////////
   useEffect(() => {
     //console.log(workFlowRowSelectResponse?.workTableRow.formId);
     setActiveTab(2);
     setPayRequestField("id", workFlowRowSelectResponse?.workTableRow.formId);
     setPayRequestField("yearId", yearId);
     setPayRequestField("systemId", systemId);
-  }, [
-    workFlowRowSelectResponse?.workTableRow.formId,
-    yearId,
-    systemId,
-  ]);
+  }, [workFlowRowSelectResponse?.workTableRow.formId, yearId, systemId]);
   //initializing tab 0
   useEffect(() => {
     const tempData: PayRequestInvoicesTable[] =
@@ -192,25 +220,74 @@ const PayRequestShow = ({ workFlowRowSelectResponse, isNew }: Props) => {
       })
     );
   }, [chequeBookDtlSearchResponse.data.result.results]);
+  ////////////////////////////////////////////////////////for defining guid
+  useEffect(() => {
+    console.log(payRequestResponse.data.result, "for defining guid");
+    if (isNew) {
+      setGuid(uuidv4());
+    } else {
+      setGuid(
+        payRequestResponse.data.result.payRequest.payRequests?.[0]?.guid ?? ""
+      );
+    }
+  }, [isNew, payRequestResponse.data.result.payRequest.payRequests?.[0]?.guid]);
+
   /////////////////////////////////////////////////////////////
   useEffect(() => {
-    //set attachment count
-    console.log(payRequestResponse.data.result.payRequestDtls, "payRequestResponse.data.result.payRequestDtls in PayRequestShow");
-    setCnt(payRequestResponse.data.result.payRequest.payRequests?.[0]?.attachCount ?? 0);
+    setAttachmentField("systemId", systemId);
+    setAttachmentField("yearId", yearId);
+    setAttachmentField(
+      "formId",
+      isNew || workFlowRowSelectResponse.msg === "PayRequestOperationForm"
+        ? 0
+        : workFlowRowSelectResponse.workTableRow.formId
+    );
+    setAttachmentField("prefix", "payrequest");
+    setAttachmentField("GUID", guid);
+  }, [
+    workFlowRowSelectResponse.workTableRow.formId,
+    systemId,
+    yearId,
+    guid,
+    isNew,
+    workFlowRowSelectResponse.msg,
+  ]);
+  /////////////////////////////////////////////////////////////for defining cnt
+  useEffect(() => {
+    let tempCnt = 0;
+    if (isNew && attachments.data.result.length === 0) {
+      tempCnt = 0;
+    } else if (attachments.data.result.length !== 0) {
+      tempCnt = attachments.data.result.length ?? 0;
+    } else {
+      tempCnt =
+        payRequestResponse.data.result.payRequest.payRequests?.[0]
+          ?.attachCount ?? 0;
+    }
+    setCnt(tempCnt);
+  }, [
+    attachments.data.result.length,
+    isNew,
+    payRequestResponse.data.result.payRequest.payRequests?.[0]?.attachCount,
+  ]);
+  /////////////////////////////////////////////////////////////
+  useEffect(() => {
     const invcs = payRequestResponse.data.result.invcs; // keep factors include settles in tempPayRequestResponse
-    setDataInTab2(isNew ? [] :
-      payRequestResponse.data.result.payRequestDtls.map((item, index) => {
-        const tempItem = invcs.find((p) => p.payRequestDtlId === item.id);
-        return {
-          ...item,
-          amount: convertToFarsiDigits(
-            formatNumberWithCommas(Number(item.amount))
-          ),
-          index: index + 1,
-          checked: tempItem ? true : false,
-          //chqBkNo: chequeBookDtlByIdResponse.data.result.checkBookDtl.chqBkNo ?? item.chqBkNo
-        };
-      })
+    setDataInTab2(
+      isNew
+        ? []
+        : payRequestResponse.data.result.payRequestDtls.map((item, index) => {
+            const tempItem = invcs.find((p) => p.payRequestDtlId === item.id);
+            return {
+              ...item,
+              amount: convertToFarsiDigits(
+                formatNumberWithCommas(Number(item.amount))
+              ),
+              index: index + 1,
+              checked: tempItem ? true : false,
+              //chqBkNo: chequeBookDtlByIdResponse.data.result.checkBookDtl.chqBkNo ?? item.chqBkNo
+            };
+          })
     );
     setAmountTab2(
       payRequestResponse.data.result.payRequestDtls.reduce(
@@ -282,8 +359,6 @@ const PayRequestShow = ({ workFlowRowSelectResponse, isNew }: Props) => {
   }, [payRequestResponse, payRequestDtlId, invoicesWithChecks]);
   ////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
-    console.log(payRequestResponse.data.result)
-    console.log(customer, "customer in PayRequestShow");
     setField("idRpCustomerBills", id);
     setField("customerIdRpCustomerBills", customer?.id ?? 0);
     setField("systemIdRpCustomerBills", systemId);
@@ -304,6 +379,7 @@ const PayRequestShow = ({ workFlowRowSelectResponse, isNew }: Props) => {
     payRequestResponse.data.result.payRequest.payRequests?.[0]?.fDate ?? "",
     payRequestResponse.data.result.payRequest.payRequests?.[0]?.tDate ?? "",
   ]);
+  //console.log(guid, "guid in handleSubmitSave");
   ////////////////////////////////////////////////////////////////////////////
   const handleSubmitSave = async (
     e?: React.MouseEvent<HTMLButtonElement>
@@ -349,23 +425,27 @@ const PayRequestShow = ({ workFlowRowSelectResponse, isNew }: Props) => {
         invcs.push(invc);
       });
     });
+
     request = {
-      guid: payRequestResponse.data.result.payRequest.payRequests?.[0]?.guid ?? "",
+      guid,
       usrId: authApiResponse?.data.result.login.usrId ?? 0,
-      id: payRequestResponse.data.result.payRequest.payRequests?.[0]?.id ?? 0,
+      id: isNew
+        ? 0
+        : payRequestResponse.data.result.payRequest.payRequests?.[0]?.id ?? 0,
       systemId: system?.id ?? 0,
       yearId: year?.id ?? 0,
       customerId: customer?.id ?? 0,
-      dat: payRequestResponse.data.result.payRequest.payRequests?.[0]?.dat ?? "",
-      tim: payRequestResponse.data.result.payRequest.payRequests?.[0]?.tim ?? "",
-      fDate: payRequestResponse.data.result.payRequest.payRequests?.[0]?.fDate ?? "",
-      tDate: payRequestResponse.data.result.payRequest.payRequests?.[0]?.tDate ?? "",
-      dueDate: payRequestResponse.data.result.payRequest.payRequests?.[0]?.dueDate ?? "",
-      settleAmnt:
-        payRequestResponse.data.result.payRequest.payRequests?.[0]?.settleAmnt ?? "",
-      providerAmnt:
-        payRequestResponse.data.result.payRequest.payRequests?.[0]?.providerAmnt ?? "",
-      dsc: payRequestResponse.data.result.payRequest.payRequests?.[0]?.dsc ?? "",
+      dat: convertToLatinDigits(dat), //payRequestResponse.data.result.payRequest.payRequests?.[0]?.dat ?? "",
+      tim: convertToLatinDigits(tim), // payRequestResponse.data.result.payRequest.payRequests?.[0]?.tim ?? "",
+      fDate: fDate ? convertToPersianDate(fDate) : "", // payRequestResponse.data.result.payRequest.payRequests?.[0]?.fDate ?? "",
+      tDate: tDate ? convertToPersianDate(tDate) : "", // payRequestResponse.data.result.payRequest.payRequests?.[0]?.tDate ?? "",
+      dueDate: dueDate ? convertToPersianDate(dueDate) : "", // payRequestResponse.data.result.payRequest.payRequests?.[0]?.dueDate ?? "",
+      settleAmnt: convertToLatinDigits(settleAmnt),
+      //(payRequestResponse.data.result.payRequest.payRequests?.[0]?.settleAmnt ?? "0").toString(),
+      providerAmnt: convertToLatinDigits(providerAmnt),
+      //(payRequestResponse.data.result.payRequest.payRequests?.[0]?.providerAmnt ?? "0").toString(),
+      dsc,
+      //payRequestResponse.data.result.payRequest.payRequests?.[0]?.dsc ?? "",
       dtls: dtls,
       invcs: invcs,
     };
@@ -394,6 +474,22 @@ const PayRequestShow = ({ workFlowRowSelectResponse, isNew }: Props) => {
         payRequestResponse={payRequestResponse}
         setShowAttachment={setShowAttachment}
         isNew={isNew}
+        dsc={dsc}
+        setDsc={setDsc}
+        dat={dat}
+        setDat={setDat}
+        tim={tim}
+        setTim={setTim}
+        fDate={fDate}
+        setFDate={setFDate}
+        tDate={tDate}
+        setTDate={setTDate}
+        dueDate={dueDate}
+        setDueDate={setDueDate}
+        settleAmnt={settleAmnt}
+        setSettleAmnt={setSettleAmnt}
+        providerAmnt={providerAmnt}
+        setProviderAmnt={setProviderAmnt}
         //authApiResponse={authApiResponse as AuthApiResponse}
       />
       <PayRequestShowTableHeader
@@ -487,10 +583,38 @@ const PayRequestShow = ({ workFlowRowSelectResponse, isNew }: Props) => {
         height="90vh"
       >
         <PayRequestAttachment
-          formId={isNew ? 0 : workFlowRowSelectResponse.workTableRow.formId}
+          formId={
+            isNew || workFlowRowSelectResponse.msg === "PayRequestOperationForm" //is not in workflow menu
+              ? 0
+              : workFlowRowSelectResponse.workTableRow.formId
+          }
           setCnt={setCnt}
+          guid={guid}
         />
       </ModalForm>
+
+      <ModalMessage
+        isOpen={isModalRegOpen}
+        onClose={() => setIsModalRegOpen(false)}
+        backgroundColor={
+          payRequestSaveResponseStore?.meta.errorCode === -1
+            ? "bg-green-200"
+            : "bg-red-200"
+        }
+        bgColorButton={
+          payRequestSaveResponseStore?.meta.errorCode === -1
+            ? "bg-green-500"
+            : "bg-red-500"
+        }
+        color="text-white"
+        message={
+          payRequestSaveResponseStore?.meta.errorCode !== -1
+            ? payRequestSaveResponseStore?.meta.message || ""
+            : "اطلاعات با موفقیت ثبت شد."
+        }
+        visibleButton={false}
+      />
+
       {payRequestSaveResponseStore?.data.result.dtlErrMsgs?.length > 0 && (
         <ModalForm
           isOpen={isModalRegOpen}
@@ -499,7 +623,9 @@ const PayRequestShow = ({ workFlowRowSelectResponse, isNew }: Props) => {
           width="1/2"
         >
           <ShowMessages
-            dtlErrMsgs={payRequestSaveResponseStore.data.result.dtlErrMsgs || []}
+            dtlErrMsgs={
+              payRequestSaveResponseStore.data.result.dtlErrMsgs || []
+            }
             color={colors.red100}
             heightWindow={300}
           />

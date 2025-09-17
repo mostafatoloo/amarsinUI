@@ -424,7 +424,7 @@ const PayRequestOperation = () => {
       yearId: yearId,
       systemId: systemId,
       id: selectedId,
-      dsc: selectedPayRequest?.dsc || "توضیحات",
+      dsc: selectedPayRequest?.dsc || "",
     };
     console.log("request", request);
     setIsModalConfirmOpen(true);
@@ -481,12 +481,12 @@ const PayRequestOperation = () => {
       />
       <div className="flex gap-2 px-2 h-1/2">
         <div className="flex flex-col w-3/4 h-full">
-          <div className="w-full bg-white rounded-md h-full">
+          <div className="w-full overflow-y-scroll bg-white rounded-md h-full">
             {isLoadingPayRequest ? (
               <Skeleton />
             ) : (
               <>
-                <div className="w-full flex justify-center md:justify-end items-center ">
+                <div className="w-full flex  justify-center md:justify-end items-center ">
                   <input
                     name="index"
                     value={""}
@@ -675,6 +675,8 @@ const PayRequestOperation = () => {
         <PayRequestOperationForm
           selectedPayRequest={selectedPayRequest}
           isNew={isNew}
+          setIsNew={setIsNew}
+          setIsEdit={setIsEdit}
         />
       </ModalForm>
       <ModalMessage
