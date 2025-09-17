@@ -92,6 +92,11 @@ const PayRequestAttachment = ({
       ),
     },
   ];
+
+  useEffect(() => {
+    //calculate attachment counts
+    setSelectedRowIndex(attachments.data.result.length-1);
+  }, [attachments.data.result.length]);
   /////////////////////////////////////////////////////////////////
  /* useEffect(() => {
     setField("systemId", systemId);
@@ -232,6 +237,7 @@ const PayRequestAttachment = ({
         <input
           ref={fileInputRef}
           type="file"
+          multiple
           style={{ display: "none" }}
           onChange={handleFileChange}
           accept="image/*"

@@ -365,19 +365,23 @@ const PayRequestShow = ({
     setField("yearIdRpCustomerBills", yearId);
     setField(
       "fDateRpCustomerBills",
-      payRequestResponse.data.result.payRequest.payRequests?.[0]?.fDate ?? ""
+      //payRequestResponse.data.result.payRequest.payRequests?.[0]?.fDate ?? ""
+      fDate ? convertToPersianDate(fDate) : ""
     );
     setField(
       "tDateRpCustomerBills",
-      payRequestResponse.data.result.payRequest.payRequests?.[0]?.tDate ?? ""
+      //payRequestResponse.data.result.payRequest.payRequests?.[0]?.tDate ?? ""
+      tDate ? convertToPersianDate(tDate) : ""
     );
   }, [
     systemId,
     yearId,
     id,
     customer?.id,
-    payRequestResponse.data.result.payRequest.payRequests?.[0]?.fDate ?? "",
-    payRequestResponse.data.result.payRequest.payRequests?.[0]?.tDate ?? "",
+    fDate,
+    tDate,
+    //payRequestResponse.data.result.payRequest.payRequests?.[0]?.fDate ?? "",
+    //payRequestResponse.data.result.payRequest.payRequests?.[0]?.tDate ?? "",
   ]);
   //console.log(guid, "guid in handleSubmitSave");
   ////////////////////////////////////////////////////////////////////////////
