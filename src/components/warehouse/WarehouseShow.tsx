@@ -146,7 +146,7 @@ const WarehouseShow = ({ workFlowRowSelectResponse }: Props) => {
         bgColorButtonHover="bg-green-600"
         color="text-white"
         onClose={() => setIsModalOpenReg(false)}
-        message={regResponse.meta.message}
+        message={regResponse.meta.message ?? ""}
         visibleButton={false}
       />
     </div>

@@ -6,7 +6,7 @@ import { DefaultOptionType, TableColumns } from "../../types/general";
 import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
 import { red } from "@mui/material/colors";
 import ModalMessage from "../layout/ModalMessage";
-import { ProductGraceDtlHistory, ProductGraceListItem, ProductGraceListItemTable, ProductGraceListItemTable2, ProductGraceListResponse, ProductGraceSaveResponse } from "../../types/productGrace";
+import { ProductGraceDtlHistory, ProductGraceListItem, ProductGraceListItemTable, ProductGraceListItemTable2, ProductGraceListResponse } from "../../types/productGrace";
 import { useProductGraceStore } from "../../store/productGraceStore";
 import ProductGraceFormListHistory from "./ProductGraceFormListHistory";
 import ProductGraceFormListHeader from "./ProductGraceFormListHeader";
@@ -21,7 +21,7 @@ type Props = {
     productId?: number
   ) => Promise<ProductGraceListResponse | undefined>;
   isLoadingProductOfferSave: boolean;
-  handleSubmitSave: () => Promise<ProductGraceSaveResponse | undefined>;
+  handleSubmitSave: () => Promise<string | undefined>;
   isDtlHistoryLoading: boolean;
   handleAddRow: (
     index: number,
@@ -35,6 +35,8 @@ type Props = {
   setShowHistory: Dispatch<SetStateAction<boolean>>;
   isModalRegOpen: boolean;
   setIsModalRegOpen: Dispatch<SetStateAction<boolean>>;
+  isModalEmptyOpen: boolean;
+  setIsModalEmptyOpen: Dispatch<SetStateAction<boolean>>;
 };
 
 const ProductGraceFormList = ({
@@ -55,6 +57,8 @@ const ProductGraceFormList = ({
   setShowHistory,
   isModalRegOpen,
   setIsModalRegOpen,
+  isModalEmptyOpen,
+  setIsModalEmptyOpen,
 }: Props) => {
   const { productGraceSaveResponse } = useProductGraceStore();
   const [brandSearch, setBrandSearch] = useState<string>("");
@@ -253,7 +257,21 @@ const ProductGraceFormList = ({
       }
     };
   }, [isModalRegOpen]);
-
+  ////////////////////////////////////////////////////////
+  useEffect(() => {
+    let timeoutId: number;
+    if (isModalEmptyOpen) {
+      timeoutId = setTimeout(() => {
+        setIsModalEmptyOpen(false);
+      }, 3000);
+    }
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [isModalEmptyOpen]);
+  ////////////////////////////////////////////////////////
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in productGraceFormList table
   return (
     <>
@@ -307,6 +325,15 @@ const ProductGraceFormList = ({
         productGraceDtlHistory={productGraceDtlHistory}
         columnsHistory={columnsHistory}
       />
+      <ModalMessage
+        isOpen={isModalEmptyOpen}
+        onClose={() => setIsModalEmptyOpen(false)}
+        backgroundColor={"bg-red-200"}
+        bgColorButton={"bg-red-500"}
+        color="text-white"
+        message={"اقلام مشخص نشده!"}
+        visibleButton={false}
+      />      
       <ModalMessage
         isOpen={isModalRegOpen}
         onClose={() => setIsModalRegOpen(false)}

@@ -222,7 +222,6 @@ const PayRequestShow = ({
   }, [chequeBookDtlSearchResponse.data.result.results]);
   ////////////////////////////////////////////////////////for defining guid
   useEffect(() => {
-    console.log(payRequestResponse.data.result, "for defining guid");
     if (isNew) {
       setGuid(uuidv4());
     } else {

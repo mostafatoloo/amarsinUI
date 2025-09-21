@@ -104,6 +104,53 @@ export const useWarehouseStore = create<WarehouseState>()((set) => ({
   CustomerTypeId: -1,
   PartKey: 0,
   //end of api/Warehouse/WarehouseSearch?search=%D8%A7&page=1&pageSize=30&lastId=0&CustomerTypeId=-1
+  //for api/WarehouseTemporaryReceipt/purchaseShow/1107390
+  receiptPurchaseId: 0,
+  warehouseTemporaryReceiptPurchaseShowResponse: {
+    meta: { errorCode: 0, message: "", type: "" },
+    data: {
+      result: {
+        err: 0,
+        msg: "",
+        result: {
+          spId: 0,
+          spTitle: "",
+          wId: 0,
+          wName: "",
+          warehouseTemporaryReceiptMst: {
+            id: 0,
+            formId: 0,
+            code: "",
+            dat: "",
+            tim: "",
+            cId: 0,
+            srName: "",
+            gln: "",
+            blackList: false,
+            exp: "",
+            guid: "",
+            status: 0,
+            msg: "",
+          },
+          warehouseTemporaryReceiptPurchaseDtls: [],
+        },
+      },
+    },
+  },
+  //for api/WarehouseTemporaryReceipt/salesPrices?id=1106779&salesPriceId=1
+  id: 0,
+  salesPriceId: 0,
+  warehouseTemporaryReceiptSalesPricesResponse: {
+    meta: { errorCode: 0, message: "", type: "" },
+    data: { result: { err: 0, msg: "", salesPrices: [] } },
+  },
+  //for api/WarehouseTemporaryReceipt/purchaseReg?id=1106779&salesPriceId=1
+  idReg: 0,
+  salesPriceIdReg: 0,
+  warehouseTemporaryReceiptPurchaseRegResponse: {
+    meta: { errorCode: 0, message: "", type: "" },
+    data: { result: { id: 0, err: 0, msg: "", dtlErrMsgs: [] } },
+  },
   setField: (field: string, value: any) => {
     set((state) => ({ ...state, [field]: value }));
   },
@@ -117,4 +164,13 @@ export const useWarehouseStore = create<WarehouseState>()((set) => ({
   setRegResponse: (regResponse) => set({ regResponse }),
   setWarehouseSearchResponse: (warehouseSearchResponse) =>
     set({ warehouseSearchResponse }),
+  setWarehouseTemporaryReceiptPurchaseShowResponse: ( //for api/WarehouseTemporaryReceipt/purchaseShow/1107390
+    warehouseTemporaryReceiptPurchaseShowResponse
+  ) => set({ warehouseTemporaryReceiptPurchaseShowResponse }),
+  setWarehouseTemporaryReceiptSalesPricesResponse: ( //for api/WarehouseTemporaryReceipt/salesPrices?id=1106779&salesPriceId=1
+    warehouseTemporaryReceiptSalesPricesResponse
+  ) => set({ warehouseTemporaryReceiptSalesPricesResponse }),
+  setWarehouseTemporaryReceiptPurchaseRegResponse: ( //for api/WarehouseTemporaryReceipt/purchaseReg?id=1106779&salesPriceId=1
+    warehouseTemporaryReceiptPurchaseRegResponse
+  ) => set({ warehouseTemporaryReceiptPurchaseRegResponse }),
 }));

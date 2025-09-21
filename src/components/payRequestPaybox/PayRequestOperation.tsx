@@ -25,6 +25,7 @@ import {
   PayRequest as PayRequestType,
 } from "../../types/payRequest";
 import PayRequestOperationForm from "./PayRequestOperationForm";
+import ConfirmCard from "../layout/ConfirmCard";
 
 const PayRequestOperation = () => {
   const {
@@ -84,7 +85,7 @@ const PayRequestOperation = () => {
   const [sortAmount, setSortAmount] = useState<number>(0);
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in productGrace table
   const [selectedRowIndexDtl, setSelectedRowIndexDtl] = useState<number>(0); //for selected row index in productGraceDtl table
-
+  const [sumAmount, setSumAmount] = useState<number>(0); //for sum amount of payRequestDtl
   const columns = [
     {
       Header: "ردیف",
@@ -388,6 +389,9 @@ const PayRequestOperation = () => {
       });
       if (tempDataDtl) {
         setDataDtl(tempDataDtl);
+        setSumAmount(
+          payRequestDtl.reduce((acc, item) => acc + Number(item.amount), 0)
+        );
       }
     }
   }, [payRequestDtl]);
@@ -543,7 +547,7 @@ const PayRequestOperation = () => {
                     onFocus={() => setFocusedInput("srchAmount")}
                     style={{ width: columns[5].width }}
                     className={`border p-1 text-sm rounded-sm`}
-                  />                  
+                  />
                   {ProductPermInput(
                     "srchDsc",
                     columns[6].width,
@@ -654,6 +658,12 @@ const PayRequestOperation = () => {
           </>
         )}
       </div>
+      <ConfirmCard backgroundColor="bg-gray-300" variant="flex-row gap-2">
+        <p className="text-sm text-gray-500">جمع: لیست چک ها:</p>
+        <p className="text-sm text-gray-500">
+          {convertToFarsiDigits(formatNumberWithCommas(sumAmount))}
+        </p>
+      </ConfirmCard>
       <ModalMessage
         isOpen={isModalOpen}
         backgroundColor="bg-red-200"
@@ -671,6 +681,7 @@ const PayRequestOperation = () => {
         }}
         title="درخواست پرداخت"
         width="1"
+        height="90vh"
       >
         <PayRequestOperationForm
           selectedPayRequest={selectedPayRequest}

@@ -219,9 +219,9 @@ import { ShowProductListRequest } from "../types/productOperation";
           sortUsrName,
           sortStep,
         };
-        const url = `/api/ProductGrace?Id=${params.id}&Acc_Year=${
+        const url = `/api/ProductGrace?Id=${params.id}&YearId=${
           params.yearId
-        }&Acc_System=${params.systemId}&State=${
+        }&SystemId=${params.systemId}&State=${
           params.state
         }&RegFDate=${encodeURIComponent(
           params.regFDate ?? ""
@@ -316,7 +316,7 @@ import { ShowProductListRequest } from "../types/productOperation";
     //for productPerm/productPermDoFirstFlow
     const productGraceDoFirstFlow = useMutation({
       mutationFn: async (request: ProductGraceDoFirstFlowRequest) => {
-        const url: string = `api/ProductGrace/doFirstFlow?Acc_System=${request.acc_System}&Acc_Year=${request.acc_Year}&Id=${
+        const url: string = `api/ProductGrace/doFirstFlow?SystemId=${request.acc_System}&YearId=${request.acc_Year}&Id=${
           request.id
         }&Dsc=${encodeURIComponent(request.dsc)}&ChartId=${request.chartId}`;
         console.log(request, "request", url, "url");

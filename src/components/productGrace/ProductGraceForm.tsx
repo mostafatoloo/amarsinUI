@@ -196,6 +196,7 @@ const ProductGraceForm = ({
   const [brand, setBrand] = useState<DefaultOptionTypeStringId[] | null>([]);
   const [brandSearch, setBrandSearch] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalEmptyOpen, setIsModalEmptyOpen] = useState(false);
   const fileName = "data_export.xlsx";
   const { products } = useProducts();
   const { setField: setProductField } = useProductStore();
@@ -451,7 +452,7 @@ const ProductGraceForm = ({
   ////////////////////////////////////////////////////////
   const handleSubmitSave = async (
     e?: React.MouseEvent<HTMLButtonElement>
-  ): Promise<ProductGraceSaveResponse | undefined> => {
+  ):  Promise<string | undefined> => {
     if (e) e.preventDefault();
     let request: ProductGraceSaveRequest;
     const dtls = originalData
@@ -467,9 +468,19 @@ const ProductGraceForm = ({
           dtlDsc: item.dtlDsc,
           deleted: item.isDeleted,
         };
-        return dtl;
-      });
+        if (dtl.gd !== 0 || dtl.sc !== 0 || dtl.cc !== 0 || dtl.ec !== 0) {
+          return dtl;
+        } else {
+          return undefined;
+        }
+      })
+      .filter((item) => item !== undefined);
 
+    console.log(dtls, "dtls");
+    if (dtls.length === 0) {
+      setIsModalEmptyOpen(true);
+      return "اقلام مشخص نشده!";
+    }
     request = {
       chartId: chartId,
       id: isNew ? 0 : selectedProductGrace?.id ?? 0, //if isNew is true, id is 0, otherwise id is selectedProductPerm?.id for edit
@@ -483,11 +494,11 @@ const ProductGraceForm = ({
     };
     console.log(request);
     try {
-      const response = await productGraceSave(request);
+      await productGraceSave(request);
       setIsModalRegOpen(true);
       //setIsNew(false);
       //setIsEdit(false);
-      return response;
+      return "اطلاعات با موفقیت ثبت شد.";
       //console.log( "request");
     } catch (error) {
       console.error("Error ثبت :", error);
@@ -570,6 +581,8 @@ const ProductGraceForm = ({
         setShowHistory={setShowHistory}
         isModalRegOpen={isModalRegOpen}
         setIsModalRegOpen={setIsModalRegOpen}
+        isModalEmptyOpen={isModalEmptyOpen} //if user not fill the grace, this modal will open
+        setIsModalEmptyOpen={setIsModalEmptyOpen} //if user not fill the grace, this modal will open
       />
     </div>
   );

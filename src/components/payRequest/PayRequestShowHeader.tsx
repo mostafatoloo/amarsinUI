@@ -5,8 +5,8 @@ import {
   convertToFarsiDigits,
   convertToLatinDigits,
   convertToPersianDate,
-  currencyStringToNumber,
   formatNumberWithCommas,
+  handleCurrencyInputChange,
   parsePersianDateString,
 } from "../../utilities/general";
 import AutoComplete from "../controls/AutoComplete";
@@ -326,21 +326,13 @@ const PayRequestShowHeader = ({
           <div className="flex w-1/2">
             <label className="p-1 w-24 text-left">مبلغ تسویه:</label>
             {inputElement(settleAmnt, !canEditForm1Mst2, (e) => {
-              setSettleAmnt(
-                currencyStringToNumber(
-                  convertToLatinDigits(e.target.value)
-                ).toString()
-              );
+              handleCurrencyInputChange(e.target.value, setSettleAmnt);
             })}
           </div>
           <div className="flex w-1/2">
             <label className="p-1 w-48 text-left">مبلغ تامین کننده:</label>
             {inputElement(providerAmnt, !canEditForm1Mst2, (e) => {
-              setProviderAmnt(
-                currencyStringToNumber(
-                  convertToLatinDigits(e.target.value)
-                ).toString()
-              );
+              handleCurrencyInputChange(e.target.value, setProviderAmnt);
             })}
           </div>
         </div>
@@ -373,7 +365,7 @@ const PayRequestShowHeader = ({
           setDsc(convertToLatinDigits(e.target.value));
         })}
         <Button
-          text={`ضمائم ${ `(${convertToFarsiDigits(cnt)})`}`}
+          text={`ضمائم ${`(${convertToFarsiDigits(cnt)})`}`}
           backgroundColor={colors.blue_400}
           backgroundColorHover={colors.blue_500}
           variant="w-32"

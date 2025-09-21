@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Meta } from "./invoice";
+import { Meta } from "./general";
 
 interface Indent {
   id: number;
@@ -30,11 +30,6 @@ export interface WarehouseTemporaryReceiptIndentDtl {
   rOffer: number;
 }
 
-/*export interface WarehouseTemporaryReceiptIndentDtlTable
-  extends WarehouseTemporaryReceiptIndentDtl {
-
-
-  }*/
 export interface WarehouseTemporaryReceiptIndentDtlTable {
   id: number;
   expire: string;
@@ -101,34 +96,54 @@ export interface WarehouseShowIdResponse {
   meta: Meta;
   data: Data;
 }
+//http://apitest.dotis.ir/api/WarehouseTemporaryReceipt/purchaseShow/1107390
+interface WarehouseTemporaryReceiptPurchaseDtls {  
+  id: number;  
+  iocId: number;  
+  expire: string;  
+  uId: string;  
+  status: number;  
+  code: string;  
+  pCode: string;  
+  pName: string;  
+  cnt: number;  
+  stock: number;  
+  pOffer: number;  
+  tax: number;  
+  graceDays: number;  
+  perm: boolean;  
+  regCnt: number;  
+  regOffer: number;  
+  rCnt: number;  
+  rCost: number;  
+  tCnt: number;  
+  tOffer: number;  
+  tCost: number;  
+  consumerPrice: number;  
+}  
 
-export interface WarehouseState extends WarehouseSearchRequest {
-  formId: number;
-  productId: number;
-  iocId: number;
-  warehouseShowIdResponse: WarehouseShowIdResponse;
-  warehouseIndentListResponse: WarehouseIndentListResponse;
-  productCatalog: ProductCatalog;
-  warehouseSearchResponse: WarehouseSearchResponse;
-  setField: (field: string, value: any) => void;
-  setWarehouseShowIdResponse: (
-    warehouseShowIdResponse: WarehouseShowIdResponse
-  ) => void;
-  setProductCatalog: (productCatalog: ProductCatalog) => void;
-  setWarehouseIndentListResponse: (
-    warehouseIndentListResponse: WarehouseIndentListResponse
-  ) => void;
-  selectIndentsResponse: SelectIndentsResponse;
-  setSelectIndentsResponse: (
-    selectIndentsResponse: SelectIndentsResponse
-  ) => void;
-  regResponse: RegResponse;
-  setRegResponse: (regResponse: RegResponse) => void;
-  setWarehouseSearchResponse: (
-    warehouseSearchResponse: WarehouseSearchResponse
-  ) => void;
-}
+interface ResultWarehouseTemporaryReceiptPurchase {  
+  err: number;  
+  msg: string;  
+  result: {  
+    spId: number;  
+    spTitle: string;  
+    wId: number;  
+    wName: string;  
+    warehouseTemporaryReceiptMst: WarehouseTemporaryReceiptMst;  
+    warehouseTemporaryReceiptPurchaseDtls: WarehouseTemporaryReceiptPurchaseDtls[];  
+  };  
+}  
 
+interface DataWarehouseTemporaryReceiptPurchase {  
+  result: ResultWarehouseTemporaryReceiptPurchase;  
+}  
+
+export interface WarehouseTemporaryReceiptPurchaseShowResponse {  
+  meta: Meta;  
+  data: DataWarehouseTemporaryReceiptPurchase;  
+}  
+///////آدرس سرور قبلی است
 export interface ProductCatalog {
   data: {
     Manufacturing: string;
@@ -198,7 +213,7 @@ export interface WarehouseIndentListResponse {
     };
   };
 }
-
+// api/WarehouseTemporaryReceipt/SelectIndents
 export type IndentRequest = {
   id: number;
   cnt: number;
@@ -224,7 +239,7 @@ export interface SelectIndentsResponse {
     };
   };
 }
-
+//api/WarehouseTemporaryReceipt/Reg
 export interface RegRequest {
   usrId: number;
   id: number;
@@ -245,7 +260,6 @@ export interface RegResponse {
 }
 
 // for api/Warehouse/WarehouseSearch?search=%D8%A7&page=1&pageSize=30&lastId=0&CustomerTypeId=-1
-
 export interface WarehouseSearchRequest {
   search: string;
   page: number;
@@ -260,11 +274,7 @@ export interface WarehouseSearchResult {
 }
 
 export interface WarehouseSearchResponse {
-  meta: {
-      errorCode: number;
-      message: string | null;
-      type: string;
-  };
+  meta: Meta;
   data: {
       result: {
           total_count: number;
@@ -273,4 +283,85 @@ export interface WarehouseSearchResponse {
           searchResults: WarehouseSearchResult[];
       };
   };
+}
+
+// /api/WarehouseTemporaryReceipt/salesPrices?id=1106779&salesPriceId=1
+type PriceItem = {
+  id: number;
+  price: number;
+};
+
+type ResultWarehouseTemporaryReceiptSalesPrices = {
+  err: number;
+  msg: string;
+  salesPrices: PriceItem[];
+};
+
+type DataWarehouseTemporaryReceiptSalesPrices = {
+  result: ResultWarehouseTemporaryReceiptSalesPrices;
+};
+
+export interface WarehouseTemporaryReceiptSalesPricesResponse {
+  meta: Meta;
+  data: DataWarehouseTemporaryReceiptSalesPrices;
+};
+
+//api/WarehouseTemporaryReceipt/purchaseReg?id=1106779&salesPriceId=1
+type ResultDetail = {
+  id: number;
+  err: number;
+  msg: string;
+  dtlErrMsgs: string[];
+};
+
+type DataWarehouseTemporaryReceiptPurchaseReg = {
+  result: ResultDetail;
+};
+
+export interface WarehouseTemporaryReceiptPurchaseRegResponse {
+  meta: Meta;
+  data: DataWarehouseTemporaryReceiptPurchaseReg;
+};
+export interface WarehouseState extends WarehouseSearchRequest {
+  formId: number;
+  productId: number;
+  iocId: number;
+  receiptPurchaseId:number;
+  warehouseShowIdResponse: WarehouseShowIdResponse;
+  warehouseTemporaryReceiptPurchaseShowResponse: WarehouseTemporaryReceiptPurchaseShowResponse;///api/WarehouseTemporaryReceipt/purchaseShow/1107390
+  warehouseIndentListResponse: WarehouseIndentListResponse;
+  productCatalog: ProductCatalog;
+  warehouseSearchResponse: WarehouseSearchResponse;
+  id: number; //for api/WarehouseTemporaryReceipt/salesPrices?id=1106779&salesPriceId=1
+  salesPriceId: number; //for api/WarehouseTemporaryReceipt/salesPrices?id=1106779&salesPriceId=1
+  idReg: number; //for api/WarehouseTemporaryReceipt/purchaseReg?id=1106779&salesPriceId=1
+  salesPriceIdReg: number; //for api/WarehouseTemporaryReceipt/purchaseReg?id=1106779&salesPriceId=1
+  warehouseTemporaryReceiptSalesPricesResponse: WarehouseTemporaryReceiptSalesPricesResponse;//for api/WarehouseTemporaryReceipt/salesPrices?id=1106779&salesPriceId=1
+  warehouseTemporaryReceiptPurchaseRegResponse: WarehouseTemporaryReceiptPurchaseRegResponse;//for api/WarehouseTemporaryReceipt/purchaseReg?id=1106779&salesPriceId=1
+  setField: (field: string, value: any) => void;
+  setWarehouseShowIdResponse: (
+    warehouseShowIdResponse: WarehouseShowIdResponse
+  ) => void;
+  setProductCatalog: (productCatalog: ProductCatalog) => void;
+  setWarehouseIndentListResponse: (
+    warehouseIndentListResponse: WarehouseIndentListResponse
+  ) => void;
+  selectIndentsResponse: SelectIndentsResponse;
+  setSelectIndentsResponse: (
+    selectIndentsResponse: SelectIndentsResponse
+  ) => void;
+  regResponse: RegResponse;
+  setRegResponse: (regResponse: RegResponse) => void;
+  setWarehouseSearchResponse: (
+    warehouseSearchResponse: WarehouseSearchResponse
+  ) => void;
+  setWarehouseTemporaryReceiptPurchaseShowResponse: ( ///api/WarehouseTemporaryReceipt/purchaseShow/1107390
+    warehouseTemporaryReceiptPurchaseShowResponse: WarehouseTemporaryReceiptPurchaseShowResponse
+  ) => void;
+  setWarehouseTemporaryReceiptSalesPricesResponse: (
+    warehouseTemporaryReceiptSalesPricesResponse: WarehouseTemporaryReceiptSalesPricesResponse
+  ) => void;
+  setWarehouseTemporaryReceiptPurchaseRegResponse: (
+    warehouseTemporaryReceiptPurchaseRegResponse: WarehouseTemporaryReceiptPurchaseRegResponse
+  ) => void;
 }

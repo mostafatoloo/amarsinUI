@@ -111,15 +111,60 @@ export const convertPersianDate = (dateStr: string): string => {
     .map((part) => part.padStart(2, "0"))
     .join("/");
 };
-
+// format number with commas
 export const formatNumberWithCommas = (num: number): string => {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
+// convert currency string to number
 export const currencyStringToNumber = (currencyStr: string): number => {
   // Remove any non-numeric characters except for the decimal point and minus sign
   const cleanedString = currencyStr.replace(/[^\d.-]/g, "");
   // Convert to number
   return parseFloat(cleanedString);
+};
+
+// Format number as Farsi currency with thousand separators
+export const formatFarsiCurrency = (value: string | number): string => {
+  // Handle empty or null values
+  if (!value && value !== 0) return "";
+  
+  // Convert to string and remove any existing formatting
+  let numStr = value.toString();
+  
+  // Convert Farsi digits to Latin first for processing
+  numStr = convertToLatinDigits(numStr);
+  
+  // Remove any non-digit characters except minus sign
+  numStr = numStr.replace(/[^\d-]/g, "");
+  
+  // Handle empty input after cleaning
+  if (!numStr) return "";
+  
+  // Handle negative numbers
+  const isNegative = numStr.startsWith("-");
+  const numberPart = isNegative ? numStr.slice(1) : numStr;
+  
+  // Add thousand separators (commas)
+  const formattedNumber = numberPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  
+  // Convert to Farsi digits
+  const farsiFormatted = convertToFarsiDigits(formattedNumber);
+  
+  return isNegative ? `-${farsiFormatted}` : farsiFormatted;
+};
+
+// Handle currency input change with real-time formatting
+export const handleCurrencyInputChange = (
+  inputValue: string,
+  setValue: (value: string) => void
+) => {
+  // Format the input value in real-time
+  const formattedValue = formatFarsiCurrency(inputValue);
+  setValue(formattedValue);
+  
+  // Return the numeric value for storage/API calls
+  const numericValue = currencyStringToNumber(convertToLatinDigits(inputValue));
+  return numericValue;
 };
 ////////////////////////////////////////////////////////////
 // Generic handler for both single and multiple AutoComplete components
