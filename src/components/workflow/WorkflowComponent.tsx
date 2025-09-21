@@ -7,6 +7,7 @@ import PaymentInvoiceShow from "../paymentInvoices/PaymentInvoiceShow";
 import OrderRegShow from "../order/OrderRegShow";
 import PayRequestShow from "../payRequest/PayRequestShow";
 import ReceiptPurchaseShow from "../warehouseTemporarilyReceiptPurchase/ReceiptPurchaseShow";
+import ProductGraceForWorkFlow from "../productGrace/ProductGraceForWorkFlow";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -58,6 +59,11 @@ export default function WorkflowComponent({
     case "WarehouseTemporaryReceipt/_WarehouseTemporaryReceiptPurchase":
       componentToRender1 = (
         <ReceiptPurchaseShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
+      );
+      break;
+    case "ProductGrace/_ProductGrace":
+      componentToRender1 = (
+        <ProductGraceForWorkFlow workFlowRowSelectResponse={workFlowRowSelectResponse} />
       );
       break;
     case "PayRequest/_PayRequest":
@@ -114,6 +120,11 @@ export default function WorkflowComponent({
     case "WarehouseTemporaryReceipt/_WarehouseTemporaryReceiptPurchase":
       componentToRender2 = (
         <ReceiptPurchaseShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
+      );
+      break;
+    case "ProductGrace/_ProductGrace":
+      componentToRender2 = (
+        <ProductGraceForWorkFlow workFlowRowSelectResponse={workFlowRowSelectResponse} />
       );
       break;
     case "PayRequest/_PayRequest":

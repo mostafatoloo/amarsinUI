@@ -356,6 +356,7 @@ import { ShowProductListRequest } from "../types/productOperation";
       isLoadingDtl: queryDtl.isLoading,
       errorDtl: queryDtl.error,
       productGraceDtl: queryDtl.data?.data.result.productGraceDtls,
+      productGraceDtlData: queryDtl.data?.data.result,
       //for productGrace/showProductList
       isLoadingAddList: addList.isPending,
       errorAddList: addList.error,

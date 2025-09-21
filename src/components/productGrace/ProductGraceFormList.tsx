@@ -114,7 +114,7 @@ const ProductGraceFormList = ({
 
   // Initialize data when addList changes
   useEffect(() => {
-    if (addList.length > 0) {
+    //if (addList.length > 0) {
       let i = 1;
       let initialData = addList.map((item) => ({
         ...item,
@@ -124,7 +124,7 @@ const ProductGraceFormList = ({
       //initialData.push({ ...newRow, index: initialData.length + 1 });
       setOriginalData(initialData);
       setData(initialData);
-    }
+    //}
   }, [addList]);
   ////////////////////////////////////////////////////////
   // Filter data based on search terms

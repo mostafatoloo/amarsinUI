@@ -58,6 +58,7 @@ type Props = {
   isNew: boolean;
   setIsNew: (isNew: boolean) => void;
   setIsEdit: (isEdit: boolean) => void;
+  fromWorkFlow: boolean; //for check if the form is from work flow
 };
 
 export const headCells = [
@@ -186,6 +187,7 @@ const ProductGraceForm = ({
   isLoadingProductGraceSave,
   selectedProductGrace,
   productGraceDtls,
+  fromWorkFlow,
   isNew,
   setIsNew,
   setIsEdit,
@@ -320,11 +322,10 @@ const ProductGraceForm = ({
     if (
       isNew === false &&
       selectedProductGrace !== null &&
-      selectedProductGrace.flwId === 0 &&
+      (selectedProductGrace.flwId === 0 || fromWorkFlow) &&
       productGraceDtls !== undefined
     ) {
       //for edit
-      console.log(productGraceDtls, "productGraceDtls");
       setAddList(
         productGraceDtls.map((item) => ({
           ...item,

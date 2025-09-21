@@ -481,6 +481,7 @@ const ReceiptPurchaseShowTable = ({
           isNew={isNewGrace} //for check if isNew new else edit
           setIsNew={setIsNewGrace}
           setIsEdit={() => false}
+          fromWorkFlow={false}
         />
       </ModalForm>
 
