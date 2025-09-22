@@ -128,7 +128,7 @@ const ReceiptPurchaseShowHeader = ({
             backgroundColor={!canEditForm1Mst2 ? "inherit" : "white"}
             showClearIcon={false}
             inputPadding="0 !important"
-            placeholder="انبار را انتخاب کنید..."
+            //placeholder="انبار را انتخاب کنید..."
           />
         </div>
       </div>

@@ -183,7 +183,7 @@ const ReceiptPurchaseShowTable = ({
         },
         {
           Header: "مجوز",
-          accessor: "perm",
+          accessor: "permImage",
           width: "5%",
           backgroundColor: colors.orang100,
         },
@@ -393,6 +393,10 @@ const ReceiptPurchaseShowTable = ({
         setIsNewPerm={setIsNewPerm}
         setIsNewGrace={setIsNewGrace}
         setIsNewPrice={setIsNewPrice}
+        permissionOffer={permissionOffer}
+        permissionPerm={permissionPerm}
+        permissionGrace={permissionGrace}
+        permissionPrice={permissionPrice}
       />
       {isLoadingWarehouseTemporaryReceiptPurchaseShow ? (
         <div className="text-center">{<Skeleton />}</div>
@@ -481,7 +485,7 @@ const ReceiptPurchaseShowTable = ({
           isNew={isNewGrace} //for check if isNew new else edit
           setIsNew={setIsNewGrace}
           setIsEdit={() => false}
-          fromWorkFlow={false}
+          fromWorkFlow={false}//for not going to editting in product grace form as default
         />
       </ModalForm>
 

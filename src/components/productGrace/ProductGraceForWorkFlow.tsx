@@ -52,7 +52,7 @@ const ProductGraceForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
           isNew={false} //for check if isNew new else edit
           setIsNew={() => false}
           setIsEdit={() => true}
-          fromWorkFlow={true}
+          fromWorkFlow={true}//for going to editting in product grace form as default
         />
       )}
     </div>

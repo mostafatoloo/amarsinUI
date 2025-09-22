@@ -28,7 +28,6 @@ const ProductGraceFormListHeader = ({
   const [emptyWidth, setEmptyWidth] = useState(0);
   const [graceWidth, setGraceWidth] = useState(0);
   useEffect(() => {
-    console.log(oldWidth, emptyWidth);
     if (
       columns[3].width &&
       columns[4].width &&

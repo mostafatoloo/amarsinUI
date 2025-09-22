@@ -7,9 +7,7 @@ import {
   DefaultOptionType,
 } from "../../types/general";
 import AutoComplete from "../controls/AutoComplete";
-import {
-  convertToFarsiDigits,
-} from "../../utilities/general";
+import { convertToFarsiDigits } from "../../utilities/general";
 import { WarehouseTemporaryReceiptPurchaseShowResponse } from "../../types/warehouse";
 import HistoryIcon from "../../assets/images/GrayThem/history_gray_16.png";
 import { useWarehouseStore } from "../../store/warehouseStore";
@@ -23,6 +21,10 @@ type Props = {
   setIsNewPerm: React.Dispatch<React.SetStateAction<boolean>>;
   setIsNewGrace: React.Dispatch<React.SetStateAction<boolean>>;
   setIsNewPrice: React.Dispatch<React.SetStateAction<boolean>>;
+  permissionOffer: boolean;
+  permissionPerm: boolean;
+  permissionGrace: boolean;
+  permissionPrice: boolean;
 };
 
 const ReceiptPurchaseShowTableHeader = ({
@@ -34,11 +36,14 @@ const ReceiptPurchaseShowTableHeader = ({
   setIsNewPerm,
   setIsNewGrace,
   setIsNewPrice,
+  permissionOffer,
+  permissionPerm,
+  permissionGrace,
+  permissionPrice,
 }: Props) => {
   const { salesPricesSearchResponse } = useProducts();
   const [salesPriceSearch, setSalesPriceSearch] = useState<string>("");
-  const { setField: setSalesPriceField } =
-    useWarehouseStore();
+  const { setField: setSalesPriceField } = useWarehouseStore();
 
   useEffect(() => {
     setSalesPriceField("salesPricesSearch", salesPriceSearch);
@@ -46,18 +51,28 @@ const ReceiptPurchaseShowTableHeader = ({
     setSalesPriceField("lastId", 0);
   }, [salesPriceSearch]);
 
-   useEffect(() => {
+  useEffect(() => {
     setSalesPrice({
       id: warehouseTemporaryReceiptPurchaseShowResponse.data.result.result.spId,
-      title: convertToFarsiDigits(warehouseTemporaryReceiptPurchaseShowResponse.data.result.result.spTitle),
+      title: convertToFarsiDigits(
+        warehouseTemporaryReceiptPurchaseShowResponse.data.result.result.spTitle
+      ),
     });
     setSalesPriceField(
       "id",
       warehouseTemporaryReceiptPurchaseShowResponse.data.result.result
         .warehouseTemporaryReceiptMst.id
     );
-    setSalesPriceField("salesPriceId", warehouseTemporaryReceiptPurchaseShowResponse.data.result.result.spId);    
-  }, [warehouseTemporaryReceiptPurchaseShowResponse.data.result.result.spId, warehouseTemporaryReceiptPurchaseShowResponse.data.result.result.warehouseTemporaryReceiptMst.id, warehouseTemporaryReceiptPurchaseShowResponse.data.result.result.spTitle]);
+    setSalesPriceField(
+      "salesPriceId",
+      warehouseTemporaryReceiptPurchaseShowResponse.data.result.result.spId
+    );
+  }, [
+    warehouseTemporaryReceiptPurchaseShowResponse.data.result.result.spId,
+    warehouseTemporaryReceiptPurchaseShowResponse.data.result.result
+      .warehouseTemporaryReceiptMst.id,
+    warehouseTemporaryReceiptPurchaseShowResponse.data.result.result.spTitle,
+  ]);
 
   //change purchase sales price
   const changeSalesPrice = (newValue: DefaultOptionType) => {
@@ -66,19 +81,19 @@ const ReceiptPurchaseShowTableHeader = ({
       warehouseTemporaryReceiptPurchaseShowResponse.data.result.result
         .warehouseTemporaryReceiptMst.id
     );
-    setSalesPriceField("salesPriceId", newValue.id);
+    setSalesPriceField("salesPriceId", newValue?.id ?? 1);
     setSalesPrice(newValue);
-    setSalesPriceSearch(newValue.title);
+    setSalesPriceSearch(newValue?.title ?? "");
   };
 
   const handleHistoryClick = (accessor: string) => {
     if (accessor === "pOffer") {
       setIsNewOffer(true);
-    } else if (accessor === "perm") {
+    } else if (accessor === "permImage") {
       setIsNewPerm(true);
     } else if (accessor === "graceDays") {
       setIsNewGrace(true);
-    } 
+    }
   };
 
   return (
@@ -146,17 +161,19 @@ const ReceiptPurchaseShowTableHeader = ({
                           desktopfontsize="12px"
                           placeholder="قیمت ..."
                         />
-                        <img
-                          src={HistoryIcon}
-                          onClick={() => setIsNewPrice(true)}
-                          className="cursor-pointer"
-                          alt="HistoryIcon"
-                        />
+                        {permissionPrice && (
+                          <img
+                            src={HistoryIcon}
+                            onClick={() => setIsNewPrice(true)}
+                            className="cursor-pointer"
+                            alt="HistoryIcon"
+                          />
+                        )}
                       </div>
                     );
                   else if (
                     column.accessor === "pOffer" ||
-                    column.accessor === "perm" ||
+                    column.accessor === "permImage" ||
                     column.accessor === "graceDays"
                   )
                     return (
@@ -172,12 +189,17 @@ const ReceiptPurchaseShowTableHeader = ({
                         }}
                       >
                         <p className="py-1">{column.Header}</p>
-                        <img
-                          src={HistoryIcon}
-                          onClick={() => handleHistoryClick(column.accessor)}
-                          className="cursor-pointer"
-                          alt="HistoryIcon"
-                        />
+                        {((column.accessor === "pOffer" && permissionOffer) ||
+                          (column.accessor === "permImage" && permissionPerm) ||
+                          (column.accessor === "graceDays" &&
+                            permissionGrace)) && (
+                          <img
+                            src={HistoryIcon}
+                            onClick={() => handleHistoryClick(column.accessor)}
+                            className="cursor-pointer"
+                            alt="HistoryIcon"
+                          />
+                        )}
                       </div>
                     );
                   return (

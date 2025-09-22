@@ -597,7 +597,7 @@ const ProductGrace = () => {
           isNew={isNew} //for check if isNew new else edit
           setIsNew={setIsNew}
           setIsEdit={setIsEdit}
-          fromWorkFlow={false}
+          fromWorkFlow={false}//for not going to editting in product grace form as default
         />
       </ModalForm>
       <ModalMessage
