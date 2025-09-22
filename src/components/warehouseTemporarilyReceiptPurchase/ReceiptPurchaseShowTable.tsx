@@ -305,7 +305,7 @@ const ReceiptPurchaseShowTable = ({
           tax: "%" + convertToFarsiDigits(item.tax),
           perm: item.perm,
           permImage: item.perm ? <Check sx={{ color: "green" }} /> : null,
-          graceDays: convertToFarsiDigits(item.graceDays),
+          graceDays: item.graceDays>0 ? convertToFarsiDigits(item.graceDays) : null,
           regCnt: convertToFarsiDigits(item.regCnt),
           regOffer: convertToFarsiDigits(item.regOffer),
           tCost: convertToFarsiDigits(formatNumberWithCommas(item.tCost)),
