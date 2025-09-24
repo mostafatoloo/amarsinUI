@@ -110,8 +110,18 @@ const ProductPrice = () => {
         width: "5%",
       },
       {
+        Header: "نسبت",
+        accessor: "p1p2Ratio",
+        width: "5%",
+      },
+      {
         Header: "داروخانه",
         accessor: "p2",
+        width: "5%",
+      },
+      {
+        Header: "نسبت",
+        accessor: "p2p3Ratio",
         width: "5%",
       },
       {
@@ -321,7 +331,9 @@ const ProductPrice = () => {
           lastBuyPrice: convertToFarsiDigits(item.lastBuyPrice),
           tax: convertToFarsiDigits(item.tax),
           p1: convertToFarsiDigits(formatNumberWithCommas(item.p1)),
+          p1p2Ratio:item.p2!==0 ? convertToFarsiDigits((item.p1/item.p2).toFixed(2)) : null,
           p2: convertToFarsiDigits(formatNumberWithCommas(item.p2)),
+          p2p3Ratio:item.p3!==0 ? convertToFarsiDigits((item.p2/item.p3).toFixed(2)) : null,
           p3: convertToFarsiDigits(formatNumberWithCommas(item.p3)),
           p4: convertToFarsiDigits(formatNumberWithCommas(item.p4)),
           p5: convertToFarsiDigits(formatNumberWithCommas(item.p5)),

@@ -42,6 +42,7 @@ const ProductOfferFormParams = ({
   const { brands } = useBrand();
   const { definitionDateTime } = useDefinitionInvironment();
   useEffect(() => {
+    console.log(selectedProductOffer, "selectedProductOffer in ProductOfferFormParams");
     setDat(
       isNew
         ? convertToFarsiDigits(
@@ -54,11 +55,11 @@ const ProductOfferFormParams = ({
         ? convertToFarsiDigits(definitionDateTime.time)
         : convertToFarsiDigits(selectedProductOffer?.tim)
     );
-  }, [definitionDateTime]);
+  }, [definitionDateTime,selectedProductOffer]);
 
   useEffect(() => {
     setDsc(isNew ? "" : selectedProductOffer?.dsc ?? "");
-  }, []);
+  }, [selectedProductOffer]);
 
   return (
     <form className="flex flex-col gap-2 w-full">

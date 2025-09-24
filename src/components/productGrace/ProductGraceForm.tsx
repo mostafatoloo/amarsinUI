@@ -402,7 +402,6 @@ const ProductGraceForm = ({
     productId: number = 0
   ) => {
     const res = await handleSubmit(e, productId);
-    console.log(res?.data.result, "res");
     if (res && res.data.result) {
       // Map through the new products
       res.data.result.productGraceProducts.forEach(
