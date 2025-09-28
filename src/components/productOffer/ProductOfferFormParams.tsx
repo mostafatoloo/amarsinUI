@@ -24,6 +24,7 @@ type Props = {
   setDat: React.Dispatch<React.SetStateAction<string>>;
   setTim: React.Dispatch<React.SetStateAction<string>>;
   setDsc: React.Dispatch<React.SetStateAction<string>>;
+  canEditForm1: boolean;
 };
 
 const ProductOfferFormParams = ({
@@ -38,11 +39,11 @@ const ProductOfferFormParams = ({
   setDat,
   setTim,
   setDsc,
+  canEditForm1,
 }: Props) => {
   const { brands } = useBrand();
   const { definitionDateTime } = useDefinitionInvironment();
   useEffect(() => {
-    console.log(selectedProductOffer, "selectedProductOffer in ProductOfferFormParams");
     setDat(
       isNew
         ? convertToFarsiDigits(
@@ -55,7 +56,7 @@ const ProductOfferFormParams = ({
         ? convertToFarsiDigits(definitionDateTime.time)
         : convertToFarsiDigits(selectedProductOffer?.tim)
     );
-  }, [definitionDateTime,selectedProductOffer]);
+  }, [definitionDateTime, selectedProductOffer]);
 
   useEffect(() => {
     setDsc(isNew ? "" : selectedProductOffer?.dsc ?? "");
@@ -101,34 +102,38 @@ const ProductOfferFormParams = ({
           widthInput="w-full-minus-24"
         />
       </div>
-      <div className="flex gap-2 items-center">
-        <label className="text-lg font-bold">شرایط</label>
-        <hr className="w-full border-2 border-gray-300" />
-      </div>
-      <div className="w-full flex items-center">
-        <label className="p-1 w-24 text-left">برند:</label>
-        <div className="bg-slate-50 flex w-full">
-          <AutoComplete
-            options={brands.map((b) => ({
-              id: b.id,
-              title: b.text,
-            }))}
-            value={brand}
-            handleChange={(_event, newValue) => {
-              return setBrand(newValue as DefaultOptionTypeStringId[]);
-            }}
-            multiple={true}
-            setSearch={setBrandSearch}
-            showLabel={false}
-            outlinedInputPadding="10px"
-            placeholder={
-              Array.isArray(brand) && brand.length > 0
-                ? undefined
-                : "برند را انتخاب کنید..."
-            }
-          />
+      {canEditForm1 && (
+        <>
+        <div className="flex gap-2 items-center">
+          <label className="text-lg font-bold">شرایط</label>
+          <hr className="w-full border-2 border-gray-300" />
         </div>
-      </div>
+        <div className="w-full flex items-center">
+          <label className="p-1 w-24 text-left">برند:</label>
+          <div className="bg-slate-50 flex w-full">
+            <AutoComplete
+              options={brands.map((b) => ({
+                id: b.id,
+                title: b.text,
+              }))}
+              value={brand}
+              handleChange={(_event, newValue) => {
+                return setBrand(newValue as DefaultOptionTypeStringId[]);
+              }}
+              multiple={true}
+              setSearch={setBrandSearch}
+              showLabel={false}
+              outlinedInputPadding="10px"
+              placeholder={
+                Array.isArray(brand) && brand.length > 0
+                  ? undefined
+                  : "برند را انتخاب کنید..."
+              }
+            />
+          </div>
+        </div>
+      </>
+      )}
     </form>
   );
 };

@@ -6,7 +6,13 @@ import { DefaultOptionType, TableColumns } from "../../types/general";
 import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
 import { red } from "@mui/material/colors";
 import ModalMessage from "../layout/ModalMessage";
-import { ProductGraceDtlHistory, ProductGraceListItem, ProductGraceListItemTable, ProductGraceListItemTable2, ProductGraceListResponse } from "../../types/productGrace";
+import {
+  ProductGraceDtlHistory,
+  ProductGraceListItem,
+  ProductGraceListItemTable,
+  ProductGraceListItemTable2,
+  ProductGraceListResponse,
+} from "../../types/productGrace";
 import { useProductGraceStore } from "../../store/productGraceStore";
 import ProductGraceFormListHistory from "./ProductGraceFormListHistory";
 import ProductGraceFormListHeader from "./ProductGraceFormListHeader";
@@ -37,9 +43,11 @@ type Props = {
   setIsModalRegOpen: Dispatch<SetStateAction<boolean>>;
   isModalEmptyOpen: boolean;
   setIsModalEmptyOpen: Dispatch<SetStateAction<boolean>>;
+  canEditForm1: boolean;
 };
 
 const ProductGraceFormList = ({
+  canEditForm1,
   setIsNew,
   setIsEdit,
   addList,
@@ -115,15 +123,15 @@ const ProductGraceFormList = ({
   // Initialize data when addList changes
   useEffect(() => {
     //if (addList.length > 0) {
-      let i = 1;
-      let initialData = addList.map((item) => ({
-        ...item,
-        index: i++,
-        isDeleted: false,
-      }));
-      //initialData.push({ ...newRow, index: initialData.length + 1 });
-      setOriginalData(initialData);
-      setData(initialData);
+    let i = 1;
+    let initialData = addList.map((item) => ({
+      ...item,
+      index: i++,
+      isDeleted: false,
+    }));
+    //initialData.push({ ...newRow, index: initialData.length + 1 });
+    setOriginalData(initialData);
+    setData(initialData);
     //}
   }, [addList]);
   ////////////////////////////////////////////////////////
@@ -201,7 +209,7 @@ const ProductGraceFormList = ({
     const response = await handleSubmit(undefined, productId);
     let productGraceProducts: ProductGraceListItem[] | undefined =
       response?.data.result.productGraceProducts;
-      console.log(productGraceProducts,"productGraceProducts")
+    console.log(productGraceProducts, "productGraceProducts");
     setOriginalData((old) =>
       old.map((row, index) => {
         if (index === rowIndex && productGraceProducts) {
@@ -212,10 +220,14 @@ const ProductGraceFormList = ({
             product: productGraceProducts[0].product,
             pId: productGraceProducts[0].pId,
             lastDate: productGraceProducts[0].lastDate,
-            gd: productGraceProducts[0].gdo > 0 ? productGraceProducts[0].gdo : 0,
-            sc: productGraceProducts[0].sco > 0 ? productGraceProducts[0].sco : 0,
-            cc: productGraceProducts[0].cco > 0 ? productGraceProducts[0].cco : 0,
-            ec: productGraceProducts[0].eco > 0 ? productGraceProducts[0].eco : 0,
+            gd:
+              productGraceProducts[0].gdo > 0 ? productGraceProducts[0].gdo : 0,
+            sc:
+              productGraceProducts[0].sco > 0 ? productGraceProducts[0].sco : 0,
+            cc:
+              productGraceProducts[0].cco > 0 ? productGraceProducts[0].cco : 0,
+            ec:
+              productGraceProducts[0].eco > 0 ? productGraceProducts[0].eco : 0,
             gdo: 0,
             sco: 0,
             cco: 0,
@@ -291,7 +303,7 @@ const ProductGraceFormList = ({
           />
 
           <TTable
-            canEditForm={true}
+            canEditForm={canEditForm1}
             columns={columns}
             data={data}
             updateMyData={updateMyData}
@@ -306,17 +318,19 @@ const ProductGraceFormList = ({
             setSelectedRowIndex={setSelectedRowIndex}
           />
         </div>
-        <ConfirmCard variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end ">
-          <Button
-            text={isLoadingProductOfferSave ? "در حال ثبت اطلاعات..." : "ثبت"}
-            backgroundColor="bg-green-500"
-            color="text-white"
-            backgroundColorHover="bg-green-600"
-            colorHover="text-white"
-            variant="shadow-lg w-64"
-            onClick={handleSubmitSave}
-          />
-        </ConfirmCard>
+        {canEditForm1 && (
+          <ConfirmCard variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end ">
+            <Button
+              text={isLoadingProductOfferSave ? "در حال ثبت اطلاعات..." : "ثبت"}
+              backgroundColor="bg-green-500"
+              color="text-white"
+              backgroundColorHover="bg-green-600"
+              colorHover="text-white"
+              variant="shadow-lg w-64"
+              onClick={handleSubmitSave}
+            />
+          </ConfirmCard>
+        )}
       </div>
       <ProductGraceFormListHistory
         showHistory={showHistory}
@@ -333,7 +347,7 @@ const ProductGraceFormList = ({
         color="text-white"
         message={"اقلام مشخص نشده!"}
         visibleButton={false}
-      />      
+      />
       <ModalMessage
         isOpen={isModalRegOpen}
         onClose={() => setIsModalRegOpen(false)}

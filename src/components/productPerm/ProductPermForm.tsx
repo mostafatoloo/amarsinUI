@@ -56,6 +56,8 @@ type Props = {
   isNew: boolean;
   setIsNew: (isNew: boolean) => void;
   setIsEdit: (isEdit: boolean) => void;
+  fromWorkFlow: boolean;
+  canEditForm1: boolean;
 };
 
 export const headCells = [
@@ -89,7 +91,7 @@ export const headCells = [
     Header: "نیاز به مجوز",
     accessor: "npo",
     width: "5%",
-    Cell: ({ value }: any) => value 
+    Cell: ({ value }: any) => value,
   },
   {
     Header: "نیاز به مجوز",
@@ -144,6 +146,8 @@ const ProductPermForm = ({
   isNew,
   setIsNew,
   setIsEdit,
+  fromWorkFlow,
+  canEditForm1,
 }: Props) => {
   const [addList, setAddList] = useState<ProductPermListItemTable[]>([]);
   const [search, setSearch] = useState<string>("");
@@ -184,12 +188,14 @@ const ProductPermForm = ({
             ? ({ row }: any) => {
                 return (
                   <div className="flex w-full">
-                    <img
-                      src={row.original.isDeleted ? RestoreIcon : TrashIcon}
-                      onClick={() => updateToDeleted(row)}
-                      className="cursor-pointer"
-                      alt="TrashIcon"
-                    />
+                    {canEditForm1 && (
+                      <img
+                        src={row.original.isDeleted ? RestoreIcon : TrashIcon}
+                        onClick={() => updateToDeleted(row)}
+                        className="cursor-pointer"
+                        alt="TrashIcon"
+                      />
+                    )}
                     <img
                       src={HistoryIcon}
                       onClick={() => handleShowHistory(row)}
@@ -269,7 +275,7 @@ const ProductPermForm = ({
     if (
       isNew === false &&
       selectedProductPerm !== null &&
-      selectedProductPerm.flwId === 0 &&
+      (selectedProductPerm.flwId === 0 || fromWorkFlow) &&
       productPermDtls !== undefined
     ) {
       //for edit
@@ -448,20 +454,23 @@ const ProductPermForm = ({
         brand={brand}
         setBrand={setBrand}
         setBrandSearch={setBrandSearch}
+        canEditForm1={canEditForm1}
       />
       <ConfirmCard
         variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end"
-        backgroundColor="bg-white"
+        backgroundColor="transparent"
       >
-        <Button
-          text="ایجاد لیست"
-          backgroundColor="bg-white"
-          color="text-blue-500"
-          backgroundColorHover="bg-blue-500"
-          colorHover="text-white"
-          variant="shadow-lg"
-          onClick={handleSubmitAndAddToTable}
-        />
+        {canEditForm1 && (
+          <Button
+            text="ایجاد لیست"
+            backgroundColor="bg-white"
+            color="text-blue-500"
+            backgroundColorHover="bg-blue-500"
+            colorHover="text-white"
+            variant="shadow-lg"
+            onClick={handleSubmitAndAddToTable}
+          />
+        )}
         <Button
           text="اکسل"
           backgroundColor="bg-white"
@@ -493,6 +502,7 @@ const ProductPermForm = ({
       </div>
 
       <ProductPermFormList
+        canEditForm1={canEditForm1}
         setIsNew={setIsNew}
         setIsEdit={setIsEdit}
         columns={columns}

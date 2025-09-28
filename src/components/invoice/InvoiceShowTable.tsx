@@ -5,13 +5,17 @@ import React from "react";
 import TTable from "../controls/TTable";
 import { convertToFarsiDigits, formatNumberWithCommas } from "../../utilities/general";
 
-const InvoiceShowTable = () => {
+type Props = {
+  caption: string;
+};
+
+const InvoiceShowTable = ({ caption }: Props) => {
   const { isLoading, invoiceShowIdResponse } = useInvoice();
 
   const columns = React.useMemo(
     () => [
       {
-        Header: "اقلام",
+        Header: caption,
         width: "100%",
         columns: [
           {

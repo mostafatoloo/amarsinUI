@@ -58,6 +58,8 @@ type Props = {
   isNew: boolean;
   setIsNew: (isNew: boolean) => void;
   setIsEdit: (isEdit: boolean) => void;
+  fromWorkFlow: boolean;
+  canEditForm1: boolean;
 };
 
 export const headCells = [
@@ -200,6 +202,7 @@ export const headCells = [
 ];
 
 const ProductPriceForm = ({
+  canEditForm1,
   addProductList,
   productPriceDtlHistory,
   isLoadingDtlHistory,
@@ -210,6 +213,7 @@ const ProductPriceForm = ({
   isNew,
   setIsNew,
   setIsEdit,
+  fromWorkFlow,
 }: Props) => {
   const [addList, setAddList] = useState<ProductPriceListItemTable[]>([]);
   const [search, setSearch] = useState<string>("");
@@ -252,12 +256,14 @@ const ProductPriceForm = ({
             ? ({ row }: any) => {
                 return (
                   <div className="flex w-full">
-                    <img
-                      src={row.original.isDeleted ? RestoreIcon : TrashIcon}
-                      onClick={() => updateToDeleted(row)}
-                      className="cursor-pointer"
-                      alt="TrashIcon"
-                    />
+                    {canEditForm1 && (
+                      <img
+                        src={row.original.isDeleted ? RestoreIcon : TrashIcon}
+                        onClick={() => updateToDeleted(row)}
+                        className="cursor-pointer"
+                        alt="TrashIcon"
+                      />
+                    )}
                     <img
                       src={HistoryIcon}
                       onClick={() => handleShowHistory(row)}
@@ -341,7 +347,7 @@ const ProductPriceForm = ({
     if (
       isNew === false &&
       selectedProductPrice !== null &&
-      selectedProductPrice.flwId === 0 &&
+      (selectedProductPrice.flwId === 0 || fromWorkFlow) &&
       productPriceDtls !== undefined
     ) {
       //for edit
@@ -505,7 +511,7 @@ const ProductPriceForm = ({
           item.p5O !== 0
         ) {
           return dtl;
-        }else{
+        } else {
           return undefined;
         }
       })
@@ -556,20 +562,23 @@ const ProductPriceForm = ({
         brand={brand}
         setBrand={setBrand}
         setBrandSearch={setBrandSearch}
+        canEditForm1={canEditForm1}
       />
       <ConfirmCard
         variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end"
-        backgroundColor="bg-white"
+        backgroundColor="transparent"
       >
-        <Button
-          text="ایجاد لیست"
-          backgroundColor="bg-white"
-          color="text-blue-500"
-          backgroundColorHover="bg-blue-500"
-          colorHover="text-white"
-          variant="shadow-lg"
-          onClick={handleSubmitAndAddToTable}
-        />
+        {canEditForm1 && (
+          <Button
+            text="ایجاد لیست"
+            backgroundColor="bg-white"
+            color="text-blue-500"
+            backgroundColorHover="bg-blue-500"
+            colorHover="text-white"
+            variant="shadow-lg"
+            onClick={handleSubmitAndAddToTable}
+          />
+        )}
         <Button
           text="اکسل"
           backgroundColor="bg-white"
@@ -601,6 +610,7 @@ const ProductPriceForm = ({
       </div>
 
       <ProductPriceFormList
+        canEditForm1={canEditForm1}
         setIsNew={setIsNew}
         setIsEdit={setIsEdit}
         columns={columns}

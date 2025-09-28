@@ -367,6 +367,7 @@ export function useProductOffer() {
     isLoadingDtl: queryDtl.isLoading,
     errorDtl: queryDtl.error,
     productOfferDtl: queryDtl.data?.data.result.productOfferDtls,
+    productOfferDtlData: queryDtl.data?.data.result,
     //for productOffer/showProductList
     isLoadingAddList: addList.isPending,
     errorAddList: addList.error,

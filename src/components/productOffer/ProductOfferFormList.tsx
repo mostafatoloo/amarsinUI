@@ -18,7 +18,7 @@ import ModalMessage from "../layout/ModalMessage";
 import { useProductOfferStore } from "../../store/productOfferStore";
 
 type Props = {
-  setIsNew:(isNew: boolean) => void
+  setIsNew: (isNew: boolean) => void;
   setIsEdit: (isEdit: boolean) => void;
   addList: ProductOfferProductTable[];
   showDeleted: boolean;
@@ -41,9 +41,11 @@ type Props = {
   setShowHistory: Dispatch<SetStateAction<boolean>>;
   isModalRegOpen: boolean;
   setIsModalRegOpen: Dispatch<SetStateAction<boolean>>;
+  canEditForm1: boolean;
 };
 
 const ProductOfferFormList = ({
+  canEditForm1,
   setIsNew,
   setIsEdit,
   addList,
@@ -303,7 +305,7 @@ const ProductOfferFormList = ({
           />
 
           <TTable
-            canEditForm={true}
+            canEditForm={canEditForm1}
             columns={columns}
             selectedRowIndex={selectedRowIndex}
             setSelectedRowIndex={setSelectedRowIndex}
@@ -318,17 +320,19 @@ const ProductOfferFormList = ({
             showToolTip={true}
           />
         </div>
-        <ConfirmCard variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end ">
-          <Button
-            text={isLoadingProductOfferSave ? "در حال ثبت اطلاعات..." : "ثبت"}
-            backgroundColor="bg-green-500"
-            color="text-white"
-            backgroundColorHover="bg-green-600"
-            colorHover="text-white"
-            variant="shadow-lg w-64"
-            onClick={handleSubmitSave}
-          />
-        </ConfirmCard>
+        {canEditForm1 && (
+          <ConfirmCard variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end ">
+            <Button
+              text={isLoadingProductOfferSave ? "در حال ثبت اطلاعات..." : "ثبت"}
+              backgroundColor="bg-green-500"
+              color="text-white"
+              backgroundColorHover="bg-green-600"
+              colorHover="text-white"
+              variant="shadow-lg w-64"
+              onClick={handleSubmitSave}
+            />
+          </ConfirmCard>
+        )}
       </div>
       <ProductOfferFormListHistory
         showHistory={showHistory}

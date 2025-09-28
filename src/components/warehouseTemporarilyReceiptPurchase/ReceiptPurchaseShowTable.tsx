@@ -305,7 +305,8 @@ const ReceiptPurchaseShowTable = ({
           tax: "%" + convertToFarsiDigits(item.tax),
           perm: item.perm,
           permImage: item.perm ? <Check sx={{ color: "green" }} /> : null,
-          graceDays: item.graceDays>0 ? convertToFarsiDigits(item.graceDays) : null,
+          graceDays:
+            item.graceDays > 0 ? convertToFarsiDigits(item.graceDays) : null,
           regCnt: convertToFarsiDigits(item.regCnt),
           regOffer: convertToFarsiDigits(item.regOffer),
           tCost: convertToFarsiDigits(formatNumberWithCommas(item.tCost)),
@@ -442,6 +443,8 @@ const ReceiptPurchaseShowTable = ({
           isNew={isNewOffer} //for check if isNew new else edit
           setIsNew={setIsNewOffer}
           setIsEdit={() => false}
+          fromWorkFlow={false}
+          canEditForm1={true}
         />
       </ModalForm>
       <ModalForm
@@ -463,6 +466,8 @@ const ReceiptPurchaseShowTable = ({
           isNew={isNewPerm} //for check if isNew new else edit
           setIsNew={setIsNewPerm}
           setIsEdit={() => false}
+          fromWorkFlow={false} //for not going to editting in product perm form as default
+          canEditForm1={true}
         />
       </ModalForm>
 
@@ -485,7 +490,8 @@ const ReceiptPurchaseShowTable = ({
           isNew={isNewGrace} //for check if isNew new else edit
           setIsNew={setIsNewGrace}
           setIsEdit={() => false}
-          fromWorkFlow={false}//for not going to editting in product grace form as default
+          fromWorkFlow={false} //for not going to editting in product grace form as default
+          canEditForm1={true}
         />
       </ModalForm>
 
@@ -508,6 +514,8 @@ const ReceiptPurchaseShowTable = ({
           isNew={isNewPrice} //for check if isNew new else edit
           setIsNew={setIsNewPrice}
           setIsEdit={() => false}
+          fromWorkFlow={false}
+          canEditForm1={true}
         />
       </ModalForm>
       <ModalMessage

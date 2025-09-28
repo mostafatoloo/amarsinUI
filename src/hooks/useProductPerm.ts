@@ -358,6 +358,7 @@ export function useProductPerm() {
     isLoadingDtl: queryDtl.isLoading,
     errorDtl: queryDtl.error,
     productPermDtl: queryDtl.data?.data.result.productPermDtls,
+    productPermDtlData: queryDtl.data?.data.result,
     //for productPerm/productList
     isLoadingAddList: addList.isPending,
     errorAddList: addList.error,

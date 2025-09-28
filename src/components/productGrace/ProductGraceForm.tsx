@@ -59,6 +59,7 @@ type Props = {
   setIsNew: (isNew: boolean) => void;
   setIsEdit: (isEdit: boolean) => void;
   fromWorkFlow: boolean; //for check if the form is from work flow
+  canEditForm1: boolean;
 };
 
 export const headCells = [
@@ -191,6 +192,7 @@ const ProductGraceForm = ({
   isNew,
   setIsNew,
   setIsEdit,
+  canEditForm1,
 }: Props) => {
   const [addList, setAddList] = useState<ProductGraceListItemTable[]>([]);
   const [search, setSearch] = useState<string>("");
@@ -232,12 +234,14 @@ const ProductGraceForm = ({
             ? ({ row }: any) => {
                 return (
                   <div className="flex w-full">
-                    <img
-                      src={row.original.isDeleted ? RestoreIcon : TrashIcon}
-                      onClick={() => updateToDeleted(row)}
-                      className="cursor-pointer"
-                      alt="TrashIcon"
-                    />
+                    {canEditForm1 && (
+                      <img
+                        src={row.original.isDeleted ? RestoreIcon : TrashIcon}
+                        onClick={() => updateToDeleted(row)}
+                        className="cursor-pointer"
+                        alt="TrashIcon"
+                      />
+                    )}
                     <img
                       src={HistoryIcon}
                       onClick={() => handleShowHistory(row)}
@@ -452,7 +456,7 @@ const ProductGraceForm = ({
   ////////////////////////////////////////////////////////
   const handleSubmitSave = async (
     e?: React.MouseEvent<HTMLButtonElement>
-  ):  Promise<string | undefined> => {
+  ): Promise<string | undefined> => {
     if (e) e.preventDefault();
     let request: ProductGraceSaveRequest;
     const dtls = originalData
@@ -519,20 +523,23 @@ const ProductGraceForm = ({
         brand={brand}
         setBrand={setBrand}
         setBrandSearch={setBrandSearch}
+        canEditForm1={canEditForm1}
       />
       <ConfirmCard
         variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end"
-        backgroundColor="bg-white"
+        backgroundColor="transparent"
       >
-        <Button
-          text="ایجاد لیست"
-          backgroundColor="bg-white"
-          color="text-blue-500"
-          backgroundColorHover="bg-blue-500"
-          colorHover="text-white"
-          variant="shadow-lg"
-          onClick={handleSubmitAndAddToTable}
-        />
+        {canEditForm1 && (
+          <Button
+            text="ایجاد لیست"
+            backgroundColor="bg-white"
+            color="text-blue-500"
+            backgroundColorHover="bg-blue-500"
+            colorHover="text-white"
+            variant="shadow-lg"
+            onClick={handleSubmitAndAddToTable}
+          />
+        )}
         <Button
           text="اکسل"
           backgroundColor="bg-white"
@@ -564,6 +571,7 @@ const ProductGraceForm = ({
       </div>
 
       <ProductGraceFormList
+        canEditForm1={canEditForm1}
         setIsNew={setIsNew}
         setIsEdit={setIsEdit}
         columns={columns}

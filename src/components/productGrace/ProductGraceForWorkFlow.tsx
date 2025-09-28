@@ -36,25 +36,27 @@ const ProductGraceForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
           (item) => item.id === workFlowRowSelectResponse.workTableRow.formId
         ) || null
       );
-  }, [workFlowRowSelectResponse.workTableRow.formId,productGraceDtlData?.productGraces]);
+  }, [
+    workFlowRowSelectResponse.workTableRow.formId,
+    productGraceDtlData?.productGraces,
+  ]);
 
   return (
     <div className="w-full h-full py-2">
-      {workFlowRowSelectResponse.workTableForms.canEditForm1 && (
-        <ProductGraceForm
-          addProductList={addProductList}
-          productGraceDtlHistory={productGraceDtlHistory || []}
-          isLoadingDtlHistory={isLoadingDtlHistory}
-          productGraceSave={productGraceSave}
-          isLoadingProductGraceSave={isLoadingProductGraceSave}
-          selectedProductGrace={selectedProductGrace} //for check if selectedProductGrace.flwId===0 new else edit && sending selectedProductGrace.id in edit
-          productGraceDtls={productGraceDtl}
-          isNew={false} //for check if isNew new else edit
-          setIsNew={() => false}
-          setIsEdit={() => true}
-          fromWorkFlow={true}//for going to editting in product grace form as default
-        />
-      )}
+      <ProductGraceForm
+        canEditForm1={workFlowRowSelectResponse.workTableForms.canEditForm1}
+        addProductList={addProductList}
+        productGraceDtlHistory={productGraceDtlHistory || []}
+        isLoadingDtlHistory={isLoadingDtlHistory}
+        productGraceSave={productGraceSave}
+        isLoadingProductGraceSave={isLoadingProductGraceSave}
+        selectedProductGrace={selectedProductGrace} //for check if selectedProductGrace.flwId===0 new else edit && sending selectedProductGrace.id in edit
+        productGraceDtls={productGraceDtl}
+        isNew={false} //for check if isNew new else edit
+        setIsNew={() => false}
+        setIsEdit={() => true}
+        fromWorkFlow={true} //for going to editting in product grace form as default
+      />
     </div>
   );
 };

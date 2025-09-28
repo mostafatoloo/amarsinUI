@@ -610,6 +610,8 @@ const ProductPrice = () => {
           isNew={isNew} //for check if isNew new else edit
           setIsNew={setIsNew}
           setIsEdit={setIsEdit}
+          fromWorkFlow={false}
+          canEditForm1={true}
         />
       </ModalForm>
       <ModalMessage

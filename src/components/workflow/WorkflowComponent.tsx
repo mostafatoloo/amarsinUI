@@ -8,6 +8,9 @@ import OrderRegShow from "../order/OrderRegShow";
 import PayRequestShow from "../payRequest/PayRequestShow";
 import ReceiptPurchaseShow from "../warehouseTemporarilyReceiptPurchase/ReceiptPurchaseShow";
 import ProductGraceForWorkFlow from "../productGrace/ProductGraceForWorkFlow";
+import ProductOfferForWorkFlow from "../productOffer/ProductOfferForWorkFlow";
+import ProductPriceForWorkFlow from "../productPrice/ProductPriceForWorkFlow";
+import ProductPermForWorkFlow from "../productPerm/ProductPermForWorkFlow";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -21,52 +24,92 @@ export default function WorkflowComponent({
 
   switch (workFlowRowSelectResponse.workTableForms.form1ViewPath) {
     case "Invoice/_Show":
+    case "InvoiceBuy/_InvoiceBuy":
+    case "Procurement/_Procurement":
       componentToRender1 = (
-        <InvoiceShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
+        <InvoiceShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          caption={"اقلام"}
+        />
       );
       break;
-    case "WarehouseTemporaryReceipt/_WarehouseTemporaryReceiptIndent":
+    case "InvoiceReturn/_InvoiceReturn":
+      componentToRender1 = (
+        <InvoiceShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          caption={"اقلام مرجوعی"}
+        />
+      );
+      break;
+    case "WarehouseTemporaryReceipt/_WarehouseTemporaryReceiptIndent": //کارشناس خرید => ثبت اولیه رسید موقت
       componentToRender1 = (
         <WarehouseShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
       );
       break;
-    case "Indent/_CreateIndent":
+    case "Indent/_CreateIndent": //کارشناس خرید => دریافت پیش فاکتور
       componentToRender1 = (
         <InvoiceReceiptShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
         />
       );
       break;
-    case "Payment/_Cheque":
+    case "Payment/_Cheque": //کمک حسابداری
       componentToRender1 = (
         <RegRecievedCheque
           workFlowRowSelectResponse={workFlowRowSelectResponse}
         />
       );
       break;
-    case "Payment/_PaymentInvoices":
+    case "Payment/_PaymentInvoices": //کارشناس بازرگانی=>تایید اطلاعات چک دریافتی
       componentToRender1 = (
         <PaymentInvoiceShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
         />
       );
       break;
-    case "Order/_Order":
+    case "Order/_Order": //کارشناس بازرگانی -> ثبت اولیه - سفارش
       componentToRender1 = (
         <OrderRegShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
       );
       break;
-    case "WarehouseTemporaryReceipt/_WarehouseTemporaryReceiptPurchase":
+    case "WarehouseTemporaryReceipt/_WarehouseTemporaryReceiptPurchase": ////کارشناس خرید -> تایید فاکتور خرید
       componentToRender1 = (
-        <ReceiptPurchaseShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
+        <ReceiptPurchaseShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+        />
       );
       break;
-    case "ProductGrace/_ProductGrace":
+    case "ProductGrace/_ProductGrace": // ثبت فرجه
       componentToRender1 = (
-        <ProductGraceForWorkFlow workFlowRowSelectResponse={workFlowRowSelectResponse} />
+        <ProductGraceForWorkFlow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+        />
       );
       break;
-    case "PayRequest/_PayRequest":
+    case "ProductOffer/_ProductOfferEdit": //ثیت آفر
+    case "ProductOffer/_ProductOffer":
+      componentToRender1 = (
+        <ProductOfferForWorkFlow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+        />
+      );
+      break;
+    case "ProductPrice/_ProductPrice": //ثبت لیست قیمت
+      componentToRender1 = (
+        //<p>ProductPrice</p>
+        <ProductPriceForWorkFlow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+        />
+      );
+      break;
+    case "ProductPerm/_ProductPerm": //ثبت لیست نیاز به مجوز
+      componentToRender1 = (
+        <ProductPermForWorkFlow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+        />
+      );
+      break;
+    case "PayRequest/_PayRequest": //کارشناس خرید -> ثبت اولیه
       componentToRender1 = (
         <PayRequestShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
@@ -82,53 +125,92 @@ export default function WorkflowComponent({
   }
   switch (workFlowRowSelectResponse.workTableForms.form2ViewPath) {
     case "Invoice/_Show":
+    case "InvoiceBuy/_InvoiceBuy":
+    case "Procurement/_Procurement":
       componentToRender2 = (
-        <InvoiceShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
+        <InvoiceShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          caption={"اقلام"}
+        />
       );
       break;
-    case "WarehouseTemporaryReceipt/_WarehouseTemporaryReceiptIndent":
+    case "InvoiceReturn/_InvoiceReturn":
+      componentToRender2 = (
+        <InvoiceShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          caption={"اقلام مرجوعی"}
+        />
+      );
+      break;
+    case "WarehouseTemporaryReceipt/_WarehouseTemporaryReceiptIndent": //کارشناس خرید => ثبت اولیه رسید موقت
       componentToRender2 = (
         <WarehouseShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
       );
       break;
-    case "Indent/_CreateIndent":
+    case "Indent/_CreateIndent": //کارشناس خرید => دریافت پیش فاکتور
       componentToRender2 = (
         <InvoiceReceiptShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
         />
       );
       break;
-    case "Payment/_Cheque":
+    case "Payment/_Cheque": //کمک حسابداری
       componentToRender2 = (
         <RegRecievedCheque
           workFlowRowSelectResponse={workFlowRowSelectResponse}
         />
       );
       break;
-    case "Payment/_PaymentInvoices":
+    case "Payment/_PaymentInvoices": //کارشناس بازرگانی=>تایید اطلاعات چک دریافتی
       componentToRender2 = (
         <PaymentInvoiceShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
         />
       );
       break;
-    case "Order/_Order":
+    case "Order/_Order": //کارشناس بازرگانی -> ثبت اولیه - سفارش
       componentToRender1 = (
         <OrderRegShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
       );
       break;
-    case "WarehouseTemporaryReceipt/_WarehouseTemporaryReceiptPurchase":
+    case "WarehouseTemporaryReceipt/_WarehouseTemporaryReceiptPurchase": //کارشناس خرید -> تایید فاکتور خرید
       componentToRender2 = (
-        <ReceiptPurchaseShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
+        <ReceiptPurchaseShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+        />
       );
       break;
-    case "ProductGrace/_ProductGrace":
+    case "ProductGrace/_ProductGrace": //ثبت فرجه
       componentToRender2 = (
-        <ProductGraceForWorkFlow workFlowRowSelectResponse={workFlowRowSelectResponse} />
+        <ProductGraceForWorkFlow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+        />
       );
       break;
-    case "PayRequest/_PayRequest":
-      componentToRender1 = (
+    case "ProductOffer/_ProductOfferEdit": //ثیت آفر
+    case "ProductOffer/_ProductOffer":
+      componentToRender2 = (
+        <ProductOfferForWorkFlow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+        />
+      );
+      break;
+    case "ProductPrice/_ProductPrice": //ثبت لیست قیمت
+      componentToRender2 = (
+        <ProductPriceForWorkFlow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+        />
+      );
+      break;
+    case "ProductPerm/_ProductPerm": //ثبت لیست نیاز به مجوز
+      componentToRender2 = (
+        <ProductPermForWorkFlow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+        />
+      );
+      break;
+    case "PayRequest/_PayRequest": //کارشناس خرید -> ثبت اولیه
+      componentToRender2 = (
         <PayRequestShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           isNew={false}

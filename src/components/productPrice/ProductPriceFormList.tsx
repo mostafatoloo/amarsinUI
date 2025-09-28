@@ -46,9 +46,11 @@ type Props = {
   setIsModalRegOpen: Dispatch<SetStateAction<boolean>>;
   isModalEmptyOpen: boolean;
   setIsModalEmptyOpen: Dispatch<SetStateAction<boolean>>;
+  canEditForm1: boolean;
 };
 
 const ProductPriceFormList = ({
+  canEditForm1,
   setIsNew,
   setIsEdit,
   addList,
@@ -302,7 +304,7 @@ const ProductPriceFormList = ({
           />
 
           <TTable
-            canEditForm={true}
+            canEditForm={canEditForm1}
             columns={columns}
             data={data}
             updateMyData={updateMyData}

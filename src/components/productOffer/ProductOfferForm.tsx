@@ -43,7 +43,7 @@ import { useProductOfferStore } from "../../store/productOfferStore";
 
 type Props = {
   addProductList: (
-    request: ShowProductListRequest 
+    request: ShowProductListRequest
   ) => Promise<ShowProductListResponse>;
   productOfferDtlHistory: ProductOfferDtlHistory[];
   isLoadingProductOfferDtlHistory: boolean;
@@ -56,6 +56,8 @@ type Props = {
   isNew: boolean;
   setIsNew: (isNew: boolean) => void;
   setIsEdit: (isEdit: boolean) => void;
+  fromWorkFlow: boolean;
+  canEditForm1: boolean;
 };
 
 export const headCells = [
@@ -220,6 +222,7 @@ export const headCells = [
 ];
 
 const ProductOfferForm = ({
+  canEditForm1,
   addProductList,
   productOfferDtlHistory,
   isLoadingProductOfferDtlHistory,
@@ -230,6 +233,7 @@ const ProductOfferForm = ({
   isNew,
   setIsNew,
   setIsEdit,
+  fromWorkFlow,
 }: Props) => {
   const [addList, setAddList] = useState<ProductOfferProductTable[]>([]);
   const [search, setSearch] = useState<string>("");
@@ -258,7 +262,8 @@ const ProductOfferForm = ({
         ...item,
         options:
           item.accessor === "product"
-            ? products && products.map((p) => ({
+            ? products &&
+              products.map((p) => ({
                 id: p.pId,
                 title: convertToFarsiDigits(p.n),
               }))
@@ -269,12 +274,14 @@ const ProductOfferForm = ({
             ? ({ row }: any) => {
                 return (
                   <div className="flex w-full">
-                    <img
-                      src={row.original.isDeleted ? RestoreIcon : TrashIcon}
-                      onClick={() => updateToDeleted(row)}
-                      className="cursor-pointer"
-                      alt="TrashIcon"
-                    />
+                    {canEditForm1 && (
+                      <img
+                        src={row.original.isDeleted ? RestoreIcon : TrashIcon}
+                        onClick={() => updateToDeleted(row)}
+                        className="cursor-pointer"
+                        alt="TrashIcon"
+                      />
+                    )}
                     <img
                       src={HistoryIcon}
                       onClick={() => handleShowHistory(row)}
@@ -364,11 +371,10 @@ const ProductOfferForm = ({
     if (
       isNew === false &&
       selectedProductOffer !== null &&
-      selectedProductOffer.flwId === 0 &&
+      (selectedProductOffer.flwId === 0 || fromWorkFlow) &&
       productOfferDtls !== undefined
     ) {
       //for edit
-      console.log(productOfferDtls, "productOfferDtls");
       setAddList(
         productOfferDtls.map((item) => ({
           ...item,
@@ -400,7 +406,7 @@ const ProductOfferForm = ({
           lastDate: item.lastDate,
           s1N: item.s1N + item.s1D > 0 ? item.s1N.toString() : "",
           s1D: item.s1D + item.s1N > 0 ? item.s1D.toString() : "",
-          s2N: item.s2N + item.s2D > 0 ? item.s2N.toString() : "",  
+          s2N: item.s2N + item.s2D > 0 ? item.s2N.toString() : "",
           s2D: item.s2D + item.s2N > 0 ? item.s2D.toString() : "",
           s3N: item.s3N + item.s3D > 0 ? item.s3N.toString() : "",
           s3D: item.s3D + item.s3N > 0 ? item.s3D.toString() : "",
@@ -598,20 +604,23 @@ const ProductOfferForm = ({
         brand={brand}
         setBrand={setBrand}
         setBrandSearch={setBrandSearch}
+        canEditForm1={canEditForm1}
       />
       <ConfirmCard
         variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end"
-        backgroundColor="bg-white"
+        backgroundColor="transparent"
       >
-        <Button
-          text="ایجاد لیست"
-          backgroundColor="bg-white"
-          color="text-blue-500"
-          backgroundColorHover="bg-blue-500"
-          colorHover="text-white"
-          variant="shadow-lg"
-          onClick={handleSubmitAndAddToTable}
-        />
+        {canEditForm1 && (
+          <Button
+            text="ایجاد لیست"
+            backgroundColor="bg-white"
+            color="text-blue-500"
+            backgroundColorHover="bg-blue-500"
+            colorHover="text-white"
+            variant="shadow-lg"
+            onClick={handleSubmitAndAddToTable}
+          />
+        )}
         <Button
           text="اکسل"
           backgroundColor="bg-white"
@@ -643,6 +652,7 @@ const ProductOfferForm = ({
       </div>
 
       <ProductOfferFormList
+        canEditForm1={canEditForm1}
         setIsNew={setIsNew}
         setIsEdit={setIsEdit}
         columns={columns}

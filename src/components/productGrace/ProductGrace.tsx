@@ -598,6 +598,7 @@ const ProductGrace = () => {
           setIsNew={setIsNew}
           setIsEdit={setIsEdit}
           fromWorkFlow={false}//for not going to editting in product grace form as default
+          canEditForm1={true}
         />
       </ModalForm>
       <ModalMessage

@@ -3,7 +3,6 @@ import {
   Routes,
   Route,
   Navigate,
-  useLocation,
 } from "react-router-dom";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -22,6 +21,7 @@ import ProductPerm from "./components/productPerm/ProductPerm";
 import ProductGrace from "./components/productGrace/ProductGrace";
 import ProductPrice from "./components/productPrice/ProductPrice";
 import PayRequestOperation from "./components/payRequestPaybox/PayRequestOperation";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
@@ -43,7 +43,6 @@ function App() {
 }
 
 function AppContent() {
-  const location = useLocation(); // Now this is inside <Router>
   return (
     <Layout>
       <Routes>
@@ -61,7 +60,7 @@ function AppContent() {
         <Route path="/admin/RpProviders" element={<PrivateRoute><ProviderList /></PrivateRoute>} />
         <Route path="/admin/RpProducers" element={<PrivateRoute><ProducerList /></PrivateRoute>} />
         <Route path="/" element={<Navigate to="/admin/WFMS/index" />} />
-        <Route path="*" element={<div>Route not found: {location.pathname}</div>} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Layout>
   );

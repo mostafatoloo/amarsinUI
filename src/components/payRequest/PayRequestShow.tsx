@@ -1,4 +1,4 @@
-// مدیرمالی ->
+// کارشناس خرید -> ثبت اولیه
 import { useEffect, useState } from "react";
 import { usePayRequest } from "../../hooks/usePayRequest";
 import { WorkflowRowSelectResponse } from "../../types/workflow";
