@@ -97,7 +97,6 @@ const PayRequestShow = ({
   const [sumStatus, setSumStatus] = useState("");
   // end of tab 1
   //for tab 2
-  //const isConfirmRef: React.MutableRefObject<boolean> = useRef(false);
   const [newPay, setNewPay] = useState(0);
   const [payRequestDtlId, setPayRequestDtlId] = useState(0);
   const [amountTab2, setAmountTab2] = useState(0);

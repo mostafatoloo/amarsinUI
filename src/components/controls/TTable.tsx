@@ -8,6 +8,7 @@ import {
 } from "../../utilities/general";
 import { colors } from "../../utilities/color";
 import AutoComplete from "./AutoComplete";
+import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
 
 type TableProps<T extends object> = {
   canEditForm?: boolean;
@@ -33,6 +34,7 @@ type TableProps<T extends object> = {
   showHeader?: boolean;
   selectedRowIndex?: number; // just for background color
   setSelectedRowIndex?: (value: number) => void; // just for background color
+  maxVisibleColumns?: number; // Maximum number of columns to show before collapsing
 };
 
 // Create an editable cell renderer
@@ -237,8 +239,64 @@ export default function TTable<T extends object>({
   showHeader = true,
   selectedRowIndex,
   setSelectedRowIndex,
+  maxVisibleColumns = 6,
 }: TableProps<T>) {
   //const [rowSelect, setRowSelect] = useState(0);
+
+  const { width } = useCalculateTableHeight();
+
+  // Process columns for mobile/tablet responsiveness
+  const processedColumns = React.useMemo(() => {
+    // Only apply column collapsing on mobile/tablet
+    if (width > 768 || columns.length <= maxVisibleColumns) {
+      return columns;
+    }
+
+    const visibleColumns = columns.slice(0, maxVisibleColumns - 1);
+    const hiddenColumns = columns.slice(maxVisibleColumns - 1);
+
+    const processedVisibleColumns= visibleColumns.map((vc)=>{return {...vc,width:"15%"}})
+    
+    // Calculate total width of visible columns
+    /*const totalVisibleWidth = visibleColumns.reduce((sum, col) => {
+      const width = parseInt(col.width?.slice(0,-1).toString() || '0');
+      return sum + width;
+    }, 0);*/
+    
+    // Create a collapsed column for hidden columns
+    const collapsedColumn = {
+      Header: `سایر (${convertToFarsiDigits(hiddenColumns.length)})`,
+      accessor: "collapsed",
+      align: "center",
+      width: "25%",//(100-totalVisibleWidth).toString()+"%",
+      Cell: ({ row }: any) => {
+        const hiddenData = hiddenColumns.map((col: any) => {
+          const cellValue = row.original[col.accessor];
+          
+          return {
+            header: col.Header,
+            value: cellValue,
+            columnId: col.accessor
+          };
+        });
+
+        return (
+          <div className="text-xs space-y-1 p-1">
+            {hiddenData.map((item, index) => (
+              <div key={index} className="flex flex-col items-center border-b border-gray-200 pb-1 last:border-b-0">
+                <div className="font-semibold text-gray-600 mb-1">{item.header}</div>
+                <div className="flex justify-center">
+                  {React.isValidElement(item.value) ? item.value : (item.value || '-')}
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      }
+    };
+
+    return [...processedVisibleColumns, collapsedColumn];
+  }, [columns, maxVisibleColumns, width]);
 
   const {
     getTableProps,
@@ -248,7 +306,7 @@ export default function TTable<T extends object>({
     rows, // all rows, no pagination
   } = useTable(
     {
-      columns,
+      columns: processedColumns,
       data: data ? data : [],
       //defaultColumn,
       //autoResetPage: !skipPageReset,

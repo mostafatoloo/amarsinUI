@@ -134,6 +134,7 @@ export default function ClearBookShow() {
                       ? true
                       : false
                   }
+                  onChange={()=>console.log("changed")}
                   /*onClick={() =>
                     handleSetProduct(
                       clearBook.id,
@@ -182,56 +183,6 @@ export default function ClearBookShow() {
     }
   };
   /////////////////////////////////////////////////////
-  /*const changeRowValues = useCallback(
-    (value: string, rowIndex: number, columnId: string) => {
-      if (
-        columnId === "cost" ||
-        columnId === "cnt" ||
-        columnId === "taxValue" ||
-        columnId === "dcrmnt"
-      ) {
-        setData((old) =>
-          old.map((row, index) => {
-            if (index === rowIndex) {
-              const total = calculateTotal(
-                columnId === "cost" ? value : row.cost.toString(),
-                columnId === "cnt" ? value : row.cnt.toString(),
-                columnId === "taxValue" ? value : row.taxValue.toString(),
-                columnId === "dcrmnt" ? value : row.dcrmnt.toString()
-              );
-              return {
-                ...old[rowIndex],
-                [columnId]: value,
-                total,
-              };
-            }
-            return row;
-          })
-        );
-        const rowInOriginal = data[rowIndex];
-        setOriginalData((old) =>
-          old.map((row) => {
-            if (row.id === rowInOriginal.id && row.pId === rowInOriginal.pId) {
-              const total = calculateTotal(
-                columnId === "cost" ? value : row.cost.toString(),
-                columnId === "cnt" ? value : row.cnt.toString(),
-                columnId === "taxValue" ? value : row.taxValue.toString(),
-                columnId === "dcrmnt" ? value : row.dcrmnt.toString()
-              );
-              return {
-                ...row,
-                [columnId]: value,
-                total,
-              };
-            }
-            return row;
-          })
-        );
-      }
-    },
-    [calculateTotal, data]
-  );
-*/
   const { height, width } = useCalculateTableHeight();
 
   return (
@@ -279,6 +230,7 @@ export default function ClearBookShow() {
               canEditForm={true}
               updateMyData={updateMyData}
               changeRowValues={changeRowValues}
+              maxVisibleColumns={6}
             />
           </div>
         ) : (
