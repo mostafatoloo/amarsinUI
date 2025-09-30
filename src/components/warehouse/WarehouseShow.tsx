@@ -63,7 +63,7 @@ const WarehouseShow = ({ workFlowRowSelectResponse }: Props) => {
 
   const { isModalOpen, setIsModalOpen } = useGeneralContext();
   useEffect(() => {
-    let timeoutId: number;
+    let timeoutId: NodeJS.Timeout;
     if (isModalOpen || isModalOpenReg) {
       timeoutId = setTimeout(() => {
         setIsModalOpen(false);

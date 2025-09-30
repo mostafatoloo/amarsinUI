@@ -1,21 +1,37 @@
 import { useState } from "react";
 import WorkflowParent from "./WorkflowParent";
 import { WorkflowChild } from "./WorkflowChild";
-import { useWorkflow } from "../../hooks/useWorkflow";
+import {
+  WorkFlowDoFlowRequest,
+  WorkflowResponse,
+  WorkflowRowSelectResponse,
+} from "../../types/workflow";
+import { QueryObserverResult, RefetchOptions, UseMutateAsyncFunction } from "@tanstack/react-query";
 
-const WorkflowForm = () => {
+type Props = {
+  workFlowResponse: WorkflowResponse;
+  error: Error | null;
+  isLoading: boolean;
+  isLoadingRowSelect: boolean;
+  workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  errorRowSelect: Error | null;
+  doFlow: UseMutateAsyncFunction<any, Error, WorkFlowDoFlowRequest, unknown>;
+  isLoadingdoFlow: boolean;
+  getWorkTable: (options?: RefetchOptions) => Promise<QueryObserverResult<WorkflowResponse, Error>>
+};
+
+const WorkflowForm = ({
+  workFlowResponse,
+  error,
+  isLoading,
+  isLoadingRowSelect,
+  workFlowRowSelectResponse,
+  errorRowSelect,
+  doFlow,
+  isLoadingdoFlow,
+  getWorkTable
+}: Props) => {
   const [selectedId, setSelectedId] = useState<number>(148201);
-  const {
-    workFlowResponse,
-    error,
-    isLoading,
-    isLoadingRowSelect,
-    workFlowRowSelectResponse,
-    errorRowSelect,
-    doFlow,
-    isLoadingdoFlow,
-    getWorkTable,
-  } = useWorkflow();
 
   const handleSelectedIdChange = (id: number) => {
     //console.log(id, "id in WorkflowForm");

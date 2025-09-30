@@ -248,7 +248,7 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
   const fileName = "data_export.xlsx";
 
   useEffect(() => {
-    let timeoutId: number;
+    let timeoutId: NodeJS.Timeout;
     if (isModalOpen) {
       timeoutId = setTimeout(() => {
         setIsModalOpen(false);

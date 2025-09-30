@@ -374,7 +374,7 @@ const ProductOffer = () => {
   const [isModalConfirmOpen, setIsModalConfirmOpen] = useState<boolean>(false);
   const [isModalDeleteOpen, setIsModalDeleteOpen] = useState<boolean>(false);
   useEffect(() => {
-    let timeoutId: number;
+    let timeoutId: NodeJS.Timeout;
     if (isModalOpen || isModalConfirmOpen || isModalDeleteOpen) {
       timeoutId = setTimeout(() => {
         setIsModalOpen(false);

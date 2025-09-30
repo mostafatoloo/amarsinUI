@@ -197,7 +197,7 @@ const PayRequestActiveTab2 = ({
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in payRequestActiveTab2 table
   //////////////////////////////////////////////////////////////
   useEffect(() => {
-    let timeoutId: number;
+    let timeoutId: NodeJS.Timeout;
     if (isModalOpen) {
       timeoutId = setTimeout(() => {
         setIsModalOpen(false);

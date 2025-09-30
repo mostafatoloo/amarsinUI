@@ -255,7 +255,7 @@ const ProductGraceFormList = ({
   const { height, width } = useCalculateTableHeight();
   ////////////////////////////////////////////////////////
   useEffect(() => {
-    let timeoutId: number;
+    let timeoutId: NodeJS.Timeout;
     if (isModalRegOpen) {
       timeoutId = setTimeout(() => {
         setIsModalRegOpen(false);
@@ -271,7 +271,7 @@ const ProductGraceFormList = ({
   }, [isModalRegOpen]);
   ////////////////////////////////////////////////////////
   useEffect(() => {
-    let timeoutId: number;
+    let timeoutId: NodeJS.Timeout;
     if (isModalEmptyOpen) {
       timeoutId = setTimeout(() => {
         setIsModalEmptyOpen(false);

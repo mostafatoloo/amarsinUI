@@ -23,6 +23,7 @@
     "axios": "^1.6.7",
     "date-fns": "^4.1.0",
     "jalaali-js": "^1.2.8",
+    "lucide-react": "^0.544.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-multi-date-picker": "^4.5.2",
@@ -35,6 +36,7 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.17.17",
+    "@types/node": "^24.5.2",
     "@types/react": "^18.2.64",
     "@types/react-dom": "^18.2.21",
     "@types/react-table": "^7.7.20",

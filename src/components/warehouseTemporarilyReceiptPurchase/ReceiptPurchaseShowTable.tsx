@@ -277,7 +277,7 @@ const ReceiptPurchaseShowTable = ({
   const [isNewPrice, setIsNewPrice] = useState<boolean>(false);
   //////////////////////////////////////////////////////////////
   useEffect(() => {
-    let timeoutId: number;
+    let timeoutId: NodeJS.Timeout;
     if (isModalOpen) {
       timeoutId = setTimeout(() => {
         setIsModalOpen(false);

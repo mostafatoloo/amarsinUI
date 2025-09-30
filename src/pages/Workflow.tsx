@@ -5,10 +5,21 @@ import SentForm24 from "../assets/images/GrayThem/SentForm24.png"
 import Refresh32 from "../assets/images/GrayThem/rfrsh32.png"
 //import { useWorkflow } from "../hooks/useWorkflow";
 import WorkflowForm from "../components/workflow/WorkflowForm";
+import { useWorkflow } from "../hooks/useWorkflow";
 
 
 export default function Workflow() {
-//const {getWorkTable}=useWorkflow()
+  const {
+    workFlowResponse,
+    error,
+    isLoading,
+    isLoadingRowSelect,
+    workFlowRowSelectResponse,
+    errorRowSelect,
+    doFlow,
+    isLoadingdoFlow,
+    getWorkTable,
+  } = useWorkflow();
 
   return (
     <div className="h-[calc(100vh-72px)] overflow-y-scroll flex flex-col bg-gray-200 pt-2">
@@ -29,7 +40,7 @@ export default function Workflow() {
             <p className="text-xs">گردش</p>
           </div>
           <div className="flex flex-col items-center cursor-pointer"
-          onClick={()=>console.log("object")}>
+          onClick={()=>getWorkTable()}>
           {/*onClick={()=>getWorkTable()}>*/}
             <img src={Refresh32} alt="Refresh32" className="w-6 h-6" />
             <p className="text-xs">بازخوانی</p>
@@ -40,7 +51,17 @@ export default function Workflow() {
 
       {/* Main content */}
       <main className="flex flex-col items-center justify-center px-2">
-        <WorkflowForm />
+        <WorkflowForm 
+          workFlowResponse={workFlowResponse}
+          error={error}
+          isLoading={isLoading}
+          isLoadingRowSelect={isLoadingRowSelect}
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          errorRowSelect={errorRowSelect}
+          doFlow={doFlow}
+          isLoadingdoFlow={isLoadingdoFlow}
+          getWorkTable={getWorkTable}
+        />
       </main>
 
       {/* Footer */}

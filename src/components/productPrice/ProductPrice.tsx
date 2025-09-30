@@ -25,6 +25,7 @@ import ModalForm from "../layout/ModalForm";
 import { useProductPriceStore } from "../../store/productPriceStore";
 import { useProductPrice } from "../../hooks/useProductPrice";
 import ProductPriceForm from "./ProductPriceForm";
+import ErrorPage from "../common/ErrorPage";
 
 const ProductPrice = () => {
   const {
@@ -38,6 +39,7 @@ const ProductPrice = () => {
     productPriceTotalCount,
     refetch,
     isLoading,
+    error,
     isLoadingDtl,
     productPriceDtl,
     productPriceMeta,
@@ -331,9 +333,15 @@ const ProductPrice = () => {
           lastBuyPrice: convertToFarsiDigits(item.lastBuyPrice),
           tax: convertToFarsiDigits(item.tax),
           p1: convertToFarsiDigits(formatNumberWithCommas(item.p1)),
-          p1p2Ratio:item.p2!==0 ? convertToFarsiDigits((item.p1/item.p2).toFixed(2)) : null,
+          p1p2Ratio:
+            item.p2 !== 0
+              ? convertToFarsiDigits((item.p1 / item.p2).toFixed(2))
+              : null,
           p2: convertToFarsiDigits(formatNumberWithCommas(item.p2)),
-          p2p3Ratio:item.p3!==0 ? convertToFarsiDigits((item.p2/item.p3).toFixed(2)) : null,
+          p2p3Ratio:
+            item.p3 !== 0
+              ? convertToFarsiDigits((item.p2 / item.p3).toFixed(2))
+              : null,
           p3: convertToFarsiDigits(formatNumberWithCommas(item.p3)),
           p4: convertToFarsiDigits(formatNumberWithCommas(item.p4)),
           p5: convertToFarsiDigits(formatNumberWithCommas(item.p5)),
@@ -355,7 +363,7 @@ const ProductPrice = () => {
   const [isModalConfirmOpen, setIsModalConfirmOpen] = useState<boolean>(false);
   const [isModalDeleteOpen, setIsModalDeleteOpen] = useState<boolean>(false);
   useEffect(() => {
-    let timeoutId: number;
+    let timeoutId: NodeJS.Timeout;
     if (isModalOpen || isModalConfirmOpen || isModalDeleteOpen) {
       timeoutId = setTimeout(() => {
         setIsModalOpen(false);
@@ -371,7 +379,7 @@ const ProductPrice = () => {
   }, [isModalOpen, isModalConfirmOpen, isModalDeleteOpen]);
 
   const handleConfirm = () => {
-    console.log("confirm")
+    console.log("confirm");
     const request: ProductPriceDoFirstFlowRequest = {
       acc_Year: yearId,
       acc_System: systemId,
@@ -433,7 +441,14 @@ const ProductPrice = () => {
       <div className="flex gap-2 px-2 h-1/2">
         <div className="flex flex-col w-3/4 h-full">
           <div className="w-full overflow-y-scroll bg-white rounded-md h-full">
-            {isLoading ? (
+            {error ? (
+              <ErrorPage
+                error={error}
+                title="خطا در بارگذاری اطلاعات"
+                onRetry={() => refetch()}
+                showHomeButton={true}
+              />
+            ) : isLoading ? (
               <Skeleton />
             ) : (
               <>

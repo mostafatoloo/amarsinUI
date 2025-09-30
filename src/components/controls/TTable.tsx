@@ -80,8 +80,11 @@ export function EditableInput<T extends object>({
   const [isFocused, setIsFocused] = React.useState(false);
 
   React.useEffect(() => {
-    //console.log(initialValue, "initialValue in useEffect"),
-    if (typeof initialValue === "boolean") {
+    if (
+      initialValue.props?.children?.props.type === "checkbox"
+    ) {
+      setValue(initialValue.props.children.props.checked);
+    } else if (typeof initialValue === "boolean") {
       setValue(initialValue);
     } else {
       setValue(
@@ -158,16 +161,16 @@ export function EditableInput<T extends object>({
         }}
         onFocus={() => setIsFocused(true)}
         style={{
-          backgroundColor: isFocused || selectedRowIndex === index
-            ? "white"
-            : !canEditForm
-            ? "inherit"
-            : bgColor || "white",
+          backgroundColor:
+            isFocused || selectedRowIndex === index
+              ? "white"
+              : !canEditForm
+              ? "inherit"
+              : bgColor || "white",
         }}
       />
     );
   }
-
   if (type === "checkbox") {
     return (
       <input
@@ -320,7 +323,9 @@ export default function TTable<T extends object>({
                       backgroundColor:
                         i === selectedRowIndex && changeRowSelectColor //rowSelect && changeRowSelectColor
                           ? colors.blue50
-                          : CellColorChange && (!cell.column.backgroundColor || cell.column.except === true)
+                          : CellColorChange &&
+                            (!cell.column.backgroundColor ||
+                              cell.column.except === true)
                           ? CellColorChange(row, cell.column.id)
                           : cell.column.backgroundColor || "white",
                       whiteSpace: "pre-wrap",

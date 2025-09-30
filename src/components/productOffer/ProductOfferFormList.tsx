@@ -272,7 +272,7 @@ const ProductOfferFormList = ({
   const { height, width } = useCalculateTableHeight();
   ////////////////////////////////////////////////////////
   useEffect(() => {
-    let timeoutId: number;
+    let timeoutId: NodeJS.Timeout;
     if (isModalRegOpen) {
       timeoutId = setTimeout(() => {
         setIsModalRegOpen(false);

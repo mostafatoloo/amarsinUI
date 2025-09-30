@@ -22,6 +22,7 @@ import ProductGrace from "./components/productGrace/ProductGrace";
 import ProductPrice from "./components/productPrice/ProductPrice";
 import PayRequestOperation from "./components/payRequestPaybox/PayRequestOperation";
 import NotFound from "./pages/NotFound";
+import ClearBook from "./pages/definitions/ClearBook";
 
 const queryClient = new QueryClient();
 
@@ -59,6 +60,7 @@ function AppContent() {
         <Route path="/admin/RpProviders/Inventory" element={<PrivateRoute><InventoryGoodList /></PrivateRoute>} />
         <Route path="/admin/RpProviders" element={<PrivateRoute><ProviderList /></PrivateRoute>} />
         <Route path="/admin/RpProducers" element={<PrivateRoute><ProducerList /></PrivateRoute>} />
+        <Route path="/Admin/ClearBook/index" element={<PrivateRoute><ClearBook /></PrivateRoute>} />
         <Route path="/" element={<Navigate to="/admin/WFMS/index" />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

@@ -1,4 +1,4 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Paper } from "@mui/material";
 
 import { useBrandStore } from "../../store/brandStore";
@@ -14,7 +14,7 @@ import { HeadCell } from "../../hooks/useTable";
 import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
 import TTable from "../controls/TTable";
 import { convertToFarsiDigits } from "../../utilities/general";
-import {  DefaultOptionTypeStringId, TableColumns } from "../../types/general";
+import { DefaultOptionTypeStringId, TableColumns } from "../../types/general";
 
 export const headCells: HeadCell<InventoryItem>[] = [
   {
@@ -89,7 +89,6 @@ export const columns: TableColumns = [
 ];
 
 export default function InventoryGoodListForm() {
-
   const { inventoryList, error, isLoading } = useInventoryGoodList();
 
   const { systemId, yearId } = useGeneralContext();
@@ -129,8 +128,6 @@ export default function InventoryGoodListForm() {
 
   const [data, setData] = useState<InventoryItemTbl[]>([]);
 
-  //console.log(data, "data");
-  //const [skipPageReset, setSkipPageReset] = useState(false);
 
   useEffect(() => {
     setData(
@@ -149,10 +146,6 @@ export default function InventoryGoodListForm() {
     );
   }, [inventoryList.rpProviderInventories]);
 
-  /*useEffect(() => {
-    setSkipPageReset(false);
-  }, [data]);*/
-
   const { height, width } = useCalculateTableHeight();
 
   return (
@@ -168,7 +161,7 @@ export default function InventoryGoodListForm() {
               title: b.text,
             }))}
             value={brand}
-            handleChange={(_event, newValue) => {             
+            handleChange={(_event, newValue) => {
               return setBrand(newValue as DefaultOptionTypeStringId);
             }}
             setSearch={setSearch}
@@ -188,17 +181,7 @@ export default function InventoryGoodListForm() {
             className="mt-2 overflow-y-auto"
             style={width > 640 ? { height: height } : { height: "fit" }}
           >
-            {/*<Table
-              data={inventoryList.rpProviderInventories}
-              headCells={headCells}
-              wordWrap={true}
-            />*/}
-            <TTable
-              columns={columns}
-              data={data}
-              //updateMyData={updateMyData}
-              //skipPageReset={skipPageReset}
-            />
+            <TTable columns={columns} data={data} />
           </div>
         ) : (
           <p className="p-6 text-red-400 text-sm md:text-base font-bold">

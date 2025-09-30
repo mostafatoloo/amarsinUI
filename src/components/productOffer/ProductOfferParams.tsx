@@ -77,7 +77,7 @@ const ProductOfferParams = ({
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   useEffect(() => {
-    let timeoutId: number;
+    let timeoutId: NodeJS.Timeout;
     if (isModalOpen) {
       timeoutId = setTimeout(() => {
         setIsModalOpen(false);

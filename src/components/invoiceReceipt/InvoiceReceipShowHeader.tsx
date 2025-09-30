@@ -69,7 +69,7 @@ const InvoiceReceipShowHeader = ({
 
   const { isModalOpen, setIsModalOpen } = useGeneralContext();
   useEffect(() => {
-    let timeoutId: number;
+    let timeoutId: NodeJS.Timeout;
     if (isModalOpen) {
       timeoutId = setTimeout(() => {
         setIsModalOpen(false);

@@ -360,7 +360,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
   };
   /////////////////////////////////////////////////////////////////
   useEffect(() => {
-    let timeoutId: number;
+    let timeoutId: NodeJS.Timeout;
     if (isModalOpen) {
       timeoutId = setTimeout(() => {
         setIsModalOpen(false);
