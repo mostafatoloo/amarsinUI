@@ -21,10 +21,15 @@ type Props = {
   handleDelete: () => void;
   handleEdit: () => void;
   handleConfirm: () => void;
-  selectedProductOffer: ProductOffer | ProductPerm | ProductGrace | ProductPrice | null;
+  selectedProductOffer:
+    | ProductOffer
+    | ProductPerm
+    | ProductGrace
+    | ProductPrice
+    | null;
   data: any[];
   refetch: () => void;
-}
+};
 
 const ProductOfferHeader = ({
   columns,
@@ -37,106 +42,103 @@ const ProductOfferHeader = ({
   refetch,
 }: Props) => {
   return (
-    <header className="flex items-center justify-between border-gray-300 border-b pb-2">
-    <PageTitle />
-    <div className="flex px-4 items-center gap-4">
-      <div
-        className="flex flex-col items-center cursor-pointer"
-        onClick={() => setIsNew(true)} // for new
-      >
-        <img src={Add32} alt="Add32" className="w-6 h-6" />
-        <p className="text-xs">جدید</p>
-      </div>
-      <div
-        className={`flex flex-col items-center ${
-          selectedProductOffer === null || selectedProductOffer.flwId !== 0
-            ? "cursor-not-allowed"
-            : "cursor-pointer"
-        }`}
-        onClick={
-          () =>
-            selectedProductOffer === null ||
-            selectedProductOffer.flwId !== 0
-              ? null
-              : handleDelete() //for productOffer/productOfferDel
-        }
-      >
-        <img
-          src={
-            selectedProductOffer === null ||
-            selectedProductOffer.flwId !== 0
-              ? Del24Disabled
-              : Del24
+    <header className="flex flex-col gap-2 md:flex-row items-center justify-between border-gray-300 border-b pb-2">
+      <PageTitle />
+      <div className="flex px-4 items-center gap-4">
+        <div
+          className="flex flex-col items-center cursor-pointer"
+          onClick={() => setIsNew(true)} // for new
+        >
+          <img src={Add32} alt="Add32" className="w-6 h-6" />
+          <p className="text-xs">جدید</p>
+        </div>
+        <div
+          className={`flex flex-col items-center ${
+            selectedProductOffer === null || selectedProductOffer.flwId !== 0
+              ? "cursor-not-allowed"
+              : "cursor-pointer"
+          }`}
+          onClick={
+            () =>
+              selectedProductOffer === null || selectedProductOffer.flwId !== 0
+                ? null
+                : handleDelete() //for productOffer/productOfferDel
           }
-          alt="Del24"
-          className="w-6 h-6"
-        />
-        <p className="text-xs">حذف</p>
-      </div>
-      <div
-        className={`flex flex-col items-center ${
-          selectedProductOffer === null || selectedProductOffer.flwId !== 0
-            ? "cursor-not-allowed"
-            : "cursor-pointer"
-        }`}
-        onClick={
-          () =>
-            selectedProductOffer === null ||
-            selectedProductOffer.flwId !== 0
-              ? null
-              : handleEdit() // for edit
-        } // for edit
-      >
-        <img
-          src={
-            selectedProductOffer === null ||
-            selectedProductOffer.flwId !== 0
-              ? Edit24Disabled
-              : Edit24
-          }
-          alt="Edit24"
-          className="w-6 h-6"
-        />
-        <p className="text-xs">ویرایش</p>
-      </div>
-      <div
-        className={`flex flex-col items-center ${
-          selectedProductOffer === null || selectedProductOffer.flwId !== 0
-            ? "cursor-not-allowed"
-            : "cursor-pointer"
-        }`}
-      >
-        <img
-          src={
-            selectedProductOffer === null ||
-            selectedProductOffer.flwId !== 0
-              ? Accept24Disabled
-              : Accept24
-          }
-          alt="Accept24"
-          className="w-6 h-6"
-          onClick={() =>
-            selectedProductOffer === null ||
-            selectedProductOffer.flwId !== 0
-              ? console.log(selectedProductOffer,"selectedProductOffer is null or flwId is not 0")
-              : handleConfirm()
-          }
-        />
-        <p className="text-xs">تایید</p>
-      </div>
+        >
+          <img
+            src={
+              selectedProductOffer === null || selectedProductOffer.flwId !== 0
+                ? Del24Disabled
+                : Del24
+            }
+            alt="Del24"
+            className="w-6 h-6"
+          />
+          <p className="text-xs">حذف</p>
+        </div>
+        <div
+          className={`flex flex-col items-center ${
+            selectedProductOffer === null || selectedProductOffer.flwId !== 0
+              ? "cursor-not-allowed"
+              : "cursor-pointer"
+          }`}
+          onClick={
+            () =>
+              selectedProductOffer === null || selectedProductOffer.flwId !== 0
+                ? null
+                : handleEdit() // for edit
+          } // for edit
+        >
+          <img
+            src={
+              selectedProductOffer === null || selectedProductOffer.flwId !== 0
+                ? Edit24Disabled
+                : Edit24
+            }
+            alt="Edit24"
+            className="w-6 h-6"
+          />
+          <p className="text-xs">ویرایش</p>
+        </div>
+        <div
+          className={`flex flex-col items-center ${
+            selectedProductOffer === null || selectedProductOffer.flwId !== 0
+              ? "cursor-not-allowed"
+              : "cursor-pointer"
+          }`}
+        >
+          <img
+            src={
+              selectedProductOffer === null || selectedProductOffer.flwId !== 0
+                ? Accept24Disabled
+                : Accept24
+            }
+            alt="Accept24"
+            className="w-6 h-6"
+            onClick={() =>
+              selectedProductOffer === null || selectedProductOffer.flwId !== 0
+                ? console.log(
+                    selectedProductOffer,
+                    "selectedProductOffer is null or flwId is not 0"
+                  )
+                : handleConfirm()
+            }
+          />
+          <p className="text-xs">تایید</p>
+        </div>
 
-      <ExcelExport data={data} headCells={columns} />
+        <ExcelExport data={data} headCells={columns} />
 
-      <div
-        className="flex flex-col items-center cursor-pointer"
-        onClick={() => refetch()}
-      >
-        <img src={Refresh32} alt="Refresh32" className="w-6 h-6" />
-        <p className="text-xs">بازخوانی</p>
+        <div
+          className="flex flex-col items-center cursor-pointer"
+          onClick={() => refetch()}
+        >
+          <img src={Refresh32} alt="Refresh32" className="w-6 h-6" />
+          <p className="text-xs">بازخوانی</p>
+        </div>
       </div>
-    </div>
-  </header>
-  )
-}
+    </header>
+  );
+};
 
 export default ProductOfferHeader;

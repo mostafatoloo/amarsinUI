@@ -230,7 +230,7 @@ export default function ClearBookShow() {
               canEditForm={true}
               updateMyData={updateMyData}
               changeRowValues={changeRowValues}
-              maxVisibleColumns={6}
+              //maxVisibleColumns={10}
             />
           </div>
         ) : (

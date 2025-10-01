@@ -108,7 +108,7 @@ const WorkflowRowSelectHeader = ({
         </div>
       </div>
 
-      <div className="px-2 border text-gray-600 border-gray-300 rounded-md w-full md:w-1/3">
+      <div className="px-2 border text-gray-600 border-gray-300 h-20 overflow-y-auto rounded-md w-full md:w-1/3">
         {flowDescriptions.length > 0 &&
           flowDescriptions.map((fd, index) => {
             return (

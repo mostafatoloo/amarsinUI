@@ -41,14 +41,14 @@ const PageTitle = () => {
   }, [system]);
 
   return (
-    <div className="flex justify-center items-center w-80 md:flex-row px-4 gap-2 text-xs md:text-sm">
+    <div className="flex justify-center items-center w-80 md:flex-row pt-2 md:pt-0 px-4 gap-2 text-xs md:text-sm">
       <div className="flex flex-col justify-evenly items-end text-center w-20">
         <label htmlFor="system" >سیستم:</label>
         <label htmlFor="year" >
           سال مالی:
         </label>
       </div>
-      <div className="flex flex-col justify-center items-end w-60 pt-4 md:pt-0">
+      <div className="flex flex-col justify-center items-end w-60">
         {/* for system */}
         <AutoComplete
           options={definitionInvironment?.systems ?? []}

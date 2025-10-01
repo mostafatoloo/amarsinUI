@@ -22,15 +22,21 @@ import Skeleton from "../layout/Skeleton";
 import { LoadPaymentResponse, UpdateFieldsRequest } from "../../types/cheque";
 import { UseMutateAsyncFunction } from "@tanstack/react-query";
 import RegRecievedChequeInfoSanad from "./RegRecievedChequeInfoSanad";
+import { FaCircle } from "react-icons/fa";
 
 type Props = {
   canEditForm: boolean;
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
-  loadPaymentResponse: LoadPaymentResponse,
-  isLoadingLoadPayment: boolean,
-  updateFields: UseMutateAsyncFunction<any, Error, UpdateFieldsRequest, unknown>,
-  isLoadingUpdateFields:boolean,
-  cashPosSystemSearch: any,
+  loadPaymentResponse: LoadPaymentResponse;
+  isLoadingLoadPayment: boolean;
+  updateFields: UseMutateAsyncFunction<
+    any,
+    Error,
+    UpdateFieldsRequest,
+    unknown
+  >;
+  isLoadingUpdateFields: boolean;
+  cashPosSystemSearch: any;
 };
 
 const RegRecievedChequeInfo: React.FC<Props> = ({
@@ -51,6 +57,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
   const [systemSearch, setSystemSearch] = useState<string>("");
   const [yearSearch, setYearSearch] = useState<string>("");
   const [cashPosSystemSerch, setCashPosSystemSerch] = useState<string>("");
+  const [sayadiTextColor, setSayadiTextColor] = useState<string>("");
   const { authApiResponse } = useAuthStore();
   const initData = authApiResponse?.data.result.initData;
 
@@ -58,6 +65,9 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
   const systemRef = useRef<any>(null);
   const yearRef = useRef<any>(null);
   const bankRef = useRef<any>(null);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFieldChanged, setIsFieldChanged] = useState(false);
 
   const {
     //id,
@@ -68,13 +78,9 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
     setUpdateStatus,
   } = useChequeStore();
   const [payKind, setPayKind] = useState<number>(0);
-
   useEffect(() => {
     setPayKind(loadPaymentResponse.data.result.payment?.payKind ?? 0);
   }, [loadPaymentResponse]);
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isFieldChanged, setIsFieldChanged] = useState(false);
 
   const [cheque, setCheque] = useState({
     sayadiMessage: "",
@@ -107,8 +113,9 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
     },
     sanadNum: "",
     sanadDate: "",
+    sayadiStatus: 0,
   });
-  ///////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////
   // Validation function
   const notValidateRequiredFields = (fieldName: string) => {
     const errors = {
@@ -236,7 +243,9 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
       accNo: convertToFarsiDigits(
         loadPaymentResponse.data.result.payment?.accNo ?? ""
       ),
-      no: convertToFarsiDigits(loadPaymentResponse.data.result.payment?.no ?? ""),
+      no: convertToFarsiDigits(
+        loadPaymentResponse.data.result.payment?.no ?? ""
+      ),
       fixSerial: convertToFarsiDigits(
         loadPaymentResponse.data.result.payment?.fixSerial ?? ""
       ),
@@ -245,7 +254,9 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
           Number(loadPaymentResponse.data.result.payment?.amount ?? 0)
         )
       ),
-      dsc: convertToFarsiDigits(loadPaymentResponse.data.result.payment?.dsc ?? ""),
+      dsc: convertToFarsiDigits(
+        loadPaymentResponse.data.result.payment?.dsc ?? ""
+      ),
       cash_PosSystem: {
         id: loadPaymentResponse.data.result.payment?.cash_PosSystem ?? 0,
         title: convertToFarsiDigits(
@@ -258,7 +269,25 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
       sanadDate: convertToFarsiDigits(
         loadPaymentResponse.data.result.payment?.sanadDate ?? ""
       ),
+      sayadiStatus: loadPaymentResponse.data.result.payment?.sayadiStatus ?? 0,
     });
+    switch (
+      loadPaymentResponse.data.result.payment &&
+      loadPaymentResponse.data.result.payment?.sayadiStatus
+    ) {
+      case 1:
+        setSayadiTextColor("text-green-700");
+        break;
+      case -1:
+        setSayadiTextColor("text-yellow-500");
+        break;
+      case -2:
+        setSayadiTextColor("text-red-700");
+        break;
+      default:
+        setSayadiTextColor("text-gray-500");
+        break;
+    }
   }, [loadPaymentResponse]);
   ///////////////////////////////////////////////////////////////////
   // Enhanced setChequeFields with validation
@@ -432,16 +461,18 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
         </a>
       </div>
       {payKind === 2 && (
-        <Input
-          name="sayadiMessage"
-          label="صیادی:"
-          value={cheque.sayadiMessage}
-          widthDiv="w-full"
-          widthLabel="w-24"
-          widthInput="w-full-minus-24"
-          variant="outlined"
-          disabled
-        />
+        <div className="flex items-center gap-2 w-full">
+          <label className="w-24 text-end" >صیادی:</label>
+          <div>
+            <FaCircle className={sayadiTextColor} size={10} />
+          </div>
+          <input
+            name="sayadiMessage"
+            value={cheque.sayadiMessage}
+            className={`border-2 border-gray-300 rounded-md p-1 w-full ${sayadiTextColor}`}
+            disabled
+          />
+        </div>
       )}
       <div className="flex justify-between w-full">
         <div className="flex w-1/2 justify-center items-center gap-2">
@@ -769,24 +800,26 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
               />
               {showValidationError("no")}
             </div>
-            {payKind===2 && <label>/</label>}
-            {payKind===2 && <div className="flex w-full justify-center items-center gap-2">
-              <Input
-                disabled={ !canEditForm} //payKind === 1 ||
-                name="fixSerial"
-                value={cheque.fixSerial}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setChequeFields("fixSerial", e.target.value)
-                }
-                onBlur={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  updateCheque("fixSerial", e.target.value)
-                }
-                widthDiv="w-full"
-                widthInput="w-full"
-                variant="outlined"
-              />
-              {showValidationError("fixSerial")}
-            </div>}
+            {payKind === 2 && <label>/</label>}
+            {payKind === 2 && (
+              <div className="flex w-full justify-center items-center gap-2">
+                <Input
+                  disabled={!canEditForm} //payKind === 1 ||
+                  name="fixSerial"
+                  value={cheque.fixSerial}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setChequeFields("fixSerial", e.target.value)
+                  }
+                  onBlur={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    updateCheque("fixSerial", e.target.value)
+                  }
+                  widthDiv="w-full"
+                  widthInput="w-full"
+                  variant="outlined"
+                />
+                {showValidationError("fixSerial")}
+              </div>
+            )}
           </div>
         </div>
         <div className="flex w-1/2 justify-center items-center gap-2">

@@ -72,7 +72,7 @@ export default function WorkflowComponent({
         <OrderRegShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
       );
       break;
-    case "WarehouseTemporaryReceipt/_WarehouseTemporaryReceiptPurchase": ////کارشناس خرید -> تایید فاکتور خرید
+    case "WarehouseTemporaryReceipt/_WarehouseTemporaryReceiptPurchase": // کارشناس خرید -> تایید فاکتور خرید
       componentToRender1 = (
         <ReceiptPurchaseShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
@@ -96,7 +96,6 @@ export default function WorkflowComponent({
       break;
     case "ProductPrice/_ProductPrice": //ثبت لیست قیمت
       componentToRender1 = (
-        //<p>ProductPrice</p>
         <ProductPriceForWorkFlow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
         />
@@ -128,13 +127,13 @@ export default function WorkflowComponent({
     case "InvoiceBuy/_InvoiceBuy":
     case "Procurement/_Procurement":
       componentToRender2 = (
-        <InvoiceShow
+        <InvoiceShow           //کارشناس خرید-> دریافت اصل فاکتور*****************
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           caption={"اقلام"}
         />
       );
       break;
-    case "InvoiceReturn/_InvoiceReturn":
+    case "InvoiceReturn/_InvoiceReturn":  //****************
       componentToRender2 = (
         <InvoiceShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
@@ -154,7 +153,7 @@ export default function WorkflowComponent({
         />
       );
       break;
-    case "Payment/_Cheque": //کمک حسابداری
+    case "Payment/_Cheque": //کمک حسابداری***************
       componentToRender2 = (
         <RegRecievedCheque
           workFlowRowSelectResponse={workFlowRowSelectResponse}
@@ -169,7 +168,7 @@ export default function WorkflowComponent({
       );
       break;
     case "Order/_Order": //کارشناس بازرگانی -> ثبت اولیه - سفارش
-      componentToRender1 = (
+      componentToRender2 = (
         <OrderRegShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
       );
       break;
@@ -180,14 +179,14 @@ export default function WorkflowComponent({
         />
       );
       break;
-    case "ProductGrace/_ProductGrace": //ثبت فرجه
+    case "ProductGrace/_ProductGrace": //ثبت فرجه***************
       componentToRender2 = (
         <ProductGraceForWorkFlow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
         />
       );
       break;
-    case "ProductOffer/_ProductOfferEdit": //ثیت آفر
+    case "ProductOffer/_ProductOfferEdit": //ثیت آفر***************
     case "ProductOffer/_ProductOffer":
       componentToRender2 = (
         <ProductOfferForWorkFlow
@@ -195,21 +194,21 @@ export default function WorkflowComponent({
         />
       );
       break;
-    case "ProductPrice/_ProductPrice": //ثبت لیست قیمت
+    case "ProductPrice/_ProductPrice": //ثبت لیست قیمت***************
       componentToRender2 = (
         <ProductPriceForWorkFlow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
         />
       );
       break;
-    case "ProductPerm/_ProductPerm": //ثبت لیست نیاز به مجوز
+    case "ProductPerm/_ProductPerm": //ثبت لیست نیاز به مجوز***************
       componentToRender2 = (
         <ProductPermForWorkFlow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
         />
       );
       break;
-    case "PayRequest/_PayRequest": //کارشناس خرید -> ثبت اولیه
+    case "PayRequest/_PayRequest": //کارشناس خرید -> ثبت اولیه 
       componentToRender2 = (
         <PayRequestShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}

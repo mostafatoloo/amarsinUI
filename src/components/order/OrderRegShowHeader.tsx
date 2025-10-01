@@ -60,8 +60,8 @@ const OrderRegShowHeader = ({
   
   return (
     <div className="mt-2 text-sm w-full flex flex-col gap-2 border border-gray-400 rounded-md p-2">
-      <div className="flex items-center justify-between gap-2 w-full">
-        <div className="w-3/4 flex justify-center items-center">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 w-full">
+        <div className="w-full md:w-3/4 flex justify-center items-center">
           <label className="p-1 w-20 text-left">خریدار:</label>
           <div className="bg-slate-50 flex w-full rounded-md">
           <AutoComplete
@@ -83,8 +83,8 @@ const OrderRegShowHeader = ({
           </div>
           {orderRegShowResponse.data.result.orderMst?.blackList ? <p className="text-red-500 w-20 p-1">لیست سیاه</p> : null}
         </div>
-        <div className="w-1/4 flex">
-          <label className="p-1 w-12 text-left">ثبت:</label>
+        <div className="w-full md:w-1/4 flex">
+          <label className="p-1 w-20 md:w-12 text-left">ثبت:</label>
           <input
             type="text"
             value={convertToFarsiDigits(

@@ -46,8 +46,8 @@ const ProductPerm = () => {
     productPermSave,
     isLoadingProductPermSave,
     productPermDoFirstFlow,
-    productPermDel
- } = useProductPerm();
+    productPermDel,
+  } = useProductPerm();
 
   //const { setField: setProductOfferField } = useProductOfferStore();
   const [data, setData] = useState<any[]>([]);
@@ -86,33 +86,36 @@ const ProductPerm = () => {
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in productPerm table
   const [selectedRowIndexDtl, setSelectedRowIndexDtl] = useState<number>(0); //for selected row index in productPermDtl table
 
-  const columnsDtl = React.useMemo(() => [
-    {
-      Header: "ردیف",
-      accessor: "index",
-      width: "5%",
-    },  
-    {
-      Header: "برند",
-      accessor: "bName",
-      width: "10%",
-    },
-    {
-      Header: "کالا",
-      accessor: "product",
-      width: "45%",
-    },
-    {
-      Header: "نیاز به مجوز",
-      accessor: "np",
-      width: "5%",
-    },
-    {
-      Header: "شرح",
-      accessor: "dtlDsc",
-      width: "35%",
-    },
-  ], []);
+  const columnsDtl = React.useMemo(
+    () => [
+      {
+        Header: "ردیف",
+        accessor: "index",
+        width: "5%",
+      },
+      {
+        Header: "برند",
+        accessor: "bName",
+        width: "10%",
+      },
+      {
+        Header: "کالا",
+        accessor: "product",
+        width: "45%",
+      },
+      {
+        Header: "نیاز به مجوز",
+        accessor: "np",
+        width: "5%",
+      },
+      {
+        Header: "شرح",
+        accessor: "dtlDsc",
+        width: "35%",
+      },
+    ],
+    []
+  );
   // Refs for maintaining focus on input elements
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
@@ -260,7 +263,7 @@ const ProductPerm = () => {
       setSelectedProductPerm(
         productPerm?.find((item) => item.id === selectedId) || null
       );
-  }, [selectedId,productPerm]);
+  }, [selectedId, productPerm]);
 
   useEffect(() => {
     const tempData = productPerm?.map((item, index) => {
@@ -391,8 +394,8 @@ const ProductPerm = () => {
         data={data}
         refetch={refetch}
       />
-      <div className="flex gap-2 px-2 h-1/2">
-        <div className="flex flex-col w-3/4 h-full">
+      <div className="flex flex-col md:flex-row gap-2 px-2 h-1/2">
+        <div className="flex flex-col w-full md:w-3/4 h-full">
           <div className="w-full overflow-y-scroll bg-white rounded-md h-full">
             {isLoading ? (
               <Skeleton />
@@ -422,9 +425,24 @@ const ProductPerm = () => {
                     style={{ width: columns[1].width }}
                     className={`border p-1 text-sm rounded-sm`}
                   />
-                  {ProductPermInput("srchDate", columns[2].width, srchDate, setSrchDate)}
-                  {ProductPermInput("srchTime", columns[3].width, srchTime, setSrchTime)}
-                  {ProductPermInput("srchDsc", columns[4].width, srchDsc, setSrchDsc)}
+                  {ProductPermInput(
+                    "srchDate",
+                    columns[2].width,
+                    srchDate,
+                    setSrchDate
+                  )}
+                  {ProductPermInput(
+                    "srchTime",
+                    columns[3].width,
+                    srchTime,
+                    setSrchTime
+                  )}
+                  {ProductPermInput(
+                    "srchDsc",
+                    columns[4].width,
+                    srchDsc,
+                    setSrchDsc
+                  )}
                   <input
                     name="srchAccepted"
                     type="checkbox"
@@ -439,8 +457,18 @@ const ProductPerm = () => {
                     style={{ width: columns[5].width }}
                     className={`border p-1 text-sm rounded-sm`}
                   />
-                  {ProductPermInput("srchUsrName", columns[6].width, srchUsrName, setSrchUsrName)}
-                  {ProductPermInput("srchStep", columns[7].width, srchStep, setSrchStep)}
+                  {ProductPermInput(
+                    "srchUsrName",
+                    columns[6].width,
+                    srchUsrName,
+                    setSrchUsrName
+                  )}
+                  {ProductPermInput(
+                    "srchStep",
+                    columns[7].width,
+                    srchStep,
+                    setSrchStep
+                  )}
                 </div>
                 <ProductOfferTblHeader
                   columns={columns}
@@ -485,7 +513,7 @@ const ProductPerm = () => {
           </div>
         </div>
         {/* ProductOfferParams */}
-        <div className="w-1/4 h-full">
+        <div className="w-full md:w-1/4 h-full">
           <ProductOfferParams
             regFDate={regFDate}
             setRegFDate={setRegFDate}
@@ -510,7 +538,7 @@ const ProductPerm = () => {
             data={dataDtl}
             fontSize="0.75rem"
             changeRowSelectColor={true}
-            wordWrap={false}
+            wordWrap={true}
             showToolTip={true}
           />
         )}
@@ -544,7 +572,7 @@ const ProductPerm = () => {
           isNew={isNew} //for check if isNew new else edit
           setIsNew={setIsNew}
           setIsEdit={setIsEdit}
-          fromWorkFlow={false}//for not going to editting in product perm form as default
+          fromWorkFlow={false} //for not going to editting in product perm form as default
           canEditForm1={true}
         />
       </ModalForm>

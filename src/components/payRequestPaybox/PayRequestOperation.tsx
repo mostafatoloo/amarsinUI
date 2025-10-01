@@ -483,8 +483,8 @@ const PayRequestOperation = () => {
         data={data}
         refetch={refetch}
       />
-      <div className="flex gap-2 px-2 h-1/2">
-        <div className="flex flex-col w-3/4 h-full">
+      <div className="flex flex-col md:flex-row gap-2 px-2 h-1/2">
+        <div className="flex flex-col w-full md:w-3/4 h-full">
           <div className="w-full overflow-y-scroll bg-white rounded-md h-full">
             {isLoadingPayRequest ? (
               <Skeleton />
@@ -626,7 +626,7 @@ const PayRequestOperation = () => {
           </div>
         </div>
         {/* ProductOfferParams */}
-        <div className="w-1/4 h-full">
+        <div className="w-full md:w-1/4 h-full">
           <ProductOfferParams
             regFDate={regFDate}
             setRegFDate={setRegFDate}
@@ -652,8 +652,9 @@ const PayRequestOperation = () => {
               data={dataDtl}
               fontSize="0.75rem"
               changeRowSelectColor={true}
-              wordWrap={false}
+              wordWrap={true}
               showToolTip={true}
+              maxVisibleColumns={6}
             />
           </>
         )}

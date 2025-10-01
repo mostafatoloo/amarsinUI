@@ -84,7 +84,7 @@ const InvoiceReceipShowHeader = ({
 
   const body1 = (
     <div className="mt-2 text-sm w-full flex flex-col gap-2 border border-gray-400 rounded-md p-2">
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
         <div className="w-full flex">
           <label className="p-1 w-24 text-left">تامین کننده:</label>
           <div className="bg-slate-50 flex w-full">
@@ -113,7 +113,7 @@ const InvoiceReceipShowHeader = ({
           </div>
         </div>
         <div className="flex">
-          <label className="p-1">سررسید:</label>
+          <label className="p-1 w-24 text-left">سررسید:</label>
           <input
             disabled={!canEditForm}
             value={convertToFarsiDigits(fields.payDuration.toString())}
@@ -127,7 +127,7 @@ const InvoiceReceipShowHeader = ({
           />
         </div>
         <div className="flex">
-          <label className="p-1">تاریخ:</label>
+          <label className="p-1 w-24 text-left">تاریخ:</label>
           <input
             type="text"
             value={convertToFarsiDigits(
@@ -138,7 +138,7 @@ const InvoiceReceipShowHeader = ({
           />
         </div>
         <div className="flex">
-          <label className="p-1">ساعت:</label>
+          <label className="p-1 w-24 text-left  ">ساعت:</label>
           <input
             type="text"
             value={convertToFarsiDigits(
@@ -199,7 +199,7 @@ const InvoiceReceipShowHeader = ({
     <div className="mt-2 text-sm w-full flex flex-col gap-2 border border-gray-400 rounded-md p-2">
       {canEditForm && <div className="flex items-center justify-between gap-2">
         <div className="w-full flex items-center">
-          <label className="p-1 w-24 text-left">تامین کننده:</label>
+          <label className="p-1 w-32 md:w-24 text-left">تامین کننده:</label>
           <div className="bg-slate-50 flex w-full">
             <AutoComplete
               options={customers.map((b) => ({
@@ -231,7 +231,7 @@ const InvoiceReceipShowHeader = ({
         </div>
       </div>}
       {canEditForm && <div className="w-full flex items-center">
-        <label htmlFor="year" className="p-1 w-24 text-left">
+        <label htmlFor="year" className="p-1 w-32 md:w-24 text-left">
           برند:
         </label>
         <div className="bg-slate-50 flex w-full">
@@ -261,9 +261,9 @@ const InvoiceReceipShowHeader = ({
           />
         </div>
       </div>}
-      <div className="flex w-full justify-center items-center">
-        <div className="w-1/3 flex items-center">
-          <label className="p-1 w-28 text-left">قیمت:</label>
+      <div className="flex flex-col md:flex-row w-full md:justify-center md:items-center">
+        <div className="md:w-1/3 flex items-center">
+          <label className="p-1 w-32 md:w-28 text-left">قیمت:</label>
           <div className="bg-slate-50 flex w-full">
             <AutoComplete
               disabled={!canEditForm}
@@ -284,8 +284,8 @@ const InvoiceReceipShowHeader = ({
             />
           </div>
         </div>
-        <div className="w-1/3 flex items-center">
-          <label className="p-1  w-36 text-left">فروش از تاریخ:</label>
+        <div className="md:w-1/3 flex items-center">
+          <label className="p-1 w-32 text-left">فروش از تاریخ:</label>
           <PersianDatePicker
             name="fDate"
             label="از:"
@@ -294,8 +294,8 @@ const InvoiceReceipShowHeader = ({
             disabled={canEditForm ? false : true}
           />
         </div>
-        <div className="w-1/3 flex items-center">
-          <label className="p-1 w-36 text-left">تا تاریخ:</label>
+        <div className="md:w-1/3 flex items-center">
+          <label className="p-1 w-32 text-left">تا تاریخ:</label>
           <PersianDatePicker
             name="tDate"
             label="تا:"

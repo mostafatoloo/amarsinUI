@@ -60,6 +60,7 @@ const RegRecievedChequeImg = ({
 
   const handleRotateRight = () => {
     if (paymentAttachmentResponse.data.result.path!==null) {
+      console.log((rotation+90)%360)
       setRotation((prevRotation) => (prevRotation + 90) % 360);
     }
   };

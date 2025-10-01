@@ -67,8 +67,8 @@ const ReceiptPurchaseShowHeader = ({
   
   return (
     <div className="mt-2 text-sm w-full flex flex-col gap-2 border border-gray-400 rounded-md p-2">
-      <div className="flex items-center justify-between gap-2 w-full">
-        <div className="w-3/4 flex justify-center items-center">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 w-full">
+        <div className="w-full md:w-3/4 flex justify-center items-center">
           <label className="p-1 w-20 text-left">خریدار:</label>
           <div className="flex w-full rounded-md">
             <AutoComplete
@@ -89,8 +89,8 @@ const ReceiptPurchaseShowHeader = ({
             />
           </div>
         </div>
-        <div className="w-1/4 flex">
-          <label className="p-1 w-12 text-left">تاریخ:</label>
+        <div className="w-full md:w-1/4 flex">
+          <label className="p-1 w-20 md:w-12 text-left">تاریخ:</label>
           <input
             type="text"
             value={convertToFarsiDigits(datTim)}
@@ -99,8 +99,8 @@ const ReceiptPurchaseShowHeader = ({
           />
         </div>
       </div>
-      <div className="flex w-full">
-        <div className="w-3/4 flex">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 w-full">
+        <div className="md:w-3/4 flex">
           <label className="p-1 w-20 text-left">توضیحات:</label>
           <input
             type="text"
@@ -109,8 +109,8 @@ const ReceiptPurchaseShowHeader = ({
             className="text-sm text-gray-400 w-full p-1 border border-gray-300 rounded-md"
           />
         </div>
-        <div className="w-1/4 flex justify-center items-center">
-          <label className="p-1 w-12 text-left">انبار:</label>
+        <div className="md:w-1/4 flex justify-center items-center">
+          <label className="p-1 w-20 md:w-12 text-left">انبار:</label>
           <AutoComplete
             disabled={!canEditForm1Mst2}
             options={warehouseSearchResponse.data.result.searchResults.map(

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { DefaultOptionType, TableColumns } from "../../types/general";
 import { CellProps, useTable, useBlockLayout } from "react-table";
 import {
@@ -82,9 +82,7 @@ export function EditableInput<T extends object>({
   const [isFocused, setIsFocused] = React.useState(false);
 
   React.useEffect(() => {
-    if (
-      initialValue.props?.children?.props.type === "checkbox"
-    ) {
+    if (initialValue.props?.children?.props.type === "checkbox") {
       setValue(initialValue.props.children.props.checked);
     } else if (typeof initialValue === "boolean") {
       setValue(initialValue);
@@ -179,10 +177,14 @@ export function EditableInput<T extends object>({
         type="checkbox"
         disabled={!canEditForm}
         className="text-inherit p-0 m-0 border-0 w-full focus:outline-none"
-        checked={value as boolean}
+        checked={Boolean(value)}
         onChange={(e) => {
           setValue(e.target.checked);
-          changeRowValues(e.target.checked, index, id); //rowIndex, columnId
+          changeRowValues(
+            e.target.checked,
+            index,
+            id ?? (column as any)?.accessor
+          ); //rowIndex, columnId
         }}
       />
     );
@@ -239,60 +241,83 @@ export default function TTable<T extends object>({
   showHeader = true,
   selectedRowIndex,
   setSelectedRowIndex,
-  maxVisibleColumns = 6,
+  maxVisibleColumns,
 }: TableProps<T>) {
   //const [rowSelect, setRowSelect] = useState(0);
 
   const { width } = useCalculateTableHeight();
+  const [showTableHeader, setShowTableHeader] = useState<boolean>(showHeader);
+
+  useEffect(() => {
+    if (!maxVisibleColumns || width > 768) {
+      setShowTableHeader(showHeader);
+    } else {
+      setShowTableHeader(true);
+    }
+  }, [showHeader,width]);
 
   // Process columns for mobile/tablet responsiveness
   const processedColumns = React.useMemo(() => {
     // Only apply column collapsing on mobile/tablet
-    if (width > 768 || columns.length <= maxVisibleColumns) {
+    if (!maxVisibleColumns || width > 768) {
       return columns;
     }
 
     const visibleColumns = columns.slice(0, maxVisibleColumns - 1);
     const hiddenColumns = columns.slice(maxVisibleColumns - 1);
 
-    const processedVisibleColumns= visibleColumns.map((vc)=>{return {...vc,width:"15%"}})
-    
+    const collapsedColumnWidth=15;
+    const visibleColumnWidth= (100-collapsedColumnWidth)/visibleColumns.length
+    const processedVisibleColumns = visibleColumns.map((vc) => {
+      return { ...vc, width: visibleColumnWidth.toString()+"%" };
+    });
+
     // Calculate total width of visible columns
     /*const totalVisibleWidth = visibleColumns.reduce((sum, col) => {
       const width = parseInt(col.width?.slice(0,-1).toString() || '0');
       return sum + width;
     }, 0);*/
-    
+
     // Create a collapsed column for hidden columns
     const collapsedColumn = {
       Header: `سایر (${convertToFarsiDigits(hiddenColumns.length)})`,
       accessor: "collapsed",
       align: "center",
-      width: "25%",//(100-totalVisibleWidth).toString()+"%",
+      width: collapsedColumnWidth.toString() + "%", //(100-totalVisibleWidth).toString()+"%",
       Cell: ({ row }: any) => {
-        const hiddenData = hiddenColumns.map((col: any) => {
-          const cellValue = row.original[col.accessor];
-          
-          return {
-            header: col.Header,
-            value: cellValue,
-            columnId: col.accessor
-          };
-        });
-
         return (
           <div className="text-xs space-y-1 p-1">
-            {hiddenData.map((item, index) => (
-              <div key={index} className="flex flex-col items-center border-b border-gray-200 pb-1 last:border-b-0">
-                <div className="font-semibold text-gray-600 mb-1">{item.header}</div>
-                <div className="flex justify-center">
-                  {React.isValidElement(item.value) ? item.value : (item.value || '-')}
+            {hiddenColumns.map((col: any, index: number) => {
+              const columnId = col.id ?? col.accessor;
+              const key = `${String(columnId)}-${index}`;
+              return (
+                <div
+                  key={key}
+                  className="flex flex-col items-center border-b border-gray-200 pb-1 last:border-b-0"
+                >
+                  <div className="font-semibold text-gray-600 mb-1">
+                    {col.Header}
+                  </div>
+                  <div className="flex justify-center">
+                    {col.Cell
+                      ? React.createElement(col.Cell as any, {
+                          value: row.original[col.accessor],
+                          row: { index: row.index, original: row.original },
+                          column: { ...col, id: col.id ?? col.accessor },
+                          updateMyData,
+                          updateMyRow,
+                          changeRowValues,
+                          canEditForm,
+                          selectedRowIndex,
+                        })
+                      : row.original[col.accessor] ?? "-"}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         );
-      }
+      },
     };
 
     return [...processedVisibleColumns, collapsedColumn];
@@ -434,7 +459,7 @@ export default function TTable<T extends object>({
       className="table-fixed w-full border border-gray-300" // shadow-lg
       style={{ fontSize }}
     >
-      {showHeader && tHead}
+      {showTableHeader && tHead}
       {tBody}
     </table>
   );

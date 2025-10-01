@@ -26,6 +26,7 @@ import { useProductGrace } from "../../hooks/useProductGrace";
 import ProductGraceForm from "./ProductGraceForm";
 import ProductGraceDtlHeader from "./ProductGraceDtlHeader";
 import { colors } from "../../utilities/color";
+import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
 
 const ProductGrace = () => {
   const {
@@ -401,6 +402,9 @@ const ProductGrace = () => {
       />
     );
   };
+
+  const {width}= useCalculateTableHeight();
+
   return (
     <div
       className={`sm:h-full overflow-y-scroll flex flex-col bg-gray-200 pt-2 gap-2`}
@@ -415,8 +419,8 @@ const ProductGrace = () => {
         data={data}
         refetch={refetch}
       />
-      <div className="flex gap-2 px-2 h-1/2">
-        <div className="flex flex-col w-3/4 h-full">
+      <div className="flex flex-col md:flex-row gap-2 px-2 h-1/2">
+        <div className="flex flex-col w-full md:w-3/4 h-full">
           <div className="w-full overflow-y-scroll bg-white rounded-md h-full">
             {isLoading ? (
               <Skeleton />
@@ -534,7 +538,7 @@ const ProductGrace = () => {
           </div>
         </div>
         {/* ProductOfferParams */}
-        <div className="w-1/4 h-full">
+        <div className="w-full md:w-1/4 h-full">
           <ProductOfferParams
             regFDate={regFDate}
             setRegFDate={setRegFDate}
@@ -553,7 +557,7 @@ const ProductGrace = () => {
           <Skeleton />
         ) : (
           <>
-            <ProductGraceDtlHeader columns={columnsDtl} />
+            {width>768 && <ProductGraceDtlHeader columns={columnsDtl} />}
             <TTable
               selectedRowIndex={selectedRowIndexDtl}
               setSelectedRowIndex={setSelectedRowIndexDtl}
@@ -561,9 +565,10 @@ const ProductGrace = () => {
               data={dataDtl}
               fontSize="0.75rem"
               changeRowSelectColor={true}
-              wordWrap={false}
+              wordWrap={true}
               showToolTip={true}
               showHeader={false}
+              maxVisibleColumns={7}
             />
           </>
         )}
@@ -597,7 +602,7 @@ const ProductGrace = () => {
           isNew={isNew} //for check if isNew new else edit
           setIsNew={setIsNew}
           setIsEdit={setIsEdit}
-          fromWorkFlow={false}//for not going to editting in product grace form as default
+          fromWorkFlow={false} //for not going to editting in product grace form as default
           canEditForm1={true}
         />
       </ModalForm>

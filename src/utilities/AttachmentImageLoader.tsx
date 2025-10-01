@@ -34,7 +34,8 @@ const AttachmentImageLoader: React.FC<AttachmentImageLoaderProps> = ({
     options.alt,
     options.id,
     options.placeholder,
-    options.clickable
+    options.clickable,
+    options.style,
   ]);
 
   // Default to true for clickable images
