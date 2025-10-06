@@ -13,6 +13,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type Props = {
+  setSelectedRowIndex?: (index: number) => void;
   page?: number;
   setPage?: (page: number) => void;
   pageSize?: number;
@@ -23,7 +24,7 @@ type Props = {
 export function TablePaginationActions(props: Props) {
   const { setDefaultRowsPerPage } = useGeneralContext();
 
-  const { page = 1, setPage, totalCount, pageSize = 10 } = props;
+  const {setSelectedRowIndex, page = 1, setPage, totalCount, pageSize = 10 } = props;
 
   const [inputValue, setInputValue] = useState<string>((page || 0) + 1 + "");
   const inputRef = useRef<boolean>(false);
@@ -62,6 +63,7 @@ export function TablePaginationActions(props: Props) {
   const handleChangePage = (_event: unknown, newPage: number): void => {
     // Convert from 0-based to 1-based for API
     setPage?.(newPage + 1);
+    setSelectedRowIndex?.(0);
   };
 
   return (

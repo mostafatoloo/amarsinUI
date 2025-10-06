@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import { useProducts } from "../../hooks/useProducts";
 import {
   ColumnGroup,
   TableColumns,
@@ -7,64 +5,41 @@ import {
   DefaultOptionType,
 } from "../../types/general";
 import AutoComplete from "../controls/AutoComplete";
-import { OrderRegShowResponse } from "../../types/order";
-import { useOrderStore } from "../../store/orderStore";
-import { useWarehouse } from "../../hooks/useWarehouse";
-import { convertToFarsiDigits, convertToLatinDigits } from "../../utilities/general";
+import { SalesPriceItem } from "../../types/product";
+import { WarehouseSearchResponse } from "../../types/warehouse";
 
 type Props = {
-  orderRegShowResponse: OrderRegShowResponse;
   columns: TableColumns;
   salesPrice: DefaultOptionType | null;
   warehouse: DefaultOptionType | null;
-  setSalesPrice: React.Dispatch<React.SetStateAction<DefaultOptionType | null>>;
-  setWarehouse: React.Dispatch<React.SetStateAction<DefaultOptionType | null>>;
+  setSalesPriceSearch: React.Dispatch<React.SetStateAction<string>>;
+  setWarehouseSearch: React.Dispatch<React.SetStateAction<string>>;
+  changeSalesPrice: (newValue: DefaultOptionType) => void;
+  changeWarehouse: (newValue: DefaultOptionType) => void;
+  salesPricesSearchResponse: SalesPriceItem[];
+  warehouseSearchResponse: WarehouseSearchResponse;
 };
 
 const OrderRegShowTableHeader = ({
-  orderRegShowResponse,
   columns,
   salesPrice,
   warehouse,
-  setSalesPrice,
-  setWarehouse,
+  setSalesPriceSearch,
+  setWarehouseSearch,
+  changeSalesPrice,
+  changeWarehouse,
+  salesPricesSearchResponse,
+  warehouseSearchResponse,
 }: Props) => {
-  const { salesPricesSearchResponse } = useProducts();
-  const { warehouseSearchResponse } = useWarehouse();
-  const [salesPriceSearch, setSalesPriceSearch] = useState<string>("");
-  const [warehouseSearch, setWarehouseSearch] = useState<string>("");
-  const {setField:setSalesPriceField,setField:setWarehouseField}=useOrderStore()
-
-
-  useEffect(() => {
-    setSalesPriceField("salesPricesSearch", salesPriceSearch);
-    setSalesPriceField("salesPricesSearchPage", 1);
-    setSalesPriceField("lastId", 0);
-  }, [salesPriceSearch]);
-
-  useEffect(() => {
-    //console.log(convertToLatinDigits(warehouseSearch),"warehouseSearch");
-    setWarehouseField("search", convertToLatinDigits(warehouseSearch) ? null :"ا");
-    setWarehouseField("page", 1);
-    setWarehouseField("pageSize", 30);
-    setWarehouseField("lastId", 0);
-    setWarehouseField("CustomerTypeId", -1);
-    setWarehouseField("PartKey", 0);
-  }, [warehouseSearch]);
-
-  useEffect(() => {
-    setSalesPrice({
-      id: orderRegShowResponse.data.result.defaultPriceId,
-      title: convertToFarsiDigits(orderRegShowResponse.data.result.priceTitle),
-    });
-    setWarehouse({
-      id: orderRegShowResponse.data.result.defaultWarehouseId,
-      title: convertToFarsiDigits(orderRegShowResponse.data.result.warehouseName),
-    });
-  }, [orderRegShowResponse]);
 
   const calculateMergedWidth = (columnGroup: ColumnGroup) => {
-    const mergedColumns = ["cupCode", "cupCnt", "cupOCnt", "cupEDate", "editIcon2"];
+    const mergedColumns = [
+      "cupCode",
+      "cupCnt",
+      "cupOCnt",
+      "cupEDate",
+      "editIcon2",
+    ];
     let totalWidth = 0;
     columnGroup.columns.forEach((column) => {
       if (mergedColumns.includes(column.accessor)) {
@@ -73,20 +48,6 @@ const OrderRegShowTableHeader = ({
       }
     });
     return (totalWidth * 100) / Number(columnGroup.width?.slice(0, -1)) + "%";
-  };
-//change order sales price
-  const changeSalesPrice = (newValue: DefaultOptionType) => {
-    //console.log(newValue);
-    setSalesPriceField("orderIdForSalesPrice", orderRegShowResponse.data.result.orderMst.id);
-    setSalesPriceField("salesPriceId", newValue.id);
-    setSalesPrice(newValue);
-    setSalesPriceSearch(newValue.title);
-  };
-//change warehouse
-  const changeWarehouse = (newValue: DefaultOptionType) => {
-    //console.log(newValue);
-    setWarehouse(newValue);
-    setWarehouseSearch(newValue?.title ?? "ا");
   };
 
   return (
@@ -141,10 +102,12 @@ const OrderRegShowTableHeader = ({
                       >
                         <AutoComplete
                           disabled={false}
-                          options={warehouseSearchResponse.data.result.searchResults.map((b) => ({
-                            id: b.id,
-                            title: b.text,
-                          }))}
+                          options={warehouseSearchResponse.data.result.searchResults.map(
+                            (b) => ({
+                              id: b.id,
+                              title: b.text,
+                            })
+                          )}
                           value={warehouse}
                           handleChange={(_event, newValue) => {
                             changeWarehouse(newValue as DefaultOptionType);

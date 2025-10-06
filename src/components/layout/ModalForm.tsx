@@ -26,16 +26,16 @@ const ModalForm: React.FC<ModalProps> = ({
 
   switch (width) {
     case "1/2":
-      classname = `bg-white rounded-lg shadow-lg w-full md:w-1/2 relative p-4 mt-4 animate-open-modal`;
+      classname = `bg-white rounded-lg shadow-lg w-full md:w-1/2 relative p-4 mt-4 md:animate-open-modal`;
       break;
     case "2/3":
-      classname = `bg-white rounded-lg shadow-lg w-full md:w-2/3 relative p-4 mt-4 animate-open-modal`;
+      classname = `bg-white rounded-lg shadow-lg w-full md:w-2/3 relative p-4 mt-4 md:animate-open-modal`;
       break;
     case "5/6":
-      classname = `bg-white rounded-lg shadow-lg w-full md:w-5/6 relative p-4 mt-4 animate-open-modal`;
+      classname = `bg-white rounded-lg shadow-lg w-full md:w-5/6 relative p-4 mt-4 md:animate-open-modal`;
       break;
     case "1":
-      classname = `bg-white rounded-lg shadow-lg w-full md:w-full relative p-4 mt-4 animate-open-modal`;
+      classname = `bg-white rounded-lg shadow-lg w-full md:w-full relative p-4 mt-4 md:animate-open-modal`;
       break;
   }
   /*const classname =

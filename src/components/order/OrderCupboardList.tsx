@@ -8,10 +8,9 @@ import {
 import TTable, { EditableInput } from "../controls/TTable";
 import { colors } from "../../utilities/color";
 import Skeleton from "../layout/Skeleton";
-import {
-  OrderCupListResponse,
-  OrderCupListTbl,
-} from "../../types/order";
+import { OrderCupListResponse, OrderCupListTbl } from "../../types/order";
+import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
+import OrderCupboardListMobileTable from "./OrderCupboardListMobileTable";
 
 type Props = {
   handleOrderCupboardListClose: () => void;
@@ -58,7 +57,7 @@ const OrderCupboardList = ({
           {
             Header: "تاربخ",
             accessor: "fDate",
-            width: "10%",
+            width: "13%",
           },
           {
             Header: "بچ",
@@ -68,12 +67,12 @@ const OrderCupboardList = ({
           {
             Header: "انقضاء",
             accessor: "eDate",
-            width: "10%",
+            width: "13%",
           },
           {
             Header: "موجودی",
             accessor: "cAmnt",
-            width: "20%",
+            width: "14%",
           },
         ],
       },
@@ -106,6 +105,7 @@ const OrderCupboardList = ({
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in orderCupboardList table
 
   const updateMyData = (rowIndex: number, columnId: string, value: string) => {
+    //console.log(rowIndex, columnId, value,"rowIndex, columnId, value")
     setData((old) =>
       old.map((row, index) => {
         if (index === rowIndex) {
@@ -197,11 +197,14 @@ const OrderCupboardList = ({
         return item;
       });
       //console.log(updateData,"updateData in order cupboard list")
+      console.log(updateData,"updateData")
       setBaseData(updateData);
       setProcessedData(updateData);
       handleOrderCupboardListClose();
     }
   };
+
+  const { width } = useCalculateTableHeight();
 
   return (
     <>
@@ -213,19 +216,28 @@ const OrderCupboardList = ({
         </p>
       ) : (
         <div className="w-full mt-2">
-          <TTable
-            columns={columns}
-            data={data}
-            updateMyData={updateMyData}
-            selectedRowIndex={selectedRowIndex}
-            setSelectedRowIndex={setSelectedRowIndex}
-            fontSize="0.75rem"
-            changeRowSelectColor={true}
-            wordWrap={true}
-            changeRowValues={changeRowValues}
-            showToolTip={true}
-            canEditForm={true}
-          />
+          {width > 640 ? (
+            <TTable
+              columns={columns}
+              data={data}
+              updateMyData={updateMyData}
+              selectedRowIndex={selectedRowIndex}
+              setSelectedRowIndex={setSelectedRowIndex}
+              fontSize="0.75rem"
+              changeRowSelectColor={true}
+              wordWrap={true}
+              changeRowValues={changeRowValues}
+              showToolTip={true}
+              canEditForm={true}
+            />
+          ) : (
+            <OrderCupboardListMobileTable
+              data={data}
+              columns={columns}
+              changeRowValues={changeRowValues}
+              canEditForm={true}
+            />
+          )}
 
           {data.length > 0 && (
             <ConfirmCard variant="rounded-md justify-end">

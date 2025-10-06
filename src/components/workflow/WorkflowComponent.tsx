@@ -11,6 +11,7 @@ import ProductGraceForWorkFlow from "../productGrace/ProductGraceForWorkFlow";
 import ProductOfferForWorkFlow from "../productOffer/ProductOfferForWorkFlow";
 import ProductPriceForWorkFlow from "../productPrice/ProductPriceForWorkFlow";
 import ProductPermForWorkFlow from "../productPerm/ProductPermForWorkFlow";
+import WarehouseTemporaryReceiptShow from "../preInvoiceReturn/WarehouseTemporaryReceiptShow";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -108,6 +109,13 @@ export default function WorkflowComponent({
         />
       );
       break;
+    case "PreInvoiceReturn/_PreInvoiceReturnWareHouseTemporaryReceipt": //مدیر انبار / تایید و ارسال به انبار- پیش فاکتور مرجوعی
+      componentToRender1 = (
+        <WarehouseTemporaryReceiptShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+        />
+      );
+      break;
     case "PayRequest/_PayRequest": //کارشناس خرید -> ثبت اولیه
       componentToRender1 = (
         <PayRequestShow
@@ -127,13 +135,13 @@ export default function WorkflowComponent({
     case "InvoiceBuy/_InvoiceBuy":
     case "Procurement/_Procurement":
       componentToRender2 = (
-        <InvoiceShow           //کارشناس خرید-> دریافت اصل فاکتور*****************
+        <InvoiceShow //کارشناس خرید-> دریافت اصل فاکتور*****************
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           caption={"اقلام"}
         />
       );
       break;
-    case "InvoiceReturn/_InvoiceReturn":  //****************
+    case "InvoiceReturn/_InvoiceReturn": //****************
       componentToRender2 = (
         <InvoiceShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
@@ -208,7 +216,14 @@ export default function WorkflowComponent({
         />
       );
       break;
-    case "PayRequest/_PayRequest": //کارشناس خرید -> ثبت اولیه 
+    case "PreInvoiceReturn/_PreInvoiceReturnWareHouseTemporaryReceipt": //مدیر انبار / تایید و ارسال به انبار- پیش فاکتور مرجوعی
+      componentToRender1 = (
+        <WarehouseTemporaryReceiptShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+        />
+      );
+      break;
+    case "PayRequest/_PayRequest": //کارشناس خرید -> ثبت اولیه
       componentToRender2 = (
         <PayRequestShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}

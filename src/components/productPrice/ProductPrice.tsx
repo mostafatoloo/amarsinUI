@@ -560,6 +560,7 @@ const ProductPrice = () => {
               pageSize={pageSize}
               setPageSize={setPageSize}
               totalCount={productPriceTotalCount ?? 0}
+              setSelectedRowIndex={setSelectedRowIndex}
             />
           </div>
         </div>

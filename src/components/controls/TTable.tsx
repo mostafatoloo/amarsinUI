@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { DefaultOptionType, TableColumns } from "../../types/general";
+import { Column, DefaultOptionType, TableColumns } from "../../types/general";
 import { CellProps, useTable, useBlockLayout } from "react-table";
 import {
   convertToFarsiDigits,
@@ -82,7 +82,7 @@ export function EditableInput<T extends object>({
   const [isFocused, setIsFocused] = React.useState(false);
 
   React.useEffect(() => {
-    if (initialValue.props?.children?.props.type === "checkbox") {
+    if (initialValue && initialValue.props?.children?.props.type === "checkbox") {
       setValue(initialValue.props.children.props.checked);
     } else if (typeof initialValue === "boolean") {
       setValue(initialValue);
@@ -143,6 +143,7 @@ export function EditableInput<T extends object>({
         showBorderFocused={true}
         textColor={colors.gray_600}
         backgroundColor={!canEditForm ? "inherit" : "white"}
+        //textAlign="center"
         //onInputChange={handleInputChange}
         //inputValue={search}
       />
@@ -254,7 +255,7 @@ export default function TTable<T extends object>({
     } else {
       setShowTableHeader(true);
     }
-  }, [showHeader,width]);
+  }, [showHeader, width]);
 
   // Process columns for mobile/tablet responsiveness
   const processedColumns = React.useMemo(() => {
@@ -262,21 +263,20 @@ export default function TTable<T extends object>({
     if (!maxVisibleColumns || width > 768) {
       return columns;
     }
+    //reduce invisible columns
+    const tempColumns = (columns as Column[]).filter(
+      (column) => column.visible !== false
+    );
+    const visibleColumns = tempColumns.slice(0, maxVisibleColumns - 1);
+    const hiddenColumns = tempColumns.slice(maxVisibleColumns - 1);
 
-    const visibleColumns = columns.slice(0, maxVisibleColumns - 1);
-    const hiddenColumns = columns.slice(maxVisibleColumns - 1);
-
-    const collapsedColumnWidth=15;
-    const visibleColumnWidth= (100-collapsedColumnWidth)/visibleColumns.length
+    console.log(visibleColumns, hiddenColumns);
+    const collapsedColumnWidth = 15;
+    const visibleColumnWidth =
+      (100 - collapsedColumnWidth) / visibleColumns.length;
     const processedVisibleColumns = visibleColumns.map((vc) => {
-      return { ...vc, width: visibleColumnWidth.toString()+"%" };
+      return { ...vc, width: visibleColumnWidth.toString() + "%" };
     });
-
-    // Calculate total width of visible columns
-    /*const totalVisibleWidth = visibleColumns.reduce((sum, col) => {
-      const width = parseInt(col.width?.slice(0,-1).toString() || '0');
-      return sum + width;
-    }, 0);*/
 
     // Create a collapsed column for hidden columns
     const collapsedColumn = {
@@ -320,6 +320,7 @@ export default function TTable<T extends object>({
       },
     };
 
+    console.log([...processedVisibleColumns, collapsedColumn]);
     return [...processedVisibleColumns, collapsedColumn];
   }, [columns, maxVisibleColumns, width]);
 
@@ -392,6 +393,7 @@ export default function TTable<T extends object>({
             >
               {row.cells.map((cell: any) => {
                 if (cell.column.visible === false) return null;
+                //console.log(cell.column)
                 return (
                   <td
                     {...cell.getCellProps()}
@@ -412,8 +414,8 @@ export default function TTable<T extends object>({
                           ? CellColorChange(row, cell.column.id)
                           : cell.column.backgroundColor || "white",
                       whiteSpace: "pre-wrap",
-                      textWrap: !wordWrap ? "nowrap" : "wrap",
-                      overflow: !wordWrap ? "hidden" : "visible",
+                      textWrap: !wordWrap && width > 768 ? "nowrap" : "wrap",
+                      overflow: !wordWrap && width > 768 ? "hidden" : "visible",
                       ...(hasSumRow && i === rows.length - 1
                         ? {
                             backgroundColor: colors.gray200,

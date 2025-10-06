@@ -6,18 +6,29 @@ import { OrderRegShowResponse } from "../../types/order";
 import AutoComplete from "../controls/AutoComplete";
 import { useCustomers } from "../../hooks/useCustomers";
 import { DefaultOptionType } from "../../types/general";
+import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
+import { SalesPriceItem } from "../../types/product";
+import { WarehouseSearchResponse } from "../../types/warehouse";
 
 type Props = {
   orderRegShowResponse: OrderRegShowResponse;
   canEditForm1Mst1: boolean;
   cash1: boolean;
-  setCash1: React.Dispatch<React.SetStateAction<boolean>>
+  setCash1: React.Dispatch<React.SetStateAction<boolean>>;
   byPhone: boolean;
   setByPhone: React.Dispatch<React.SetStateAction<boolean>>;
   urgency: boolean;
   setUrgency: React.Dispatch<React.SetStateAction<boolean>>;
   customer: DefaultOptionType | null;
   setCustomer: (customer: DefaultOptionType | null) => void;
+  salesPrice: DefaultOptionType | null;
+  warehouse: DefaultOptionType | null;
+  salesPricesSearchResponse: SalesPriceItem[];
+  warehouseSearchResponse: WarehouseSearchResponse
+  setSalesPriceSearch: React.Dispatch<React.SetStateAction<string>>;
+  setWarehouseSearch: React.Dispatch<React.SetStateAction<string>>;
+  changeSalesPrice: (newValue: DefaultOptionType) => void;
+  changeWarehouse: (newValue: DefaultOptionType) => void;
 };
 
 const OrderRegShowHeader = ({
@@ -31,8 +42,15 @@ const OrderRegShowHeader = ({
   setUrgency,
   customer,
   setCustomer,
+  salesPrice,
+  warehouse,
+  salesPricesSearchResponse,
+  warehouseSearchResponse,
+  setSalesPriceSearch,
+  setWarehouseSearch,
+  changeSalesPrice,
+  changeWarehouse
 }: Props) => {
-
   const { systemId, yearId } = useGeneralContext();
   const { customers } = useCustomers();
   const { setField: setCustomerField } = useCustomerStore();
@@ -48,23 +66,25 @@ const OrderRegShowHeader = ({
   }, [search, systemId, yearId]);
 
   useEffect(() => {
-    setSearch("")
+    setSearch("");
     setCash1(orderRegShowResponse.data.result.orderMst?.cash);
     setByPhone(orderRegShowResponse.data.result.orderMst?.byPhone);
     setUrgency(orderRegShowResponse.data.result.orderMst?.urgency);
     setCustomer({
       id: orderRegShowResponse.data.result.orderMst?.cId ?? "",
-      title: orderRegShowResponse.data.result.orderMst?.srName   ?? "",
+      title: orderRegShowResponse.data.result.orderMst?.srName ?? "",
     });
   }, [orderRegShowResponse.data.result.orderMst]);
-  
+
+  const { width } = useCalculateTableHeight();
+
   return (
     <div className="mt-2 text-sm w-full flex flex-col gap-2 border border-gray-400 rounded-md p-2">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 w-full">
         <div className="w-full md:w-3/4 flex justify-center items-center">
           <label className="p-1 w-20 text-left">خریدار:</label>
           <div className="bg-slate-50 flex w-full rounded-md">
-          <AutoComplete
+            <AutoComplete
               options={customers.map((b) => ({
                 id: b.id,
                 title: b.text,
@@ -81,7 +101,9 @@ const OrderRegShowHeader = ({
               disabled={!canEditForm1Mst1}
             />
           </div>
-          {orderRegShowResponse.data.result.orderMst?.blackList ? <p className="text-red-500 w-20 p-1">لیست سیاه</p> : null}
+          {orderRegShowResponse.data.result.orderMst?.blackList ? (
+            <p className="text-red-500 w-20 p-1">لیست سیاه</p>
+          ) : null}
         </div>
         <div className="w-full md:w-1/4 flex">
           <label className="p-1 w-20 md:w-12 text-left">ثبت:</label>
@@ -101,7 +123,9 @@ const OrderRegShowHeader = ({
         <label className="p-1 w-20 text-left">توضیحات:</label>
         <input
           type="text"
-          value={convertToFarsiDigits(orderRegShowResponse.data.result.orderMst?.exp ?? "")}
+          value={convertToFarsiDigits(
+            orderRegShowResponse.data.result.orderMst?.exp ?? ""
+          )}
           disabled={!canEditForm1Mst1}
           className="text-sm text-gray-400 w-full p-1 border border-gray-300 rounded-md"
         />
@@ -111,7 +135,9 @@ const OrderRegShowHeader = ({
           <label className="p-1 w-20 text-left">تیتک:</label>
           <input
             type="text"
-            value={convertToFarsiDigits(orderRegShowResponse.data.result.orderMst?.dsc ?? "")}
+            value={convertToFarsiDigits(
+              orderRegShowResponse.data.result.orderMst?.dsc ?? ""
+            )}
             disabled={!canEditForm1Mst1}
             className="text-sm text-gray-400 w-full p-1 border border-gray-300 rounded-md"
           />
@@ -139,7 +165,8 @@ const OrderRegShowHeader = ({
           <input
             type="text"
             value={convertToFarsiDigits(
-              orderRegShowResponse.data.result.orderMst?.customerDcrmntPrcnt ?? ""
+              orderRegShowResponse.data.result.orderMst?.customerDcrmntPrcnt ??
+                ""
             )}
             className="text-sm text-gray-400 w-16 p-1 border border-gray-300 rounded-md"
           />
@@ -163,6 +190,58 @@ const OrderRegShowHeader = ({
           <label className="p-1 w-12 text-left">اورژانسی</label>
         </div>
       </div>
+      {width <= 640 ? (
+        <>
+          <div className="flex items-center justify-between w-full">
+            <label className="p-1 w-20 text-left">قیمت:</label>
+            <AutoComplete
+              disabled={false}
+              options={salesPricesSearchResponse.map((b) => ({
+                id: b.id,
+                title: b.text,
+              }))}
+              value={salesPrice}
+              handleChange={(_event, newValue) => {
+                changeSalesPrice(newValue as DefaultOptionType);
+              }}
+              setSearch={setSalesPriceSearch}
+              showLabel={false}
+              outlinedInputPadding="10px"
+              backgroundColor={"white"}
+              showClearIcon={false}
+              inputPadding="0 !important"
+              textAlign="center"
+              desktopfontsize="12px"
+              placeholder="قیمت را انتخاب کنید..."
+            />
+          </div>
+          <div className="flex items-center justify-between w-full">
+            <label className="p-1 w-20 text-left">انبار:</label>
+            <AutoComplete
+              disabled={false}
+              options={warehouseSearchResponse.data.result.searchResults.map(
+                (b) => ({
+                  id: b.id,
+                  title: b.text,
+                })
+              )}
+              value={warehouse}
+              handleChange={(_event, newValue) => {
+                changeWarehouse(newValue as DefaultOptionType);
+              }}
+              setSearch={setWarehouseSearch}
+              showLabel={false}
+              outlinedInputPadding="10px"
+              backgroundColor={"white"}
+              showClearIcon={false}
+              inputPadding="0 !important"
+              textAlign="center"
+              desktopfontsize="12px"
+              placeholder="انبار را انتخاب کنید..."
+            />
+          </div>
+        </>
+      ) : null}
     </div>
   );
 };

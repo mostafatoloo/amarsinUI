@@ -504,6 +504,7 @@ const ProductPerm = () => {
           </div>
           <div className="w-full bg-white rounded-md">
             <TablePaginationActions
+              setSelectedRowIndex={setSelectedRowIndex}
               page={pageNumber - 1}
               setPage={setPageNumber}
               pageSize={pageSize}
