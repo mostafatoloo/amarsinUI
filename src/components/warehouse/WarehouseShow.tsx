@@ -104,7 +104,7 @@ const WarehouseShow = ({ workFlowRowSelectResponse }: Props) => {
         title="کاتالوگ محصول"
         width="1/2"
       >
-        {selectedProduct && <ProductCatalogue dtl={selectedProduct} />}
+        {selectedProduct && <ProductCatalogue dtl={selectedProduct} isNotVisible={false} />}
       </ModalForm>
       {/*open product catalog if status is clicked*/}
       <ModalForm

@@ -1,23 +1,35 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { colors } from "../../utilities/color";
 import {
-  ResponsePreInvoiceDtlSearch,
+  PreInvoiceReturnDtlTable,
   ResultWarehouseTemporaryReceiptShow,
+  WarehouseTemporaryReceiptSaveRequest,
 } from "../../types/preInvoiceReturn";
-import { convertToFarsiDigits } from "../../utilities/general";
-import { FaCheck } from "react-icons/fa";
+import {
+  convertToFarsiDigits,
+  convertToLatinDigits,
+} from "../../utilities/general";
+import { FaCheck, FaSave } from "react-icons/fa";
 import TTable, { EditableInput } from "../controls/TTable";
 import Skeleton from "../layout/Skeleton";
-import { DefaultOptionType } from "../../types/general";
+import { DefaultOptionType, TableColumns } from "../../types/general";
+import { usePreInvoiceReturnStore } from "../../store/preInvoiceReturnStore";
+import Spinner from "../controls/Spinner";
+import { WarehouseTemporaryReceiptIndentDtl } from "../../types/warehouse";
 
 type Props = {
   warehouseTemporaryReceiptShowResponse: ResultWarehouseTemporaryReceiptShow;
   isLoadingWarehouseTemporaryReceiptShow: boolean;
   preInvoiceDtlSearchOptions: DefaultOptionType[];
   CanEditForm1Dtl1: boolean;
-  setPreInvoiceReturnDtlsId: React.Dispatch<React.SetStateAction<number>>;
   search: string;
   setSearch: (search: string) => void;
+  warehouseTemporaryReceiptSave: (
+    request: WarehouseTemporaryReceiptSaveRequest
+  ) => void;
+  isLoadingWarehouseTemporaryReceiptSave: boolean;
+  setStatusClicked: (statusClicked: boolean) => void;
+  setSelectedProduct: (dtl: WarehouseTemporaryReceiptIndentDtl) => void;
 };
 
 const WarehouseTemporaryReceiptShowTable = ({
@@ -25,34 +37,41 @@ const WarehouseTemporaryReceiptShowTable = ({
   isLoadingWarehouseTemporaryReceiptShow,
   preInvoiceDtlSearchOptions,
   CanEditForm1Dtl1,
-  setPreInvoiceReturnDtlsId,
   search,
   setSearch,
+  warehouseTemporaryReceiptSave,
+  isLoadingWarehouseTemporaryReceiptSave,
+  setStatusClicked,
+  setSelectedProduct,
 }: Props) => {
-  const columns = [
+  const columns: TableColumns = [
     {
       Header: "اطلاعات درخواست",
-      width: "70%",
+      width: "65%",
       columns: [
         {
           Header: "ردیف",
           accessor: "index",
           width: "3%",
+          Cell: ({ value }: any) => convertToFarsiDigits(value),
         },
         {
           Header: "کالا",
           accessor: "product",
           width: "15%",
+          Cell: ({ value }: any) => convertToFarsiDigits(value),
         },
         {
           Header: "قفسه",
           accessor: "cupCode",
-          width: "7%",
+          width: "6%",
+          Cell: ({ value }: any) => convertToFarsiDigits(value),
         },
         {
           Header: "uid",
           accessor: "cCode",
           width: "10%",
+          Cell: ({ value }: any) => convertToFarsiDigits(value),
         },
         {
           Header: "انقضاء",
@@ -62,7 +81,8 @@ const WarehouseTemporaryReceiptShowTable = ({
         {
           Header: "تعداد",
           accessor: "cnt",
-          width: "5%",
+          width: "3%",
+          Cell: ({ value }: any) => convertToFarsiDigits(value),
         },
         {
           Header: "سالم",
@@ -73,26 +93,29 @@ const WarehouseTemporaryReceiptShowTable = ({
           Header: "فاکتور",
           accessor: "factorNo",
           width: "10%",
+          Cell: ({ value }: any) => convertToFarsiDigits(value),
         },
         {
           Header: "شرح",
           accessor: "dtlDsc",
-          width: "12%",
+          width: "10%",
+          Cell: ({ value }: any) => convertToFarsiDigits(value),
         },
       ],
     },
     {
       Header: "ثبت",
-      width: "26%",
+      width: "33%",
       backgroundColor: colors.indigo50,
       columns: [
         {
           Header: "رسید موقت",
-          accessor: "tempReciept",
-          width: "15%",
+          accessor: "wtrdText",
+          width: "23%",
           backgroundColor: colors.indigo50,
           type: "autoComplete",
           options: preInvoiceDtlSearchOptions,
+          align: "center",
           setSearch,
           search,
           placeholder: "رسید موقت را انتخاب کنید...",
@@ -105,76 +128,273 @@ const WarehouseTemporaryReceiptShowTable = ({
           accessor: "regedCnt",
           width: "3%",
           backgroundColor: colors.indigo50,
+          Cell: ({ value }: any) => convertToFarsiDigits(Number(value)),
         },
         {
           Header: "آفر",
           accessor: "regedOffer",
           width: "3%",
           backgroundColor: colors.indigo50,
+          Cell: ({ value }: any) => convertToFarsiDigits(Number(value)),
         },
         {
           Header: "وضعیت",
-          accessor: "statusCode",
-          width: "5%",
+          accessor: "status",
+          width: "4%",
           backgroundColor: colors.indigo50,
+          Cell: ({ value }: any) => (value),
         },
       ],
     },
     {
       Header: "...",
-      width: "4%",
+      width: "2%",
       backgroundColor: colors.indigo50, //indigo[50]
       columns: [
         {
           Header: "...",
-          accessor: "wtrdId",
-          width: "4%",
+          accessor: "saveBtn",
+          width: "2%",
           backgroundColor: colors.indigo50,
-          //Cell: EditableInput,
+          /*Cell: ({ row }: any) => (
+            <div className="flex w-full items-center justify-center">
+              <button
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  updateToSave(row);
+                }}
+              >
+                <FaSave color="purple" size={16} />
+              </button>
+            </div>
+          ),*/
+          Cell: ({ value }: any) => value,
         },
       ],
     },
   ];
-  const [data, setData] = useState<any[]>([]);
+
+  const [data, setData] = useState<PreInvoiceReturnDtlTable[]>([]);
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in warehouseTemporaryReceiptShowTable table
+  const { setField } = usePreInvoiceReturnStore();
+  ///////////////////////////////////////////////////////
+  const updateToSave = (row: any) => {
+    const request: WarehouseTemporaryReceiptSaveRequest = {
+      WarehouseTemporaryReceiptSaveRequestId: row.id,
+      warehouseTemporaryReceiptDtlId: row.wtrdId ?? 0,
+    };
+    console.log(request, "request in updateToSave");
+    warehouseTemporaryReceiptSave(request);
+    checkIconClick(
+      Number(convertToLatinDigits(row.index.toString()))-1,
+      { id: row.wtrdId, title: row.wtrdText },
+      "wtrdText"
+    );
+  };
+//////////////////////////////////////////////////////////
+  const handleStatusClick = (dtl: WarehouseTemporaryReceiptIndentDtl) => {
+    setSelectedProduct(dtl);
+    setStatusClicked(true);
+  };
   ///////////////////////////////////////////////////////
   useEffect(() => {
     setData(
       warehouseTemporaryReceiptShowResponse.preInvoiceReturnDtls.map(
-        (item, idx) => ({
+        (item, idx) => { 
+          const dtl: WarehouseTemporaryReceiptIndentDtl = {
+            id: 0,
+            iocId: 0,
+            produce: "",
+            expire: "",
+            uId: "",
+            status: 0,
+            cId: item.wtrcdId,
+            code: "",
+            gtin: "",
+            irc: "",
+            pCode: "",
+            pName: "",
+            cnt: 0,
+            stock: 0,
+            pOffer: 0,
+            indents: [],
+            rCnt: 0,
+            rOffer: 0,
+          };
+          return{
           ...item,
-          index: convertToFarsiDigits(idx + 1),
-          product: convertToFarsiDigits(item.product),
-          cupCode: convertToFarsiDigits(item.cupCode),
-          uid: convertToFarsiDigits(item.uid),
+          index: convertToFarsiDigits(idx + 1).toString(),
           expireDate:
             convertToFarsiDigits(item.expireYear) +
             "/" +
             convertToFarsiDigits(item.expireMonth) +
             "/" +
             convertToFarsiDigits(item.expireDay),
-          cnt: convertToFarsiDigits(item.cnt),
           appearanceImage: item.appearance ? <FaCheck color="green" /> : null,
-          factorNo: convertToFarsiDigits(item.factorNo),
-          dtlDsc: convertToFarsiDigits(item.dtlDsc),
-          wtrdText: convertToFarsiDigits(item.wtrdText),
-          regedCnt: convertToFarsiDigits(Number(item.regedCnt)),
-          regedOffer: convertToFarsiDigits(Number(item.regedOffer)),
-          statusCode: convertToFarsiDigits(item.statusCode),
-          wtrdId: convertToFarsiDigits(item.wtrdId),
-        })
+          status: (
+            <div className="flex justify-evenly items-center w-full">
+              {convertToFarsiDigits(item.statusCode)}
+              <input
+                type="checkbox"
+                checked={false}
+                readOnly
+                onClick={() => handleStatusClick(dtl)}
+              />
+            </div>
+          ),          
+          saveBtn: (
+            <button
+              className="flex w-full items-center justify-center"
+              onMouseDown={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                updateToSave(item);
+              }}
+            >
+              {isLoadingWarehouseTemporaryReceiptSave ? (
+                <Spinner size={4} />
+              ) : (
+                <FaSave color="purple" size={16} />
+              )}
+            </button>
+          ),
+        }}
       )
     );
   }, [warehouseTemporaryReceiptShowResponse]);
 
   useEffect(() => {
-    console.log(selectedRowIndex,"selectedRowIndex")
-    setPreInvoiceReturnDtlsId(
-      warehouseTemporaryReceiptShowResponse.preInvoiceReturnDtls[
-        selectedRowIndex
-      ].id
-    );
+    warehouseTemporaryReceiptShowResponse.preInvoiceReturnDtls[
+      selectedRowIndex
+    ] &&
+      setField(
+        "preInvoiceDtlId",
+        warehouseTemporaryReceiptShowResponse.preInvoiceReturnDtls?.[
+          selectedRowIndex
+        ]?.id
+      );
+  }, [
+    warehouseTemporaryReceiptShowResponse.preInvoiceReturnDtls?.[
+      selectedRowIndex
+    ]?.id,
+    selectedRowIndex,
+  ]);
+
+  useEffect(() => {
+    console.log(selectedRowIndex, "selectedRowIndex");
   }, [selectedRowIndex]);
+  //////////////////////////////////////////////////////
+  const updateMyData = (rowIndex: number, columnId: string, value: string) => {
+    // We also turn on the flag to not reset the page
+    setData((old) =>
+      old.map((row, index) => {
+        if (index === rowIndex) {
+          return {
+            ...old[rowIndex],
+            [columnId]: value,
+          };
+        }
+        return row;
+      })
+    );
+  };
+  ////////////////////////////////////////////////////
+  const changeRowValues = (
+    value: string,
+    rowIndex: number,
+    columnId: string
+  ) => {
+    updateMyData(rowIndex, columnId, value);
+  };
+  ///////////////////////////////////////////////////////////////
+  const updateMyRow = async (
+    rowIndex: number,
+    value: DefaultOptionType,
+    columnId?: string
+  ) => {
+    setData((old) =>
+      old.map((row, index) => {
+        if (index === rowIndex && value && value.id !== 0) {
+          return {
+            ...old[rowIndex],
+            [columnId as string]:
+              columnId === "wtrdText" ? value.title : old[rowIndex].wtrdText,
+            wtrdId:
+              columnId === "wtrdText"
+                ? value !== null
+                  ? value.id
+                  : 0
+                : old[rowIndex].wtrdId,
+            saveBtn: columnId==="wtrdText"?(
+              <button
+                className="flex w-full items-center justify-center"
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  updateToSave(old[rowIndex]);
+                }}
+              >
+                {<FaCheck color="green" size={16} />}
+              </button>
+            ):(
+              <button
+                className="flex w-full items-center justify-center"
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  updateToSave(old[rowIndex]);
+                }}
+              >
+                {<FaSave color="purple" size={16} />}
+              </button>
+            ),
+          };
+        }
+        return row;
+      })
+    );
+  };
+  ///////////////////////////////////////////////////////////////
+  const checkIconClick = async (
+    rowIndex: number,
+    value: DefaultOptionType,
+    columnId?: string
+  ) => {
+    setData((old) =>
+      old.map((row, index) => {
+        if (index === rowIndex && value && value.id !== 0) {
+          return {
+            ...old[rowIndex],
+            saveBtn: columnId==="wtrdText"?(
+              <button
+                className="flex w-full items-center justify-center"
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  updateToSave(old[rowIndex]);
+                }}
+              >
+                {<FaSave color="purple" size={16} />}
+              </button>
+            ):(
+              <button
+                className="flex w-full items-center justify-center"
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  updateToSave(old[rowIndex]);
+                }}
+              >
+                {<FaSave color="purple" size={16} />}
+              </button>
+            ),
+          };
+        }
+        return row;
+      })
+    );
+  };
 
   return (
     <>
@@ -191,6 +411,9 @@ const WarehouseTemporaryReceiptShowTable = ({
             changeRowSelectColor={true}
             wordWrap={true}
             canEditForm={CanEditForm1Dtl1}
+            changeRowValues={changeRowValues}
+            updateMyData={updateMyData}
+            updateMyRow={updateMyRow}
             //CellColorChange={handleCellColorChange}
           />
         </>

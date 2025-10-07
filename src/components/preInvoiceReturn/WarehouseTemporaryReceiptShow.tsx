@@ -5,6 +5,9 @@ import { WorkflowRowSelectResponse } from "../../types/workflow";
 import WarehouseTemporaryReceiptShowHeader from "./WarehouseTemporaryReceiptShowHeader";
 import WarehouseTemporaryReceiptShowTable from "./WarehouseTemporaryReceiptShowTable";
 import { DefaultOptionType } from "../../types/general";
+import { WarehouseTemporaryReceiptIndentDtl } from "../../types/warehouse";
+import ModalForm from "../layout/ModalForm";
+import ProductCatalogue from "../warehouse/ProductCatalogue";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -16,28 +19,36 @@ const WarehouseTemporaryReceiptShow = ({
   const {
     warehouseTemporaryReceiptShowResponse,
     isLoading,
-    isLoadingPreInvoiceDtlSearch,
     preInvoiceDtlSearchResponse,
+    isLoadingWarehouseTemporaryReceiptSave,
+    warehouseTemporaryReceiptSave,
   } = usePreInvoiceReturn();
   const { setField } = usePreInvoiceReturnStore();
   const [preInvoiceDtlSearchOptions, setPreInvoiceDtlSearchOptions] = useState<
     DefaultOptionType[]
   >([]);
   const [search, setSearch] = useState<string>("");
-  const [preInvoiceReturnDtlsId, setPreInvoiceReturnDtlsId] = useState<number>(0);
+  const [statusClicked, setStatusClicked] = useState(false);
+  const [selectedProduct, setSelectedProduct] =
+  useState<WarehouseTemporaryReceiptIndentDtl | null>(null);
+  //////////////////////////////////////////////////////////////
   useEffect(() => {
-    //console.log(workFlowRowSelectResponse.workTableRow.formId, "formId in InvoiceShowHeader");
+    console.log(
+      workFlowRowSelectResponse.workTableRow.formId,
+      "formId in InvoiceShowHeader"
+    );
     setField("id", workFlowRowSelectResponse.workTableRow.formId);
   }, [workFlowRowSelectResponse.workTableRow.formId]);
 
   useEffect(() => {
-    console.log(preInvoiceReturnDtlsId,search,"preInvoiceReturnDtlsId,search");
     setField("pagePreInvoiceDtlSearch", 1);
     setField("searchPreInvoiceDtlSearch", search);
     setField(
-      "preInvoiceDtlId",preInvoiceReturnDtlsId);
-  }, [preInvoiceReturnDtlsId,search]);
-
+      "preInvoiceDtlId",
+      warehouseTemporaryReceiptShowResponse?.preInvoiceReturnDtls?.[0]?.id
+    );
+  }, [ search]);
+/////////////////////////////////////////////////////////////
   useEffect(() => {
     setPreInvoiceDtlSearchOptions(
       preInvoiceDtlSearchResponse.data.result.results.map((item) => ({
@@ -50,6 +61,12 @@ const WarehouseTemporaryReceiptShow = ({
   useEffect(() => {
     console.log(preInvoiceDtlSearchOptions);
   }, [preInvoiceDtlSearchOptions]);
+//////////////////////////////////////////////////////////////
+  const handleProductCatalogueClose = () => {
+    setStatusClicked(false);
+    setSelectedProduct(null);
+  };
+//////////////////////////////////////////////////////////////
   return (
     <div className="w-full flex flex-col">
       <WarehouseTemporaryReceiptShowHeader
@@ -68,10 +85,24 @@ const WarehouseTemporaryReceiptShow = ({
         isLoadingWarehouseTemporaryReceiptShow={isLoading}
         preInvoiceDtlSearchOptions={preInvoiceDtlSearchOptions}
         CanEditForm1Dtl1={true} //{workFlowRowSelectResponse.workTableForms.canEditForm1Dtl1}
-        setPreInvoiceReturnDtlsId={setPreInvoiceReturnDtlsId}
         search={search}
         setSearch={setSearch}
+        warehouseTemporaryReceiptSave={warehouseTemporaryReceiptSave}
+        isLoadingWarehouseTemporaryReceiptSave={
+          isLoadingWarehouseTemporaryReceiptSave
+        }
+        setStatusClicked={setStatusClicked}
+        setSelectedProduct={setSelectedProduct}
       />
+      {/*open product catalog if status is clicked*/}
+      <ModalForm
+        isOpen={statusClicked}
+        onClose={handleProductCatalogueClose}
+        title="کاتالوگ محصول"
+        width="1/2"
+      >
+        {selectedProduct && <ProductCatalogue dtl={selectedProduct} isNotVisible={true} />}
+      </ModalForm>      
     </div>
   );
 };

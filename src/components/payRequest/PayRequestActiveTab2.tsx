@@ -339,6 +339,7 @@ const PayRequestActiveTab2 = ({
       setField("chequeBookDtlId", value.id);
     }
   };
+  ////////////////////////////////////////////////////////////////////
   useEffect(() => {
     setAmountTab2(
       data.reduce(

@@ -36,6 +36,15 @@ interface PreInvoiceReturnDtl {
   statusCode: number;
 }
 
+
+export interface PreInvoiceReturnDtlTable extends PreInvoiceReturnDtl {
+  index: string;
+  appearanceImage: JSX.Element | null;
+  expireDate: string;
+  saveBtn: JSX.Element | null;
+  status: JSX.Element | null;
+}
+
 interface ResultWarehouseTemporaryReceiptShow {
   err: number;
   msg: string;
@@ -71,18 +80,44 @@ interface ResponsePreInvoiceDtlSearch {
   meta: Meta;
   data: DataPreInvoiceDtlSearch;
 }
-export interface PreInvoiceReturnState {
+///api/PreInvoiceReturn/warehouseTemporaryReceiptSave
+interface WarehouseTemporaryReceiptSaveRequest{
+  WarehouseTemporaryReceiptSaveRequestId:number;
+  warehouseTemporaryReceiptDtlId:number
+}
+
+interface ResultWarehouseTemporaryReceiptSave {
+  id: number;
+  cupboardId: number;
+  statusCode: number;
+  err: number;
+  msg: string;
+}
+
+interface DataWarehouseTemporaryReceiptSave {
+  result: ResultWarehouseTemporaryReceiptSave;
+}
+
+interface WarehouseTemporaryReceiptSaveResponse {
+  meta: Meta;
+  data: DataWarehouseTemporaryReceiptSave;
+}
+export interface PreInvoiceReturnState extends WarehouseTemporaryReceiptSaveRequest {
   searchPreInvoiceDtlSearch: string;
   pagePreInvoiceDtlSearch: number;
   preInvoiceDtlId: number;
   id: number;
   responsePreInvoiceDtlSearch: ResponsePreInvoiceDtlSearch;
   responseWarehouseTemporaryReceiptShow: ResponseWarehouseTemporaryReceiptShow;
+  warehouseTemporaryReceiptSaveResponse:WarehouseTemporaryReceiptSaveResponse;//api/PreInvoiceReturn/warehouseTemporaryReceiptSave
   setField: (field: string | number | symbol, value: any) => void;
   setResponsePreInvoiceDtlSearch: (
     ResponsePreInvoiceDtlSearch: ResponsePreInvoiceDtlSearch
   ) => void;
   setResponseWarehouseTemporaryReceiptShow: (
     ResponseWarehouseTemporaryReceiptShow: ResponseWarehouseTemporaryReceiptShow
+  ) => void;
+  setWarehouseTemporaryReceiptSaveResponse: (
+    WarehouseTemporaryReceiptSaveResponse: WarehouseTemporaryReceiptSaveResponse
   ) => void;
 }

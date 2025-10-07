@@ -1,9 +1,10 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import { useMutation, useQuery, UseQueryOptions } from "@tanstack/react-query";
 import api from "../api/axios";
 import { usePreInvoiceReturnStore } from "../store/preInvoiceReturnStore";
 import {
   ResponsePreInvoiceDtlSearch,
   ResponseWarehouseTemporaryReceiptShow,
+  WarehouseTemporaryReceiptSaveRequest,
 } from "../types/preInvoiceReturn";
 
 export function usePreInvoiceReturn() {
@@ -11,6 +12,7 @@ export function usePreInvoiceReturn() {
     id,
     setResponseWarehouseTemporaryReceiptShow,
     setResponsePreInvoiceDtlSearch,
+    setWarehouseTemporaryReceiptSaveResponse,
     searchPreInvoiceDtlSearch,
     preInvoiceDtlId,
     pagePreInvoiceDtlSearch,
@@ -27,9 +29,8 @@ export function usePreInvoiceReturn() {
       const params = {
         id,
       };
-      const response = await api.get(
-        `/api/PreInvoiceReturn/warehouseTemporaryReceiptShow?Id=${params.id}`
-      );
+      const url = `/api/PreInvoiceReturn/warehouseTemporaryReceiptShow?Id=${params.id}`;
+      const response = await api.get(url);
       return response.data;
     },
     refetchOnWindowFocus: false, // Refetch data when the window is focused
@@ -57,9 +58,8 @@ export function usePreInvoiceReturn() {
         page: pagePreInvoiceDtlSearch,
         search: searchPreInvoiceDtlSearch,
       };
-      const response = await api.get(
-        `/api/WarehouseTemporaryReceipt/preInvoiceDtSearch?PreInvoiceDtlId=${params.preInvoiceDtlId}&page=${params.page}&Search=${params.search}`
-      );
+      const url = `/api/WarehouseTemporaryReceipt/preInvoiceDtSearch?PreInvoiceDtlId=${params.preInvoiceDtlId}&page=${params.page}&Search=${params.search}`;
+      const response = await api.get(url);
       return response.data;
     },
     refetchOnWindowFocus: false, // Refetch data when the window is focused
@@ -68,7 +68,20 @@ export function usePreInvoiceReturn() {
       setResponsePreInvoiceDtlSearch(data);
     },
   } as UseQueryOptions<ResponsePreInvoiceDtlSearch, Error, ResponsePreInvoiceDtlSearch, unknown[]>);
-
+  //api/PreInvoiceReturn/warehouseTemporaryReceiptSave
+  const warehouseTemporaryReceiptSave = useMutation({
+    mutationFn: async (request: WarehouseTemporaryReceiptSaveRequest) => {
+      const url = `/api/PreInvoiceReturn/warehouseTemporaryReceiptSave`;
+      const response = await api.post(url, {
+        id: request.WarehouseTemporaryReceiptSaveRequestId,
+        warehouseTemporaryReceiptDtlId: request.warehouseTemporaryReceiptDtlId,
+      });
+      return response.data;
+    },
+    onSuccess: (data: any) => {
+      setWarehouseTemporaryReceiptSaveResponse(data);
+    },
+  });
   return {
     //for responseWarehouseTemporaryReceiptShow
     refetch: query.refetch,
@@ -95,5 +108,11 @@ export function usePreInvoiceReturn() {
       meta: { errorCode: 0, message: "", type: "" },
       data: { result: { total_count: 0, results: [] } },
     },
+    //for warehouseTemporaryReceiptSave
+    warehouseTemporaryReceiptSave: warehouseTemporaryReceiptSave.mutateAsync,
+    isLoadingWarehouseTemporaryReceiptSave:
+      warehouseTemporaryReceiptSave.isPending,
+    errorWarehouseTemporaryReceiptSave: warehouseTemporaryReceiptSave.error,
+    warehouseTemporaryReceiptSaveResponse: warehouseTemporaryReceiptSave.data,
   };
 }

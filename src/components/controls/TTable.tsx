@@ -76,6 +76,7 @@ export function EditableInput<T extends object>({
     backgroundColor: bgColor,
     options: autoOptions,
     setSearch,
+    align,
     //search,
   } = column as any;
   const [value, setValue] = React.useState<string | boolean>(initialValue);
@@ -143,7 +144,7 @@ export function EditableInput<T extends object>({
         showBorderFocused={true}
         textColor={colors.gray_600}
         backgroundColor={!canEditForm ? "inherit" : "white"}
-        //textAlign="center"
+        textAlign={align}
         //onInputChange={handleInputChange}
         //inputValue={search}
       />

@@ -11,9 +11,10 @@ import {  green, red } from "@mui/material/colors";
 
 type Props = {
   dtl: WarehouseTemporaryReceiptIndentDtl;
+  isNotVisible: boolean;
 };
 
-const ProductCatalogue = ({ dtl }: Props) => {
+const ProductCatalogue = ({ dtl ,isNotVisible}: Props) => {
   const { productCatalog, } = useWarehouse();
   const { setField } = useWarehouseStore();
   const headCells: HeadCell<ProductCatalogTable>[] = [
@@ -40,6 +41,7 @@ const ProductCatalogue = ({ dtl }: Props) => {
       isNumber: true,
       disableSorting: true,
       changeColor: true,
+      isNotVisible,
     },
     {
       id: "samaneInfo",
@@ -107,8 +109,8 @@ const ProductCatalogue = ({ dtl }: Props) => {
         : {
             rowId: "",
             title: titles[i],
-            systemInfo: productCatalog.statusMessage,
-            samaneInfo: "",
+            systemInfo: "",
+            samaneInfo: productCatalog.statusMessage,
           };
     data.push(record);
   }
@@ -125,7 +127,7 @@ const ProductCatalogue = ({ dtl }: Props) => {
     item: ProductCatalogTable
   ) => {
     if (cell.changeColor && item?.["title"] === "وضعیت") {
-      return item?.["systemInfo"] === "مجاز" ? green[200] : red[200];
+      return item?.["samaneInfo"] === "مجاز" ? green[200] : red[200];
     }
     return "";
   };

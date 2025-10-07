@@ -143,11 +143,11 @@ const AutoComplete = forwardRef(
               "& .MuiAutocomplete-hasPopupIcon.MuiAutocomplete-hasClearIcon.muirtl-1tlcqt-MuiAutocomplete-root .MuiOutlinedInput-root":
                 {
                   paddingLeft:
-                    textAlign === "center"
+                    textAlign === "center" 
                       ? "0 !important"
                       : outlinedInputPadding,
                   paddingRight:
-                    textAlign === "center"
+                    textAlign === "center" 
                       ? "0 !important"
                       : outlinedInputPadding,
                 },
