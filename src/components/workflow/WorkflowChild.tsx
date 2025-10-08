@@ -8,6 +8,7 @@ import { UseMutateAsyncFunction } from "@tanstack/react-query";
 
 type Props = {
   selectedId: number;
+  setSelectedId: React.Dispatch<React.SetStateAction<number>>
   workFlowResponse: WorkflowResponse;
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   isLoadingRowSelect: boolean;
@@ -15,17 +16,20 @@ type Props = {
   doFlow: UseMutateAsyncFunction<any, Error, WorkFlowDoFlowRequest, unknown>;
   isLoadingdoFlow: boolean;
   getWorkTable: () => void;
+  getWorkTableRowSelect:() => void;
 };
 
 export const WorkflowChild = ({
   selectedId,
+  setSelectedId,
   workFlowResponse,
   workFlowRowSelectResponse,
   isLoadingRowSelect,
   errorRowSelect,
   doFlow,
   isLoadingdoFlow,
-  getWorkTable
+  getWorkTable,
+  getWorkTableRowSelect
 }: Props) => {
   //const [currentSelectedId, setCurrentSelectedId] = useState(selectedId);
   const { chartId, systemId } = useGeneralContext();
@@ -73,6 +77,9 @@ export const WorkflowChild = ({
           isLoading={isLoadingRowSelect}
           error={errorRowSelect}
           getWorkTable={getWorkTable}
+          getWorkTableRowSelect={getWorkTableRowSelect}
+          selectedId={selectedId}
+          setSelectedId={setSelectedId}
         />
       )}
       <WorkflowComponent

@@ -17,6 +17,9 @@ type Props = {
   doFlow: UseMutateAsyncFunction<any, Error, WorkFlowDoFlowRequest, unknown>;
   isLoadingdoFlow: boolean;
   getWorkTable: () => void;
+  getWorkTableRowSelect:() => void;
+  selectedId: number;
+  setSelectedId: React.Dispatch<React.SetStateAction<number>>
 };
 
 const WorkflowRowSelectHeader = ({
@@ -24,6 +27,9 @@ const WorkflowRowSelectHeader = ({
   doFlow,
   isLoadingdoFlow,
   getWorkTable,
+  getWorkTableRowSelect,
+  selectedId,
+  setSelectedId,
 }: Props) => {
   const flowButtons = workFlowRowSelectResponse.flowButtons;
   const flowDescriptions = workFlowRowSelectResponse.flowDescriptions;
@@ -37,7 +43,11 @@ const WorkflowRowSelectHeader = ({
     if (isModalOpen) {
       timeoutId = setTimeout(() => {
         setIsModalOpen(false);
+        //setSelectedId(selectedId);
+        let tempId=selectedId
+        getWorkTableRowSelect();
         getWorkTable();
+        setSelectedId(tempId)
       }, 3000);
     }
     return () => {

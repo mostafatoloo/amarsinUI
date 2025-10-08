@@ -21,7 +21,7 @@ type Props = {
   warehouseTemporaryReceiptShowResponse: ResultWarehouseTemporaryReceiptShow;
   isLoadingWarehouseTemporaryReceiptShow: boolean;
   preInvoiceDtlSearchOptions: DefaultOptionType[];
-  CanEditForm1Dtl1: boolean;
+  canEditForm1: boolean;
   search: string;
   setSearch: (search: string) => void;
   warehouseTemporaryReceiptSave: (
@@ -36,7 +36,7 @@ const WarehouseTemporaryReceiptShowTable = ({
   warehouseTemporaryReceiptShowResponse,
   isLoadingWarehouseTemporaryReceiptShow,
   preInvoiceDtlSearchOptions,
-  CanEditForm1Dtl1,
+  canEditForm1,
   search,
   setSearch,
   warehouseTemporaryReceiptSave,
@@ -105,13 +105,13 @@ const WarehouseTemporaryReceiptShowTable = ({
     },
     {
       Header: "ثبت",
-      width: "33%",
+      width: canEditForm1 ? "33%" : "35%",
       backgroundColor: colors.indigo50,
       columns: [
         {
           Header: "رسید موقت",
           accessor: "wtrdText",
-          width: "23%",
+          width: canEditForm1 ? "23%" : "25%" ,
           backgroundColor: colors.indigo50,
           type: "autoComplete",
           options: preInvoiceDtlSearchOptions,
@@ -119,7 +119,7 @@ const WarehouseTemporaryReceiptShowTable = ({
           setSearch,
           search,
           placeholder: "رسید موقت را انتخاب کنید...",
-          Cell: CanEditForm1Dtl1
+          Cell: canEditForm1
             ? EditableInput
             : ({ value }: any) => convertToFarsiDigits(value),
         },
@@ -150,12 +150,14 @@ const WarehouseTemporaryReceiptShowTable = ({
       Header: "...",
       width: "2%",
       backgroundColor: colors.indigo50, //indigo[50]
+      visible:canEditForm1,
       columns: [
         {
           Header: "...",
           accessor: "saveBtn",
           width: "2%",
           backgroundColor: colors.indigo50,
+          visible:canEditForm1,
           /*Cell: ({ row }: any) => (
             <div className="flex w-full items-center justify-center">
               <button
@@ -281,9 +283,6 @@ const WarehouseTemporaryReceiptShowTable = ({
     selectedRowIndex,
   ]);
 
-  useEffect(() => {
-    console.log(selectedRowIndex, "selectedRowIndex");
-  }, [selectedRowIndex]);
   //////////////////////////////////////////////////////
   const updateMyData = (rowIndex: number, columnId: string, value: string) => {
     // We also turn on the flag to not reset the page
@@ -410,7 +409,7 @@ const WarehouseTemporaryReceiptShowTable = ({
             //fontSize="0.75rem"
             changeRowSelectColor={true}
             wordWrap={true}
-            canEditForm={CanEditForm1Dtl1}
+            canEditForm={canEditForm1}
             changeRowValues={changeRowValues}
             updateMyData={updateMyData}
             updateMyRow={updateMyRow}

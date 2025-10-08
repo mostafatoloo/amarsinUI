@@ -18,6 +18,7 @@ type Props = {
   doFlow: UseMutateAsyncFunction<any, Error, WorkFlowDoFlowRequest, unknown>;
   isLoadingdoFlow: boolean;
   getWorkTable: (options?: RefetchOptions) => Promise<QueryObserverResult<WorkflowResponse, Error>>
+  getWorkTableRowSelect: ()=>void
 };
 
 const WorkflowForm = ({
@@ -29,7 +30,8 @@ const WorkflowForm = ({
   errorRowSelect,
   doFlow,
   isLoadingdoFlow,
-  getWorkTable
+  getWorkTable,
+  getWorkTableRowSelect
 }: Props) => {
   const [selectedId, setSelectedId] = useState<number>(148201);
 
@@ -46,9 +48,11 @@ const WorkflowForm = ({
         workFlowResponse={workFlowResponse}
         error={error}
         isLoading={isLoading}
+        isLoadingdoFlow={isLoadingdoFlow}
       />
       <WorkflowChild
         selectedId={selectedId} //{selectedIdRef.current}
+        setSelectedId={setSelectedId}
         workFlowResponse={workFlowResponse}
         workFlowRowSelectResponse={workFlowRowSelectResponse}
         isLoadingRowSelect={isLoadingRowSelect}
@@ -56,6 +60,7 @@ const WorkflowForm = ({
         doFlow={doFlow}
         isLoadingdoFlow={isLoadingdoFlow}
         getWorkTable={getWorkTable}
+        getWorkTableRowSelect={getWorkTableRowSelect}
       />
     </div>
   );

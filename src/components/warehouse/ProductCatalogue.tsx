@@ -1,58 +1,52 @@
 import { useEffect } from "react";
-import { HeadCell } from "../../hooks/useTable";
 import { useWarehouse } from "../../hooks/useWarehouse";
 import {
   ProductCatalogTable,
   WarehouseTemporaryReceiptIndentDtl,
 } from "../../types/warehouse";
-import { Table } from "../controls/Table";
 import { useWarehouseStore } from "../../store/warehouseStore";
-import {  green, red } from "@mui/material/colors";
+import { green, red } from "@mui/material/colors";
+import Skeleton from "../layout/Skeleton";
+import TTable from "../controls/TTable";
+import { Column } from "../../types/general";
+import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
+import { convertToFarsiDigits } from "../../utilities/general";
 
 type Props = {
   dtl: WarehouseTemporaryReceiptIndentDtl;
-  isNotVisible: boolean;
+  visible: boolean;
 };
 
-const ProductCatalogue = ({ dtl ,isNotVisible}: Props) => {
-  const { productCatalog, } = useWarehouse();
+const ProductCatalogue = ({ dtl, visible }: Props) => {
+  const { productCatalog, isLoadingProductCatalog } = useWarehouse();
   const { setField } = useWarehouseStore();
-  const headCells: HeadCell<ProductCatalogTable>[] = [
+  const columns: Column[] = [
     {
-      id: "rowId",
-      label: "ردیف",
-      disableSorting: true,
-      cellWidth: "5%",
-      isNumber: true,
-      changeColor: true,
+      Header: "ردیف",
+      accessor: "rowId",
+      width: "5%",
+      Cell: ({ value }: any) => convertToFarsiDigits(value),
     },
     {
-      id: "title",
-      label: "عنوان",
-      cellWidth: "15%",
-      isNumber: true,
-      disableSorting: true,
-      changeColor: true,
+      Header: "عنوان",
+      accessor: "title",
+      width: visible ? "15%" : "35%",
+      Cell: ({ value }: any) => convertToFarsiDigits(value),
     },
     {
-      id: "systemInfo",
-      label: "اطلاعات سیستم",
-      cellWidth: "40%",
-      isNumber: true,
-      disableSorting: true,
-      changeColor: true,
-      isNotVisible,
+      Header: "اطلاعات سیستم",
+      accessor: "systemInfo",
+      width: "40%",
+      visible,
+      Cell: ({ value }: any) => convertToFarsiDigits(value),
     },
     {
-      id: "samaneInfo",
-      label: "اطلاعات سامانه",
-      cellWidth: "40%",
-      isNumber: true,
-      disableSorting: true,
-      changeColor: true,
+      Header: "اطلاعات سامانه",
+      accessor: "samaneInfo",
+      width: visible ? "40%" : "60%",
+      Cell: ({ value }: any) => convertToFarsiDigits(value),
     },
   ];
-
   const titles = [
     "بچ",
     "صاحب مجوز",
@@ -116,29 +110,35 @@ const ProductCatalogue = ({ dtl ,isNotVisible}: Props) => {
   }
 
   useEffect(() => {
-    console.log(dtl.cId, "dtl.cId")
+    console.log(dtl.cId, "dtl.cId");
     setField("productId", dtl.cId);
     //getProductCatalog()
-
   }, []);
 
-  const handleCellColorChange = (
-    cell: HeadCell<ProductCatalogTable>,
-    item: ProductCatalogTable
-  ) => {
-    if (cell.changeColor && item?.["title"] === "وضعیت") {
-      return item?.["samaneInfo"] === "مجاز" ? green[200] : red[200];
-    }
+  const handleCellColorChange = (row: any): string | null => {
+    if (row.original.title === "وضعیت")
+      return row.original.samaneInfo === "مجاز" ? green[200] : red[200];
     return "";
   };
 
+  const {  width } = useCalculateTableHeight();
+
   return (
-    <Table
-      data={data}
-      headCells={headCells}
-      wordWrap={true}
-      cellColorChangeHandler={handleCellColorChange}
-    />
+    <>
+      {isLoadingProductCatalog ? (
+        <div className="text-center">{<Skeleton />}</div>
+      ) : (
+        <>
+          <TTable
+            data={data}
+            columns={columns}
+            wordWrap={true}
+            CellColorChange={handleCellColorChange}
+            fontSize={width > 640 ? "1rem" : "0.75rem"}
+          />
+        </>
+      )}
+    </>
   );
 };
 

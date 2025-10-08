@@ -1,5 +1,5 @@
 import {
-  QueryClient,
+  //QueryClient,
   useMutation,
   useQuery,
   UseQueryOptions,
@@ -33,7 +33,7 @@ export function useWorkflow() {
     setWorkFlowDoFlowResponse,
   } = useWorkflowStore();
 
-  const queryClient = new QueryClient();
+  //const queryClient = new QueryClient();
 
   const query = useQuery<WorkflowResponse, Error, WorkflowResponse, unknown[]>({
     queryKey: [
@@ -85,7 +85,7 @@ export function useWorkflow() {
       const response = await api.get(url, { signal });
       return response.data;
     },
-    enabled: systemId !== 0 && chartId !== 0 ? true : false,
+    //enabled: systemId !== 0 && chartId !== 0 ? true : false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     /*staleTime: 30000, // Consider data fresh for 30 seconds
@@ -118,7 +118,7 @@ export function useWorkflow() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: workTableId !== 0 && chartId !== 0 ? true : false,
+    //enabled: workTableId !== 0 && chartId !== 0 ? true : false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     onSuccess: (data: any) => {
@@ -134,8 +134,8 @@ export function useWorkflow() {
       return response.data;
     },
     onSuccess: (data: any) => {
-      queryClient.refetchQueries({ queryKey: ["workflow"] });
-      queryClient.refetchQueries({ queryKey: ["workflowRowSelect"] });
+      //queryClient.refetchQueries({ queryKey: ["workflow"] });
+      //queryClient.refetchQueries({ queryKey: ["workflowRowSelect"] });
       setWorkFlowDoFlowResponse(data);
       console.log("Data refetched and response set:", data);
     },

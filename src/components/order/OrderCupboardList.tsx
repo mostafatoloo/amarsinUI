@@ -84,14 +84,14 @@ const OrderCupboardList = ({
           {
             Header: "تعداد",
             accessor: "cnt",
-            cellWidth: "10%",
+            width: "10%",
             backgroundColor: colors.indigo50, //green[50]
             Cell: EditableInput,
           },
           {
             Header: "آفر",
             accessor: "oCnt",
-            cellWidth: "10%",
+            width: "10%",
             backgroundColor: colors.indigo50, //green[50]
             Cell: EditableInput,
           },

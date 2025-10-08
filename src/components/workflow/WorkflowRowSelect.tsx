@@ -13,6 +13,9 @@ type Props = {
   isLoading: boolean;
   error: Error | null;
   getWorkTable: () => void;
+  getWorkTableRowSelect:() => void;
+  selectedId: number;
+  setSelectedId: React.Dispatch<React.SetStateAction<number>>
 };
 
 const WorkflowRowSelect = ({
@@ -22,6 +25,9 @@ const WorkflowRowSelect = ({
   isLoading,
   error,
   getWorkTable,
+  getWorkTableRowSelect,
+  selectedId,
+  setSelectedId,
 }: Props) => {
   if (error) return <div>Error: {error.message} </div>;
   return (
@@ -39,6 +45,9 @@ const WorkflowRowSelect = ({
             doFlow={doFlow}
             isLoadingdoFlow={isLoadingdoFlow}
             getWorkTable={getWorkTable}
+            getWorkTableRowSelect={getWorkTableRowSelect}
+            selectedId={selectedId}
+            setSelectedId={setSelectedId}
           />
         </div>
       )}

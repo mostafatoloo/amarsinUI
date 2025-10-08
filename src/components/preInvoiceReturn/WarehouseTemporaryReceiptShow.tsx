@@ -33,10 +33,6 @@ const WarehouseTemporaryReceiptShow = ({
   useState<WarehouseTemporaryReceiptIndentDtl | null>(null);
   //////////////////////////////////////////////////////////////
   useEffect(() => {
-    console.log(
-      workFlowRowSelectResponse.workTableRow.formId,
-      "formId in InvoiceShowHeader"
-    );
     setField("id", workFlowRowSelectResponse.workTableRow.formId);
   }, [workFlowRowSelectResponse.workTableRow.formId]);
 
@@ -58,9 +54,6 @@ const WarehouseTemporaryReceiptShow = ({
     );
   }, [preInvoiceDtlSearchResponse]);
 
-  useEffect(() => {
-    console.log(preInvoiceDtlSearchOptions);
-  }, [preInvoiceDtlSearchOptions]);
 //////////////////////////////////////////////////////////////
   const handleProductCatalogueClose = () => {
     setStatusClicked(false);
@@ -84,7 +77,7 @@ const WarehouseTemporaryReceiptShow = ({
         }
         isLoadingWarehouseTemporaryReceiptShow={isLoading}
         preInvoiceDtlSearchOptions={preInvoiceDtlSearchOptions}
-        CanEditForm1Dtl1={true} //{workFlowRowSelectResponse.workTableForms.canEditForm1Dtl1}
+        canEditForm1={workFlowRowSelectResponse.workTableForms.canEditForm1}
         search={search}
         setSearch={setSearch}
         warehouseTemporaryReceiptSave={warehouseTemporaryReceiptSave}
@@ -101,7 +94,7 @@ const WarehouseTemporaryReceiptShow = ({
         title="کاتالوگ محصول"
         width="1/2"
       >
-        {selectedProduct && <ProductCatalogue dtl={selectedProduct} isNotVisible={true} />}
+        {selectedProduct && <ProductCatalogue dtl={selectedProduct} visible={false} />}
       </ModalForm>      
     </div>
   );

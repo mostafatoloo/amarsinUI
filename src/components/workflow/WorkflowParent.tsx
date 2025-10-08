@@ -22,6 +22,7 @@ type Props = {
   workFlowResponse: WorkflowResponse;
   error: Error | null;
   isLoading: boolean;
+  isLoadingdoFlow:boolean
 };
 
 export default function WorkflowParent({
@@ -30,6 +31,7 @@ export default function WorkflowParent({
   workFlowResponse,
   error,
   isLoading,
+  isLoadingdoFlow
 }: Props) {
   const { flowMapId: flowMapIdStore, setField } = useWorkflowStore();
   const { systemId, chartId, defaultRowsPerPage } = useGeneralContext();
@@ -333,7 +335,7 @@ export default function WorkflowParent({
           />
         </div>
 
-        {isLoading ? (
+        {isLoading || isLoadingdoFlow ? (
           <div className="text-center">{<Skeleton />}</div>
         ) : workFlowResponse.err !== 0 ? (
           <p className="p-6 text-red-400 text-sm md:text-base font-bold">

@@ -1,5 +1,23 @@
 import { ReactNode } from 'react';
 
+export type HeadCell<T> = {
+  id: keyof T | "index" | string;
+  label: string;
+  disableSorting?: boolean;
+  isNumber?: boolean;
+  isCurrency?: boolean;
+  icon?: string;
+  path?: string;
+  hasDetails?: boolean;
+  cellWidth: string;
+  backgroundColor?: string;
+  isNotVisible?: boolean;
+  changeColor?: boolean;
+  type?: string;
+  val?: string[];
+  setVal?: (e: React.ChangeEvent<HTMLInputElement>, index: number) => void;
+};
+
 export type Column = {
   Header: string;
   accessor: string;

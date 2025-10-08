@@ -10,11 +10,10 @@ import Skeleton from "../layout/Skeleton";
 import { useNavigate } from "react-router-dom";
 import AutoComplete from "../controls/AutoComplete";
 import { useGeneralContext } from "../../context/GeneralContext";
-import { HeadCell } from "../../hooks/useTable";
 import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
 import TTable from "../controls/TTable";
 import { convertToFarsiDigits } from "../../utilities/general";
-import { DefaultOptionTypeStringId, TableColumns } from "../../types/general";
+import { DefaultOptionTypeStringId, HeadCell, TableColumns } from "../../types/general";
 
 export const headCells: HeadCell<InventoryItem>[] = [
   {

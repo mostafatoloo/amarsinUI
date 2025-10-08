@@ -19,6 +19,7 @@ export default function Workflow() {
     doFlow,
     isLoadingdoFlow,
     getWorkTable,
+    getWorkTableRowSelect,
   } = useWorkflow();
 
   return (
@@ -61,6 +62,7 @@ export default function Workflow() {
           doFlow={doFlow}
           isLoadingdoFlow={isLoadingdoFlow}
           getWorkTable={getWorkTable}
+          getWorkTableRowSelect={getWorkTableRowSelect}
         />
       </main>
 
