@@ -36,9 +36,11 @@ import { useProducts } from "../../hooks/useProducts";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  refetchSwitch: boolean;
+  setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const OrderRegShow = ({ workFlowRowSelectResponse }: Props) => {
+const OrderRegShow = ({ workFlowRowSelectResponse, refetchSwitch, setRefetchSwitch }: Props) => {
   const canEditForm1Mst1 =
     workFlowRowSelectResponse.workTableForms.canEditForm1Mst1;
   const [cash1, setCash1] = useState(false);
@@ -65,6 +67,7 @@ const OrderRegShow = ({ workFlowRowSelectResponse }: Props) => {
     isLoadingOrderCupList,
     orderReg,
     orderRegResponse,
+    refetchOrderRegShow,
   } = useOrders();
 
   const { orderId } = useOrderStore();
@@ -241,6 +244,15 @@ const OrderRegShow = ({ workFlowRowSelectResponse }: Props) => {
     setEditClicked2(false);
     setOtId(0);
   };
+  ////////////////////////////////////////////////////////////////////////
+  // refetch orderRegShow if refetchSwitch is true
+  useEffect(() => {
+    if (!refetchSwitch) return;
+    if (refetchSwitch) {
+      refetchOrderRegShow();
+      setRefetchSwitch(false);
+    }
+  }, [refetchSwitch]);
   ////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     //console.log(workFlowRowSelectResponse?.workTableRow.formId);

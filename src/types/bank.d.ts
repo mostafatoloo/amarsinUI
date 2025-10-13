@@ -1,17 +1,19 @@
+import { SearchItem } from "./general";
+
 export type BankSearchRequest = {
     page: number;
     lastId: number;
     search: string;
   };
   
-  export type Bank = {
+  /*export type Bank = {
     id: number;
     text: string;
-  };
+  };*/
   
   export type BankSearchResponse = {
     total_count: number;
-    results: Bank[];
+    results: SearchItem[];
   };
 
   export interface BankState extends BankSearchRequest{

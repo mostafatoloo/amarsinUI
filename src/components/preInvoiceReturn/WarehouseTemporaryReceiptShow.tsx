@@ -11,10 +11,14 @@ import ProductCatalogue from "../warehouse/ProductCatalogue";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  refetchSwitch: boolean;
+  setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const WarehouseTemporaryReceiptShow = ({
   workFlowRowSelectResponse,
+  refetchSwitch,
+  setRefetchSwitch,
 }: Props) => {
   const {
     warehouseTemporaryReceiptShowResponse,
@@ -22,6 +26,7 @@ const WarehouseTemporaryReceiptShow = ({
     preInvoiceDtlSearchResponse,
     isLoadingWarehouseTemporaryReceiptSave,
     warehouseTemporaryReceiptSave,
+    refetchWarehouseTemporaryReceiptShow,
   } = usePreInvoiceReturn();
   const { setField } = usePreInvoiceReturnStore();
   const [preInvoiceDtlSearchOptions, setPreInvoiceDtlSearchOptions] = useState<
@@ -31,6 +36,14 @@ const WarehouseTemporaryReceiptShow = ({
   const [statusClicked, setStatusClicked] = useState(false);
   const [selectedProduct, setSelectedProduct] =
   useState<WarehouseTemporaryReceiptIndentDtl | null>(null);
+  // refetch warehouseTemporaryReceiptShow if refetchSwitch is true
+  useEffect(() => {
+    if (!refetchSwitch) return;
+    if (refetchSwitch) {
+      refetchWarehouseTemporaryReceiptShow();
+      setRefetchSwitch(false);
+    }
+  }, [refetchSwitch]);
   //////////////////////////////////////////////////////////////
   useEffect(() => {
     setField("id", workFlowRowSelectResponse.workTableRow.formId);

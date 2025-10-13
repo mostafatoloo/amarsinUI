@@ -35,6 +35,7 @@ type TableProps<T extends object> = {
   selectedRowIndex?: number; // just for background color
   setSelectedRowIndex?: (value: number) => void; // just for background color
   maxVisibleColumns?: number; // Maximum number of columns to show before collapsing
+  collapsedColumnWidth?: number;
 };
 
 // Create an editable cell renderer
@@ -244,6 +245,7 @@ export default function TTable<T extends object>({
   selectedRowIndex,
   setSelectedRowIndex,
   maxVisibleColumns,
+  collapsedColumnWidth = 15,
 }: TableProps<T>) {
   //const [rowSelect, setRowSelect] = useState(0);
 
@@ -272,7 +274,6 @@ export default function TTable<T extends object>({
     const hiddenColumns = tempColumns.slice(maxVisibleColumns - 1);
 
     console.log(visibleColumns, hiddenColumns);
-    const collapsedColumnWidth = 15;
     const visibleColumnWidth =
       (100 - collapsedColumnWidth) / visibleColumns.length;
     const processedVisibleColumns = visibleColumns.map((vc) => {

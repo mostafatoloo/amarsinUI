@@ -1,3 +1,5 @@
+import { SearchItem } from "./general";
+
 interface LoadPaymentResponse {
     meta: {
       errorCode: number;
@@ -121,14 +123,14 @@ interface LoadPaymentResponse {
     payKind: number;
   };
 
-  interface ResultItem {
+  /*interface ResultItem {
     id: number;
     text: string;
-  }
+  }*/
   
   interface CashPosSystemSearchResponse {
     total_count: number;
-    results: ResultItem[];
+    results: SearchItem[];
   }
 
   //api/Payment/attachment?id=377211&actCode=Last&includeBase64=false

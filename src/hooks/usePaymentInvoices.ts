@@ -69,6 +69,7 @@ export function usePaymentInvoices() {
     paymentInvoicesSaveResponse: paymentInvoicesSavefn.data,
 
     //getInvoiceOutStanding: () => query.refetch(),
+    refetchInvoiceOutStanding: () => query.refetch(),
     isLoading: query.isLoading,
     error: query.error,
     invoiceOutStandingResponse: query.data ?? {

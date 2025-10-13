@@ -9,10 +9,14 @@ import RegRecievedChequeInfo from "./RegRecievedChequeInfo";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  refetchSwitch: boolean;
+  setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const RegRecievedCheque = ({
   workFlowRowSelectResponse,
+  refetchSwitch,
+  setRefetchSwitch,
 }: Props) => {
   const {
     loadPaymentResponse,
@@ -22,10 +26,20 @@ const RegRecievedCheque = ({
     cashPosSystemSearch,
     paymentAttachmentResponse,
     isLoadingPaymentAttachment,
+    getPayment
   } = useCheques();
 
   const {setField,formId:chequeFormId}=useChequeStore()
   const canEditForm = workFlowRowSelectResponse.workTableForms.canEditForm1;
+  // refetch getPayment if refetchSwitch is true
+  useEffect(() => {
+    if (!refetchSwitch) return;
+    if (refetchSwitch) {
+      getPayment();
+      setRefetchSwitch(false);
+    }
+  }, [refetchSwitch]);
+  ////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     if(chequeFormId!==workFlowRowSelectResponse.workTableRow.formId){
       setField("formId", workFlowRowSelectResponse.workTableRow.formId);

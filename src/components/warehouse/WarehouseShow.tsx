@@ -16,28 +16,49 @@ import { colors } from "../../utilities/color";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  refetchSwitch: boolean;
+  setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const WarehouseShow = ({ workFlowRowSelectResponse }: Props) => {
+const WarehouseShow = ({
+  workFlowRowSelectResponse,
+  refetchSwitch,
+  setRefetchSwitch,
+}: Props) => {
   const [isModalOpenReg, setIsModalOpenReg] = useState(false);
   const [statusClicked, setStatusClicked] = useState(false);
   const [confirmHasError, setConfirmHasError] = useState(false);
-  const { selectIndentsResponse, regResponse, formId } = useWarehouseStore();
+  const { selectIndentsResponse, regResponse, formId, setField } =
+    useWarehouseStore();
+  const {
+    warehouseShowIdResponse,
+    isLoadingWarehouseShowId,
+    refetchWarehouseShowId,
+  } = useWarehouse();
 
   const [editClicked, setEditClicked] = useState(false);
   const [iocId, setIocId] = useState(0);
   const [selectedProduct, setSelectedProduct] =
     useState<WarehouseTemporaryReceiptIndentDtl | null>(null);
-  const { setField } = useWarehouseStore();
+
+  //refetch warehouseShow if refetchSwitch is true
+  useEffect(() => {
+    if (!refetchSwitch) return;
+    if (refetchSwitch) {
+      refetchWarehouseShowId();
+      setRefetchSwitch(false);
+    }
+  }, [refetchSwitch]);
 
   useEffect(() => {
-    console.log(workFlowRowSelectResponse.workTableRow.formId, "formId in WarehouseShow");
+    console.log(
+      workFlowRowSelectResponse.workTableRow.formId,
+      "formId in WarehouseShow"
+    );
     if (formId !== workFlowRowSelectResponse.workTableRow.formId)
       setField("formId", workFlowRowSelectResponse.workTableRow.formId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workFlowRowSelectResponse.workTableRow.formId]);
-
-  const { warehouseShowIdResponse, isLoadingWarehouseShowId } = useWarehouse();
 
   const [customer, setCustomer] = useState<{
     id: string;
@@ -104,7 +125,9 @@ const WarehouseShow = ({ workFlowRowSelectResponse }: Props) => {
         title="کاتالوگ محصول"
         width="1/2"
       >
-        {selectedProduct && <ProductCatalogue dtl={selectedProduct} visible={true} />}
+        {selectedProduct && (
+          <ProductCatalogue dtl={selectedProduct} visible={true} />
+        )}
       </ModalForm>
       {/*open product catalog if status is clicked*/}
       <ModalForm
@@ -126,7 +149,10 @@ const WarehouseShow = ({ workFlowRowSelectResponse }: Props) => {
         title="پیام ها"
         width="2/3"
       >
-        <ShowMessages dtlErrMsgs={regResponse.data.result.dtlErrMsgs} color={colors.yellow100} />
+        <ShowMessages
+          dtlErrMsgs={regResponse.data.result.dtlErrMsgs}
+          color={colors.yellow100}
+        />
       </ModalForm>
 
       <ModalMessage

@@ -4,11 +4,11 @@ import ExcelExport from "../../utilities/ExcelExport";
 import { useBrandStore } from "../../store/brandStore";
 import { useEffect } from "react";
 import { useGeneralContext } from "../../context/GeneralContext";
-import { useInventoryGoodList } from "../../hooks/useInventoryGoodList";
+import { useInventory } from "../../hooks/useInventory";
 
 export default function InventoryGoodList() {
 
-  const {inventoryList} = useInventoryGoodList()
+  const {inventoryList} = useInventory()
   const {setField}=useBrandStore()
   const {systemId}=useGeneralContext()
 

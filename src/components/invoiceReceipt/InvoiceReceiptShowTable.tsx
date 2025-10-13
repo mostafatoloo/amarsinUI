@@ -26,11 +26,10 @@ import {
 import { useProductStore } from "../../store/productStore";
 import { useGeneralContext } from "../../context/GeneralContext";
 import TTable, { EditableInput } from "../controls/TTable";
-import { DefaultOptionType, TableColumns } from "../../types/general";
+import { DefaultOptionType, TableColumns, UpdateResult } from "../../types/general";
 import {
   Detail,
   IndentSaveRequest,
-  IndentSaveResponse,
   IndentShowProductListResponse,
 } from "../../types/product";
 import { red } from "@mui/material/colors";
@@ -59,7 +58,7 @@ type Props = {
   fields: Fields;
   newRow: IndentDtlTable;
   products: DefaultOptionType[];
-  saveList: (request: IndentSaveRequest) => Promise<IndentSaveResponse>;
+  saveList: (request: IndentSaveRequest) => Promise<UpdateResult>;
   isLoadingSaveList: boolean;
   isDtHistoryLoading: boolean;
   getIndentMrsResponse: () => void;
@@ -552,7 +551,7 @@ const InvoiceReceiptShowTable = ({
   ////////////////////////////////////////////////////////
   const handleSubmitSave = async (
     e?: React.MouseEvent<HTMLButtonElement>
-  ): Promise<IndentSaveResponse | undefined> => {
+  ): Promise<UpdateResult | undefined> => {
     if (e) e.preventDefault();
     let request: IndentSaveRequest;
     const dtls: Detail[] = originalData.map((item) => {

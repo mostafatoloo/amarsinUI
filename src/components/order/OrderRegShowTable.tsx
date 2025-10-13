@@ -3,11 +3,10 @@ import {
 } from "../../utilities/general";
 import Skeleton from "../layout/Skeleton";
 import TTable from "../controls/TTable";
-import { DefaultOptionType, TableColumns } from "../../types/general";
+import { DefaultOptionType, SearchItem, TableColumns } from "../../types/general";
 import OrderRegShowTableHeader from "./OrderRegShowTableHeader";
 import { colors } from "../../utilities/color";
 import {   useState } from "react";
-import { SalesPriceItem } from "../../types/product";
 import { WarehouseSearchResponse } from "../../types/warehouse";
 
 type Props = {
@@ -20,7 +19,7 @@ type Props = {
   setWarehouseSearch: React.Dispatch<React.SetStateAction<string>>;
   changeSalesPrice: (newValue: DefaultOptionType) => void;
   changeWarehouse: (newValue: DefaultOptionType) => void;
-  salesPricesSearchResponse: SalesPriceItem[];
+  salesPricesSearchResponse: SearchItem[];
   warehouseSearchResponse: WarehouseSearchResponse;
 };
 

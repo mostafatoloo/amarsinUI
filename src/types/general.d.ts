@@ -75,6 +75,18 @@ interface Data {
   result: Result;
 }
 //end define a general response data
+interface SearchItem {
+  id: number;
+  text: string;
+}
+
+interface UpdateResult {
+  systemId: number;
+  id: number;
+  err: number;
+  msg: string;
+  hasFlow: boolean;
+}
 
 export type TableColumns = (ColumnGroup | Column)[];
 

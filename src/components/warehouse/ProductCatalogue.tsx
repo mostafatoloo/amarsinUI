@@ -110,10 +110,11 @@ const ProductCatalogue = ({ dtl, visible }: Props) => {
   }
 
   useEffect(() => {
+    console.log(dtl, "dtl in useEffect");
     console.log(dtl.cId, "dtl.cId");
     setField("productId", dtl.cId);
     //getProductCatalog()
-  }, []);
+  }, [dtl.cId]);
 
   const handleCellColorChange = (row: any): string | null => {
     if (row.original.title === "وضعیت")

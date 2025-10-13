@@ -1,5 +1,9 @@
-import { Meta } from "./general";
-import { ProductOperation, ProductOperationRequest, SaveRequest } from "./productOperation";
+import { Meta, UpdateResult } from "./general";
+import {
+  ProductOperation,
+  ProductOperationRequest,
+  SaveRequest,
+} from "./productOperation";
 
 //http://apitest.dotis.ir/api/ProductOffer/ProductOffer?Id=1363&Acc_Year=15&Acc_System=4&RegFDate=1404%2F01%2F01&RegTDate=1404%2F05%2F01&FDate=1404%2F01%2F01&TDate=1404%2F05%2F01&State=0
 
@@ -44,8 +48,8 @@ interface ProductOfferDtl {
 }
 
 interface ProductOfferDtlTable {
-  index:string;
-  id:number;
+  index: string;
+  id: number;
   bName: string;
   pId: number;
   product: string;
@@ -55,14 +59,13 @@ interface ProductOfferDtlTable {
   s3O: string;
   s4O: string;
   dtlDsc: string;
-  no: JSX.Element | null;  
+  no: JSX.Element | null;
 }
-
 
 interface Result {
   err: number;
   msg: string | null;
-  total_count:number;
+  total_count: number;
   productOffers: ProductOffer[];
   productOfferDtls: ProductOfferDtl[];
 }
@@ -117,7 +120,7 @@ interface ProductOfferProduct {
 
 export interface ProductOfferProductTable {
   //index: number;
-  id:number;
+  id: number;
   bName: string;
   pId: number;
   product: string;
@@ -135,12 +138,12 @@ export interface ProductOfferProductTable {
   s4N: string;
   s4D: string;
   no: boolean;
-  dtlDsc: string;  
+  dtlDsc: string;
   deleted: boolean;
   isDeleted: boolean;
 }
 
-export interface ProductOfferProductTable2 extends ProductOfferProductTable{
+export interface ProductOfferProductTable2 extends ProductOfferProductTable {
   index: number;
 }
 
@@ -164,7 +167,7 @@ interface ProductOfferDtlHistoryData {
 
 interface ProductOfferDtlHistory {
   id: number;
-  date: string; 
+  date: string;
   accepted: boolean;
   s1NO: number;
   s1DO: number;
@@ -202,13 +205,7 @@ export interface Dtl {
 type ProductOfferSaveResponse = {
   meta: Meta;
   data: {
-    result: {
-      systemId: number;
-      id: number;
-      err: number;
-      msg: string;
-      hasFlow: boolean;
-    };
+    result: UpdateResult;
   };
 };
 
@@ -243,16 +240,16 @@ interface ProductOfferDoFirstFlowResponse {
   data: DataProductOfferDoFirstFlow;
 }
 //http://apitest.dotis.ir/api/ProductOffer/Del?Id=1637
-interface ResultProductOfferDel {
-  systemId: number;
-  id: number;
-  err: number;
-  msg: string;
-  hasFlow: boolean;
-}
+/*  interface ResultProductOfferDel {
+    systemId: number;
+    id: number;
+    err: number;
+    msg: string;
+    hasFlow: boolean;
+  }*/
 
 interface DataProductOfferDel {
-  result: ResultProductOfferDel;
+  result: UpdateResult;
 }
 
 interface ProductOfferDelResponse {
@@ -260,7 +257,10 @@ interface ProductOfferDelResponse {
   data: DataProductOfferDel;
 }
 
-export interface ProductOfferState extends ProductOfferRequest,ShowProductListRequest,ProductOfferDoFirstFlowRequest {
+export interface ProductOfferState
+  extends ProductOfferRequest,
+    ShowProductListRequest,
+    ProductOfferDoFirstFlowRequest {
   pId: number; //for product offer dtl history request
   productOfferDtlHistoryResponse: ProductOfferDtlHistoryResponse; //for product offer dtl history
   showProductListResponse: ShowProductListResponse; //for show product list
@@ -270,9 +270,19 @@ export interface ProductOfferState extends ProductOfferRequest,ShowProductListRe
   productOfferDelResponse: ProductOfferDelResponse; //for product offer del
   setField: (field: string, value: any) => void;
   setProductOfferResponse: (productOfferResponse: ProductOfferResponse) => void;
-  setShowProductListResponse: (showProductListResponse: ShowProductListResponse) => void;
-  setProductOfferDtlHistoryResponse: (productOfferDtlHistoryResponse: ProductOfferDtlHistoryResponse) => void;
-  setProductOfferSaveResponse: (productOfferSaveResponse: ProductOfferSaveResponse) => void;
-  setProductOfferDoFirstFlowResponse: (productOfferDoFirstFlowResponse: ProductOfferDoFirstFlowResponse) => void;
-  setProductOfferDelResponse: (productOfferDelResponse: ProductOfferDelResponse) => void;
+  setShowProductListResponse: (
+    showProductListResponse: ShowProductListResponse
+  ) => void;
+  setProductOfferDtlHistoryResponse: (
+    productOfferDtlHistoryResponse: ProductOfferDtlHistoryResponse
+  ) => void;
+  setProductOfferSaveResponse: (
+    productOfferSaveResponse: ProductOfferSaveResponse
+  ) => void;
+  setProductOfferDoFirstFlowResponse: (
+    productOfferDoFirstFlowResponse: ProductOfferDoFirstFlowResponse
+  ) => void;
+  setProductOfferDelResponse: (
+    productOfferDelResponse: ProductOfferDelResponse
+  ) => void;
 }

@@ -353,6 +353,7 @@ import { ShowProductListRequest } from "../types/productOperation";
       productGraceMeta: query.data?.meta,
       productGraceTotalCount: query.data?.data.result.total_count,
       //for productGraceDtl
+      refetchProductGraceDtl: queryDtl.refetch,
       isLoadingDtl: queryDtl.isLoading,
       errorDtl: queryDtl.error,
       productGraceDtl: queryDtl.data?.data.result.productGraceDtls,

@@ -19,6 +19,7 @@ import Button from "../controls/Button";
 import { useCustomerStore } from "../../store/customerStore";
 import { useGeneralContext } from "../../context/GeneralContext";
 import PersianDatePicker from "../controls/PersianDatePicker";
+import { InputElement } from "../controls/InputElement";
 
 type Props = {
   cnt: number; //attachment count
@@ -202,27 +203,6 @@ const PayRequestShowHeader = ({
     );
   }, [payRequestResponse]);
 
-  const inputElement = (
-    value: string,
-    disabled: boolean,
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  ) => {
-    return (
-      <div className="flex w-full">
-        <input
-          type="text"
-          value={convertToFarsiDigits(value)}
-          disabled={disabled}
-          onChange={onChange}
-          className="text-sm text-gray-400 w-full p-1 border border-gray-300 rounded-md"
-          style={{
-            backgroundColor: disabled ? colors.gray50 : "inherit",
-            color: disabled ? colors.gray600 : "inherit",
-          }}
-        />
-      </div>
-    );
-  };
   return (
     <div className="mt-2 text-sm w-full flex flex-col gap-2 border border-gray-400 rounded-md p-2">
       <div className="flex items-center justify-between gap-2 w-full">
@@ -273,13 +253,13 @@ const PayRequestShowHeader = ({
         </div>
         <div className="w-1/4 flex">
           <label className="p-1 w-24 text-left">تاریخ:</label>
-          {inputElement(dat, true, (e) => {
+          {InputElement(dat, true, (e) => {
             setDat(convertToLatinDigits(e.target.value));
           })}
         </div>
         <div className="flex w-1/4">
           <label className="p-1 w-36 text-left">ساعت:</label>
-          {inputElement(tim, true, (e) => {
+          {InputElement(tim, true, (e) => {
             setTim(convertToLatinDigits(e.target.value));
           })}
         </div>
@@ -325,13 +305,13 @@ const PayRequestShowHeader = ({
         <div className="flex w-1/2">
           <div className="flex w-1/2">
             <label className="p-1 w-24 text-left">مبلغ تسویه:</label>
-            {inputElement(settleAmnt, !canEditForm1Mst2, (e) => {
+            {InputElement(settleAmnt, !canEditForm1Mst2, (e) => {
               handleCurrencyInputChange(e.target.value, setSettleAmnt);
             })}
           </div>
           <div className="flex w-1/2">
             <label className="p-1 w-48 text-left">مبلغ تامین کننده:</label>
-            {inputElement(providerAmnt, !canEditForm1Mst2, (e) => {
+            {InputElement(providerAmnt, !canEditForm1Mst2, (e) => {
               handleCurrencyInputChange(e.target.value, setProviderAmnt);
             })}
           </div>
@@ -361,7 +341,7 @@ const PayRequestShowHeader = ({
       </div>
       <div className="flex w-full items-center gap-2">
         <label className="p-1 w-24 text-left">توضیحات:</label>
-        {inputElement(dsc, !canEditForm1Mst2, (e) => {
+        {InputElement(dsc, !canEditForm1Mst2, (e) => {
           setDsc(convertToLatinDigits(e.target.value));
         })}
         <Button

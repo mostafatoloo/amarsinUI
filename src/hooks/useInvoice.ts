@@ -31,6 +31,7 @@ export function useInvoice() {
 
   return {
     //getInventoryList: () => query.refetch(), // Optional manual trigger
+    refetchInvoiceShowId: () => query.refetch(),
     isLoading: query.isLoading,
     error: query.error,
     invoiceShowIdResponse: query.data ?? {

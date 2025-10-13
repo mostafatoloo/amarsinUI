@@ -9,9 +9,11 @@ import { useWarehouseStore } from "../../store/warehouseStore";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  refetchSwitch: boolean;
+  setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const ReceiptPurchaseShow = ({ workFlowRowSelectResponse }: Props) => {
+const ReceiptPurchaseShow = ({ workFlowRowSelectResponse, refetchSwitch, setRefetchSwitch }: Props) => {
   const canEditForm1Mst2 =
     workFlowRowSelectResponse.workTableForms.canEditForm1Mst2;
   const { setField: setWarehouseField } = useWarehouseStore();
@@ -22,8 +24,18 @@ const ReceiptPurchaseShow = ({ workFlowRowSelectResponse }: Props) => {
     warehouseTemporaryReceiptSalesPricesResponse,
     isLoadingWarehouseTemporaryReceiptPurchaseReg,
     warehouseTemporaryReceiptPurchaseRegResponse,
+    refetchWarehouseTemporaryReceiptPurchaseShow,
   } = useWarehouse();
 
+  // refetch warehouseTemporaryReceiptPurchaseShow if refetchSwitch is true
+  useEffect(() => {
+    if (!refetchSwitch) return;
+    if (refetchSwitch) {
+      refetchWarehouseTemporaryReceiptPurchaseShow();
+      setRefetchSwitch(false);
+    }
+  }, [refetchSwitch]);
+  ////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     console.log(workFlowRowSelectResponse?.workTableRow.formId);
     setWarehouseField(

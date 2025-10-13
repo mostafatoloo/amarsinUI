@@ -19,6 +19,8 @@ type Props = {
   isLoadingdoFlow: boolean;
   getWorkTable: (options?: RefetchOptions) => Promise<QueryObserverResult<WorkflowResponse, Error>>
   getWorkTableRowSelect: ()=>void
+  refetchSwitch: boolean;
+  setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>
 };
 
 const WorkflowForm = ({
@@ -31,7 +33,9 @@ const WorkflowForm = ({
   doFlow,
   isLoadingdoFlow,
   getWorkTable,
-  getWorkTableRowSelect
+  getWorkTableRowSelect,
+  refetchSwitch,
+  setRefetchSwitch
 }: Props) => {
   const [selectedId, setSelectedId] = useState<number>(148201);
 
@@ -61,6 +65,8 @@ const WorkflowForm = ({
         isLoadingdoFlow={isLoadingdoFlow}
         getWorkTable={getWorkTable}
         getWorkTableRowSelect={getWorkTableRowSelect}
+        refetchSwitch={refetchSwitch}
+        setRefetchSwitch={setRefetchSwitch}
       />
     </div>
   );

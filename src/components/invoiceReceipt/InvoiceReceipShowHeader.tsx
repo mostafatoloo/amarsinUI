@@ -15,10 +15,10 @@ import { useProductStore } from "../../store/productStore";
 import {
   DefaultOptionType,
   DefaultOptionTypeStringId,
+  SearchItem,
 } from "../../types/general";
 import PersianDatePicker from "../controls/PersianDatePicker";
 import ModalMessage from "../layout/ModalMessage";
-import { SalesPriceItem } from "../../types/product";
 
 type Props = {
  // canEditForm1Mst1: boolean;
@@ -26,7 +26,7 @@ type Props = {
   fields: Fields;
   setFields: React.Dispatch<React.SetStateAction<Fields>>;
   indentMrsResponse: IndentMrsResponse;
-  salesPricesSearchResponse: SalesPriceItem[];
+  salesPricesSearchResponse: SearchItem[];
 };
 const InvoiceReceipShowHeader = ({
   //canEditForm1Mst1,

@@ -1,3 +1,5 @@
+import { SearchItem } from "./general"
+
 export interface CustomerSearchRequest{
     systemId: number
     yearId: number
@@ -7,10 +9,10 @@ export interface CustomerSearchRequest{
     lastId:number
     usrPerm:boolean
 }
-export interface Customer{
+/*export interface Customer{
     id:string,
     text:string
-}
+}*/
 
 export interface CustomerState extends CustomerSearchRequest{
     customerSearchResponse:CustomerSearchResponse
@@ -30,7 +32,7 @@ type CustomerSearchResponse = {
         total_count: number;
         err: number;
         msg: string | null;
-        searchResults:Customer[]
+        searchResults:SearchItem[]
       };
     };
   };

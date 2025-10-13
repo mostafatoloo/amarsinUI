@@ -158,19 +158,6 @@ const WarehouseTemporaryReceiptShowTable = ({
           width: "2%",
           backgroundColor: colors.indigo50,
           visible:canEditForm1,
-          /*Cell: ({ row }: any) => (
-            <div className="flex w-full items-center justify-center">
-              <button
-                onMouseDown={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  updateToSave(row);
-                }}
-              >
-                <FaSave color="purple" size={16} />
-              </button>
-            </div>
-          ),*/
           Cell: ({ value }: any) => value,
         },
       ],
@@ -196,6 +183,7 @@ const WarehouseTemporaryReceiptShowTable = ({
   };
 //////////////////////////////////////////////////////////
   const handleStatusClick = (dtl: WarehouseTemporaryReceiptIndentDtl) => {
+    console.log(dtl,"dtl")
     setSelectedProduct(dtl);
     setStatusClicked(true);
   };

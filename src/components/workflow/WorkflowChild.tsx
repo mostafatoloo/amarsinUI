@@ -17,6 +17,8 @@ type Props = {
   isLoadingdoFlow: boolean;
   getWorkTable: () => void;
   getWorkTableRowSelect:() => void;
+  refetchSwitch: boolean;
+  setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>
 };
 
 export const WorkflowChild = ({
@@ -29,7 +31,9 @@ export const WorkflowChild = ({
   doFlow,
   isLoadingdoFlow,
   getWorkTable,
-  getWorkTableRowSelect
+  getWorkTableRowSelect,
+  refetchSwitch,
+  setRefetchSwitch
 }: Props) => {
   //const [currentSelectedId, setCurrentSelectedId] = useState(selectedId);
   const { chartId, systemId } = useGeneralContext();
@@ -83,7 +87,9 @@ export const WorkflowChild = ({
         />
       )}
       <WorkflowComponent
-        workFlowRowSelectResponse={workFlowRowSelectResponse}
+        workFlowRowSelectResponse={workFlowRowSelectResponse} 
+        refetchSwitch={refetchSwitch}
+        setRefetchSwitch={setRefetchSwitch}
       />
     </>
   );

@@ -84,7 +84,7 @@ export function usePreInvoiceReturn() {
   });
   return {
     //for responseWarehouseTemporaryReceiptShow
-    refetch: query.refetch,
+    refetchWarehouseTemporaryReceiptShow:() => query.refetch(),
     isLoading: query.isLoading,
     error: query.error,
     warehouseTemporaryReceiptShowResponse: query.data?.data.result ?? {

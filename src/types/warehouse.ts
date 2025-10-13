@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Meta } from "./general";
+import { Meta, SearchItem } from "./general";
 
 interface Indent {
   id: number;
@@ -268,10 +268,10 @@ export interface WarehouseSearchRequest {
   CustomerTypeId: number;
   PartKey:number
 }
-export interface WarehouseSearchResult {
+/*export interface WarehouseSearchResult {
   id: number;
   text: string;
-}
+}*/
 
 export interface WarehouseSearchResponse {
   meta: Meta;
@@ -280,7 +280,7 @@ export interface WarehouseSearchResponse {
           total_count: number;
           err: number;
           msg: string | null;
-          searchResults: WarehouseSearchResult[];
+          searchResults: SearchItem[];
       };
   };
 }

@@ -1,3 +1,4 @@
+import { UpdateResult } from "./general";
 import {
   ProductItem,
   ProductOperation,
@@ -129,13 +130,13 @@ export interface Dtl {
   deleted: boolean;
 }
 
-interface DtlErrMsgs {
+/*interface DtlErrMsgs {
   systemId: number;
   id: number;
   err: number;
   msg: string;
   hasFlow: boolean;
-}
+}*/
 
 type ProductPriceSaveResponse = {
   meta: Meta;
@@ -144,7 +145,7 @@ type ProductPriceSaveResponse = {
       id: number;
       err: number;
       msg: string;
-      dtlErrMsgs: DtlErrMsgs[];
+      dtlErrMsgs: UpdateResult[];
     };
   };
 };
@@ -157,16 +158,16 @@ interface ProductPriceDoFirstFlowRequest {
   dsc: string;
 }
 
-interface ResultProductPriceDoFirstFlow {
+/*interface ResultProductPriceDoFirstFlow {
   systemId: number;
   id: number;
   err: number;
   msg: string;
   hasFlow: boolean;
-}
+}*/
 
 interface DataProductPriceDoFirstFlow {
-  result: ResultProductPriceDoFirstFlow;
+  result: UpdateResult;
 }
 
 interface ProductPriceDoFirstFlowResponse {

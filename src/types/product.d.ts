@@ -1,4 +1,4 @@
-import { Meta } from './general';
+import { Meta, SearchItem, UpdateResult } from './general';
 import { IndentDtlHistoryRequest } from './product.d';
 export interface ProductSearchRequest {
   accYear: number;
@@ -30,7 +30,7 @@ export interface ProductState
   salesPricesSearchResponse: SalesPricesSearchResponse;
   indentShowProductListResponse: IndentShowProductListResponse;
   indentSaveRequest: IndentSaveRequest;
-  indentSaveResponse: IndentSaveResponse;
+  indentSaveResponse: UpdateResult;
   indentDtlHistoryResponse: IndentDtlHistoryResponse;
   setField: (
     field:
@@ -49,7 +49,7 @@ export interface ProductState
   setIndentShowProductListResponse: (
     indentShowProductListResponse: IndentShowProductListResponse
   ) => void;
-  setIndentSaveResponse: (indentSaveResponse: IndentSaveResponse) => void;
+  setIndentSaveResponse: (indentSaveResponse: UpdateResult) => void;
   setIndentDtlHistoryResponse: (indentDtlHistoryResponse: IndentDtlHistoryResponse) => void;
 }
 
@@ -76,16 +76,16 @@ type ProductSearchResponse = {
 };
 
 //SalesPrice
-interface SalesPriceItem {
+/*interface SalesPriceItem {
   id: number;
   text: string;
-}
+}*/
 
 interface SalesPricesSearchResponse {
   total_count: number;
   err: number;
   msg: string | null;
-  searchResults: SalesPriceItem[];
+  searchResults: SearchItem[];
 }
 //indent/showProductList
 interface IndentProduct {
@@ -156,13 +156,13 @@ interface IndentSaveRequest {
   dtls: Detail[];
 }
 
-interface IndentSaveResponse {
+/*interface IndentSaveResponse {
   systemId: number;
   id: number;
   err: number;
   msg: string;
   hasFlow: boolean;
-}
+}*/
 //for Indent/dtlHidtory
 
 type IndentDtlHistory={

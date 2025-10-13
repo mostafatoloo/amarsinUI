@@ -289,7 +289,8 @@ const PaymentInvoiceShowTable = ({
       let initialData = invoiceOutStandingResponse.data.invoiceOutstandings.map(
         (dtl) => ({
           ...dtl,
-          check: false,
+          check: dtl.checked,
+          amnt: dtl.settlement,
           index: i++,
         })
       );

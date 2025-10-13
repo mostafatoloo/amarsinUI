@@ -61,8 +61,8 @@ export function useWarehouse() {
       return response.data;
     },
     enabled: formId !== 0 ? true : false, // Only fetch if param is available
-    refetchOnWindowFocus: true, // Refetch data when the window is focused
-    refetchOnReconnect: true, // Refetch data when the network reconnects
+    refetchOnWindowFocus: false, // Refetch data when the window is focused
+    refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
       setWarehouseShowIdResponse(data);
     },
@@ -85,9 +85,9 @@ export function useWarehouse() {
       const response = await axios.get(`${apiUrl}${url}`);
       return response.data;
     },
-    enabled: productId !== 0 ? true : false, // Only fetch if param is available
-    refetchOnWindowFocus: true, // Refetch data when the window is focused
-    refetchOnReconnect: true, // Refetch data when the network reconnects
+    //enabled: productId !== 0 ? true : false, // Only fetch if param is available
+    refetchOnWindowFocus: false, // Refetch data when the window is focused
+    refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
       setProductCatalog(data);
     },
@@ -138,8 +138,8 @@ export function useWarehouse() {
       return response.data;
     },
     enabled: iocId !== 0 && iocId !== undefined ? true : false, // Only fetch if param is available
-    refetchOnWindowFocus: true, // Refetch data when the window is focused
-    refetchOnReconnect: true, // Refetch data when the network reconnects
+    refetchOnWindowFocus: false, // Refetch data when the window is focused
+    refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
       setWarehouseIndentListResponse(data);
     },
@@ -238,8 +238,7 @@ export function useWarehouse() {
       },
     },
     // output for warehouseShowId
-    //getInventoryList: () => query.refetch(), // Optional manual trigger
-    //getWarehouseShowIdResponse: () => warehouseShowIdQuery.refetch(), // Optional manual trigger
+    refetchWarehouseShowId: () => warehouseShowIdQuery.refetch(),
     isLoadingWarehouseShowId: warehouseShowIdQuery.isLoading,
     errorWarehouseShowId: warehouseShowIdQuery.error,
     warehouseShowIdResponse: warehouseShowIdQuery.data ?? {
@@ -316,6 +315,7 @@ export function useWarehouse() {
       },
     },
     //output for warehouseTemporaryReceiptPurchaseShowResponse
+    refetchWarehouseTemporaryReceiptPurchaseShow: () => warehouseTemporaryReceiptPurchaseShowQuery.refetch(),
     isLoadingWarehouseTemporaryReceiptPurchaseShow:
       warehouseTemporaryReceiptPurchaseShowQuery.isLoading,
     errorWarehouseTemporaryReceiptPurchaseShow:

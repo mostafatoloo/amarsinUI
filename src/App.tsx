@@ -49,8 +49,8 @@ function AppContent() {
       <Routes>
         <Route path="/login" element={<Login isHomePage={true} />} />
         <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-        <Route path="/admin/ProductOffer" element={<PrivateRoute><ProductOffer /></PrivateRoute>} />
         <Route path="/Admin/ProductOffer" element={<PrivateRoute><ProductOffer /></PrivateRoute>} />
+        <Route path="/Admin/Indent" element={<PrivateRoute><ProductOffer /></PrivateRoute>} />
         <Route path="/admin/ProductPerm" element={<PrivateRoute><ProductPerm /></PrivateRoute>} />
         <Route path="/admin/ProductGrace" element={<PrivateRoute><ProductGrace /></PrivateRoute>} />
         <Route path="/admin/ProductPrice" element={<PrivateRoute><ProductPrice /></PrivateRoute>} />

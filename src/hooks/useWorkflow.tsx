@@ -116,12 +116,14 @@ export function useWorkflow() {
       console.log(url, "url");
 
       const response = await api.get(url);
+      setWorkFlowRowSelectResponse(response.data);
       return response.data;
     },
-    //enabled: workTableId !== 0 && chartId !== 0 ? true : false,
+    enabled: workTableId !== 0 && chartId !== 0 ? true : false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     onSuccess: (data: any) => {
+      console.log(data,"data in useWorkflow queryRowSelect");
       setWorkFlowRowSelectResponse(data);
     },
   } as UseQueryOptions<WorkflowRowSelectResponse, Error, WorkflowRowSelectResponse, unknown[]>);

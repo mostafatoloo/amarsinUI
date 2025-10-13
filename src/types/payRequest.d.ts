@@ -1,7 +1,7 @@
 // for http://apitest.dotis.ir/api/PayRequest?Id=1513&Acc_Year=15&Acc_System=4&State=0
 import { ProductOperationRequest } from "./productOperation";
 import { RpCustomerBillsResponse, RpCustomerBillsRequest } from "./sales";
-import { Meta } from "./general";
+import { Meta, SearchItem, UpdateResult } from "./general";
 interface PayRequest {
   id: number;
   guid: string;
@@ -140,15 +140,15 @@ interface PayRequestInvoicesRequest {
   customerId: number;
 }
 //http://apitest.dotis.ir/api/Payment/chequeBookSearch?page=1&lastId=0&Acc_System=1
-interface ChequeBookSearchResult {
+/*interface ChequeBookSearchResult {
   id: number;
   text: string;
-}
+}*/
 
 interface ChequeBookSearchData {
   result: {
     total_count: number;
-    results: ChequeBookSearchResult[];
+    results: SearchItem[];
   };
 }
 
@@ -171,14 +171,14 @@ interface ChequeBookSearchRequest {
 }
 
 //http://apitest.dotis.ir/api/Payment/chequeBookDtlSearch?ChequeBookId=174&page=1&lastId=0
-interface ChequeBookDtlSearchResult {
+/*interface ChequeBookDtlSearchResult {
   id: number;
   text: string;
-}
+}*/
 interface ChequeBookDtlSearchData {
   result: {
     total_count: number;
-    results: ChequeBookDtlSearchResult[];
+    results: SearchItem[];
   };
 }
 interface ChequeBookDtlSearchMeta {
@@ -287,16 +287,16 @@ interface PayRequestDoFirstFlowRequest {
   wFMS_FlowMapId: number;
 }
 
-interface ResultPayRequestDoFirstFlow {
+/*interface ResultPayRequestDoFirstFlow {
   systemId: number;
   id: number;
   err: number;
   msg: string;
   hasFlow: boolean;
-}
+}*/
 
 interface DataPayRequestDoFirstFlow {
-  result: ResultPayRequestDoFirstFlow;
+  result: UpdateResult;
 }
 
 interface PayRequestDoFirstFlowResponse {

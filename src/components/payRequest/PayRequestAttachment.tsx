@@ -117,7 +117,7 @@ const PayRequestAttachment = ({
       setData(tempData);
     }
     //console.log(attachments, "attachments");
-    setSelectedId(tempData[0]?.id);
+    setSelectedId(tempData[tempData.length-1]?.id);
     //console.log(tempData);
   }, [attachments]);
   ////////////////////////////////////////////////////////////////

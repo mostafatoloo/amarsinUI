@@ -1,7 +1,7 @@
 import { Paper } from "@mui/material";
 import { useInvoice } from "../../hooks/useInvoice";
 import Skeleton from "../layout/Skeleton";
-import React from "react";
+import React, { useEffect } from "react";
 import TTable from "../controls/TTable";
 import {
   convertToFarsiDigits,
@@ -12,10 +12,12 @@ import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
 
 type Props = {
   caption: string;
+  refetchSwitch: boolean;
+  setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>
 };
 
-const InvoiceShowTable = ({ caption }: Props) => {
-  const { isLoading, invoiceShowIdResponse } = useInvoice();
+const InvoiceShowTable = ({ caption, refetchSwitch, setRefetchSwitch }: Props) => {
+  const { isLoading, invoiceShowIdResponse ,refetchInvoiceShowId} = useInvoice();
 
   const columns = React.useMemo(
     () => [
@@ -79,6 +81,15 @@ const InvoiceShowTable = ({ caption }: Props) => {
 
     []
   );
+
+
+  useEffect(() => {
+    if (!refetchSwitch) return;
+    if (refetchSwitch) {
+      refetchInvoiceShowId();
+      setRefetchSwitch(false);
+    }
+  }, [refetchSwitch]);
 
   const data = invoiceShowIdResponse.data.result.invoiceDtls.map((dtl, i) => ({
     ...dtl,

@@ -1,6 +1,6 @@
 // http://apitest.dotis.ir/api/PreInvoiceReturn/warehouseTemporaryReceiptShow?Id=924865
 
-import { Meta } from "./general";
+import { Meta, SearchItem } from "./general";
 
 interface PreInvoiceReturn {
   id: number;
@@ -62,14 +62,9 @@ export interface ResponseWarehouseTemporaryReceiptShow {
   data: DataWarehouseTemporaryReceiptShow;
 }
 ///api/WarehouseTemporaryReceipt/preInvoiceDtSearch?PreInvoiceDtlId=4512744&page=1
-interface ResultItem {
-  id: number;
-  text: string;
-}
-
 interface ResultPreInvoiceDtlSearch {
   total_count: number;
-  results: ResultItem[];
+  results: SearchItem[];
 }
 
 interface DataPreInvoiceDtlSearch {

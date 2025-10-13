@@ -1,11 +1,12 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { useBrandStore } from "../store/brandStore";
-import { Brand, BrandRequest } from "../types/brand";
+import {  BrandRequest } from "../types/brand";
 import api from "../api/axios";
+import { SearchItem } from "../types/general";
 
 
 interface BrandResponse {
-  results: Brand[];
+  results: SearchItem[];
 }
 
 export function useBrand() {

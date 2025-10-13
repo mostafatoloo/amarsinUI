@@ -12,10 +12,14 @@ import { useAuthStore } from "../../store/authStore";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  refetchSwitch: boolean;
+  setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const PaymentInvoiceShow = ({
   workFlowRowSelectResponse,
+  refetchSwitch,
+  setRefetchSwitch,
 }: Props) => {
   
   const canEditForm1Mst1= workFlowRowSelectResponse.workTableForms.canEditForm1Mst1
@@ -28,6 +32,7 @@ const PaymentInvoiceShow = ({
     paymentInvoicesSave,
     isLoadingPaymentInvoicesSave,
     paymentInvoicesSaveResponse,
+    refetchInvoiceOutStanding,
   } = usePaymentInvoices();
   const { isLoadingUpdateFields, updateFields } = useCheques();
   const { updateFieldsResponse } = useChequeStore();
@@ -37,6 +42,15 @@ const PaymentInvoiceShow = ({
   const canEditForm = workFlowRowSelectResponse.workTableForms.canEditForm1;
   const usrId = authApiResponse?.data?.result?.login?.usrId ?? 0;
 
+  // refetch invoiceOutStanding if refetchSwitch is true
+  useEffect(() => {
+    if (!refetchSwitch) return;
+    if (refetchSwitch) {
+      refetchInvoiceOutStanding();
+      setRefetchSwitch(false);
+    }
+  }, [refetchSwitch]);
+////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     setField("paymentId", workFlowRowSelectResponse.workTableRow.formId);
     setField("systemId", systemId);

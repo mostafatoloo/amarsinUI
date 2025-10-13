@@ -4,7 +4,6 @@ import { Paper } from "@mui/material";
 import { useBrandStore } from "../../store/brandStore";
 import { useInventoryStore } from "../../store/inventoryStore";
 import { InventoryItem, InventoryItemTbl } from "../../types/inventory";
-import { useInventoryGoodList } from "../../hooks/useInventoryGoodList";
 import { useBrand } from "../../hooks/useBrands";
 import Skeleton from "../layout/Skeleton";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +13,7 @@ import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
 import TTable from "../controls/TTable";
 import { convertToFarsiDigits } from "../../utilities/general";
 import { DefaultOptionTypeStringId, HeadCell, TableColumns } from "../../types/general";
+import { useInventory } from "../../hooks/useInventory";
 
 export const headCells: HeadCell<InventoryItem>[] = [
   {
@@ -88,7 +88,7 @@ export const columns: TableColumns = [
 ];
 
 export default function InventoryGoodListForm() {
-  const { inventoryList, error, isLoading } = useInventoryGoodList();
+  const { inventoryList, error, isLoading } = useInventory();
 
   const { systemId, yearId } = useGeneralContext();
 

@@ -156,6 +156,7 @@ export function useOrders() {
     },
 
     //output for Order/orderRegShow
+    refetchOrderRegShow: () => orderRegShowQuery.refetch(),
     isLoadingOrderRegShow: orderRegShowQuery.isLoading,
     errorOrderRegShow: orderRegShowQuery.error,
     orderRegShowResponse: orderRegShowQuery.data ?? {

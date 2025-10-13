@@ -5,9 +5,8 @@ import { useGeneralContext } from "../../context/GeneralContext";
 import { OrderRegShowResponse } from "../../types/order";
 import AutoComplete from "../controls/AutoComplete";
 import { useCustomers } from "../../hooks/useCustomers";
-import { DefaultOptionType } from "../../types/general";
+import { DefaultOptionType, SearchItem } from "../../types/general";
 import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
-import { SalesPriceItem } from "../../types/product";
 import { WarehouseSearchResponse } from "../../types/warehouse";
 
 type Props = {
@@ -23,7 +22,7 @@ type Props = {
   setCustomer: (customer: DefaultOptionType | null) => void;
   salesPrice: DefaultOptionType | null;
   warehouse: DefaultOptionType | null;
-  salesPricesSearchResponse: SalesPriceItem[];
+  salesPricesSearchResponse: SearchItem[];
   warehouseSearchResponse: WarehouseSearchResponse
   setSalesPriceSearch: React.Dispatch<React.SetStateAction<string>>;
   setWarehouseSearch: React.Dispatch<React.SetStateAction<string>>;

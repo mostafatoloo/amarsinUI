@@ -3,9 +3,9 @@ import {
   TableColumns,
   Column,
   DefaultOptionType,
+  SearchItem,
 } from "../../types/general";
 import AutoComplete from "../controls/AutoComplete";
-import { SalesPriceItem } from "../../types/product";
 import { WarehouseSearchResponse } from "../../types/warehouse";
 
 type Props = {
@@ -16,7 +16,7 @@ type Props = {
   setWarehouseSearch: React.Dispatch<React.SetStateAction<string>>;
   changeSalesPrice: (newValue: DefaultOptionType) => void;
   changeWarehouse: (newValue: DefaultOptionType) => void;
-  salesPricesSearchResponse: SalesPriceItem[];
+  salesPricesSearchResponse: SearchItem[];
   warehouseSearchResponse: WarehouseSearchResponse;
 };
 

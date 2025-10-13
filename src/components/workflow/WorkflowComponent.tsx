@@ -12,13 +12,20 @@ import ProductOfferForWorkFlow from "../productOffer/ProductOfferForWorkFlow";
 import ProductPriceForWorkFlow from "../productPrice/ProductPriceForWorkFlow";
 import ProductPermForWorkFlow from "../productPerm/ProductPermForWorkFlow";
 import WarehouseTemporaryReceiptShow from "../preInvoiceReturn/WarehouseTemporaryReceiptShow";
+import BankAssignShow from "../bankAssign/BankAssignShow";
+import DeliveryShow from "../delivery/DeliveryShow";
+import InventoryDetailShow from "../inventory/inventoryDetail/InventoryDetailShow";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  refetchSwitch: boolean;
+  setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function WorkflowComponent({
   workFlowRowSelectResponse,
+  refetchSwitch,
+  setRefetchSwitch,
 }: Props) {
   let componentToRender1: React.ReactNode | null = null;
   let componentToRender2: React.ReactNode | null = null;
@@ -30,6 +37,8 @@ export default function WorkflowComponent({
       componentToRender1 = (
         <InvoiceShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
           caption={"اقلام"}
         />
       );
@@ -38,19 +47,27 @@ export default function WorkflowComponent({
       componentToRender1 = (
         <InvoiceShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
           caption={"اقلام مرجوعی"}
         />
       );
       break;
     case "WarehouseTemporaryReceipt/_WarehouseTemporaryReceiptIndent": //کارشناس خرید => ثبت اولیه رسید موقت
       componentToRender1 = (
-        <WarehouseShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
+        <WarehouseShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
+        />
       );
       break;
     case "Indent/_CreateIndent": //کارشناس خرید => دریافت پیش فاکتور
       componentToRender1 = (
         <InvoiceReceiptShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
         />
       );
       break;
@@ -58,6 +75,8 @@ export default function WorkflowComponent({
       componentToRender1 = (
         <RegRecievedCheque
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
         />
       );
       break;
@@ -65,18 +84,26 @@ export default function WorkflowComponent({
       componentToRender1 = (
         <PaymentInvoiceShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
         />
       );
       break;
     case "Order/_Order": //کارشناس بازرگانی -> ثبت اولیه - سفارش
       componentToRender1 = (
-        <OrderRegShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
+        <OrderRegShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
+        />
       );
       break;
     case "WarehouseTemporaryReceipt/_WarehouseTemporaryReceiptPurchase": // کارشناس خرید -> تایید فاکتور خرید
       componentToRender1 = (
         <ReceiptPurchaseShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
         />
       );
       break;
@@ -113,6 +140,34 @@ export default function WorkflowComponent({
       componentToRender1 = (
         <WarehouseTemporaryReceiptShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
+        />
+      );
+      break;
+    case "Payment/_BankAssign": //حسابدار -> عودت شد
+      componentToRender1 = (
+        <BankAssignShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
+        />
+      );
+      break;
+    case "Delivery/_Delivery": //تیتک -> ارسال به تیتک
+      componentToRender1 = (
+        <DeliveryShow workFlowRowSelectResponse={workFlowRowSelectResponse} 
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
+        />
+      );
+      break;
+    case "Inventory/_Inventory": //کارشناس خرید -> ثبت شمارش
+      componentToRender1 = (
+        <InventoryDetailShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
         />
       );
       break;
@@ -137,6 +192,8 @@ export default function WorkflowComponent({
       componentToRender2 = (
         <InvoiceShow //کارشناس خرید-> دریافت اصل فاکتور*****************
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
           caption={"اقلام"}
         />
       );
@@ -145,19 +202,27 @@ export default function WorkflowComponent({
       componentToRender2 = (
         <InvoiceShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
           caption={"اقلام مرجوعی"}
         />
       );
       break;
     case "WarehouseTemporaryReceipt/_WarehouseTemporaryReceiptIndent": //کارشناس خرید => ثبت اولیه رسید موقت
       componentToRender2 = (
-        <WarehouseShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
+        <WarehouseShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
+        />
       );
       break;
     case "Indent/_CreateIndent": //کارشناس خرید => دریافت پیش فاکتور
       componentToRender2 = (
         <InvoiceReceiptShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
         />
       );
       break;
@@ -165,6 +230,8 @@ export default function WorkflowComponent({
       componentToRender2 = (
         <RegRecievedCheque
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
         />
       );
       break;
@@ -172,18 +239,26 @@ export default function WorkflowComponent({
       componentToRender2 = (
         <PaymentInvoiceShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
         />
       );
       break;
     case "Order/_Order": //کارشناس بازرگانی -> ثبت اولیه - سفارش
       componentToRender2 = (
-        <OrderRegShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
+        <OrderRegShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
+        />
       );
       break;
     case "WarehouseTemporaryReceipt/_WarehouseTemporaryReceiptPurchase": //کارشناس خرید -> تایید فاکتور خرید
       componentToRender2 = (
         <ReceiptPurchaseShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
         />
       );
       break;
@@ -217,9 +292,37 @@ export default function WorkflowComponent({
       );
       break;
     case "PreInvoiceReturn/_PreInvoiceReturnWareHouseTemporaryReceipt": //مدیر انبار / تایید و ارسال به انبار- پیش فاکتور مرجوعی
-      componentToRender1 = (
+      componentToRender2 = (
         <WarehouseTemporaryReceiptShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
+        />
+      );
+      break;
+    case "Payment/_BankAssign": //حسابدار -> عودت شد
+      componentToRender2 = (
+        <BankAssignShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
+        />
+      );
+      break;
+    case "Delivery/_Delivery": //تیتک -> ارسال به تیتک
+      componentToRender2 = (
+        <DeliveryShow workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
+        />
+      );
+      break;
+    case "Inventory/_Inventory": //کارشناس خرید -> ثبت شمارش
+      componentToRender2 = (
+        <InventoryDetailShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
         />
       );
       break;

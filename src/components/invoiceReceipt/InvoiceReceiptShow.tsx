@@ -35,6 +35,8 @@ import { debounce } from "lodash";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  refetchSwitch: boolean;
+  setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export type Fields = {
@@ -48,7 +50,11 @@ export type Fields = {
   dsc: string;
 };
 
-const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
+const InvoiceReceiptShow = ({
+  workFlowRowSelectResponse,
+  refetchSwitch,
+  setRefetchSwitch,
+}: Props) => {
   const canEditForm = workFlowRowSelectResponse.workTableForms.canEditForm1;
   const { setField, mrsId } = useInvoiceReceiptStore();
   const { yearId, systemId } = useGeneralContext();
@@ -88,6 +94,15 @@ const InvoiceReceiptShow = ({ workFlowRowSelectResponse }: Props) => {
       ? parsePersianDateString(indentMrsResponse.indents[0]?.saleTDate)
       : null,
   });
+
+  //refetch invoiceReceiptShow if refetchSwitch is true
+  useEffect(() => {
+    if (!refetchSwitch) return;
+    if (refetchSwitch) {
+      getIndentMrsResponse();
+      setRefetchSwitch(false);
+    }
+  }, [refetchSwitch]);
 
   useEffect(() => {
     setFields((prev: Fields) => ({

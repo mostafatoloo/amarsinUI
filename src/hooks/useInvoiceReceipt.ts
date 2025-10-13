@@ -23,8 +23,8 @@ export function useInvoiceReceipt() {
       return response.data;
     },
     enabled: mrsId!==0 ? true : false, // Only fetch if param is available
-    refetchOnWindowFocus: true, // Refetch data when the window is focused
-    refetchOnReconnect: true, // Refetch data when the network reconnects
+    refetchOnWindowFocus: false, // Refetch data when the window is focused
+    refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
       setIndentMrsResponse(data);
     },

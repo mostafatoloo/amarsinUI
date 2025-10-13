@@ -1,12 +1,12 @@
 import PageTitle from "../components/layout/PageTitle";
-import Add32 from "../assets/images/GrayThem/add32.png"
-import FormFlow24 from "../assets/images/GrayThem/FormFlow24.png"
-import SentForm24 from "../assets/images/GrayThem/SentForm24.png"
-import Refresh32 from "../assets/images/GrayThem/rfrsh32.png"
+import Add32 from "../assets/images/GrayThem/add32.png";
+import FormFlow24 from "../assets/images/GrayThem/FormFlow24.png";
+import SentForm24 from "../assets/images/GrayThem/SentForm24.png";
+import Refresh32 from "../assets/images/GrayThem/rfrsh32.png";
 //import { useWorkflow } from "../hooks/useWorkflow";
 import WorkflowForm from "../components/workflow/WorkflowForm";
 import { useWorkflow } from "../hooks/useWorkflow";
-
+import {  useState } from "react";
 
 export default function Workflow() {
   const {
@@ -21,7 +21,16 @@ export default function Workflow() {
     getWorkTable,
     getWorkTableRowSelect,
   } = useWorkflow();
+  //const { setField: setWorkFlowStoreField, workTableId } = useWorkflowStore();
+  //const { systemId } = useGeneralContext();
 
+  const [refetchSwitch, setRefetchSwitch] = useState(false);
+
+  const refetchWorkTables = () => {
+    getWorkTable();
+    getWorkTableRowSelect();
+    setRefetchSwitch(true);
+  };
   return (
     <div className="h-[calc(100vh-72px)] overflow-y-scroll flex flex-col bg-gray-200 pt-2">
       {/* Top blue header */}
@@ -40,9 +49,11 @@ export default function Workflow() {
             <img src={FormFlow24} alt="FormFlow24" className="w-6 h-6" />
             <p className="text-xs">گردش</p>
           </div>
-          <div className="flex flex-col items-center cursor-pointer"
-          onClick={()=>getWorkTable()}>
-          {/*onClick={()=>getWorkTable()}>*/}
+          <div
+            className="flex flex-col items-center cursor-pointer"
+            onClick={refetchWorkTables}
+          >
+            {/*onClick={()=>getWorkTable()}>*/}
             <img src={Refresh32} alt="Refresh32" className="w-6 h-6" />
             <p className="text-xs">بازخوانی</p>
           </div>
@@ -52,7 +63,7 @@ export default function Workflow() {
 
       {/* Main content */}
       <main className="flex flex-col items-center justify-center px-2">
-        <WorkflowForm 
+        <WorkflowForm
           workFlowResponse={workFlowResponse}
           error={error}
           isLoading={isLoading}
@@ -63,6 +74,8 @@ export default function Workflow() {
           isLoadingdoFlow={isLoadingdoFlow}
           getWorkTable={getWorkTable}
           getWorkTableRowSelect={getWorkTableRowSelect}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
         />
       </main>
 

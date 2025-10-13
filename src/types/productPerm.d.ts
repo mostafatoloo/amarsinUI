@@ -1,6 +1,11 @@
 //http://apitest.dotis.ir/api/ProductPerm/productPerm?Id=0&yearId=15&systemId=4&State=0&PageNumber=1&SrchId=-1&SrchAccepted=-1&SortId=0&SortDate=0&SortTime=0&SortDsc=0&SortAccepted=0&SortUsrName=0&SortStep=0
-import { Meta } from "./general";
-import { ProductItem, ProductOperation, ProductOperationRequest, SaveRequest } from "./productOperation";
+import { Meta, UpdateResult } from "./general";
+import {
+  ProductItem,
+  ProductOperation,
+  ProductOperationRequest,
+  SaveRequest,
+} from "./productOperation";
 
 export interface ProductPermRequest extends ProductOperationRequest {
   yearId: number;
@@ -34,7 +39,7 @@ interface ProductPermResponse {
   data: Data;
 }
 //http://apitest.dotis.ir/api/ProductPerm/productList
-interface ProductPermListRequest{
+interface ProductPermListRequest {
   id: number;
   productId: number;
   systemId: number;
@@ -99,15 +104,7 @@ export interface Dtl {
 
 type ProductPermSaveResponse = {
   meta: Meta;
-  data: {
-    result: {
-      systemId: number;
-      id: number;
-      err: number;
-      msg: string;
-      hasFlow: boolean;
-    };
-  };
+  data: { result: UpdateResult };
 };
 
 //http://apitest.dotis.ir/api/ProductPerm/doFirstFlow?ChartId=1&Acc_System=1&Acc_Year=15&Id=123123&Dsc=
@@ -119,16 +116,16 @@ interface ProductPermDoFirstFlowRequest {
   dsc: string;
 }
 
-interface ResultProductPermDoFirstFlow {
+/*interface ResultProductPermDoFirstFlow {
   systemId: number;
   id: number;
   err: number;
   msg: string;
   hasFlow: boolean;
-}
+}*/
 
 interface DataProductPermDoFirstFlow {
-  result: ResultProductPermDoFirstFlow;
+  result: UpdateResult;
 }
 
 interface ProductPermDoFirstFlowResponse {
