@@ -96,14 +96,14 @@ export const useWarehouseStore = create<WarehouseState>()((set) => ({
       result: { total_count: 0, err: 0, msg: "", searchResults: [] },
     },
   },
-  //for api/Warehouse/WarehouseSearch?search=%D8%A7&page=1&pageSize=30&lastId=0&CustomerTypeId=-1
+  //for api/Warehouse/Search?search=%D8%A7&page=1&pageSize=30&lastId=0&CustomerTypeId=-1
   search: "ا",
   page: 1,
   pageSize: 30,
   lastId: 0,
   CustomerTypeId: -1,
   PartKey: 0,
-  //end of api/Warehouse/WarehouseSearch?search=%D8%A7&page=1&pageSize=30&lastId=0&CustomerTypeId=-1
+  //end of api/Warehouse/Search?search=%D8%A7&page=1&pageSize=30&lastId=0&CustomerTypeId=-1
   //for api/WarehouseTemporaryReceipt/purchaseShow/1107390
   receiptPurchaseId: 0,
   warehouseTemporaryReceiptPurchaseShowResponse: {

@@ -1,7 +1,7 @@
-//حسابداری -> خزانه داری ->عملیات -> درخواست پرداخت
-import Accept from "../../assets/images/GrayThem/img24_3.png";
+//حسابداری => حسابداری بازرگانی => عملیات => درخواست خرید
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useGeneralContext } from "../../context/GeneralContext";
+import { ProductPriceDtl } from "../../types/productPrice";
 import {
   convertPersianDate,
   convertToFarsiDigits,
@@ -15,41 +15,59 @@ import ProductOfferTblHeader from "../productOffer/ProductOfferTblHeader";
 import TTable from "../controls/TTable";
 import { TablePaginationActions } from "../controls/TablePaginationActions";
 import ProductOfferParams from "../productOffer/ProductOfferParams";
-import ModalMessage from "../layout/ModalMessage";
 import ModalForm from "../layout/ModalForm";
-import { usePayRequest } from "../../hooks/usePayRequest";
-import { usePayRequestStore } from "../../store/payRequestStore";
-import {
-  PayRequestDoFirstFlowRequest,
-  PayRequestDtl,
-  PayRequest as PayRequestType,
-} from "../../types/payRequest";
-import PayRequestOperationForm from "./PayRequestOperationForm";
-import ConfirmCard from "../layout/ConfirmCard";
+import ErrorPage from "../common/ErrorPage";
+import { useProductStore } from "../../store/productStore";
+import { useProducts } from "../../hooks/useProducts";
+import { Indent, IndentDoFirstFlowRequest } from "../../types/product";
+import PurchaseRequestIndentForm from "./PurchaseRequestIndentForm";
+import ModalMessage from "../layout/ModalMessage";
+import InvoiceReceiptShowTableSummery from "../invoiceReceipt/InvoiceReceiptShowTableSummery";
+import Card from "../controls/Card";
+import { colors } from "../../utilities/color";
+import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
 
-const PayRequestOperation = () => {
+const PurchaseRequestIndent = () => {
   const {
     setField,
     id: prevId,
-    payRequestDoFirstFlowResponse,
-    payRequestDelResponse,
-  } = usePayRequestStore();
+    indentDoFirstFlowResponse,
+    indentDelResponse,
+  } = useProductStore();
   const {
-    payRequest,
-    payRequestTotalCount,
-    payRequestMeta,
+    indentList,
+    indentListDtl,
+    //indentListMeta,
+    refetchIndentList,
+    isLoadingIndentList,
+    errorIndentList,
+    //indentListTotalCount,
+    isLoadingIndentListDtl,
+    indentListTotalCount,
+    indentDoFirstFlow,
+    indentDel,
+    /*productPrice,
+    productPriceTotalCount,
     refetch,
-    isLoadingPayRequest,
+    isLoading,
+    error,
     isLoadingDtl,
-    payRequestDtl,
-    payRequestDoFirstFlow,
-    payRequestDel,
-  } = usePayRequest();
+    productPriceDtl,
+    productPriceMeta,
+    addProductList,
+    productPriceDtlHistory,
+    isLoadingDtlHistory,
+    productPriceSave,
+    isLoadingProductPriceSave,
+    productPriceDoFirstFlow,
+    productPriceDel,*/
+  } = useProducts();
 
+  //const { setField: setProductOfferField } = useProductOfferStore();
   const [data, setData] = useState<any[]>([]);
-  const [dataDtl, setDataDtl] = useState<PayRequestDtl[]>([]);
+  const [dataDtl, setDataDtl] = useState<ProductPriceDtl[]>([]);
   const { yearId, systemId, chartId } = useGeneralContext();
-  const [selectedId, setSelectedId] = useState<number>(589);
+  const [selectedId, setSelectedId] = useState<number>(0);
   const [isNew, setIsNew] = useState<boolean>(false); //for new
   const [isEdit, setIsEdit] = useState<boolean>(false); //for edit
   //for ProductPermParams params
@@ -58,8 +76,7 @@ const PayRequestOperation = () => {
   const [fDate, setFDate] = useState<Date | null>(null);
   const [tDate, setTDate] = useState<Date | null>(null);
   const [state, setState] = useState<number>(-1);
-  const [selectedPayRequest, setSelectedPayRequest] =
-    useState<PayRequestType | null>(null);
+  const [selectedIndent, setSelectedIndent] = useState<Indent | null>(null);
   // for pagination
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(12);
@@ -69,23 +86,21 @@ const PayRequestOperation = () => {
   const [srchDate, setSrchDate] = useState<string>("");
   const [srchTime, setSrchTime] = useState<string>("");
   const [srchDsc, setSrchDsc] = useState<string>("");
-  const [srchAccepted, setSrchAccepted] = useState<number>(-1);
+  const [srchSRName, setSrchSRName] = useState<string>("");
+  const [srchPayDuration, setSrchPayDuration] = useState<number>(-1);
   const [srchUsrName, setSrchUsrName] = useState<string>("");
   const [srchStep, setSrchStep] = useState<string>("");
-  const [srchSrName, setSrchSrName] = useState<string>("");
-  const [srchAmount, setSrchAmount] = useState<number>(-1);
   const [sortId, setSortId] = useState<number>(0);
   const [sortDate, setSortDate] = useState<number>(0);
   const [sortTime, setSortTime] = useState<number>(0);
   const [sortDsc, setSortDsc] = useState<number>(0);
-  const [sortAccepted, setSortAccepted] = useState<number>(0);
+  const [sortSRName, setSortSRName] = useState<number>(0);
+  const [sortPayDuration, setSortPayDuration] = useState<number>(0);
   const [sortUsrName, setSortUsrName] = useState<number>(0);
   const [sortStep, setSortStep] = useState<number>(0);
-  const [sortSrName, setSortSrName] = useState<number>(0);
-  const [sortAmount, setSortAmount] = useState<number>(0);
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in productGrace table
   const [selectedRowIndexDtl, setSelectedRowIndexDtl] = useState<number>(0); //for selected row index in productGraceDtl table
-  const [sumAmount, setSumAmount] = useState<number>(0); //for sum amount of payRequestDtl
+
   const columns = [
     {
       Header: "ردیف",
@@ -95,6 +110,12 @@ const PayRequestOperation = () => {
     {
       Header: "شناسه",
       accessor: "id",
+      width: "5%",
+      visible: false,
+    },
+    {
+      Header: "شناسه",
+      accessor: "ordrId",
       width: "5%",
     },
     {
@@ -108,24 +129,19 @@ const PayRequestOperation = () => {
       width: "5%",
     },
     {
-      Header: "طرف حساب",
+      Header: "تامین کننده",
       accessor: "srName",
-      width: "25%",
+      width: "28%",
     },
     {
-      Header: "مبلغ",
-      accessor: "amount",
+      Header: "سررسید",
+      accessor: "payDuration",
       width: "5%",
     },
     {
       Header: "توضیح",
       accessor: "dsc",
       width: "20%",
-    },
-    {
-      Header: "تایید",
-      accessor: "accepted",
-      width: "3%",
     },
     {
       Header: "کاربر",
@@ -147,39 +163,44 @@ const PayRequestOperation = () => {
         width: "5%",
       },
       {
-        Header: "دسته چک",
-        accessor: "chequeBook",
-        width: "15%",
+        Header: "کالا",
+        accessor: "product",
+        width: "35%",
       },
       {
-        Header: "شماره چک",
-        accessor: "chqBkNo",
-        width: "10%",
+        Header: "تعداد",
+        accessor: "cnt",
+        width: "5%",
       },
       {
-        Header: "در وجه",
-        accessor: "prsn",
-        width: "25%",
-      },
-      {
-        Header: "صیادی",
-        accessor: "chqNo",
-        width: "10%",
-      },
-      {
-        Header: "تاریخ",
-        accessor: "dat",
+        Header: "آفر",
+        accessor: "offer",
         width: "5%",
       },
       {
         Header: "مبلغ",
-        accessor: "amount",
-        width: "10%",
+        accessor: "cost",
+        width: "5%",
+      },
+      {
+        Header: "تخفیف",
+        accessor: "dcrmnt",
+        width: "5%",
+      },
+      {
+        Header: "مالیات",
+        accessor: "taxValue",
+        width: "5%",
+      },
+      {
+        Header: "جمع",
+        accessor: "total",
+        width: "5%",
       },
       {
         Header: "شرح",
         accessor: "dtlDsc",
-        width: "20%",
+        width: "30%",
       },
     ],
     []
@@ -203,12 +224,14 @@ const PayRequestOperation = () => {
     if (focusedInput && inputRefs.current[focusedInput]) {
       inputRefs.current[focusedInput]?.focus();
     }
-  }, [focusedInput, data, payRequest]);
+  }, [focusedInput, data]);
 
   useEffect(() => {
-    console.log("yearId in PayRequestOperation", yearId);
-    setField("yearId", yearId);
-    setField("systemId", systemId);
+    setField("id", 0);
+    setField("ordrIdIndentRequest", 0);
+    setField("showDeletedInentDtl", false);
+    setField("acc_YearIndentRequest", yearId);
+    setField("acc_SystemIndentRequest", systemId);
     setField("state", state);
 
     setField(
@@ -243,11 +266,10 @@ const PayRequestOperation = () => {
     setField("srchDate", srchDate);
     setField("srchTime", srchTime);
     setField("srchDsc", srchDsc);
-    setField("srchAccepted", srchAccepted);
     setField("srchUsrName", srchUsrName);
     setField("srchStep", srchStep);
-    setField("srchAmount", srchAmount);
-    setField("srchSrName", srchSrName);
+    setField("srchSRName", srchSRName);
+    setField("srchPayDuration", srchPayDuration);
   }, []);
 
   useEffect(() => {
@@ -255,30 +277,29 @@ const PayRequestOperation = () => {
     setField("sortDate", sortDate);
     setField("sortTime", sortTime);
     setField("sortDsc", sortDsc);
-    setField("sortAccepted", sortAccepted);
     setField("sortUsrName", sortUsrName);
     setField("sortStep", sortStep);
-    setField("sortSrName", sortSrName);
-    setField("sortAmount", sortAmount);
+    setField("sortSRName", sortSRName);
+    setField("sortPayDuration", sortPayDuration);
   }, [
     sortId,
     sortDate,
     sortTime,
     sortDsc,
-    sortAccepted,
     sortUsrName,
     sortStep,
-    sortSrName,
-    sortAmount,
+    sortSRName,
+    sortPayDuration,
   ]);
   ////////////////////////////////////////////////////////////
   useEffect(() => {
-    //console.log("pageNumber", pageNumber);
+    //console.log("pageNumber", pageNumber);`
     setField("pageNumber", pageNumber);
   }, [pageNumber]);
   ////////////////////////////////////////////////////////////
   useEffect(() => {
     setPageNumber(1);
+    setSelectedRowIndex(0);
   }, [
     state,
     regFDate,
@@ -291,23 +312,21 @@ const PayRequestOperation = () => {
     srchDate,
     srchTime,
     srchDsc,
-    srchAccepted,
+    srchSRName,
     srchUsrName,
     srchStep,
-    srchSrName,
-    srchAmount,
+    srchPayDuration,
     yearId,
     sortId,
     sortDate,
     sortTime,
     sortDsc,
-    sortAccepted,
+    sortSRName,
     sortUsrName,
     sortStep,
-    sortSrName,
-    sortAmount,
+    sortPayDuration,
   ]);
-
+  //////////////////////////////////////////////////////////////////////////////
   const handleDebounceFilterChange = useCallback(
     debounce((field: string, value: string | number) => {
       console.log(field, value, "field, value");
@@ -317,12 +336,12 @@ const PayRequestOperation = () => {
       }
       // Create a new AbortController for this request
       abortControllerRef.current = new AbortController();
-      console.log(field, value, "field, value in handleDebounceFilterChange");
+
       setField(field, value);
     }, 500),
     [setField]
   );
-
+  //////////////////////////////////////////////////////////////////////////////
   // Cleanup on component unmount
   useEffect(() => {
     return () => {
@@ -331,73 +350,69 @@ const PayRequestOperation = () => {
       }
     };
   }, []);
-
+  //////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
-    console.log("selectedId", selectedId);
-    if (prevId !== selectedId) {
-      setField("id", selectedId);
+    const currentIndent = indentList.find((item) => item.id === selectedId);
+    if (currentIndent && prevId !== selectedId) {
+      setField("mrsIdIndentRequest", currentIndent.mrsId);
     }
-    selectedId !== 0 &&
-      setSelectedPayRequest(
-        payRequest?.find((item) => item.id === selectedId) || null
-      );
-  }, [selectedId, payRequest]);
-  //initialize data for payRequest table
+    //if (selectedId!==0) setField("mrsIdIndentRequest", selectedId);
+    /*if (prevId !== selectedId) {
+      setField("id", selectedId);
+    }*/
+    selectedId !== 0 && setSelectedIndent(currentIndent || null);
+  }, [selectedId]);
+  //////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
-    const tempData = payRequest?.map((item, index) => {
+    const tempData = indentList?.map((item, index) => {
       return {
         ...item,
-        id: convertToFarsiDigits(item.id),
+        ordrId: convertToFarsiDigits(item.ordrId),
         dat: convertToFarsiDigits(item.dat),
         tim: convertToFarsiDigits(item.tim),
-        srName: convertToFarsiDigits(item.srName),
-        amount: convertToFarsiDigits(item.amount),
+        payDuration: convertToFarsiDigits(item.payDuration),
         dsc: convertToFarsiDigits(item.dsc),
-        accepted: item.accepted ? (
-          <img src={Accept} alt="Accept" className="w-4 h-4" />
-        ) : null,
         usrName: convertToFarsiDigits(item.usrName),
         flowMapName: convertToFarsiDigits(item.flowMapName),
         index: convertToFarsiDigits((pageNumber - 1) * pageSize + index + 1),
       };
     });
-
     setData(tempData || []);
     if (tempData?.[0]?.id) {
-      setSelectedId(Number(convertToLatinDigits(tempData?.[0]?.id)));
+      setSelectedId(tempData?.[0]?.id);
     } else {
       setSelectedId(0);
     }
-  }, [payRequest]);
-
+  }, [indentList]);
+  //////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     let tempDataDtl: any[] = [];
-    if (payRequestDtl) {
-      tempDataDtl = payRequestDtl.map((item, index) => {
+    if (indentList.length === 0) {
+      setDataDtl(tempDataDtl);
+      return;
+    }
+    if (indentListDtl) {
+      tempDataDtl = indentListDtl.map((item, index) => {
         return {
           index: convertToFarsiDigits(index + 1),
-          chequeBook: convertToFarsiDigits(item.chequeBook),
-          chqBkNo: convertToFarsiDigits(item.chqBkNo),
-          prsn: convertToFarsiDigits(item.prsn),
-          chqNo: convertToFarsiDigits(item.chqNo),
-          dat: convertToFarsiDigits(item.dat),
-          amount: convertToFarsiDigits(
-            formatNumberWithCommas(Number(item.amount))
-          ),
+          bName: convertToFarsiDigits(item.bName),
+          product: convertToFarsiDigits(item.product),
+          cnt: convertToFarsiDigits(item.cnt),
+          offer: convertToFarsiDigits(item.offer),
+          cost: convertToFarsiDigits(formatNumberWithCommas(item.cost)),
+          dcrmnt: convertToFarsiDigits(formatNumberWithCommas(item.dcrmnt)),
+          taxValue: convertToFarsiDigits(formatNumberWithCommas(item.taxValue)),
+          total: convertToFarsiDigits(formatNumberWithCommas(item.total)),
           dtlDsc: convertToFarsiDigits(item.dtlDsc),
         };
       });
       if (tempDataDtl) {
         setDataDtl(tempDataDtl);
-        setSumAmount(
-          payRequestDtl.reduce((acc, item) => acc + Number(item.amount), 0)
-        );
       }
     }
-  }, [payRequestDtl]);
-
+  }, [indentListDtl]);
+  //////////////////////////////////////////////////////////////////////////////
   const handleSelectedIdChange = (id: number) => {
-    //console.log(id, "id in WorkflowForm");
     setSelectedId(id);
   };
 
@@ -421,18 +436,20 @@ const PayRequestOperation = () => {
   }, [isModalOpen, isModalConfirmOpen, isModalDeleteOpen]);
 
   const handleConfirm = () => {
-    const request: PayRequestDoFirstFlowRequest = {
+    const request: IndentDoFirstFlowRequest = {
+      acc_Year: yearId,
+      acc_System: systemId,
+      id: selectedIndent?.mrsId ?? 0,
+      dsc: selectedIndent?.dsc || "توضیحات",
+      wfms_FlowMapId: 403020201,
+      flowNo: 403020200,
       chartId: chartId,
-      flowNo: 405020300,
-      wFMS_FlowMapId: 405020301,
-      yearId: yearId,
-      systemId: systemId,
-      id: selectedId,
-      dsc: selectedPayRequest?.dsc || "",
     };
-    console.log("request", request);
+    console.log(request, "request");
     setIsModalConfirmOpen(true);
-    payRequestDoFirstFlow(request);
+    indentDoFirstFlow(request);
+    setSelectedId(data?.[0]?.id ?? 0);
+    setSelectedRowIndex(0);
   };
 
   const handleEdit = () => {
@@ -440,8 +457,10 @@ const PayRequestOperation = () => {
   };
 
   const handleDelete = () => {
-    payRequestDel(selectedId);
+    indentDel(selectedIndent?.mrsId ?? 0);
     setIsModalDeleteOpen(true);
+    setSelectedId(data?.[0]?.id ?? 0);
+    setSelectedRowIndex(0);
   };
 
   const ProductPermInput = (
@@ -469,6 +488,7 @@ const PayRequestOperation = () => {
       />
     );
   };
+  const { width, height } = useCalculateTableHeight();
   return (
     <div
       className={`sm:h-full overflow-y-scroll flex flex-col bg-gray-200 pt-2 gap-2`}
@@ -479,18 +499,25 @@ const PayRequestOperation = () => {
         handleDelete={handleDelete}
         handleEdit={handleEdit}
         handleConfirm={handleConfirm}
-        selectedProductOffer={selectedPayRequest || null}
+        selectedProductOffer={selectedIndent || null}
         data={data}
-        refetch={refetch}
+        refetch={refetchIndentList}
       />
       <div className="flex flex-col md:flex-row gap-2 px-2 h-1/2">
         <div className="flex flex-col w-full md:w-3/4 h-full">
           <div className="w-full overflow-y-scroll bg-white rounded-md h-full">
-            {isLoadingPayRequest ? (
+            {errorIndentList ? (
+              <ErrorPage
+                error={errorIndentList}
+                title="خطا در بارگذاری اطلاعات"
+                onRetry={() => refetchIndentList()}
+                showHomeButton={true}
+              />
+            ) : isLoadingIndentList ? (
               <Skeleton />
             ) : (
               <>
-                <div className="w-full flex  justify-center md:justify-end items-center ">
+                <div className="w-full flex justify-center md:justify-end items-center ">
                   <input
                     name="index"
                     value={""}
@@ -511,63 +538,49 @@ const PayRequestOperation = () => {
                       setSrchId(Number(e.target.value));
                     }}
                     onFocus={() => setFocusedInput("srchId")}
-                    style={{ width: columns[1].width }}
+                    style={{ width: columns[2].width }}
                     className={`border p-1 text-sm rounded-sm`}
                   />
                   {ProductPermInput(
                     "srchDate",
-                    columns[2].width,
+                    columns[3].width,
                     srchDate,
                     setSrchDate
                   )}
                   {ProductPermInput(
                     "srchTime",
-                    columns[3].width,
+                    columns[4].width,
                     srchTime,
                     setSrchTime
                   )}
                   {ProductPermInput(
-                    "srchSrName",
-                    columns[4].width,
-                    srchSrName,
-                    setSrchSrName
+                    "srchSRName",
+                    columns[5].width,
+                    srchSRName,
+                    setSrchSRName
                   )}
                   <input
-                    ref={(el) => (inputRefs.current["srchAmount"] = el)}
-                    name="srchAmount"
-                    value={srchAmount === -1 ? "" : srchAmount}
+                    ref={(el) => (inputRefs.current["srchPayDuration"] = el)}
+                    name="srchPayDuration"
+                    value={srchPayDuration === -1 ? "" : srchPayDuration}
                     onChange={(e) => {
-                      preserveFocus("srchAmount");
+                      preserveFocus("srchPayDuration");
                       handleDebounceFilterChange(
-                        "srchAmount",
+                        "srchPayDuration",
                         e.target.value === "" ? -1 : e.target.value
                       );
-                      setSrchAmount(Number(e.target.value));
+                      setSrchPayDuration(Number(e.target.value));
                     }}
-                    onFocus={() => setFocusedInput("srchAmount")}
-                    style={{ width: columns[5].width }}
+                    onFocus={() => setFocusedInput("srchPayDuration")}
+                    style={{ width: columns[6].width }}
                     className={`border p-1 text-sm rounded-sm`}
                   />
                   {ProductPermInput(
                     "srchDsc",
-                    columns[6].width,
+                    columns[7].width,
                     srchDsc,
                     setSrchDsc
                   )}
-                  <input
-                    name="srchAccepted"
-                    type="checkbox"
-                    checked={srchAccepted === 1}
-                    onChange={(e) => {
-                      handleDebounceFilterChange(
-                        "srchAccepted",
-                        e.target.checked ? 1 : -1
-                      );
-                      setSrchAccepted(Number(e.target.checked ? 1 : -1));
-                    }}
-                    style={{ width: columns[7].width }}
-                    className={`border p-1 text-sm rounded-sm`}
-                  />
                   {ProductPermInput(
                     "srchUsrName",
                     columns[8].width,
@@ -587,18 +600,18 @@ const PayRequestOperation = () => {
                   sortDate={sortDate}
                   sortTime={sortTime}
                   sortDsc={sortDsc}
-                  sortAccepted={sortAccepted}
+                  sortSrName={sortSRName}
+                  sortAmount={sortPayDuration}
                   sortUsrName={sortUsrName}
                   sortStep={sortStep}
                   setSortId={setSortId}
                   setSortDate={setSortDate}
                   setSortTime={setSortTime}
                   setSortDsc={setSortDsc}
-                  setSortAccepted={setSortAccepted}
+                  setSortSrName={setSortSRName}
+                  setSortAmount={setSortPayDuration}
                   setSortUsrName={setSortUsrName}
                   setSortStep={setSortStep}
-                  setSortSrName={setSortSrName}
-                  setSortAmount={setSortAmount}
                 />
                 <TTable
                   selectedRowIndex={selectedRowIndex}
@@ -617,16 +630,15 @@ const PayRequestOperation = () => {
           </div>
           <div className="w-full bg-white rounded-md">
             <TablePaginationActions
-              setSelectedRowIndex={setSelectedRowIndex}
               page={pageNumber - 1}
               setPage={setPageNumber}
               pageSize={pageSize}
               setPageSize={setPageSize}
-              totalCount={payRequestTotalCount ?? 0}
+              totalCount={indentListTotalCount ?? 0}
+              setSelectedRowIndex={setSelectedRowIndex}
             />
           </div>
         </div>
-        {/* ProductOfferParams */}
         <div className="w-full md:w-1/4 h-full">
           <ProductOfferParams
             regFDate={regFDate}
@@ -642,10 +654,13 @@ const PayRequestOperation = () => {
         </div>
       </div>
       <div className="px-2 h-full">
-        {isLoadingDtl ? (
+        {isLoadingIndentListDtl ? (
           <Skeleton />
         ) : (
-          <>
+          <div
+            className="overflow-y-auto"
+            style={width > 640 ? { height: height-350 } : { height: "fit" }}
+          >
             <TTable
               selectedRowIndex={selectedRowIndexDtl}
               setSelectedRowIndex={setSelectedRowIndexDtl}
@@ -655,60 +670,47 @@ const PayRequestOperation = () => {
               changeRowSelectColor={true}
               wordWrap={true}
               showToolTip={true}
-              maxVisibleColumns={6}
+              maxVisibleColumns={8}
             />
-          </>
+          </div>
         )}
       </div>
-      <ConfirmCard backgroundColor="bg-gray-300" variant="flex-row gap-2">
-        <p className="text-sm text-gray-500">جمع: لیست چک ها:</p>
-        <p className="text-sm text-gray-500">
-          {convertToFarsiDigits(formatNumberWithCommas(sumAmount))}
-        </p>
-      </ConfirmCard>
-      <ModalMessage
-        isOpen={isModalOpen}
-        backgroundColor="bg-red-200"
-        bgColorButton="bg-red-500"
-        bgColorButtonHover="bg-red-600"
-        color="text-white"
-        onClose={() => setIsModalOpen(false)}
-        message={payRequestMeta?.message || ""}
-      />
       <ModalForm
         isOpen={isNew || isEdit}
         onClose={() => {
           setIsNew(false);
           setIsEdit(false);
         }}
-        title="درخواست پرداخت"
+        title="سفارش"
         width="1"
         height="90vh"
       >
-        <PayRequestOperationForm
-          selectedPayRequest={selectedPayRequest}
+        <PurchaseRequestIndentForm
+          selectedIndent={selectedIndent}
           isNew={isNew}
-          setIsNew={setIsNew}
-          setIsEdit={setIsEdit}
+          //setIsNew={setIsNew}
+          //setIsEdit={setIsEdit}
         />
       </ModalForm>
+      {/* for top confirm button operations */}
       <ModalMessage
         isOpen={isModalConfirmOpen}
         onClose={() => setIsModalConfirmOpen(false)}
         backgroundColor={
-          payRequestDoFirstFlowResponse?.meta.errorCode === -1
+          indentDoFirstFlowResponse?.meta.errorCode === -1
             ? "bg-green-200"
             : "bg-red-200"
         }
         bgColorButton={
-          payRequestDoFirstFlowResponse?.meta.errorCode === -1
+          indentDoFirstFlowResponse?.meta.errorCode === -1
             ? "bg-green-500"
             : "bg-red-500"
         }
         color="text-white"
-        message={payRequestDoFirstFlowResponse?.meta.message || ""}
+        message={indentDoFirstFlowResponse?.meta.message || ""}
         visibleButton={false}
       />
+      {/* for top delete button operations */}
       <ModalMessage
         isOpen={isModalDeleteOpen}
         onClose={() => setIsModalDeleteOpen(false)}
@@ -717,14 +719,22 @@ const PayRequestOperation = () => {
         bgColorButtonHover="bg-red-600"
         color="text-white"
         message={
-          payRequestDelResponse?.meta.errorCode !== -1
-            ? payRequestDelResponse?.meta.message || ""
+          indentDelResponse?.meta.errorCode !== -1
+            ? indentDelResponse?.meta.message || ""
             : "اطلاعات با موفقیت حذف شد."
         }
         visibleButton={false}
       />
+      <Card
+        border="none"
+        rounded="none"
+        backgroundColor={colors.gray_300}
+        className="flex-row gap-2 rounded-bl-md rounded-br-md justify-end "
+      >
+        <InvoiceReceiptShowTableSummery data={dataDtl} />
+      </Card>
     </div>
   );
 };
 
-export default PayRequestOperation;
+export default PurchaseRequestIndent;

@@ -4,10 +4,18 @@ import { InvoiceReceiptState } from "../types/invoiceReceipt";
 export const useInvoiceReceiptStore = create<InvoiceReceiptState>()((set) => ({
 
   indentMrsResponse: {
-    err: 0,
-    msg: '',
-    indents: [],
-    indentDtls: [],
+    meta: {
+      errorCode: 0,
+      message: '',
+      type: '',
+    },
+    data: {
+      result: {
+        totalCount: 0,
+        indents: [],
+        indentDtls: [],
+      },
+    },
   },
   mrsId: 0,
   setField: (field: string, value: any) =>

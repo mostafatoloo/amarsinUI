@@ -82,6 +82,8 @@ export interface PayRequestRequest extends ProductOperationRequest {
   srchAmount: number;
   sortSrName: number;
   sortAmount: number;
+  srchAccepted:number;
+  sortAccepted:number;
 }
 
 //for http://apitest.dotis.ir/api/PayRequest/Invoices?PayRequestId=1513&SystemId=4&YearId=15&CustomerId=787

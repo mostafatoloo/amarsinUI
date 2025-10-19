@@ -13,6 +13,7 @@ import { useInvoiceReceiptStore } from "../../store/invoiceReceiptStore";
 import {
   convertPersianDate,
   convertToFarsiDigits,
+  convertToPersianDate,
   parsePersianDateString,
 } from "../../utilities/general";
 import InvoiceReceiptShowTable from "./InvoiceReceiptShowTable";
@@ -32,11 +33,15 @@ import { handleExport } from "../../utilities/ExcelExport";
 import { headCells } from "./InvoiceReceiptShowTable";
 import { useProductStore } from "../../store/productStore";
 import { debounce } from "lodash";
+import { useDefinitionInvironment } from "../../hooks/useDefinitionInvironment";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   refetchSwitch: boolean;
   setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
+  isNew: boolean;
+  //setIsNew?: (isNew: boolean) => void;
+  //setIsEdit?: (isEdit: boolean) => void;
 };
 
 export type Fields = {
@@ -48,13 +53,18 @@ export type Fields = {
   fdate: Date | null;
   tdate: Date | null;
   dsc: string;
+  dat: string;
+  tim: string;
 };
 
 const InvoiceReceiptShow = ({
   workFlowRowSelectResponse,
   refetchSwitch,
   setRefetchSwitch,
-}: Props) => {
+  isNew,
+}: //setIsNew,
+//setIsEdit,
+Props) => {
   const canEditForm = workFlowRowSelectResponse.workTableForms.canEditForm1;
   const { setField, mrsId } = useInvoiceReceiptStore();
   const { yearId, systemId } = useGeneralContext();
@@ -69,6 +79,8 @@ const InvoiceReceiptShow = ({
     isDtHistoryLoading,
   } = useProducts();
 
+  const { definitionDateTime } = useDefinitionInvironment();
+
   useEffect(() => {
     if (mrsId !== workFlowRowSelectResponse.workTableRow.formId)
       setField("mrsId", workFlowRowSelectResponse.workTableRow.formId);
@@ -76,23 +88,43 @@ const InvoiceReceiptShow = ({
 
   const [fields, setFields] = useState<Fields>({
     customer: {
-      id: indentMrsResponse.indents[0]?.cId.toString() ?? "",
-      title: indentMrsResponse.indents[0]?.srName ?? "",
+      id: indentMrsResponse.data.result.indents?.[0]?.cId.toString() ?? "",
+      title: indentMrsResponse.data.result.indents?.[0]?.srName ?? "",
     },
     customerCondition: [],
     brand: [],
-    payDuration: indentMrsResponse.indents[0]?.payDuration ?? 0,
-    dsc: indentMrsResponse.indents[0]?.dsc ?? "",
+    payDuration: indentMrsResponse.data.result.indents?.[0]?.payDuration ?? 0,
+    dsc: indentMrsResponse.data.result.indents?.[0]?.dsc ?? "",
     price: {
       id: 0,
       title: "",
     },
-    fdate: parsePersianDateString(indentMrsResponse.indents[0]?.saleFDate)
-      ? parsePersianDateString(indentMrsResponse.indents[0]?.saleFDate)
+    fdate: parsePersianDateString(
+      indentMrsResponse.data.result.indents?.[0]?.saleFDate ?? ""
+    )
+      ? parsePersianDateString(
+          indentMrsResponse.data.result.indents?.[0]?.saleFDate ?? ""
+        )
       : null,
-    tdate: parsePersianDateString(indentMrsResponse.indents[0]?.saleTDate)
-      ? parsePersianDateString(indentMrsResponse.indents[0]?.saleTDate)
+    tdate: parsePersianDateString(
+      indentMrsResponse.data.result.indents?.[0]?.saleTDate ?? ""
+    )
+      ? parsePersianDateString(
+          indentMrsResponse.data.result.indents?.[0]?.saleTDate ?? ""
+        )
       : null,
+    dat: isNew
+      ? convertToFarsiDigits(
+          convertToPersianDate(new Date(definitionDateTime.date))
+        )
+      : convertToFarsiDigits(
+          indentMrsResponse.data.result.indents?.[0]?.dat ?? ""
+        ),
+    tim: isNew
+      ? convertToFarsiDigits(definitionDateTime.time)
+      : convertToFarsiDigits(
+          indentMrsResponse.data.result.indents?.[0]?.tim ?? ""
+        ),
   });
 
   //refetch invoiceReceiptShow if refetchSwitch is true
@@ -108,21 +140,42 @@ const InvoiceReceiptShow = ({
     setFields((prev: Fields) => ({
       ...prev,
       customer: {
-        id: indentMrsResponse.indents[0]?.cId.toString() ?? "",
-        title: indentMrsResponse.indents[0]?.srName ?? "",
+        id: indentMrsResponse.data.result.indents?.[0]?.cId.toString() ?? "",
+        title: indentMrsResponse.data.result.indents?.[0]?.srName ?? "",
       },
-      payDuration: indentMrsResponse.indents[0]?.payDuration ?? 0,
-      dsc: indentMrsResponse.indents[0]?.dsc ?? "",
+      payDuration: indentMrsResponse.data.result.indents?.[0]?.payDuration ?? 0,
+      dsc: indentMrsResponse.data.result.indents?.[0]?.dsc ?? "",
       price: {
-        id: indentMrsResponse.indents[0]?.salesPriceId ?? 0,
-        title: indentMrsResponse.indents[0]?.salesPriceTitle ?? "",
+        id: indentMrsResponse.data.result.indents?.[0]?.salesPriceId ?? 0,
+        title:
+          indentMrsResponse.data.result.indents?.[0]?.salesPriceTitle ?? "",
       },
-      fdate: parsePersianDateString(indentMrsResponse.indents[0]?.saleFDate)
-        ? parsePersianDateString(indentMrsResponse.indents[0]?.saleFDate)
+      fdate: parsePersianDateString(
+        indentMrsResponse.data.result.indents?.[0]?.saleFDate ?? ""
+      )
+        ? parsePersianDateString(
+            indentMrsResponse.data.result.indents?.[0]?.saleFDate ?? ""
+          )
         : null,
-      tdate: parsePersianDateString(indentMrsResponse.indents[0]?.saleTDate)
-        ? parsePersianDateString(indentMrsResponse.indents[0]?.saleTDate)
+      tdate: parsePersianDateString(
+        indentMrsResponse.data.result.indents?.[0]?.saleTDate ?? ""
+      )
+        ? parsePersianDateString(
+            indentMrsResponse.data.result.indents?.[0]?.saleTDate ?? ""
+          )
         : null,
+      dat: isNew
+        ? convertToFarsiDigits(
+            convertToPersianDate(new Date(definitionDateTime.date))
+          )
+        : convertToFarsiDigits(
+            indentMrsResponse.data.result.indents?.[0]?.dat ?? ""
+          ),
+      tim: isNew
+        ? convertToFarsiDigits(definitionDateTime.time)
+        : convertToFarsiDigits(
+            indentMrsResponse.data.result.indents?.[0]?.tim ?? ""
+          ),
     }));
   }, [isLoading, indentMrsResponse]);
 
@@ -208,9 +261,9 @@ const InvoiceReceiptShow = ({
   ) => {
     const res = await handleSubmit(e, productId);
 
-    if (res && res.indentProducts) {
+    if (res && res.data.result) {
       // Map through the new products
-      res.indentProducts.forEach((product) => {
+      res.data.result.forEach((product) => {
         setAddList((prev) => [
           ...prev,
           {
@@ -309,7 +362,6 @@ const InvoiceReceiptShow = ({
         canEditForm={canEditForm}
         fields={fields}
         setFields={setFields}
-        indentMrsResponse={indentMrsResponse}
         salesPricesSearchResponse={salesPricesSearchResponse}
       />
       <ConfirmCard variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end">
@@ -333,7 +385,7 @@ const InvoiceReceiptShow = ({
           variant="shadow-lg"
           onClick={() =>
             handleExport({
-              data: indentMrsResponse.indentDtls,
+              data: indentMrsResponse.data.result.indentDtls,
               setIsModalOpen,
               headCells,
               fileName,
@@ -355,6 +407,7 @@ const InvoiceReceiptShow = ({
       </div>
 
       <InvoiceReceiptShowTable
+        isNew={isNew}
         setProductSearchinTable={setSearch}
         canEditForm={canEditForm}
         indentMrsResponse={indentMrsResponse}

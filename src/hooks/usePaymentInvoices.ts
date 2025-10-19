@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient, UseQueryOptions } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  UseQueryOptions,
+} from "@tanstack/react-query";
 import api from "../api/axios";
 import { usePaymentInvoiceStore } from "../store/paymentInvoiceStore";
 import {
@@ -6,6 +11,7 @@ import {
   InvoiceOutStandingResponse,
   PaymentInvoicesSaveRequest,
   PaymentInvoicesSaveResponse,
+  SettlementAveragesResponse,
 } from "../types/paymentInvoice";
 
 export function usePaymentInvoices() {
@@ -16,6 +22,7 @@ export function usePaymentInvoices() {
     yearId,
     setInvoiceOutStandingResponse,
     setPaymentInvoicesSaveResponse,
+    setSettlementAveragesResponse, //for Payment/settlementAverages
   } = usePaymentInvoiceStore();
 
   //for Payment/paymentInvoicesSave
@@ -61,6 +68,25 @@ export function usePaymentInvoices() {
     },
   } as UseQueryOptions<InvoiceOutStandingResponse, Error, InvoiceOutStandingResponse, unknown[]>);
 
+  //for Payment/settlementAverages
+  const querySettlementAverages = useQuery<
+    SettlementAveragesResponse,
+    Error,
+    SettlementAveragesResponse,
+    unknown[]
+  >({
+    queryKey: ["settlementAverages"],
+    queryFn: async () => {
+      const url: string = `/api/Payment/settlementAverages`;
+      const response = await api.get(url);
+      console.log(response.data, "response.data");
+      return response.data;
+    },
+    onSuccess: (data: any) => {
+      setSettlementAveragesResponse(data);
+    },
+  } as UseQueryOptions<SettlementAveragesResponse, Error, SettlementAveragesResponse, unknown[]>);
+
   return {
     //output for Payment/paymentInvoicesSave
     isLoadingPaymentInvoicesSave: paymentInvoicesSavefn.isPending,
@@ -82,6 +108,14 @@ export function usePaymentInvoices() {
         dsc: "",
         kind: 0,
       },
+    },
+    //getSettlementAverages: () => querySettlementAverages.refetch(),
+    refetchSettlementAverages: () => querySettlementAverages.refetch(),
+    isLoadingSettlementAverages: querySettlementAverages.isLoading,
+    errorSettlementAverages: querySettlementAverages.error,
+    settlementAveragesResponse: querySettlementAverages.data ?? {
+      meta: { errorCode: 0, message: "", type: "" },
+      data: { result: [] },
     },
   };
 }

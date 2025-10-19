@@ -22,7 +22,7 @@ export function useInvoiceReceipt() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: mrsId!==0 ? true : false, // Only fetch if param is available
+    //enabled: mrsId!==0 ? true : false, // Only fetch if param is available
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -35,10 +35,18 @@ export function useInvoiceReceipt() {
     isLoading: query.isLoading,
     error: query.error,
     indentMrsResponse: query.data ?? {
-      err: 0,
-      msg: '',
-      indents: [],
-      indentDtls: [],      
+      meta: {
+        errorCode: 0,
+        message: '',
+        type: '',
+      },
+      data: {
+        result: {
+          totalCount: 0,
+          indents: [],
+          indentDtls: [],
+        },
+      },
     },
   };
 }

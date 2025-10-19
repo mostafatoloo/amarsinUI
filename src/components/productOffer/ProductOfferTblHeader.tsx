@@ -7,7 +7,7 @@ type Props = {
   sortDate: number;
   sortTime: number;
   sortDsc: number;
-  sortAccepted: number;
+  sortAccepted?: number;
   sortUsrName: number;
   sortStep: number;
   sortSrName?: number | undefined;
@@ -16,7 +16,7 @@ type Props = {
   setSortDate: (sortDate: number) => void;
   setSortTime: (sortTime: number) => void;
   setSortDsc: (sortDsc: number) => void;
-  setSortAccepted: (sortAccepted: number) => void;
+  setSortAccepted?: (sortAccepted: number) => void;
   setSortUsrName: (sortUsrName: number) => void;
   setSortStep: (sortStep: number) => void;
   setSortSrName?: (sortSrName: number) => void;
@@ -25,7 +25,7 @@ type Props = {
 
 const ProductOfferTblHeader = React.memo(({
   columns,
-  sortId,
+  sortId, // in purchaseRequestIndent id is mrsId
   sortDate,
   sortTime,
   sortDsc,
@@ -57,19 +57,19 @@ const ProductOfferTblHeader = React.memo(({
   };
   return (
     <div className="flex text-xs font-bold text-gray-500 w-full h-6">
-      {columns.map((column: any) => (
+      {columns.filter((column: any) => column.visible!==false).map((column: any) => (
         <div
           className="flex bg-gray-200 border border-gray-300 text-center items-center justify-center border-r last:border-l cursor-pointer"
           key={column.id}
           style={{ width: column.width }}
           onClick={() => {
-            if (column.accessor === "id") {
+            if ((column.accessor === "id" ) || (column.accessor === "ordrId" )) {
               setSort(
                 [
                   setSortDate,
                   setSortTime,
                   setSortDsc,
-                  setSortAccepted,
+                  //setSortAccepted,
                   setSortUsrName,
                   setSortStep,
                 ],
@@ -82,7 +82,7 @@ const ProductOfferTblHeader = React.memo(({
                   setSortId,
                   setSortTime,
                   setSortDsc,
-                  setSortAccepted,
+                  //setSortAccepted,
                   setSortUsrName,
                   setSortStep,
                 ],
@@ -95,7 +95,7 @@ const ProductOfferTblHeader = React.memo(({
                   setSortId,
                   setSortDate,
                   setSortDsc,
-                  setSortAccepted,
+                  //setSortAccepted,
                   setSortUsrName,
                   setSortStep,
                 ],
@@ -108,14 +108,14 @@ const ProductOfferTblHeader = React.memo(({
                   setSortId,
                   setSortDate,
                   setSortTime,
-                  setSortAccepted,
+                  //setSortAccepted,
                   setSortUsrName,
                   setSortStep,
                 ],
                 sortDsc,
                 setSortDsc
               );
-            } else if (column.accessor === "accepted") {
+            } else if (column.accessor === "accepted" && sortAccepted !== undefined && setSortAccepted !== undefined) {
               setSort(
                 [
                   setSortId,
@@ -135,7 +135,7 @@ const ProductOfferTblHeader = React.memo(({
                   setSortDate,
                   setSortTime,
                   setSortDsc,
-                  setSortAccepted,
+                  //setSortAccepted,
                   setSortStep,
                 ],
                 sortUsrName,
@@ -148,20 +148,20 @@ const ProductOfferTblHeader = React.memo(({
                   setSortDate,
                   setSortTime,
                   setSortDsc,
-                  setSortAccepted,
+                  //setSortAccepted,
                   setSortUsrName,
                 ],
                 sortStep,
                 setSortStep
               );
-            } else if (column.accessor === "amount" && sortAmount !== undefined && setSortAmount !== undefined) {
+            } else if ((column.accessor === "amount" || column.accessor === "payDuration") && sortAmount !== undefined && setSortAmount !== undefined) {
               setSort(
                 [
                   setSortId,
                   setSortDate,
                   setSortTime,
                   setSortDsc,
-                  setSortAccepted,
+                  //setSortAccepted,
                   setSortUsrName,
                 ],
                 sortAmount,
@@ -174,7 +174,7 @@ const ProductOfferTblHeader = React.memo(({
                   setSortDate,
                   setSortTime,
                   setSortDsc,
-                  setSortAccepted,
+                  //setSortAccepted,
                   setSortUsrName,
                 ],
                 sortSrName,

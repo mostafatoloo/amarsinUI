@@ -20,14 +20,14 @@ export function useWarehouse() {
     formId,
     productId,
     iocId,
-    //for api/Warehouse/WarehouseSearch?search=%D8%A7&page=1&pageSize=30&lastId=0&CustomerTypeId=-1
+    //for api/Warehouse/Search?search=%D8%A7&page=1&pageSize=30&lastId=0&CustomerTypeId=-1
     search,
     page,
     pageSize,
     lastId,
     CustomerTypeId,
     PartKey,
-    //end of api/Warehouse/WarehouseSearch?search=%D8%A7&page=1&pageSize=30&lastId=0&CustomerTypeId=-1
+    //end of api/Warehouse/Search?search=%D8%A7&page=1&pageSize=30&lastId=0&CustomerTypeId=-1
     receiptPurchaseId, //for api/WarehouseTemporaryReceipt/purchaseShow/1107390
     id, //for api/WarehouseTemporaryReceipt/salesPrices?id=1106779&salesPriceId=1
     salesPriceId, //for api/WarehouseTemporaryReceipt/salesPrices?id=1106779&salesPriceId=1
@@ -110,7 +110,7 @@ export function useWarehouse() {
       PartKey,
     ],
     queryFn: async () => {
-      const url: string = `/api/Warehouse/WarehouseSearch?search=${encodeURIComponent(
+      const url: string = `/api/Warehouse/Search?search=${encodeURIComponent(
         search
       )}&page=${page}&pageSize=${pageSize}&lastId=${lastId}&CustomerTypeId=${CustomerTypeId}&PartKey=${PartKey}`;
       console.log(url, "url");

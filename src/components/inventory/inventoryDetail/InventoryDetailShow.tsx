@@ -1,3 +1,4 @@
+//کارشناس خرید -> ثبت شمارش
 import { WorkflowRowSelectResponse } from "../../../types/workflow";
 import { useInventoryStore } from "../../../store/inventoryStore";
 import { useInventory } from "../../../hooks/useInventory";

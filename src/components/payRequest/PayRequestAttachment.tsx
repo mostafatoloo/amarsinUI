@@ -23,12 +23,14 @@ import { useGeneralContext } from "../../context/GeneralContext";
 
 type Props = {
   formId: number;
+  prefix:string;
   setCnt: Dispatch<SetStateAction<number>>;
   guid: string;
 };
 
 const PayRequestAttachment = ({
   formId,
+  prefix,
   setCnt,
   guid,
 }: Props) => {
@@ -102,7 +104,7 @@ const PayRequestAttachment = ({
     setField("systemId", systemId);
     setField("yearId", yearId);
     setField("formId", formId);
-    setField("prefix", "payrequest");
+    setField("prefix", prefix);
     setField("GUID", guid);
   }, [formId,attachmentSaveResponseHook,systemId,yearId,guid]);*/
 
@@ -150,7 +152,7 @@ const PayRequestAttachment = ({
       deleteAttachment({
         idDeleteRestore: row.original.id,
         formIdDeleteRestore: formId,
-        prefixDeleteRestore: "payrequest",
+        prefixDeleteRestore: prefix,
       });
     } else {
       //if deleted, restore the attachment
@@ -159,7 +161,7 @@ const PayRequestAttachment = ({
       restoreAttachment({
         idDeleteRestore: attachmentId,
         formIdDeleteRestore: formId,
-        prefixDeleteRestore: "payrequest",
+        prefixDeleteRestore: prefix,
       });
     }
   };
@@ -206,7 +208,7 @@ const PayRequestAttachment = ({
 
       // Generate query parameters
       const params = new URLSearchParams({
-        prefix: "payrequest",
+        prefix: prefix,
         formId: formId.toString(),
         systemId: systemId.toString(),
         yearId: yearId.toString(),

@@ -1,5 +1,6 @@
-import { Meta, SearchItem, UpdateResult } from './general';
-import { IndentDtlHistoryRequest } from './product.d';
+import { Meta, SearchItem, UpdateResult } from "./general";
+import { IndentDtlHistoryRequest } from "./product.d";
+import { ProductOperationRequest } from "./productOperation";
 export interface ProductSearchRequest {
   accYear: number;
   accSystem: number;
@@ -14,43 +15,8 @@ export interface SalesPricesSearchRequest {
 }
 
 export interface IndentDtlHistoryRequest {
-  pId:number;
-  mrsId:number
-}
-
-export interface ProductState
-  extends ProductSearchRequest,
-    IndentShowProductListRequest {
-  salesPricesSearch: string;
-  salesPricesSearchPage: number;
-  lastId: number;
   pId: number;
   mrsId: number;
-  productSearchResponse: ProductSearchResponse;
-  salesPricesSearchResponse: SalesPricesSearchResponse;
-  indentShowProductListResponse: IndentShowProductListResponse;
-  indentSaveRequest: IndentSaveRequest;
-  indentSaveResponse: UpdateResult;
-  indentDtlHistoryResponse: IndentDtlHistoryResponse;
-  setField: (
-    field:
-      | keyof ProductSearchRequest
-      | keyof SalesPricesSearchRequest
-      | keyof IndentShowProductListRequest
-      |keyof  IndentDtlHistoryRequest,
-    value: any
-  ) => void;
-  setProductSearchResponse: (
-    productSearchResponse: ProductSearchResponse
-  ) => void;
-  setSalesPricesSearchResponse: (
-    salesPricesSearchResponse: SalesPricesSearchResponse
-  ) => void;
-  setIndentShowProductListResponse: (
-    indentShowProductListResponse: IndentShowProductListResponse
-  ) => void;
-  setIndentSaveResponse: (indentSaveResponse: UpdateResult) => void;
-  setIndentDtlHistoryResponse: (indentDtlHistoryResponse: IndentDtlHistoryResponse) => void;
 }
 
 type Product = {
@@ -107,10 +73,13 @@ interface IndentProduct {
   dtlDsc: string;
 }
 
+interface DataIndentShowProductList {
+  result: IndentProduct[];
+}
+
 interface IndentShowProductListResponse {
-  err: number;
-  msg: string;
-  indentProducts: IndentProduct[];
+  meta: Meta;
+  data: DataIndentShowProductList;
 }
 
 interface IndentShowProductListRequest {
@@ -165,7 +134,7 @@ interface IndentSaveRequest {
 }*/
 //for Indent/dtlHidtory
 
-type IndentDtlHistory={
+type IndentDtlHistory = {
   id: number;
   dat: string;
   cnt: number;
@@ -176,19 +145,163 @@ type IndentDtlHistory={
   dtlDsc: string;
   fmName: string;
   fDsc: string;
-}
+};
 
 type IndentDtlHistoryResponse = {
   meta: {
     errorCode: number;
     message: string;
-    type: string; 
+    type: string;
   };
   data: {
     result: {
       err: number;
       msg: string;
-      indentDtlHistories:IndentDtlHistory[]
+      indentDtlHistories: IndentDtlHistory[];
     };
   };
 };
+
+//for /api/Indent/list?Id=6430&OrdrId=-1&MrsId=0&Acc_Year=0&Acc_System=0&State=0&ShowDeletedInentDtl=false
+export interface IndentRequest extends ProductOperationRequest {
+  ordrIdIndentRequest: number;
+  mrsIdIndentRequest: number;
+  acc_YearIndentRequest: number;
+  acc_SystemIndentRequest: number;
+  state: number;
+  showDeletedInentDtl: boolean;
+  srchSRName: string;
+  srchPayDuration: number;
+  sortSRName: number;
+  sortPayDuration: number;
+}
+
+interface Indent {
+  id: number;
+  ordr: number;
+  ordrId: number;
+  payDuration: number;
+  mrsId: number;
+  dat: string;
+  tim: string;
+  cId: number;
+  srName: string;
+  dsc: string;
+  usrName: string;
+  flwId: number;
+  flowMapName: string;
+  salesPriceId: number;
+  salesPriceTitle: string;
+  saleFDate: string;
+  saleTDate: string;
+}
+
+interface IndentDtl {
+  id: number;
+  ordr: number;
+  custId: number;
+  customer: null | string;
+  pId: number;
+  bName: string;
+  productCode: string;
+  product: string;
+  sumCompanyCnt: number;
+  sumStoreCnt: number;
+  lbDate: string;
+  companyStock: number;
+  storeStock: number;
+  productExp: null | string;
+  cnt: number;
+  offer: number;
+  cost: number;
+  dcrmntPrcnt: number;
+  dcrmnt: number;
+  taxValue: number;
+  total: number;
+  dtlDsc: string;
+  del: boolean;
+  recieptId: number;
+  recieptDsc: string;
+}
+
+interface ResultIndent {
+  total_count: number;
+  indents: Indent[];
+  indentDtls: IndentDtl[];
+}
+
+interface DataIndent {
+  result: ResultIndent;
+}
+
+interface IndentResponse {
+  meta: Meta;
+  data: DataIndent;
+}
+
+//for delete /api/Indent/6480   
+interface ResultIndentDel {
+  result: UpdateResult;
+}
+
+export interface IndentDelResponse {
+  meta: Meta;
+  data: ResultIndentDel;
+}
+
+//for /api/Indent/doFirstFlow?Acc_System=4&Acc_Year=15&WFMS_FlowMapId=403020201&Id=6482&FlowNo=403020200&ChartId=1&Dsc=%D9%84%D8%A7%D9%84%DB%8C%D8%B3%D8%B3%D8%A8%D9%84%D8%A7%D8%A7
+export interface IndentDoFirstFlowRequest {
+  acc_System: number;
+  acc_Year: number;
+  wfms_FlowMapId: number;
+  id: number;
+  flowNo: number;
+  chartId: number;
+  dsc: string;
+}
+
+export interface IndentDoFirstFlowResponse {
+  meta: Meta;
+  data: ResultIndentDoFirstFlow;
+}
+
+export interface ResultIndentDoFirstFlow {
+  result: UpdateResult;
+}
+
+export interface ProductState
+  extends ProductSearchRequest,
+    IndentShowProductListRequest,
+    IndentRequest {
+  salesPricesSearch: string;
+  salesPricesSearchPage: number;
+  lastId: number;
+  pId: number;
+  mrsId: number;
+  productSearchResponse: ProductSearchResponse;
+  salesPricesSearchResponse: SalesPricesSearchResponse;
+  indentShowProductListResponse: IndentShowProductListResponse;
+  indentSaveRequest: IndentSaveRequest;
+  indentSaveResponse: UpdateResult;
+  indentDtlHistoryResponse: IndentDtlHistoryResponse;
+  indentResponse: IndentResponse;
+  indentDelResponse: IndentDelResponse; ///api/Indent/6480   //for delete
+  indentDoFirstFlowResponse: IndentDoFirstFlowResponse; //for /api/Indent/doFirstFlow?Acc_System=4&Acc_Year=15&WFMS_FlowMapId=403020201&Id=6482&FlowNo=403020200&ChartId=1&Dsc=%D9%84%D8%A7%D9%84%DB%8C%D8%B3%D8%B3%D8%A8%D9%84%D8%A7%D8%A7
+  setField: (field: string, value: any) => void;
+  setProductSearchResponse: (
+    productSearchResponse: ProductSearchResponse
+  ) => void;
+  setSalesPricesSearchResponse: (
+    salesPricesSearchResponse: SalesPricesSearchResponse
+  ) => void;
+  setIndentShowProductListResponse: (
+    indentShowProductListResponse: IndentShowProductListResponse
+  ) => void;
+  setIndentSaveResponse: (indentSaveResponse: UpdateResult) => void;
+  setIndentDtlHistoryResponse: (
+    indentDtlHistoryResponse: IndentDtlHistoryResponse
+  ) => void;
+  setIndentResponse: (indentResponse: IndentResponse) => void;
+  setIndentDelResponse: (indentDelResponse: IndentDelResponse) => void;
+  setIndentDoFirstFlowResponse: (indentDoFirstFlowResponse: IndentDoFirstFlowResponse) => void;
+}

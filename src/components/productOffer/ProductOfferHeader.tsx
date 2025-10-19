@@ -14,6 +14,7 @@ import Accept24Disabled from "../../assets/images/GrayThem/accept24_disabled.png
 import { ProductPerm } from "../../types/productPerm";
 import { ProductGrace } from "../../types/productGrace";
 import { ProductPrice } from "../../types/productPrice";
+import { Indent } from "../../types/product";
 
 type Props = {
   columns: TableColumns;
@@ -26,7 +27,7 @@ type Props = {
     | ProductPerm
     | ProductGrace
     | ProductPrice
-    | null;
+    |Indent |null;
   data: any[];
   refetch: () => void;
 };

@@ -4,6 +4,7 @@ import {
   InvoiceOutStandingResponse,
   InvoiceOutStandingState,
   PaymentInvoicesSaveResponse,
+  SettlementAveragesResponse,
 } from "../types/paymentInvoice";
 
 export const usePaymentInvoiceStore = create<InvoiceOutStandingState>()(
@@ -37,6 +38,13 @@ export const usePaymentInvoiceStore = create<InvoiceOutStandingState>()(
     paymentId: 0,
     systemId: 0,
     yearId: 0,
+    //for Payment/settlementAverages
+    settlementAveragesResponse: {
+      meta: { errorCode: 0, message: "", type: "" },
+      data: {
+        result: [],
+      },
+    },
     setField: (
       field: keyof InvoiceOutStandingRequest | "dsc" | "rem",
       value: any
@@ -47,5 +55,8 @@ export const usePaymentInvoiceStore = create<InvoiceOutStandingState>()(
     setPaymentInvoicesSaveResponse: (
       paymentInvoicesSaveResponse: PaymentInvoicesSaveResponse
     ) => set({ paymentInvoicesSaveResponse }),
+    setSettlementAveragesResponse: (
+      settlementAveragesResponse: SettlementAveragesResponse
+    ) => set({ settlementAveragesResponse }),
   })
 );

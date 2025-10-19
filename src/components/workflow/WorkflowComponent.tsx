@@ -15,6 +15,7 @@ import WarehouseTemporaryReceiptShow from "../preInvoiceReturn/WarehouseTemporar
 import BankAssignShow from "../bankAssign/BankAssignShow";
 import DeliveryShow from "../delivery/DeliveryShow";
 import InventoryDetailShow from "../inventory/inventoryDetail/InventoryDetailShow";
+import PreProcurementShow from "../preProcurement/PreProcurementShow";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -68,6 +69,7 @@ export default function WorkflowComponent({
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           refetchSwitch={refetchSwitch}
           setRefetchSwitch={setRefetchSwitch}
+          isNew={false}
         />
       );
       break;
@@ -155,8 +157,10 @@ export default function WorkflowComponent({
       );
       break;
     case "Delivery/_Delivery": //تیتک -> ارسال به تیتک
+    case "WarehouseTemporaryReceipt/_WarehouseTemporaryReceipt":
       componentToRender1 = (
-        <DeliveryShow workFlowRowSelectResponse={workFlowRowSelectResponse} 
+        <DeliveryShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
           refetchSwitch={refetchSwitch}
           setRefetchSwitch={setRefetchSwitch}
         />
@@ -165,6 +169,15 @@ export default function WorkflowComponent({
     case "Inventory/_Inventory": //کارشناس خرید -> ثبت شمارش
       componentToRender1 = (
         <InventoryDetailShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
+        />
+      );
+      break;
+    case "PreProcurement/_PreProcurement": //کارشناس تدارکات -> ثبت پیش فاکتور کالا/خدمات
+      componentToRender1 = (
+        <PreProcurementShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           refetchSwitch={refetchSwitch}
           setRefetchSwitch={setRefetchSwitch}
@@ -223,6 +236,7 @@ export default function WorkflowComponent({
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           refetchSwitch={refetchSwitch}
           setRefetchSwitch={setRefetchSwitch}
+          isNew={false}
         />
       );
       break;
@@ -310,8 +324,10 @@ export default function WorkflowComponent({
       );
       break;
     case "Delivery/_Delivery": //تیتک -> ارسال به تیتک
+    case "WarehouseTemporaryReceipt/_WarehouseTemporaryReceipt":
       componentToRender2 = (
-        <DeliveryShow workFlowRowSelectResponse={workFlowRowSelectResponse}
+        <DeliveryShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
           refetchSwitch={refetchSwitch}
           setRefetchSwitch={setRefetchSwitch}
         />
@@ -320,6 +336,15 @@ export default function WorkflowComponent({
     case "Inventory/_Inventory": //کارشناس خرید -> ثبت شمارش
       componentToRender2 = (
         <InventoryDetailShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
+        />
+      );
+      break;
+    case "PreProcurement/_PreProcurement": //کارشناس تدارکات -> ثبت پیش فاکتور کالا/خدمات
+      componentToRender2 = (
+        <PreProcurementShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           refetchSwitch={refetchSwitch}
           setRefetchSwitch={setRefetchSwitch}

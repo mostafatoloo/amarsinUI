@@ -10,6 +10,8 @@ import {
 export interface ProductOfferRequest extends ProductOperationRequest {
   acc_Year: number;
   acc_System: number;
+  srchAccepted:number;
+  sortAccepted:number;
 }
 
 export interface ProductOffer extends ProductOperation {

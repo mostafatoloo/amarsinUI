@@ -10,6 +10,8 @@ import {
 export interface ProductPriceRequest extends ProductOperationRequest {
   yearId: number;
   systemId: number;
+  srchAccepted:number;
+  sortAccepted:number;
 }
 
 interface ProductPrice extends ProductOperation {

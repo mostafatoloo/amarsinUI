@@ -5,7 +5,6 @@ import {
 } from "../../utilities/general";
 import AutoComplete from "../controls/AutoComplete";
 import { useCustomers } from "../../hooks/useCustomers";
-import { IndentMrsResponse } from "../../types/invoiceReceipt";
 import { useGeneralContext } from "../../context/GeneralContext";
 import { useCustomerStore } from "../../store/customerStore";
 import { useBrand } from "../../hooks/useBrands";
@@ -21,11 +20,10 @@ import PersianDatePicker from "../controls/PersianDatePicker";
 import ModalMessage from "../layout/ModalMessage";
 
 type Props = {
- // canEditForm1Mst1: boolean;
- canEditForm: boolean;
+  // canEditForm1Mst1: boolean;
+  canEditForm: boolean;
   fields: Fields;
   setFields: React.Dispatch<React.SetStateAction<Fields>>;
-  indentMrsResponse: IndentMrsResponse;
   salesPricesSearchResponse: SearchItem[];
 };
 const InvoiceReceipShowHeader = ({
@@ -33,8 +31,7 @@ const InvoiceReceipShowHeader = ({
   canEditForm,
   fields,
   setFields,
-  indentMrsResponse,
-  salesPricesSearchResponse
+  salesPricesSearchResponse,
 }: Props) => {
   const { customers } = useCustomers();
   const [cusomerSearch, setCusomerSearch] = useState<string>("");
@@ -46,6 +43,7 @@ const InvoiceReceipShowHeader = ({
   const { setField: setCusomerField } = useCustomerStore();
   const { setField: setBrandField } = useBrandStore();
   const { setField: setSalesPriceField } = useProductStore();
+
   useEffect(() => {
     setCusomerField("systemId", systemId);
     setCusomerField("yearId", yearId);
@@ -59,7 +57,7 @@ const InvoiceReceipShowHeader = ({
   const { brands } = useBrand();
 
   useEffect(() => {
-    console.log(cusomerSearch)
+    console.log(cusomerSearch);
     setSalesPriceField("salesPricesSearch", salesPricesearch);
     setSalesPriceField("salesPricesSearchPage", 1);
     setSalesPriceField("lastId", 0);
@@ -130,9 +128,7 @@ const InvoiceReceipShowHeader = ({
           <label className="p-1 w-24 text-left">تاریخ:</label>
           <input
             type="text"
-            value={convertToFarsiDigits(
-              indentMrsResponse.indents[0]?.dat ?? ""
-            )}
+            value={fields.dat}
             disabled
             className="text-sm text-gray-400 w-full p-1 border border-gray-300 rounded-md"
           />
@@ -141,9 +137,7 @@ const InvoiceReceipShowHeader = ({
           <label className="p-1 w-24 text-left  ">ساعت:</label>
           <input
             type="text"
-            value={convertToFarsiDigits(
-              indentMrsResponse.indents[0]?.tim ?? ""
-            )}
+            value={fields.tim}
             disabled
             className="text-sm text-gray-400 w-full p-1 border border-gray-300 rounded-md"
           />
@@ -197,70 +191,75 @@ const InvoiceReceipShowHeader = ({
 
   const body2 = (
     <div className="mt-2 text-sm w-full flex flex-col gap-2 border border-gray-400 rounded-md p-2">
-      {canEditForm && <div className="flex items-center justify-between gap-2">
+      {canEditForm && (
+        <div className="flex items-center justify-between gap-2">
+          <div className="w-full flex items-center">
+            <label className="p-1 w-32 md:w-24 text-left">تامین کننده:</label>
+            <div className="bg-slate-50 flex w-full">
+              <AutoComplete
+                options={customers.map((b) => ({
+                  id: b.id,
+                  title: b.text,
+                }))}
+                value={fields.customerCondition as DefaultOptionTypeStringId[]}
+                handleChange={(_event, newValue) => {
+                  return setFields((prev: Fields) => {
+                    return {
+                      ...prev,
+                      customerCondition:
+                        newValue as DefaultOptionTypeStringId[],
+                    };
+                  });
+                }}
+                multiple={true}
+                setSearch={setCusomerSearchCondition}
+                showLabel={false}
+                showClearIcon={false}
+                outlinedInputPadding="10px"
+                placeholder={
+                  Array.isArray(fields.customerCondition) &&
+                  fields.customerCondition.length > 0
+                    ? undefined
+                    : "تامین کننده را انتخاب کنید..."
+                }
+              />
+            </div>
+          </div>
+        </div>
+      )}
+      {canEditForm && (
         <div className="w-full flex items-center">
-          <label className="p-1 w-32 md:w-24 text-left">تامین کننده:</label>
+          <label htmlFor="year" className="p-1 w-32 md:w-24 text-left">
+            برند:
+          </label>
           <div className="bg-slate-50 flex w-full">
             <AutoComplete
-              options={customers.map((b) => ({
+              options={brands.map((b) => ({
                 id: b.id,
                 title: b.text,
               }))}
-              value={fields.customerCondition as DefaultOptionTypeStringId[]}
+              value={fields.brand}
               handleChange={(_event, newValue) => {
                 return setFields((prev: Fields) => {
                   return {
                     ...prev,
-                    customerCondition: newValue as DefaultOptionTypeStringId[],
+                    brand: newValue as DefaultOptionTypeStringId[],
                   };
                 });
               }}
               multiple={true}
-              setSearch={setCusomerSearchCondition}
+              setSearch={setBrandSearch}
               showLabel={false}
-              showClearIcon={false}
               outlinedInputPadding="10px"
               placeholder={
-                Array.isArray(fields.customerCondition) &&
-                fields.customerCondition.length > 0
+                Array.isArray(fields.brand) && fields.brand.length > 0
                   ? undefined
-                  : "تامین کننده را انتخاب کنید..."
+                  : "برند را انتخاب کنید..."
               }
             />
           </div>
         </div>
-      </div>}
-      {canEditForm && <div className="w-full flex items-center">
-        <label htmlFor="year" className="p-1 w-32 md:w-24 text-left">
-          برند:
-        </label>
-        <div className="bg-slate-50 flex w-full">
-          <AutoComplete
-            options={brands.map((b) => ({
-              id: b.id,
-              title: b.text,
-            }))}
-            value={fields.brand}
-            handleChange={(_event, newValue) => {
-              return setFields((prev: Fields) => {
-                return {
-                  ...prev,
-                  brand: newValue as DefaultOptionTypeStringId[],
-                };
-              });
-            }}
-            multiple={true}
-            setSearch={setBrandSearch}
-            showLabel={false}
-            outlinedInputPadding="10px"
-            placeholder={
-              Array.isArray(fields.brand) && fields.brand.length > 0
-                ? undefined
-                : "برند را انتخاب کنید..."
-            }
-          />
-        </div>
-      </div>}
+      )}
       <div className="flex flex-col md:flex-row w-full md:justify-center md:items-center">
         <div className="md:w-1/3 flex items-center">
           <label className="p-1 w-32 md:w-28 text-left">قیمت:</label>

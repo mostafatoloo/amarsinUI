@@ -28,7 +28,7 @@ type Props = {
     unknown
   >;
   updateFieldsResponse: UpdateFieldsResponse;
-  canEditForm1Mst1: boolean;
+  canEditForm: boolean;
 };
 
 const PaymentInvoiceShowHeader = ({
@@ -41,7 +41,7 @@ const PaymentInvoiceShowHeader = ({
   isLoadingUpdateFields,
   updateFields,
   updateFieldsResponse,
-  canEditForm1Mst1,
+  canEditForm,
 }: Props) => {
   const { setField } = usePaymentInvoiceStore();
   const [isFieldChanged, setIsFieldChanged] = useState(false);
@@ -124,13 +124,13 @@ const PaymentInvoiceShowHeader = ({
             widthDiv="w-full"
             widthInput="w-full"
             variant="outlined"
-            disabled={!canEditForm1Mst1}
+            disabled={!canEditForm}
           />
           {showValidationError()}
         </div>
         <div className="flex w-1/2 justify-center items-center gap-2">
           <Input
-            disabled={!canEditForm1Mst1}
+            disabled={!canEditForm}
             name="rem"
             label="مانده پرداختی:"
             value={rem}

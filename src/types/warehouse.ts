@@ -259,7 +259,7 @@ export interface RegResponse {
   };
 }
 
-// for api/Warehouse/WarehouseSearch?search=%D8%A7&page=1&pageSize=30&lastId=0&CustomerTypeId=-1
+// for api/Warehouse/Search?search=%D8%A7&page=1&pageSize=30&lastId=0&CustomerTypeId=-1
 export interface WarehouseSearchRequest {
   search: string;
   page: number;

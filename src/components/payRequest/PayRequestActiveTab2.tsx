@@ -170,7 +170,8 @@ const PayRequestActiveTab2 = ({
                   alt="TrashIcon"
                 />
               </button>
-              <button onMouseDown={(e) => {
+              <button
+                onMouseDown={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
                   showInvoices(row);
@@ -181,9 +182,9 @@ const PayRequestActiveTab2 = ({
                   type="checkbox"
                   checked={row.original.checked}
                   className="cursor-pointer place-content-center"
-                  onChange={() => console.log("checked", row.original.checked)}       
+                  onChange={() => console.log("checked", row.original.checked)}
                 />
-              </button> 
+              </button>
             </>
           )}
         </div>
@@ -237,6 +238,7 @@ const PayRequestActiveTab2 = ({
   ////////////////////////////////////////////////////////////////
   //initializing data
   useEffect(() => {
+    console.log(originalData, "originalData in useEffect");
     if (isChecked) {
       setData(originalData);
     } else {
@@ -245,7 +247,8 @@ const PayRequestActiveTab2 = ({
   }, [isChecked, originalData]);
   ////////////////////////////////////////////////////////////////
   const updateMyData = (rowIndex: number, columnId: string, value: string) => {
-    setData((old: PayRequestDtlTable[]) =>
+    setOriginalData((old: PayRequestDtlTable[]) =>
+    //setData((old: PayRequestDtlTable[]) =>
       old.map((row, index) => {
         if (index === rowIndex) {
           return {
@@ -268,10 +271,9 @@ const PayRequestActiveTab2 = ({
   };
   ////////////////////////////////////////////////////////////////
   const updateToDeleted = (row: any) => {
-    console.log(row.original.id, "row.original.id in updateToDeleted");
     setOriginalData((old: PayRequestDtlTable[]) =>
       old.map((origRow) => {
-        if (origRow.id === row.original.id) {
+        if (origRow.index === row.original.index) {
           return { ...origRow, del: !origRow.del };
         }
         return origRow;
@@ -307,7 +309,8 @@ const PayRequestActiveTab2 = ({
     columnId?: string
   ) => {
     console.log(value, columnId, "value in updateMyRow");
-    setData((old) =>
+    //setData((old) =>
+    setOriginalData((old) =>
       old.map((row, index) => {
         if (index === rowIndex && value && value.id !== 0) {
           return {
@@ -341,6 +344,7 @@ const PayRequestActiveTab2 = ({
   };
   ////////////////////////////////////////////////////////////////////
   useEffect(() => {
+    console.log(data, "data in useEffect");
     setAmountTab2(
       data.reduce(
         (acc, curr) =>
@@ -351,7 +355,8 @@ const PayRequestActiveTab2 = ({
   }, [data]);
 
   useEffect(() => {
-    setData((old) =>
+    //setData((old) =>
+    setOriginalData((old) =>
       old.map((row, index) => {
         if (
           row.chequeBookDtlId ===
@@ -393,10 +398,12 @@ const PayRequestActiveTab2 = ({
   };
 
   const handleAddRow = (
-    index: number,
-    setData: (value: React.SetStateAction<PayRequestDtlTable[]>) => void
+    index: number
+    //setData: (value: React.SetStateAction<PayRequestDtlTable[]>) => void
   ) => {
-    setData((prev) => [...prev, { ...newRow, index: index }]);
+    console.log(data, "data in handleAddRow");
+    console.log(originalData, "originalData in handleAddRow");
+    setOriginalData((prev) => [...prev, { ...newRow, index: index }]);
   };
 
   return (
@@ -456,7 +463,7 @@ const PayRequestActiveTab2 = ({
             src={PlusIcon}
             alt="PlusIcon"
             className="cursor-pointer"
-            onClick={() => handleAddRow(data.length + 1, setOriginalData)}
+            onClick={() => handleAddRow(data.length + 1)} //setOriginalData)}
           />
         </div>
       )}

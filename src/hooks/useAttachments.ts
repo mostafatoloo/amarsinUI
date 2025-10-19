@@ -46,7 +46,7 @@ export function useAttachments() {
       console.log(url,response.data, "url,response.data in attachments");
       return response.data;
     },
-    enabled: !!GUID, // Only run if GUID exists
+    //enabled: !!GUID, // Only run if GUID exists
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {

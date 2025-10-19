@@ -1,7 +1,6 @@
 import { toJalaali } from "jalaali-js";
 import DateObject from "react-date-object";
 import persian from "react-date-object/calendars/persian";
-
 export const convertToLatinDigits = (
   str: string | null | undefined
 ): string => {
@@ -10,8 +9,8 @@ export const convertToLatinDigits = (
   if (str === null || str === undefined) {
     return "";
   }
-  if(typeof str === "number"){
-    return str
+  if (typeof str === "number") {
+    return str;
   }
   return str.replace(/[۰-۹]/g, (d) => {
     const index = farsiDigits.indexOf(d);
@@ -47,7 +46,7 @@ export const convertToFarsiDigits = (
 };
 /////////////////////////////////////////////////////////////
 export const convertStringToInteger = (str: string | null) => {
-  if (str===null) return 0;
+  if (str === null) return 0;
   const result = parseInt(str, 10); // Base 10
   return isNaN(result) ? null : result; // Return null for NaN
 };
@@ -127,29 +126,29 @@ export const currencyStringToNumber = (currencyStr: string): number => {
 export const formatFarsiCurrency = (value: string | number): string => {
   // Handle empty or null values
   if (!value && value !== 0) return "";
-  
+
   // Convert to string and remove any existing formatting
   let numStr = value.toString();
-  
+
   // Convert Farsi digits to Latin first for processing
   numStr = convertToLatinDigits(numStr);
-  
+
   // Remove any non-digit characters except minus sign
   numStr = numStr.replace(/[^\d-]/g, "");
-  
+
   // Handle empty input after cleaning
   if (!numStr) return "";
-  
+
   // Handle negative numbers
   const isNegative = numStr.startsWith("-");
   const numberPart = isNegative ? numStr.slice(1) : numStr;
-  
+
   // Add thousand separators (commas)
   const formattedNumber = numberPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  
+
   // Convert to Farsi digits
   const farsiFormatted = convertToFarsiDigits(formattedNumber);
-  
+
   return isNegative ? `-${farsiFormatted}` : farsiFormatted;
 };
 
@@ -161,7 +160,7 @@ export const handleCurrencyInputChange = (
   // Format the input value in real-time
   const formattedValue = formatFarsiCurrency(inputValue);
   setValue(formattedValue);
-  
+
   // Return the numeric value for storage/API calls
   const numericValue = currencyStringToNumber(convertToLatinDigits(inputValue));
   return numericValue;
@@ -238,3 +237,15 @@ export function parsePersianNumerals(input: string): number[] {
     return parseInt(numberStr, 10);
   });
 }
+////////////////////////////////////////////////////////////
+//date is a persian date string like "1404/01/01"
+//add days to the date
+export const addPersianDays = (date: string, days: number): string => {
+  const dateObject = parsePersianDateString(date);
+  if (dateObject === null) {
+    return "";
+  }
+  const newDate = new DateObject({ date: dateObject, calendar: persian });
+  newDate.add(days, "days");
+  return convertToPersianDate(newDate.toDate() ?? new Date());
+};

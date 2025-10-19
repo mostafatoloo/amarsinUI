@@ -6,22 +6,25 @@ import {
   PaymentInvoice,
   PaymentInvoicesSaveRequest,
   PaymentInvoicesSaveResponse,
+  SettlementAveragesResponse,
 } from "../../types/paymentInvoice";
 import TTable, { EditableInput } from "../controls/TTable";
 
 import {
+  addPersianDays,
   convertToFarsiDigits,
   convertToLatinDigits,
+  convertToPersianDate,
   currencyStringToNumber,
   formatNumberWithCommas,
 } from "../../utilities/general";
 import PaymentInvoiceShowFooter from "./PaymentInvoiceShowFooter";
 import { TableColumns } from "../../types/general";
 import { colors } from "../../utilities/color";
-import Button from "../controls/Button";
 import ModalMessage from "../layout/ModalMessage";
 import ConfirmCard from "../layout/ConfirmCard";
 import Skeleton from "../layout/Skeleton";
+import PaymentInvoiceShowTableFooter from "./PaymentInvoiceShowTableFooter";
 
 type Props = {
   isEqualSum: boolean;
@@ -36,6 +39,7 @@ type Props = {
   ) => Promise<PaymentInvoicesSaveResponse>;
   isLoadingPaymentInvoicesSave: boolean;
   paymentInvoicesSaveResponse: PaymentInvoicesSaveResponse | undefined;
+  settlementAveragesResponse: SettlementAveragesResponse;
 };
 
 const PaymentInvoiceShowTable = ({
@@ -49,6 +53,7 @@ const PaymentInvoiceShowTable = ({
   paymentInvoicesSave,
   isLoadingPaymentInvoicesSave,
   paymentInvoicesSaveResponse,
+  settlementAveragesResponse,
 }: Props) => {
   // Use ref to always get the latest value
   const latestInvoiceDataRef = useRef(invoiceOutStandingResponse.data);
@@ -207,9 +212,9 @@ const PaymentInvoiceShowTable = ({
     ],
     []
   );
+
   const [data, setData] = useState<InvoiceOutstandingWithIndex[]>([]);
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in paymentInvoiceShowTable table
-
   // Utility function to calculate total allocated amount
   const calculateTotalAllocated = useCallback(
     (dataArray: InvoiceOutstandingWithIndex[]) => {
@@ -229,11 +234,11 @@ const PaymentInvoiceShowTable = ({
     } else {
       setIsEqualSum(false);
     }
-    console.log(
+    /*console.log(
       `Total allocated: ${totalAllocated}, Total remaining: ${
         latestInvoiceDataRef.current?.rem ?? 0
       }`
-    );
+    );*/
   }, [data, calculateTotalAllocated, latestInvoiceDataRef.current?.rem ?? 0]);
 
   ////////////////////////////////////////////////////
@@ -245,13 +250,11 @@ const PaymentInvoiceShowTable = ({
         const currentTotalAllocated = old.reduce((sum, row) => {
           return (
             sum +
-            currencyStringToNumber(
-              convertToLatinDigits(row.amnt.toString())
-            )
+            currencyStringToNumber(convertToLatinDigits(row.amnt.toString()))
           );
         }, 0);
 
-        console.log(currentTotalAllocated, "currentTotalAllocated");
+        //console.log(currentTotalAllocated, "currentTotalAllocated");
         // Calculate remaining amount to allocate
         const totalRemaining = latestInvoiceDataRef.current?.rem ?? 0;
         const availableToAllocate = totalRemaining - currentTotalAllocated;
@@ -470,6 +473,77 @@ const PaymentInvoiceShowTable = ({
     };
   }, [isModalOpen]);
   /////////////////////////////////////////////////////
+  const calculateMonthlyAvg = useCallback(() => {
+    const checkedData = data.filter((row) => row.check);
+    if (checkedData.length === 0) {
+      return 0;
+    }
+    //find maxdate and mindate
+    const maxDate = Math.max(
+      ...checkedData.map((row) => new Date(row.dat).getTime())
+    );
+    const minDate = Math.min(
+      ...checkedData.map((row) => new Date(row.dat).getTime())
+    );
+    const diffDays = (maxDate - minDate) / (1000 * 60 * 60 * 24);
+    const diffMonths = diffDays <= 30 ? 1 : diffDays / 30;
+    const sumTotal = checkedData.reduce((sum, row) => {
+      return (
+        sum + currencyStringToNumber(convertToLatinDigits(row.total.toString()))
+      );
+    }, 0);
+    //setMonthlyAvg(diffMonths > 0 ? Math.round(sumTotal / diffMonths) : 0);
+    //setMonthlyAvg(diffMonths > 0 ? Math.round(sumTotal / diffMonths) : 0);
+    return diffMonths > 0 ? Math.round(sumTotal / diffMonths) : 0;
+  }, [data]);
+
+  /////////////////////////////////////////////////////
+  const getAllowedDaysForAverage = () => {
+    const monthlyAvg = calculateMonthlyAvg();
+    console.log(monthlyAvg, "monthlyAvg");
+    const allowedDays = settlementAveragesResponse.data.result.find(
+      (item) => item.minSum < monthlyAvg && item.maxSum > monthlyAvg
+    );
+    return allowedDays?.days ?? 0;
+  };
+  /////////////////////////////////////////////////////
+  const calculateTotalGraceDays = useCallback(() => {
+    const checkedData = data.filter((row) => row.check);
+    if (checkedData.length === 0) {
+      return 0;
+    }
+    let total = 0;
+    let invoiceTotalSum = 0;
+    checkedData.forEach((row) => {
+      invoiceTotalSum += currencyStringToNumber(
+        convertToLatinDigits(row.total.toString())
+      );
+      total +=
+        row.rgd *
+        currencyStringToNumber(convertToLatinDigits(row.total.toString()));
+    });
+    return invoiceTotalSum > 0 ? Math.round(total / invoiceTotalSum) : 0;
+  }, [data]);
+  /////////////////////////////////////////////////////
+  const calculateMaxDueDate = useCallback(() => {
+    if (data.filter((row) => row.check).length === 0) {
+      return "";
+    }
+    const allowedDays = getAllowedDaysForAverage();
+    let totalGraceDays = calculateTotalGraceDays();
+    //finding last invoice
+    /*const lastDate =
+      data
+        .filter((row) => row.check)
+        .sort(
+          (a, b) => new Date(b.dat).getTime() - new Date(a.dat).getTime()
+        )[0]?.dat ?? "";*/
+    console.log(allowedDays, totalGraceDays, "allowedDays and totalGraceDays");
+    let today = convertToPersianDate(new Date());
+    let maxDueDate = addPersianDays(today, allowedDays + totalGraceDays);
+    return maxDueDate;
+  }, [data]);
+  /////////////////////////////////////////////////////
   if (isLoadingPaymentInvoicesSave) {
     return <div className="text-center">{<Skeleton />}</div>;
   }
@@ -500,22 +574,14 @@ const PaymentInvoiceShowTable = ({
         </div>
       )}
       <PaymentInvoiceShowFooter data={data} isEqualSum={isEqualSum} />
-      <ConfirmCard variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end ">
-        {canEditForm && (
-          <Button
-            text={
-              isLoadingPaymentInvoicesSave
-                ? "در حال ثبت اطلاعات..."
-                : "ثبت اطلاعات"
-            }
-            backgroundColor="bg-green-500"
-            color="text-white"
-            backgroundColorHover="bg-green-600"
-            colorHover="text-white"
-            variant="shadow-lg w-48"
-            onClick={handleSubmitSave}
-          />
-        )}
+      <ConfirmCard variant="flex-row gap-2 rounded-bl-md rounded-br-md">
+        <PaymentInvoiceShowTableFooter
+          isLoadingPaymentInvoicesSave={isLoadingPaymentInvoicesSave}
+          handleSubmitSave={handleSubmitSave}
+          monthlyAvg={calculateMonthlyAvg()}
+          maxDueDate={calculateMaxDueDate()}
+          canEditForm={canEditForm}
+        />
       </ConfirmCard>
       <ModalMessage
         isOpen={isModalOpen}

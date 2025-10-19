@@ -26,7 +26,11 @@ import {
 import { useProductStore } from "../../store/productStore";
 import { useGeneralContext } from "../../context/GeneralContext";
 import TTable, { EditableInput } from "../controls/TTable";
-import { DefaultOptionType, TableColumns, UpdateResult } from "../../types/general";
+import {
+  DefaultOptionType,
+  TableColumns,
+  UpdateResult,
+} from "../../types/general";
 import {
   Detail,
   IndentSaveRequest,
@@ -39,8 +43,10 @@ import { Fields } from "./InvoiceReceiptShow";
 import InvoiceReceiptHistory from "./invoiceReceiptHistory";
 import InvoiceReceiptShowTableHeader from "./InvoiceReceiptShowTableHeader";
 import InvoiceReceiptShowTableSummery from "./InvoiceReceiptShowTableSummery";
+import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
 
 type Props = {
+  isNew?: boolean;
   canEditForm: boolean;
   addList: IndentDtl[];
   indentMrsResponse: IndentMrsResponse;
@@ -62,7 +68,7 @@ type Props = {
   isLoadingSaveList: boolean;
   isDtHistoryLoading: boolean;
   getIndentMrsResponse: () => void;
-  setProductSearchinTable: React.Dispatch<React.SetStateAction<string>>
+  setProductSearchinTable: React.Dispatch<React.SetStateAction<string>>;
 };
 export const headCells = [
   {
@@ -195,7 +201,8 @@ export const headCells = [
 ];
 
 const InvoiceReceiptShowTable = ({
-  setProductSearchinTable, 
+  isNew,
+  setProductSearchinTable,
   canEditForm,
   addList,
   indentMrsResponse,
@@ -216,7 +223,7 @@ const InvoiceReceiptShowTable = ({
   const [brandSearch, setBrandSearch] = useState<string>("");
   const [dtlDscSearch, setDtlDscSearch] = useState<string>("");
   const [productSearch, setProductSearch] = useState<string>("");
-  const {yearId,systemId} = useGeneralContext();
+  const { yearId, systemId } = useGeneralContext();
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in invoiceReceiptShowTable table
 
   const { setField: setProductField, indentDtlHistoryResponse } =
@@ -227,7 +234,8 @@ const InvoiceReceiptShowTable = ({
       return {
         ...item,
         options: item.accessor === "product" ? products : undefined,
-        setSearch: item.accessor === "product" ? setProductSearchinTable : undefined,
+        setSearch:
+          item.accessor === "product" ? setProductSearchinTable : undefined,
         Cell:
           item.accessor === "icons"
             ? ({ row }: any) => {
@@ -253,7 +261,7 @@ const InvoiceReceiptShowTable = ({
             : item.Cell,
       };
     });
-  }, [canEditForm,products,setProductSearchinTable]);
+  }, [canEditForm, products, setProductSearchinTable]);
 
   const columnsHistory: TableColumns = [
     {
@@ -345,11 +353,19 @@ const InvoiceReceiptShowTable = ({
   }, []);
 
   ///////////////////////////////////////////////////////
+  useEffect(() => {
+    if (isNew) {
+      setOriginalData([]);
+      setData([]);
+    }
+  }, []);
   // Initialize data when indentMrsResponse changes
   useEffect(() => {
-    if (indentMrsResponse.indentDtls) {
+    //console.log(indentMrsResponse, "indentMrsResponse.indentDtls", isNew);
+    if (isNew) return;
+    if (indentMrsResponse.data.result.indentDtls) {
       let i = 1;
-      let initialData = indentMrsResponse.indentDtls.map((dtl) => ({
+      let initialData = indentMrsResponse.data.result.indentDtls.map((dtl) => ({
         ...dtl,
         index: i++,
         isDeleted: false,
@@ -412,28 +428,28 @@ const InvoiceReceiptShowTable = ({
           return {
             ...old[rowIndex],
             index: rowIndex + 1,
-            id: response.indentProducts[0].id,
+            id: response.data.result[0].id,
             custId: 0,
             ordr: 0,
             customer: "",
-            pId: response.indentProducts[0].pId,
-            bName: response.indentProducts[0].bName,
+            pId: response.data.result[0].pId,
+            bName: response.data.result[0].bName,
             productCode: "",
-            product: response.indentProducts[0].product,
-            sumCompanyCnt: response.indentProducts[0].sumCompanyCnt ?? 0,
-            sumStoreCnt: response.indentProducts[0].sumStoreCnt ?? 0,
-            lbDate: response.indentProducts[0].lbDate ?? "",
-            companyStock: response.indentProducts[0].companyStock ?? 0,
-            storeStock: response.indentProducts[0].storeStock ?? 0,
+            product: response.data.result[0].product,
+            sumCompanyCnt: response.data.result[0].sumCompanyCnt ?? 0,
+            sumStoreCnt: response.data.result[0].sumStoreCnt ?? 0,
+            lbDate: response.data.result[0].lbDate ?? "",
+            companyStock: response.data.result[0].companyStock ?? 0,
+            storeStock: response.data.result[0].storeStock ?? 0,
             productExp: "",
-            cnt: response.indentProducts[0].cnt ?? 0,
-            offer: response.indentProducts[0].offer ?? 0,
-            cost: response.indentProducts[0].cost ?? 0,
+            cnt: response.data.result[0].cnt ?? 0,
+            offer: response.data.result[0].offer ?? 0,
+            cost: response.data.result[0].cost ?? 0,
             dcrmntPrcnt: 0,
             dcrmnt: 0,
-            taxValue: response.indentProducts[0].taxValue ?? 0,
-            total: response.indentProducts[0].total ?? 0,
-            dtlDsc: response.indentProducts[0].dtlDsc,
+            taxValue: response.data.result[0].taxValue ?? 0,
+            total: response.data.result[0].total ?? 0,
+            dtlDsc: response.data.result[0].dtlDsc,
             del: false,
             recieptId: 0,
             recieptDsc: "",
@@ -573,15 +589,15 @@ const InvoiceReceiptShowTable = ({
 
     request = {
       id: 0,
-      ordrId: indentMrsResponse.indents[0]?.ordrId ?? "",
+      ordrId: indentMrsResponse.data.result.indents[0]?.ordrId ?? "0",
       mrsId,
       customerId: Number(fields.customer?.id) ?? 0,
       del: showDeleted,
       acc_System: systemId,
       acc_Year: yearId,
       payDuration: fields.payDuration,
-      dat: indentMrsResponse.indents[0]?.dat ?? "",
-      tim: indentMrsResponse.indents[0]?.tim ?? "",
+      dat: convertToLatinDigits(fields.dat),//indentMrsResponse.data.result.indents[0]?.dat ?? "",
+      tim: convertToLatinDigits(fields.tim),//indentMrsResponse.data.result.indents[0]?.tim ?? "",
       dsc: fields.dsc,
       salesPriceId: Number(fields.price?.id ?? 0),
       saleFDate:
@@ -603,47 +619,46 @@ const InvoiceReceiptShowTable = ({
       console.error("Error ثبت :", error);
     }
   };
+  const { height } = useCalculateTableHeight();
   return (
     <>
       <div className="p-2 mt-2 w-full bg-white rounded-md">
-        <InvoiceReceiptShowTableHeader
-          brandSearch={brandSearch}
-          setBrandSearch={setBrandSearch}
-          productSearch={productSearch}
-          setProductSearch={setProductSearch}
-          dtlDscSearch={dtlDscSearch}
-          setDtlDscSearch={setDtlDscSearch}
-        />
-        {isLoading ? (
-          <div className="text-center">{<Skeleton />}</div>
-        ) : indentMrsResponse.err !== 0 ? (
-          <p className="p-6 text-red-400 text-sm md:text-base font-bold">
-            {indentMrsResponse.msg}
-          </p>
-        ) : (
-          <div className="w-full">
-            <TTable
-              canEditForm={canEditForm}
-              columns={columns}
-              data={data}
-              selectedRowIndex={selectedRowIndex}
-              setSelectedRowIndex={setSelectedRowIndex}
-              updateMyData={updateMyData}
-              fontSize="0.75rem"
-              changeRowSelectColor={true}
-              wordWrap={true}
-              /*options={products.map((p) => ({
+        <div className="overflow-y-auto" style={{ height: height - 450 }}>
+          <InvoiceReceiptShowTableHeader
+            brandSearch={brandSearch}
+            setBrandSearch={setBrandSearch}
+            productSearch={productSearch}
+            setProductSearch={setProductSearch}
+            dtlDscSearch={dtlDscSearch}
+            setDtlDscSearch={setDtlDscSearch}
+          />
+          {isLoading ? (
+            <div className="text-center">{<Skeleton />}</div>
+          ) : (
+            <div className="w-full">
+              <TTable
+                canEditForm={canEditForm}
+                columns={columns}
+                data={data}
+                selectedRowIndex={selectedRowIndex}
+                setSelectedRowIndex={setSelectedRowIndex}
+                updateMyData={updateMyData}
+                fontSize="0.75rem"
+                changeRowSelectColor={true}
+                wordWrap={true}
+                /*options={products.map((p) => ({
                 id: p.pId,
                 title: convertToFarsiDigits(p.n),
               }))}*/
-              //setSearchText={setSearch}
-              updateMyRow={updateMyRow}
-              CellColorChange={handleCellColorChange}
-              changeRowValues={changeRowValues}
-              showToolTip={true}
-            />
-          </div>
-        )}
+                //setSearchText={setSearch}
+                updateMyRow={updateMyRow}
+                CellColorChange={handleCellColorChange}
+                changeRowValues={changeRowValues}
+                showToolTip={true}
+              />
+            </div>
+          )}
+        </div>
         <ConfirmCard variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end ">
           <InvoiceReceiptShowTableSummery data={data} />
           {canEditForm && (

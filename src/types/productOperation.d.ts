@@ -10,17 +10,27 @@ export interface ProductOperationRequest {
     srchDate:string;
     srchTime:string;
     srchDsc:string;
-    srchAccepted:number;
+    //srchAccepted:number;
+    //sortAccepted:number;
     srchUsrName:string;
     srchStep:string;
     sortId:number;
     sortDat:number;
     sortTime:number;
     sortDsc:number;
-    sortAccepted:number;
     sortUsrName:number;
     sortStep:number; 
   
+  }
+
+  export interface ProductOperationRequest2 {
+    id: number;
+    state: number;
+    regFDate: string;
+    regTDate: string;
+    fDate: string;
+    tDate: string;
+
   }
 
   export interface ProductOperation {
