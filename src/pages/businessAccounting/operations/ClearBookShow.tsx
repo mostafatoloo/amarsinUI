@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Paper } from "@mui/material";
 
-import { useBrandStore } from "../../store/brandStore";
-import { useBrand } from "../../hooks/useBrands";
-import Skeleton from "../layout/Skeleton";
+import { useBrandStore } from "../../../store/brandStore";
+import { useBrand } from "../../../hooks/useBrands";
+import Skeleton from "../../../components/layout/Skeleton";
 import { useNavigate } from "react-router-dom";
-import AutoComplete from "../controls/AutoComplete";
-import { useGeneralContext } from "../../context/GeneralContext";
-import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
-import TTable, { EditableInput } from "../controls/TTable";
-import { convertToFarsiDigits } from "../../utilities/general";
-import { DefaultOptionTypeStringId, TableColumns } from "../../types/general";
-import { useClearBook } from "../../hooks/useClearBook";
-import { useClearBookStore } from "../../store/clearBookStore";
-import ErrorPage from "../common/ErrorPage";
-import { ClearBookProductsSetProductRequest } from "../../types/clearBook";
+import AutoComplete from "../../../components/controls/AutoComplete";
+import { useGeneralContext } from "../../../context/GeneralContext";
+import useCalculateTableHeight from "../../../hooks/useCalculateTableHeight";
+import TTable, { EditableInput } from "../../../components/controls/TTable";
+import { convertToFarsiDigits } from "../../../utilities/general";
+import { DefaultOptionTypeStringId, TableColumns } from "../../../types/general";
+import { useClearBook } from "../../../hooks/useClearBook";
+import { useClearBookStore } from "../../../store/clearBookStore";
+import ErrorPage from "../../../components/common/ErrorPage";
+import { ClearBookProductsSetProductRequest } from "../../../types/clearBook";
 
 export default function ClearBookShow() {
   const { clearBookProducts, error, isLoading, refetch, setProduct } =

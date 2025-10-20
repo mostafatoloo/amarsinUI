@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useGeneralContext } from "../../context/GeneralContext";
 import { useClearBookStore } from "../../store/clearBookStore";
 import { useClearBook } from "../../hooks/useClearBook";
-import ClearBookShow from "../../components/clearBook/ClearBookShow";
+import ClearBookShow from "../businessAccounting/operations/ClearBookShow";
 
 export default function InventoryGoodList() {
 

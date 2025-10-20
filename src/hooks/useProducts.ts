@@ -454,9 +454,8 @@ export function useProducts() {
     mutationFn: async (request: IndentDoFirstFlowRequest) => {
       const url: string = `api/Indent/doFirstFlow?Acc_System=${
         request.acc_System
-      }&Acc_Year=${request.acc_Year}&WFMS_FlowMapId=${
-        request.wfms_FlowMapId
-      }&Id=${request.id}&FlowNo=${request.flowNo}&ChartId=${
+      }&Acc_Year=${request.acc_Year}
+      }&MrsId=${request.mrsId}&ChartId=${
         request.chartId
       }&Dsc=${encodeURIComponent(request.dsc)}`;
       console.log("IndentDoFirstFlow url", url);

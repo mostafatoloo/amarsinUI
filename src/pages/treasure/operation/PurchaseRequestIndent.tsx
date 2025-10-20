@@ -1,59 +1,73 @@
-import { columns } from "../productOffer/ProductOfferGeneral";
-import Accept from "../../assets/images/GrayThem/img24_3.png";
+//حسابداری => حسابداری بازرگانی => عملیات => درخواست خرید
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useProductPerm } from "../../hooks/useProductPerm";
-import { useProductPermStore } from "../../store/productPermStore";
-import { useGeneralContext } from "../../context/GeneralContext";
-import {
-  ProductPermDoFirstFlowRequest,
-  ProductPermDtl,
-  ProductPerm as ProductPermType,
-} from "../../types/productPerm";
+import { useGeneralContext } from "../../../context/GeneralContext";
+import { ProductPriceDtl } from "../../../types/productPrice";
 import {
   convertPersianDate,
   convertToFarsiDigits,
   convertToLatinDigits,
-} from "../../utilities/general";
+  formatNumberWithCommas,
+} from "../../../utilities/general";
 import { debounce } from "lodash";
-import ProductOfferHeader from "../productOffer/ProductOfferHeader";
-import Skeleton from "../layout/Skeleton";
-import ProductOfferTblHeader from "../productOffer/ProductOfferTblHeader";
-import TTable from "../controls/TTable";
-import { TablePaginationActions } from "../controls/TablePaginationActions";
-import ProductOfferParams from "../productOffer/ProductOfferParams";
-import ModalMessage from "../layout/ModalMessage";
-import ModalForm from "../layout/ModalForm";
-import ProductPermForm from "./ProductPermForm";
+import ProductOfferHeader from "../../../components/productOffer/ProductOfferHeader";
+import Skeleton from "../../../components/layout/Skeleton";
+import ProductOfferTblHeader from "../../../components/productOffer/ProductOfferTblHeader";
+import TTable from "../../../components/controls/TTable";
+import { TablePaginationActions } from "../../../components/controls/TablePaginationActions";
+import ProductOfferParams from "../../../components/productOffer/ProductOfferParams";
+import ModalForm from "../../../components/layout/ModalForm";
+import ErrorPage from "../../../components/common/ErrorPage";
+import { useProductStore } from "../../../store/productStore";
+import { useProducts } from "../../../hooks/useProducts";
+import { Indent, IndentDoFirstFlowRequest } from "../../../types/product";
+import PurchaseRequestIndentForm from "../../../components/purchaseRequest/PurchaseRequestIndentForm";
+import ModalMessage from "../../../components/layout/ModalMessage";
+import InvoiceReceiptShowTableSummery from "../../../components/invoiceReceipt/InvoiceReceiptShowTableSummery";
+import Card from "../../../components/controls/Card";
+import { colors } from "../../../utilities/color";
+import useCalculateTableHeight from "../../../hooks/useCalculateTableHeight";
 
-const ProductPerm = () => {
+const PurchaseRequestIndent = () => {
   const {
     setField,
     id: prevId,
-    productPermDoFirstFlowResponse,
-    productPermDelResponse,
-  } = useProductPermStore();
+    indentDoFirstFlowResponse,
+    indentDelResponse,
+  } = useProductStore();
   const {
-    productPerm,
-    productPermTotalCount,
+    indentList,
+    indentListDtl,
+    //indentListMeta,
+    refetchIndentList,
+    isLoadingIndentList,
+    errorIndentList,
+    //indentListTotalCount,
+    isLoadingIndentListDtl,
+    indentListTotalCount,
+    indentDoFirstFlow,
+    indentDel,
+    /*productPrice,
+    productPriceTotalCount,
     refetch,
     isLoading,
+    error,
     isLoadingDtl,
-    productPermDtl,
-    productPermMeta,
+    productPriceDtl,
+    productPriceMeta,
     addProductList,
-    productPermDtlHistory,
+    productPriceDtlHistory,
     isLoadingDtlHistory,
-    productPermSave,
-    isLoadingProductPermSave,
-    productPermDoFirstFlow,
-    productPermDel,
-  } = useProductPerm();
+    productPriceSave,
+    isLoadingProductPriceSave,
+    productPriceDoFirstFlow,
+    productPriceDel,*/
+  } = useProducts();
 
   //const { setField: setProductOfferField } = useProductOfferStore();
   const [data, setData] = useState<any[]>([]);
-  const [dataDtl, setDataDtl] = useState<ProductPermDtl[]>([]);
-  const { yearId, systemId, chartId } = useGeneralContext();
-  const [selectedId, setSelectedId] = useState<number>(589);
+  const [dataDtl, setDataDtl] = useState<ProductPriceDtl[]>([]);
+  const { yearId, systemId, chartId ,defaultRowsPerPage} = useGeneralContext();
+  const [selectedId, setSelectedId] = useState<number>(0);
   const [isNew, setIsNew] = useState<boolean>(false); //for new
   const [isEdit, setIsEdit] = useState<boolean>(false); //for edit
   //for ProductPermParams params
@@ -62,29 +76,84 @@ const ProductPerm = () => {
   const [fDate, setFDate] = useState<Date | null>(null);
   const [tDate, setTDate] = useState<Date | null>(null);
   const [state, setState] = useState<number>(-1);
-  const [selectedProductPerm, setSelectedProductPerm] =
-    useState<ProductPermType | null>(null);
+  const [selectedIndent, setSelectedIndent] = useState<Indent | null>(null);
   // for pagination
   const [pageNumber, setPageNumber] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(12);
+  const [pageSize, setPageSize] = useState<number>(defaultRowsPerPage);
   const abortControllerRef = useRef<AbortController | null>(null);
   //add filter options
   const [srchId, setSrchId] = useState<number>(-1);
   const [srchDate, setSrchDate] = useState<string>("");
   const [srchTime, setSrchTime] = useState<string>("");
   const [srchDsc, setSrchDsc] = useState<string>("");
-  const [srchAccepted, setSrchAccepted] = useState<number>(-1);
+  const [srchSRName, setSrchSRName] = useState<string>("");
+  const [srchPayDuration, setSrchPayDuration] = useState<number>(-1);
   const [srchUsrName, setSrchUsrName] = useState<string>("");
   const [srchStep, setSrchStep] = useState<string>("");
   const [sortId, setSortId] = useState<number>(0);
   const [sortDate, setSortDate] = useState<number>(0);
   const [sortTime, setSortTime] = useState<number>(0);
   const [sortDsc, setSortDsc] = useState<number>(0);
-  const [sortAccepted, setSortAccepted] = useState<number>(0);
+  const [sortSRName, setSortSRName] = useState<number>(0);
+  const [sortPayDuration, setSortPayDuration] = useState<number>(0);
   const [sortUsrName, setSortUsrName] = useState<number>(0);
   const [sortStep, setSortStep] = useState<number>(0);
-  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in productPerm table
-  const [selectedRowIndexDtl, setSelectedRowIndexDtl] = useState<number>(0); //for selected row index in productPermDtl table
+  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in productGrace table
+  const [selectedRowIndexDtl, setSelectedRowIndexDtl] = useState<number>(0); //for selected row index in productGraceDtl table
+
+  const columns = [
+    {
+      Header: "ردیف",
+      accessor: "index",
+      width: "5%",
+    },
+    {
+      Header: "شناسه",
+      accessor: "id",
+      width: "5%",
+      visible: false,
+    },
+    {
+      Header: "شناسه",
+      accessor: "ordrId",
+      width: "5%",
+    },
+    {
+      Header: "تاریخ",
+      accessor: "dat",
+      width: "7%",
+    },
+    {
+      Header: "ساعت",
+      accessor: "tim",
+      width: "5%",
+    },
+    {
+      Header: "تامین کننده",
+      accessor: "srName",
+      width: "28%",
+    },
+    {
+      Header: "سررسید",
+      accessor: "payDuration",
+      width: "5%",
+    },
+    {
+      Header: "توضیح",
+      accessor: "dsc",
+      width: "20%",
+    },
+    {
+      Header: "کاربر",
+      accessor: "usrName",
+      width: "15%",
+    },
+    {
+      Header: "مرحله",
+      accessor: "flowMapName",
+      width: "10%",
+    },
+  ];
 
   const columnsDtl = React.useMemo(
     () => [
@@ -94,24 +163,44 @@ const ProductPerm = () => {
         width: "5%",
       },
       {
-        Header: "برند",
-        accessor: "bName",
-        width: "10%",
-      },
-      {
         Header: "کالا",
         accessor: "product",
-        width: "45%",
+        width: "35%",
       },
       {
-        Header: "نیاز به مجوز",
-        accessor: "np",
+        Header: "تعداد",
+        accessor: "cnt",
+        width: "5%",
+      },
+      {
+        Header: "آفر",
+        accessor: "offer",
+        width: "5%",
+      },
+      {
+        Header: "مبلغ",
+        accessor: "cost",
+        width: "5%",
+      },
+      {
+        Header: "تخفیف",
+        accessor: "dcrmnt",
+        width: "5%",
+      },
+      {
+        Header: "مالیات",
+        accessor: "taxValue",
+        width: "5%",
+      },
+      {
+        Header: "جمع",
+        accessor: "total",
         width: "5%",
       },
       {
         Header: "شرح",
         accessor: "dtlDsc",
-        width: "35%",
+        width: "30%",
       },
     ],
     []
@@ -135,11 +224,14 @@ const ProductPerm = () => {
     if (focusedInput && inputRefs.current[focusedInput]) {
       inputRefs.current[focusedInput]?.focus();
     }
-  }, [focusedInput, data, productPerm]);
+  }, [focusedInput, data]);
 
   useEffect(() => {
-    setField("yearId", yearId);
-    setField("systemId", systemId);
+    setField("id", 0);
+    setField("ordrIdIndentRequest", 0);
+    setField("showDeletedInentDtl", false);
+    setField("acc_YearIndentRequest", yearId);
+    setField("acc_SystemIndentRequest", systemId);
     setField("state", state);
 
     setField(
@@ -174,9 +266,10 @@ const ProductPerm = () => {
     setField("srchDate", srchDate);
     setField("srchTime", srchTime);
     setField("srchDsc", srchDsc);
-    setField("srchAccepted", srchAccepted);
     setField("srchUsrName", srchUsrName);
     setField("srchStep", srchStep);
+    setField("srchSRName", srchSRName);
+    setField("srchPayDuration", srchPayDuration);
   }, []);
 
   useEffect(() => {
@@ -184,27 +277,29 @@ const ProductPerm = () => {
     setField("sortDate", sortDate);
     setField("sortTime", sortTime);
     setField("sortDsc", sortDsc);
-    setField("sortAccepted", sortAccepted);
     setField("sortUsrName", sortUsrName);
     setField("sortStep", sortStep);
+    setField("sortSRName", sortSRName);
+    setField("sortPayDuration", sortPayDuration);
   }, [
     sortId,
     sortDate,
     sortTime,
     sortDsc,
-    sortAccepted,
     sortUsrName,
     sortStep,
+    sortSRName,
+    sortPayDuration,
   ]);
   ////////////////////////////////////////////////////////////
   useEffect(() => {
-    //console.log("pageNumber", pageNumber);
+    //console.log("pageNumber", pageNumber);`
     setField("pageNumber", pageNumber);
   }, [pageNumber]);
   ////////////////////////////////////////////////////////////
   useEffect(() => {
-    console.log("srchDsc", srchDsc);
     setPageNumber(1);
+    setSelectedRowIndex(0);
   }, [
     state,
     regFDate,
@@ -217,19 +312,21 @@ const ProductPerm = () => {
     srchDate,
     srchTime,
     srchDsc,
-    srchAccepted,
+    srchSRName,
     srchUsrName,
     srchStep,
+    srchPayDuration,
     yearId,
     sortId,
     sortDate,
     sortTime,
     sortDsc,
-    sortAccepted,
+    sortSRName,
     sortUsrName,
     sortStep,
+    sortPayDuration,
   ]);
-
+  //////////////////////////////////////////////////////////////////////////////
   const handleDebounceFilterChange = useCallback(
     debounce((field: string, value: string | number) => {
       console.log(field, value, "field, value");
@@ -244,7 +341,7 @@ const ProductPerm = () => {
     }, 500),
     [setField]
   );
-
+  //////////////////////////////////////////////////////////////////////////////
   // Cleanup on component unmount
   useEffect(() => {
     return () => {
@@ -253,54 +350,59 @@ const ProductPerm = () => {
       }
     };
   }, []);
-
+  //////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
-    console.log("selectedId", selectedId);
-    if (prevId !== selectedId) {
-      setField("id", selectedId);
+    const currentIndent = indentList.find((item) => item.id === selectedId);
+    if (currentIndent && prevId !== selectedId) {
+      setField("mrsIdIndentRequest", currentIndent.mrsId);
     }
-    selectedId !== 0 &&
-      setSelectedProductPerm(
-        productPerm?.find((item) => item.id === selectedId) || null
-      );
-  }, [selectedId, productPerm]);
-
+    //if (selectedId!==0) setField("mrsIdIndentRequest", selectedId);
+    /*if (prevId !== selectedId) {
+      setField("id", selectedId);
+    }*/
+    selectedId !== 0 && setSelectedIndent(currentIndent || null);
+  }, [selectedId]);
+  //////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
-    const tempData = productPerm?.map((item, index) => {
+    const tempData = indentList?.map((item, index) => {
       return {
         ...item,
-        id: convertToFarsiDigits(item.id),
+        ordrId: convertToFarsiDigits(item.ordrId),
         dat: convertToFarsiDigits(item.dat),
         tim: convertToFarsiDigits(item.tim),
+        payDuration: convertToFarsiDigits(item.payDuration),
         dsc: convertToFarsiDigits(item.dsc),
-        accepted: item.accepted ? (
-          <img src={Accept} alt="Accept" className="w-4 h-4" />
-        ) : null,
         usrName: convertToFarsiDigits(item.usrName),
         flowMapName: convertToFarsiDigits(item.flowMapName),
         index: convertToFarsiDigits((pageNumber - 1) * pageSize + index + 1),
       };
     });
-
     setData(tempData || []);
     if (tempData?.[0]?.id) {
-      setSelectedId(Number(convertToLatinDigits(tempData?.[0]?.id)));
+      setSelectedId(tempData?.[0]?.id);
     } else {
       setSelectedId(0);
     }
-  }, [productPerm]);
-
+  }, [indentList]);
+  //////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     let tempDataDtl: any[] = [];
-    if (productPermDtl) {
-      tempDataDtl = productPermDtl.map((item, index) => {
+    if (indentList.length === 0) {
+      setDataDtl(tempDataDtl);
+      return;
+    }
+    if (indentListDtl) {
+      tempDataDtl = indentListDtl.map((item, index) => {
         return {
           index: convertToFarsiDigits(index + 1),
           bName: convertToFarsiDigits(item.bName),
           product: convertToFarsiDigits(item.product),
-          np: item.np ? (
-            <img src={Accept} alt="Accept" className="w-4 h-4" />
-          ) : null,
+          cnt: convertToFarsiDigits(item.cnt),
+          offer: convertToFarsiDigits(item.offer),
+          cost: convertToFarsiDigits(formatNumberWithCommas(item.cost)),
+          dcrmnt: convertToFarsiDigits(formatNumberWithCommas(item.dcrmnt)),
+          taxValue: convertToFarsiDigits(formatNumberWithCommas(item.taxValue)),
+          total: convertToFarsiDigits(formatNumberWithCommas(item.total)),
           dtlDsc: convertToFarsiDigits(item.dtlDsc),
         };
       });
@@ -308,10 +410,9 @@ const ProductPerm = () => {
         setDataDtl(tempDataDtl);
       }
     }
-  }, [productPermDtl]);
-
+  }, [indentListDtl]);
+  //////////////////////////////////////////////////////////////////////////////
   const handleSelectedIdChange = (id: number) => {
-    //console.log(id, "id in WorkflowForm");
     setSelectedId(id);
   };
 
@@ -335,15 +436,18 @@ const ProductPerm = () => {
   }, [isModalOpen, isModalConfirmOpen, isModalDeleteOpen]);
 
   const handleConfirm = () => {
-    const request: ProductPermDoFirstFlowRequest = {
-      chartId,
-      systemId,
-      yearId,
-      id: selectedId,
-      dsc: selectedProductPerm?.dsc || "",
+    const request: IndentDoFirstFlowRequest = {
+      acc_Year: yearId,
+      acc_System: systemId,
+      mrsId: selectedIndent?.mrsId ?? 0,
+      dsc: selectedIndent?.dsc || "توضیحات",
+      chartId: chartId,
     };
-    productPermDoFirstFlow(request);
+    console.log(request, "request");
     setIsModalConfirmOpen(true);
+    indentDoFirstFlow(request);
+    setSelectedId(data?.[0]?.id ?? 0);
+    setSelectedRowIndex(0);
   };
 
   const handleEdit = () => {
@@ -351,8 +455,10 @@ const ProductPerm = () => {
   };
 
   const handleDelete = () => {
-    productPermDel(selectedId);
+    indentDel(selectedIndent?.mrsId ?? 0);
     setIsModalDeleteOpen(true);
+    setSelectedId(data?.[0]?.id ?? 0);
+    setSelectedRowIndex(0);
   };
 
   const ProductPermInput = (
@@ -380,6 +486,7 @@ const ProductPerm = () => {
       />
     );
   };
+  const { width, height } = useCalculateTableHeight();
   return (
     <div
       className={`sm:h-full overflow-y-scroll flex flex-col bg-gray-200 pt-2 gap-2`}
@@ -390,14 +497,21 @@ const ProductPerm = () => {
         handleDelete={handleDelete}
         handleEdit={handleEdit}
         handleConfirm={handleConfirm}
-        selectedProductOffer={selectedProductPerm || ({} as ProductPermType)}
+        selectedProductOffer={selectedIndent || null}
         data={data}
-        refetch={refetch}
+        refetch={refetchIndentList}
       />
       <div className="flex flex-col md:flex-row gap-2 px-2 h-1/2">
         <div className="flex flex-col w-full md:w-3/4 h-full">
           <div className="w-full overflow-y-scroll bg-white rounded-md h-full">
-            {isLoading ? (
+            {errorIndentList ? (
+              <ErrorPage
+                error={errorIndentList}
+                title="خطا در بارگذاری اطلاعات"
+                onRetry={() => refetchIndentList()}
+                showHomeButton={true}
+              />
+            ) : isLoadingIndentList ? (
               <Skeleton />
             ) : (
               <>
@@ -422,50 +536,58 @@ const ProductPerm = () => {
                       setSrchId(Number(e.target.value));
                     }}
                     onFocus={() => setFocusedInput("srchId")}
-                    style={{ width: columns[1].width }}
+                    style={{ width: columns[2].width }}
                     className={`border p-1 text-sm rounded-sm`}
                   />
                   {ProductPermInput(
                     "srchDate",
-                    columns[2].width,
+                    columns[3].width,
                     srchDate,
                     setSrchDate
                   )}
                   {ProductPermInput(
                     "srchTime",
-                    columns[3].width,
+                    columns[4].width,
                     srchTime,
                     setSrchTime
                   )}
                   {ProductPermInput(
-                    "srchDsc",
-                    columns[4].width,
-                    srchDsc,
-                    setSrchDsc
+                    "srchSRName",
+                    columns[5].width,
+                    srchSRName,
+                    setSrchSRName
                   )}
                   <input
-                    name="srchAccepted"
-                    type="checkbox"
-                    checked={srchAccepted === 1}
+                    ref={(el) => (inputRefs.current["srchPayDuration"] = el)}
+                    name="srchPayDuration"
+                    value={srchPayDuration === -1 ? "" : srchPayDuration}
                     onChange={(e) => {
+                      preserveFocus("srchPayDuration");
                       handleDebounceFilterChange(
-                        "srchAccepted",
-                        e.target.checked ? 1 : -1
+                        "srchPayDuration",
+                        e.target.value === "" ? -1 : e.target.value
                       );
-                      setSrchAccepted(Number(e.target.checked ? 1 : -1));
+                      setSrchPayDuration(Number(e.target.value));
                     }}
-                    style={{ width: columns[5].width }}
+                    onFocus={() => setFocusedInput("srchPayDuration")}
+                    style={{ width: columns[6].width }}
                     className={`border p-1 text-sm rounded-sm`}
                   />
                   {ProductPermInput(
+                    "srchDsc",
+                    columns[7].width,
+                    srchDsc,
+                    setSrchDsc
+                  )}
+                  {ProductPermInput(
                     "srchUsrName",
-                    columns[6].width,
+                    columns[8].width,
                     srchUsrName,
                     setSrchUsrName
                   )}
                   {ProductPermInput(
                     "srchStep",
-                    columns[7].width,
+                    columns[9].width,
                     srchStep,
                     setSrchStep
                   )}
@@ -476,21 +598,23 @@ const ProductPerm = () => {
                   sortDate={sortDate}
                   sortTime={sortTime}
                   sortDsc={sortDsc}
-                  sortAccepted={sortAccepted}
+                  sortSrName={sortSRName}
+                  sortAmount={sortPayDuration}
                   sortUsrName={sortUsrName}
                   sortStep={sortStep}
                   setSortId={setSortId}
                   setSortDate={setSortDate}
                   setSortTime={setSortTime}
                   setSortDsc={setSortDsc}
-                  setSortAccepted={setSortAccepted}
+                  setSortSrName={setSortSRName}
+                  setSortAmount={setSortPayDuration}
                   setSortUsrName={setSortUsrName}
                   setSortStep={setSortStep}
                 />
                 <TTable
-                  columns={columns}
                   selectedRowIndex={selectedRowIndex}
                   setSelectedRowIndex={setSelectedRowIndex}
+                  columns={columns}
                   data={data}
                   fontSize="0.75rem"
                   changeRowSelectColor={true}
@@ -504,16 +628,15 @@ const ProductPerm = () => {
           </div>
           <div className="w-full bg-white rounded-md">
             <TablePaginationActions
-              setSelectedRowIndex={setSelectedRowIndex}
               page={pageNumber - 1}
               setPage={setPageNumber}
               pageSize={pageSize}
               setPageSize={setPageSize}
-              totalCount={productPermTotalCount ?? 0}
+              totalCount={indentListTotalCount ?? 0}
+              setSelectedRowIndex={setSelectedRowIndex}
             />
           </div>
         </div>
-        {/* ProductOfferParams */}
         <div className="w-full md:w-1/4 h-full">
           <ProductOfferParams
             regFDate={regFDate}
@@ -529,71 +652,63 @@ const ProductPerm = () => {
         </div>
       </div>
       <div className="px-2 h-full">
-        {isLoadingDtl ? (
+        {isLoadingIndentListDtl ? (
           <Skeleton />
         ) : (
-          <TTable
-            columns={columnsDtl}
-            selectedRowIndex={selectedRowIndexDtl}
-            setSelectedRowIndex={setSelectedRowIndexDtl}
-            data={dataDtl}
-            fontSize="0.75rem"
-            changeRowSelectColor={true}
-            wordWrap={true}
-            showToolTip={true}
-          />
+          <div
+            className="overflow-y-auto"
+            style={width > 640 ? { height: height-350 } : { height: "fit" }}
+          >
+            <TTable
+              selectedRowIndex={selectedRowIndexDtl}
+              setSelectedRowIndex={setSelectedRowIndexDtl}
+              columns={columnsDtl}
+              data={dataDtl}
+              fontSize="0.75rem"
+              changeRowSelectColor={true}
+              wordWrap={true}
+              showToolTip={true}
+              maxVisibleColumns={8}
+            />
+          </div>
         )}
       </div>
-      <ModalMessage
-        isOpen={isModalOpen}
-        backgroundColor="bg-red-200"
-        bgColorButton="bg-red-500"
-        bgColorButtonHover="bg-red-600"
-        color="text-white"
-        onClose={() => setIsModalOpen(false)}
-        message={productPermMeta?.message || ""}
-      />
       <ModalForm
         isOpen={isNew || isEdit}
         onClose={() => {
           setIsNew(false);
           setIsEdit(false);
         }}
-        title="نیاز به مجوز"
+        title="سفارش"
         width="1"
+        height="90vh"
       >
-        <ProductPermForm
-          addProductList={addProductList}
-          productPermDtlHistory={productPermDtlHistory || []}
-          isLoadingDtlHistory={isLoadingDtlHistory}
-          productPermSave={productPermSave}
-          isLoadingProductPermSave={isLoadingProductPermSave}
-          selectedProductPerm={selectedProductPerm} //for check if selectedProductPerm.flwId===0 new else edit && sending selectedProductPerm.id in edit
-          productPermDtls={productPermDtl}
-          isNew={isNew} //for check if isNew new else edit
-          setIsNew={setIsNew}
-          setIsEdit={setIsEdit}
-          fromWorkFlow={false} //for not going to editting in product perm form as default
-          canEditForm1={true}
+        <PurchaseRequestIndentForm
+          selectedIndent={selectedIndent}
+          isNew={isNew}
+          //setIsNew={setIsNew}
+          //setIsEdit={setIsEdit}
         />
       </ModalForm>
+      {/* for top confirm button operations */}
       <ModalMessage
         isOpen={isModalConfirmOpen}
         onClose={() => setIsModalConfirmOpen(false)}
         backgroundColor={
-          productPermDoFirstFlowResponse?.meta.errorCode === -1
+          indentDoFirstFlowResponse?.meta.errorCode === -1
             ? "bg-green-200"
             : "bg-red-200"
         }
         bgColorButton={
-          productPermDoFirstFlowResponse?.meta.errorCode === -1
+          indentDoFirstFlowResponse?.meta.errorCode === -1
             ? "bg-green-500"
             : "bg-red-500"
         }
         color="text-white"
-        message={productPermDoFirstFlowResponse?.meta.message || ""}
+        message={indentDoFirstFlowResponse?.meta.message || ""}
         visibleButton={false}
       />
+      {/* for top delete button operations */}
       <ModalMessage
         isOpen={isModalDeleteOpen}
         onClose={() => setIsModalDeleteOpen(false)}
@@ -602,14 +717,22 @@ const ProductPerm = () => {
         bgColorButtonHover="bg-red-600"
         color="text-white"
         message={
-          productPermDelResponse?.meta.errorCode !== -1
-            ? productPermDelResponse?.meta.message || ""
+          indentDelResponse?.meta.errorCode !== -1
+            ? indentDelResponse?.meta.message || ""
             : "اطلاعات با موفقیت حذف شد."
         }
         visibleButton={false}
       />
+      <Card
+        border="none"
+        rounded="none"
+        backgroundColor={colors.gray_300}
+        className="flex-row gap-2 rounded-bl-md rounded-br-md justify-end "
+      >
+        <InvoiceReceiptShowTableSummery data={dataDtl} />
+      </Card>
     </div>
   );
 };
 
-export default ProductPerm;
+export default PurchaseRequestIndent;

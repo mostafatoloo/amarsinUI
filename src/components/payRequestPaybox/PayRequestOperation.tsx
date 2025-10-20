@@ -48,7 +48,7 @@ const PayRequestOperation = () => {
 
   const [data, setData] = useState<any[]>([]);
   const [dataDtl, setDataDtl] = useState<PayRequestDtl[]>([]);
-  const { yearId, systemId, chartId } = useGeneralContext();
+  const { yearId, systemId, chartId,defaultRowsPerPage } = useGeneralContext();
   const [selectedId, setSelectedId] = useState<number>(589);
   const [isNew, setIsNew] = useState<boolean>(false); //for new
   const [isEdit, setIsEdit] = useState<boolean>(false); //for edit
@@ -62,7 +62,7 @@ const PayRequestOperation = () => {
     useState<PayRequestType | null>(null);
   // for pagination
   const [pageNumber, setPageNumber] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(12);
+  const [pageSize, setPageSize] = useState<number>(defaultRowsPerPage);
   const abortControllerRef = useRef<AbortController | null>(null);
   //add filter options
   const [srchId, setSrchId] = useState<number>(-1);

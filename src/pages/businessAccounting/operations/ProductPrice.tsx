@@ -1,52 +1,41 @@
-//حسابداری => حسابداری بازرگانی => عملیات => درخواست خرید
+import { columns } from "../../../components/productOffer/ProductOfferGeneral";
+import Accept from "../../../assets/images/GrayThem/img24_3.png";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useGeneralContext } from "../../context/GeneralContext";
-import { ProductPriceDtl } from "../../types/productPrice";
+import { useGeneralContext } from "../../../context/GeneralContext";
+import {
+  ProductPriceDoFirstFlowRequest,
+  ProductPriceDtl,
+  ProductPrice as ProductPriceType,
+} from "../../../types/productPrice";
 import {
   convertPersianDate,
   convertToFarsiDigits,
   convertToLatinDigits,
   formatNumberWithCommas,
-} from "../../utilities/general";
+} from "../../../utilities/general";
 import { debounce } from "lodash";
-import ProductOfferHeader from "../productOffer/ProductOfferHeader";
-import Skeleton from "../layout/Skeleton";
-import ProductOfferTblHeader from "../productOffer/ProductOfferTblHeader";
-import TTable from "../controls/TTable";
-import { TablePaginationActions } from "../controls/TablePaginationActions";
-import ProductOfferParams from "../productOffer/ProductOfferParams";
-import ModalForm from "../layout/ModalForm";
-import ErrorPage from "../common/ErrorPage";
-import { useProductStore } from "../../store/productStore";
-import { useProducts } from "../../hooks/useProducts";
-import { Indent, IndentDoFirstFlowRequest } from "../../types/product";
-import PurchaseRequestIndentForm from "./PurchaseRequestIndentForm";
-import ModalMessage from "../layout/ModalMessage";
-import InvoiceReceiptShowTableSummery from "../invoiceReceipt/InvoiceReceiptShowTableSummery";
-import Card from "../controls/Card";
-import { colors } from "../../utilities/color";
-import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
+import ProductOfferHeader from "../../../components/productOffer/ProductOfferHeader";
+import Skeleton from "../../../components/layout/Skeleton";
+import ProductOfferTblHeader from "../../../components/productOffer/ProductOfferTblHeader";
+import TTable from "../../../components/controls/TTable";
+import { TablePaginationActions } from "../../../components/controls/TablePaginationActions";
+import ProductOfferParams from "../../../components/productOffer/ProductOfferParams";
+import ModalMessage from "../../../components/layout/ModalMessage";
+import ModalForm from "../../../components/layout/ModalForm";
+import { useProductPriceStore } from "../../../store/productPriceStore";
+import { useProductPrice } from "../../../hooks/useProductPrice";
+import ProductPriceForm from "../../../components/productPrice/ProductPriceForm";
+import ErrorPage from "../../../components/common/ErrorPage";
 
-const PurchaseRequestIndent = () => {
+const ProductPrice = () => {
   const {
     setField,
     id: prevId,
-    indentDoFirstFlowResponse,
-    indentDelResponse,
-  } = useProductStore();
+    productPriceDoFirstFlowResponse,
+    productPriceDelResponse,
+  } = useProductPriceStore();
   const {
-    indentList,
-    indentListDtl,
-    //indentListMeta,
-    refetchIndentList,
-    isLoadingIndentList,
-    errorIndentList,
-    //indentListTotalCount,
-    isLoadingIndentListDtl,
-    indentListTotalCount,
-    indentDoFirstFlow,
-    indentDel,
-    /*productPrice,
+    productPrice,
     productPriceTotalCount,
     refetch,
     isLoading,
@@ -60,14 +49,14 @@ const PurchaseRequestIndent = () => {
     productPriceSave,
     isLoadingProductPriceSave,
     productPriceDoFirstFlow,
-    productPriceDel,*/
-  } = useProducts();
+    productPriceDel,
+  } = useProductPrice();
 
   //const { setField: setProductOfferField } = useProductOfferStore();
   const [data, setData] = useState<any[]>([]);
   const [dataDtl, setDataDtl] = useState<ProductPriceDtl[]>([]);
-  const { yearId, systemId, chartId } = useGeneralContext();
-  const [selectedId, setSelectedId] = useState<number>(0);
+  const { yearId, systemId, chartId, defaultRowsPerPage } = useGeneralContext();
+  const [selectedId, setSelectedId] = useState<number>(589);
   const [isNew, setIsNew] = useState<boolean>(false); //for new
   const [isEdit, setIsEdit] = useState<boolean>(false); //for edit
   //for ProductPermParams params
@@ -76,84 +65,29 @@ const PurchaseRequestIndent = () => {
   const [fDate, setFDate] = useState<Date | null>(null);
   const [tDate, setTDate] = useState<Date | null>(null);
   const [state, setState] = useState<number>(-1);
-  const [selectedIndent, setSelectedIndent] = useState<Indent | null>(null);
+  const [selectedProductPrice, setSelectedProductPrice] =
+    useState<ProductPriceType | null>(null);
   // for pagination
   const [pageNumber, setPageNumber] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(12);
+  const [pageSize, setPageSize] = useState<number>(defaultRowsPerPage);
   const abortControllerRef = useRef<AbortController | null>(null);
   //add filter options
   const [srchId, setSrchId] = useState<number>(-1);
   const [srchDate, setSrchDate] = useState<string>("");
   const [srchTime, setSrchTime] = useState<string>("");
   const [srchDsc, setSrchDsc] = useState<string>("");
-  const [srchSRName, setSrchSRName] = useState<string>("");
-  const [srchPayDuration, setSrchPayDuration] = useState<number>(-1);
+  const [srchAccepted, setSrchAccepted] = useState<number>(-1);
   const [srchUsrName, setSrchUsrName] = useState<string>("");
   const [srchStep, setSrchStep] = useState<string>("");
   const [sortId, setSortId] = useState<number>(0);
   const [sortDate, setSortDate] = useState<number>(0);
   const [sortTime, setSortTime] = useState<number>(0);
   const [sortDsc, setSortDsc] = useState<number>(0);
-  const [sortSRName, setSortSRName] = useState<number>(0);
-  const [sortPayDuration, setSortPayDuration] = useState<number>(0);
+  const [sortAccepted, setSortAccepted] = useState<number>(0);
   const [sortUsrName, setSortUsrName] = useState<number>(0);
   const [sortStep, setSortStep] = useState<number>(0);
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in productGrace table
   const [selectedRowIndexDtl, setSelectedRowIndexDtl] = useState<number>(0); //for selected row index in productGraceDtl table
-
-  const columns = [
-    {
-      Header: "ردیف",
-      accessor: "index",
-      width: "5%",
-    },
-    {
-      Header: "شناسه",
-      accessor: "id",
-      width: "5%",
-      visible: false,
-    },
-    {
-      Header: "شناسه",
-      accessor: "ordrId",
-      width: "5%",
-    },
-    {
-      Header: "تاریخ",
-      accessor: "dat",
-      width: "7%",
-    },
-    {
-      Header: "ساعت",
-      accessor: "tim",
-      width: "5%",
-    },
-    {
-      Header: "تامین کننده",
-      accessor: "srName",
-      width: "28%",
-    },
-    {
-      Header: "سررسید",
-      accessor: "payDuration",
-      width: "5%",
-    },
-    {
-      Header: "توضیح",
-      accessor: "dsc",
-      width: "20%",
-    },
-    {
-      Header: "کاربر",
-      accessor: "usrName",
-      width: "15%",
-    },
-    {
-      Header: "مرحله",
-      accessor: "flowMapName",
-      width: "10%",
-    },
-  ];
 
   const columnsDtl = React.useMemo(
     () => [
@@ -163,38 +97,48 @@ const PurchaseRequestIndent = () => {
         width: "5%",
       },
       {
+        Header: "برند",
+        accessor: "bName",
+        width: "10%",
+      },
+      {
         Header: "کالا",
         accessor: "product",
         width: "35%",
       },
       {
-        Header: "تعداد",
-        accessor: "cnt",
+        Header: "پخش",
+        accessor: "p1",
         width: "5%",
       },
       {
-        Header: "آفر",
-        accessor: "offer",
+        Header: "نسبت",
+        accessor: "p1p2Ratio",
         width: "5%",
       },
       {
-        Header: "مبلغ",
-        accessor: "cost",
+        Header: "داروخانه",
+        accessor: "p2",
         width: "5%",
       },
       {
-        Header: "تخفیف",
-        accessor: "dcrmnt",
+        Header: "نسبت",
+        accessor: "p2p3Ratio",
         width: "5%",
       },
       {
-        Header: "مالیات",
-        accessor: "taxValue",
+        Header: "مصرف کننده",
+        accessor: "p3",
         width: "5%",
       },
       {
-        Header: "جمع",
-        accessor: "total",
+        Header: "مشتری",
+        accessor: "p4",
+        width: "5%",
+      },
+      {
+        Header: "مشتری",
+        accessor: "p5",
         width: "5%",
       },
       {
@@ -224,14 +168,11 @@ const PurchaseRequestIndent = () => {
     if (focusedInput && inputRefs.current[focusedInput]) {
       inputRefs.current[focusedInput]?.focus();
     }
-  }, [focusedInput, data]);
+  }, [focusedInput, data, productPrice]);
 
   useEffect(() => {
-    setField("id", 0);
-    setField("ordrIdIndentRequest", 0);
-    setField("showDeletedInentDtl", false);
-    setField("acc_YearIndentRequest", yearId);
-    setField("acc_SystemIndentRequest", systemId);
+    setField("yearId", yearId);
+    setField("systemId", systemId);
     setField("state", state);
 
     setField(
@@ -266,10 +207,9 @@ const PurchaseRequestIndent = () => {
     setField("srchDate", srchDate);
     setField("srchTime", srchTime);
     setField("srchDsc", srchDsc);
+    setField("srchAccepted", srchAccepted);
     setField("srchUsrName", srchUsrName);
     setField("srchStep", srchStep);
-    setField("srchSRName", srchSRName);
-    setField("srchPayDuration", srchPayDuration);
   }, []);
 
   useEffect(() => {
@@ -277,29 +217,26 @@ const PurchaseRequestIndent = () => {
     setField("sortDate", sortDate);
     setField("sortTime", sortTime);
     setField("sortDsc", sortDsc);
+    setField("sortAccepted", sortAccepted);
     setField("sortUsrName", sortUsrName);
     setField("sortStep", sortStep);
-    setField("sortSRName", sortSRName);
-    setField("sortPayDuration", sortPayDuration);
   }, [
     sortId,
     sortDate,
     sortTime,
     sortDsc,
+    sortAccepted,
     sortUsrName,
     sortStep,
-    sortSRName,
-    sortPayDuration,
   ]);
   ////////////////////////////////////////////////////////////
   useEffect(() => {
-    //console.log("pageNumber", pageNumber);`
+    //console.log("pageNumber", pageNumber);
     setField("pageNumber", pageNumber);
   }, [pageNumber]);
   ////////////////////////////////////////////////////////////
   useEffect(() => {
     setPageNumber(1);
-    setSelectedRowIndex(0);
   }, [
     state,
     regFDate,
@@ -312,21 +249,19 @@ const PurchaseRequestIndent = () => {
     srchDate,
     srchTime,
     srchDsc,
-    srchSRName,
+    srchAccepted,
     srchUsrName,
     srchStep,
-    srchPayDuration,
     yearId,
     sortId,
     sortDate,
     sortTime,
     sortDsc,
-    sortSRName,
+    sortAccepted,
     sortUsrName,
     sortStep,
-    sortPayDuration,
   ]);
-  //////////////////////////////////////////////////////////////////////////////
+
   const handleDebounceFilterChange = useCallback(
     debounce((field: string, value: string | number) => {
       console.log(field, value, "field, value");
@@ -341,7 +276,7 @@ const PurchaseRequestIndent = () => {
     }, 500),
     [setField]
   );
-  //////////////////////////////////////////////////////////////////////////////
+
   // Cleanup on component unmount
   useEffect(() => {
     return () => {
@@ -350,59 +285,66 @@ const PurchaseRequestIndent = () => {
       }
     };
   }, []);
-  //////////////////////////////////////////////////////////////////////////////
+
   useEffect(() => {
-    const currentIndent = indentList.find((item) => item.id === selectedId);
-    if (currentIndent && prevId !== selectedId) {
-      setField("mrsIdIndentRequest", currentIndent.mrsId);
-    }
-    //if (selectedId!==0) setField("mrsIdIndentRequest", selectedId);
-    /*if (prevId !== selectedId) {
+    console.log("selectedId", selectedId);
+    if (prevId !== selectedId) {
       setField("id", selectedId);
-    }*/
-    selectedId !== 0 && setSelectedIndent(currentIndent || null);
-  }, [selectedId]);
-  //////////////////////////////////////////////////////////////////////////////
+    }
+    selectedId !== 0 &&
+      setSelectedProductPrice(
+        productPrice?.find((item) => item.id === selectedId) || null
+      );
+  }, [selectedId, productPrice]);
+
   useEffect(() => {
-    const tempData = indentList?.map((item, index) => {
+    const tempData = productPrice?.map((item, index) => {
       return {
         ...item,
-        ordrId: convertToFarsiDigits(item.ordrId),
+        id: convertToFarsiDigits(item.id),
         dat: convertToFarsiDigits(item.dat),
         tim: convertToFarsiDigits(item.tim),
-        payDuration: convertToFarsiDigits(item.payDuration),
         dsc: convertToFarsiDigits(item.dsc),
+        accepted: item.accepted ? (
+          <img src={Accept} alt="Accept" className="w-4 h-4" />
+        ) : null,
         usrName: convertToFarsiDigits(item.usrName),
         flowMapName: convertToFarsiDigits(item.flowMapName),
         index: convertToFarsiDigits((pageNumber - 1) * pageSize + index + 1),
       };
     });
+
     setData(tempData || []);
     if (tempData?.[0]?.id) {
-      setSelectedId(tempData?.[0]?.id);
+      setSelectedId(Number(convertToLatinDigits(tempData?.[0]?.id)));
     } else {
       setSelectedId(0);
     }
-  }, [indentList]);
-  //////////////////////////////////////////////////////////////////////////////
+  }, [productPrice]);
+
   useEffect(() => {
     let tempDataDtl: any[] = [];
-    if (indentList.length === 0) {
-      setDataDtl(tempDataDtl);
-      return;
-    }
-    if (indentListDtl) {
-      tempDataDtl = indentListDtl.map((item, index) => {
+    if (productPriceDtl) {
+      tempDataDtl = productPriceDtl.map((item, index) => {
         return {
           index: convertToFarsiDigits(index + 1),
           bName: convertToFarsiDigits(item.bName),
           product: convertToFarsiDigits(item.product),
-          cnt: convertToFarsiDigits(item.cnt),
-          offer: convertToFarsiDigits(item.offer),
-          cost: convertToFarsiDigits(formatNumberWithCommas(item.cost)),
-          dcrmnt: convertToFarsiDigits(formatNumberWithCommas(item.dcrmnt)),
-          taxValue: convertToFarsiDigits(formatNumberWithCommas(item.taxValue)),
-          total: convertToFarsiDigits(formatNumberWithCommas(item.total)),
+          lastBuyPrice: convertToFarsiDigits(item.lastBuyPrice),
+          tax: convertToFarsiDigits(item.tax),
+          p1: convertToFarsiDigits(formatNumberWithCommas(item.p1)),
+          p1p2Ratio:
+            item.p2 !== 0
+              ? convertToFarsiDigits((item.p1 / item.p2).toFixed(2))
+              : null,
+          p2: convertToFarsiDigits(formatNumberWithCommas(item.p2)),
+          p2p3Ratio:
+            item.p3 !== 0
+              ? convertToFarsiDigits((item.p2 / item.p3).toFixed(2))
+              : null,
+          p3: convertToFarsiDigits(formatNumberWithCommas(item.p3)),
+          p4: convertToFarsiDigits(formatNumberWithCommas(item.p4)),
+          p5: convertToFarsiDigits(formatNumberWithCommas(item.p5)),
           dtlDsc: convertToFarsiDigits(item.dtlDsc),
         };
       });
@@ -410,9 +352,10 @@ const PurchaseRequestIndent = () => {
         setDataDtl(tempDataDtl);
       }
     }
-  }, [indentListDtl]);
-  //////////////////////////////////////////////////////////////////////////////
+  }, [productPriceDtl]);
+
   const handleSelectedIdChange = (id: number) => {
+    //console.log(id, "id in WorkflowForm");
     setSelectedId(id);
   };
 
@@ -436,20 +379,15 @@ const PurchaseRequestIndent = () => {
   }, [isModalOpen, isModalConfirmOpen, isModalDeleteOpen]);
 
   const handleConfirm = () => {
-    const request: IndentDoFirstFlowRequest = {
+    console.log("confirm");
+    const request: ProductPriceDoFirstFlowRequest = {
       acc_Year: yearId,
       acc_System: systemId,
-      id: selectedIndent?.mrsId ?? 0,
-      dsc: selectedIndent?.dsc || "توضیحات",
-      wfms_FlowMapId: 403020201,
-      flowNo: 403020200,
-      chartId: chartId,
+      id: selectedId,
+      dsc: selectedProductPrice?.dsc || "توضیحات",
     };
-    console.log(request, "request");
     setIsModalConfirmOpen(true);
-    indentDoFirstFlow(request);
-    setSelectedId(data?.[0]?.id ?? 0);
-    setSelectedRowIndex(0);
+    productPriceDoFirstFlow(request);
   };
 
   const handleEdit = () => {
@@ -457,10 +395,8 @@ const PurchaseRequestIndent = () => {
   };
 
   const handleDelete = () => {
-    indentDel(selectedIndent?.mrsId ?? 0);
+    productPriceDel(selectedId);
     setIsModalDeleteOpen(true);
-    setSelectedId(data?.[0]?.id ?? 0);
-    setSelectedRowIndex(0);
   };
 
   const ProductPermInput = (
@@ -488,7 +424,6 @@ const PurchaseRequestIndent = () => {
       />
     );
   };
-  const { width, height } = useCalculateTableHeight();
   return (
     <div
       className={`sm:h-full overflow-y-scroll flex flex-col bg-gray-200 pt-2 gap-2`}
@@ -499,21 +434,21 @@ const PurchaseRequestIndent = () => {
         handleDelete={handleDelete}
         handleEdit={handleEdit}
         handleConfirm={handleConfirm}
-        selectedProductOffer={selectedIndent || null}
+        selectedProductOffer={selectedProductPrice || null}
         data={data}
-        refetch={refetchIndentList}
+        refetch={refetch}
       />
       <div className="flex flex-col md:flex-row gap-2 px-2 h-1/2">
-        <div className="flex flex-col w-full md:w-3/4 h-full">
+      <div className="flex flex-col w-full md:w-3/4 h-full">
           <div className="w-full overflow-y-scroll bg-white rounded-md h-full">
-            {errorIndentList ? (
+            {error ? (
               <ErrorPage
-                error={errorIndentList}
+                error={error}
                 title="خطا در بارگذاری اطلاعات"
-                onRetry={() => refetchIndentList()}
+                onRetry={() => refetch()}
                 showHomeButton={true}
               />
-            ) : isLoadingIndentList ? (
+            ) : isLoading ? (
               <Skeleton />
             ) : (
               <>
@@ -538,58 +473,50 @@ const PurchaseRequestIndent = () => {
                       setSrchId(Number(e.target.value));
                     }}
                     onFocus={() => setFocusedInput("srchId")}
-                    style={{ width: columns[2].width }}
+                    style={{ width: columns[1].width }}
                     className={`border p-1 text-sm rounded-sm`}
                   />
                   {ProductPermInput(
                     "srchDate",
-                    columns[3].width,
+                    columns[2].width,
                     srchDate,
                     setSrchDate
                   )}
                   {ProductPermInput(
                     "srchTime",
-                    columns[4].width,
+                    columns[3].width,
                     srchTime,
                     setSrchTime
                   )}
                   {ProductPermInput(
-                    "srchSRName",
-                    columns[5].width,
-                    srchSRName,
-                    setSrchSRName
-                  )}
-                  <input
-                    ref={(el) => (inputRefs.current["srchPayDuration"] = el)}
-                    name="srchPayDuration"
-                    value={srchPayDuration === -1 ? "" : srchPayDuration}
-                    onChange={(e) => {
-                      preserveFocus("srchPayDuration");
-                      handleDebounceFilterChange(
-                        "srchPayDuration",
-                        e.target.value === "" ? -1 : e.target.value
-                      );
-                      setSrchPayDuration(Number(e.target.value));
-                    }}
-                    onFocus={() => setFocusedInput("srchPayDuration")}
-                    style={{ width: columns[6].width }}
-                    className={`border p-1 text-sm rounded-sm`}
-                  />
-                  {ProductPermInput(
                     "srchDsc",
-                    columns[7].width,
+                    columns[4].width,
                     srchDsc,
                     setSrchDsc
                   )}
+                  <input
+                    name="srchAccepted"
+                    type="checkbox"
+                    checked={srchAccepted === 1}
+                    onChange={(e) => {
+                      handleDebounceFilterChange(
+                        "srchAccepted",
+                        e.target.checked ? 1 : -1
+                      );
+                      setSrchAccepted(Number(e.target.checked ? 1 : -1));
+                    }}
+                    style={{ width: columns[5].width }}
+                    className={`border p-1 text-sm rounded-sm`}
+                  />
                   {ProductPermInput(
                     "srchUsrName",
-                    columns[8].width,
+                    columns[6].width,
                     srchUsrName,
                     setSrchUsrName
                   )}
                   {ProductPermInput(
                     "srchStep",
-                    columns[9].width,
+                    columns[7].width,
                     srchStep,
                     setSrchStep
                   )}
@@ -600,16 +527,14 @@ const PurchaseRequestIndent = () => {
                   sortDate={sortDate}
                   sortTime={sortTime}
                   sortDsc={sortDsc}
-                  sortSrName={sortSRName}
-                  sortAmount={sortPayDuration}
+                  sortAccepted={sortAccepted}
                   sortUsrName={sortUsrName}
                   sortStep={sortStep}
                   setSortId={setSortId}
                   setSortDate={setSortDate}
                   setSortTime={setSortTime}
                   setSortDsc={setSortDsc}
-                  setSortSrName={setSortSRName}
-                  setSortAmount={setSortPayDuration}
+                  setSortAccepted={setSortAccepted}
                   setSortUsrName={setSortUsrName}
                   setSortStep={setSortStep}
                 />
@@ -634,11 +559,12 @@ const PurchaseRequestIndent = () => {
               setPage={setPageNumber}
               pageSize={pageSize}
               setPageSize={setPageSize}
-              totalCount={indentListTotalCount ?? 0}
+              totalCount={productPriceTotalCount ?? 0}
               setSelectedRowIndex={setSelectedRowIndex}
             />
           </div>
         </div>
+        {/* ProductOfferParams */}
         <div className="w-full md:w-1/4 h-full">
           <ProductOfferParams
             regFDate={regFDate}
@@ -654,13 +580,10 @@ const PurchaseRequestIndent = () => {
         </div>
       </div>
       <div className="px-2 h-full">
-        {isLoadingIndentListDtl ? (
+        {isLoadingDtl ? (
           <Skeleton />
         ) : (
-          <div
-            className="overflow-y-auto"
-            style={width > 640 ? { height: height-350 } : { height: "fit" }}
-          >
+          <>
             <TTable
               selectedRowIndex={selectedRowIndexDtl}
               setSelectedRowIndex={setSelectedRowIndexDtl}
@@ -672,45 +595,59 @@ const PurchaseRequestIndent = () => {
               showToolTip={true}
               maxVisibleColumns={8}
             />
-          </div>
+          </>
         )}
       </div>
+      <ModalMessage
+        isOpen={isModalOpen}
+        backgroundColor="bg-red-200"
+        bgColorButton="bg-red-500"
+        bgColorButtonHover="bg-red-600"
+        color="text-white"
+        onClose={() => setIsModalOpen(false)}
+        message={productPriceMeta?.message || ""}
+      />
       <ModalForm
         isOpen={isNew || isEdit}
         onClose={() => {
           setIsNew(false);
           setIsEdit(false);
         }}
-        title="سفارش"
+        title="قیمت های کالا"
         width="1"
-        height="90vh"
       >
-        <PurchaseRequestIndentForm
-          selectedIndent={selectedIndent}
-          isNew={isNew}
-          //setIsNew={setIsNew}
-          //setIsEdit={setIsEdit}
+        <ProductPriceForm
+          addProductList={addProductList}
+          productPriceDtlHistory={productPriceDtlHistory || []}
+          isLoadingDtlHistory={isLoadingDtlHistory}
+          productPriceSave={productPriceSave}
+          isLoadingProductPriceSave={isLoadingProductPriceSave}
+          selectedProductPrice={selectedProductPrice} //for check if selectedProductPrice.flwId===0 new else edit && sending selectedProductPrice.id in edit
+          productPriceDtls={productPriceDtl}
+          isNew={isNew} //for check if isNew new else edit
+          setIsNew={setIsNew}
+          setIsEdit={setIsEdit}
+          fromWorkFlow={false}
+          canEditForm1={true}
         />
       </ModalForm>
-      {/* for top confirm button operations */}
       <ModalMessage
         isOpen={isModalConfirmOpen}
         onClose={() => setIsModalConfirmOpen(false)}
         backgroundColor={
-          indentDoFirstFlowResponse?.meta.errorCode === -1
+          productPriceDoFirstFlowResponse?.meta.errorCode === -1
             ? "bg-green-200"
             : "bg-red-200"
         }
         bgColorButton={
-          indentDoFirstFlowResponse?.meta.errorCode === -1
+          productPriceDoFirstFlowResponse?.meta.errorCode === -1
             ? "bg-green-500"
             : "bg-red-500"
         }
         color="text-white"
-        message={indentDoFirstFlowResponse?.meta.message || ""}
+        message={productPriceDoFirstFlowResponse?.meta.message || ""}
         visibleButton={false}
       />
-      {/* for top delete button operations */}
       <ModalMessage
         isOpen={isModalDeleteOpen}
         onClose={() => setIsModalDeleteOpen(false)}
@@ -719,22 +656,14 @@ const PurchaseRequestIndent = () => {
         bgColorButtonHover="bg-red-600"
         color="text-white"
         message={
-          indentDelResponse?.meta.errorCode !== -1
-            ? indentDelResponse?.meta.message || ""
+          productPriceDelResponse?.meta.errorCode !== -1
+            ? productPriceDelResponse?.meta.message || ""
             : "اطلاعات با موفقیت حذف شد."
         }
         visibleButton={false}
       />
-      <Card
-        border="none"
-        rounded="none"
-        backgroundColor={colors.gray_300}
-        className="flex-row gap-2 rounded-bl-md rounded-br-md justify-end "
-      >
-        <InvoiceReceiptShowTableSummery data={dataDtl} />
-      </Card>
     </div>
   );
 };
 
-export default PurchaseRequestIndent;
+export default ProductPrice;

@@ -253,9 +253,7 @@ export interface IndentDelResponse {
 export interface IndentDoFirstFlowRequest {
   acc_System: number;
   acc_Year: number;
-  wfms_FlowMapId: number;
-  id: number;
-  flowNo: number;
+  mrsId: number;
   chartId: number;
   dsc: string;
 }

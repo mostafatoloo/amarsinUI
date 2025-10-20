@@ -1,32 +1,32 @@
-import { columns } from "../productOffer/ProductOfferGeneral";
-import Accept from "../../assets/images/GrayThem/img24_3.png";
+import { columns } from "../../../components/productOffer/ProductOfferGeneral";
+import Accept from "../../../assets/images/GrayThem/img24_3.png";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useGeneralContext } from "../../context/GeneralContext";
+import { useGeneralContext } from "../../../context/GeneralContext";
 import {
   ProductGraceDoFirstFlowRequest,
   ProductGraceDtl,
   ProductGrace as ProductGraceType,
-} from "../../types/productGrace";
+} from "../../../types/productGrace";
 import {
   convertPersianDate,
   convertToFarsiDigits,
   convertToLatinDigits,
-} from "../../utilities/general";
+} from "../../../utilities/general";
 import { debounce } from "lodash";
-import ProductOfferHeader from "../productOffer/ProductOfferHeader";
-import Skeleton from "../layout/Skeleton";
-import ProductOfferTblHeader from "../productOffer/ProductOfferTblHeader";
-import TTable from "../controls/TTable";
-import { TablePaginationActions } from "../controls/TablePaginationActions";
-import ProductOfferParams from "../productOffer/ProductOfferParams";
-import ModalMessage from "../layout/ModalMessage";
-import ModalForm from "../layout/ModalForm";
-import { useProductGraceStore } from "../../store/productGraceStore";
-import { useProductGrace } from "../../hooks/useProductGrace";
-import ProductGraceForm from "./ProductGraceForm";
-import ProductGraceDtlHeader from "./ProductGraceDtlHeader";
-import { colors } from "../../utilities/color";
-import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
+import ProductOfferHeader from "../../../components/productOffer/ProductOfferHeader";
+import Skeleton from "../../../components/layout/Skeleton";
+import ProductOfferTblHeader from "../../../components/productOffer/ProductOfferTblHeader";
+import TTable from "../../../components/controls/TTable";
+import { TablePaginationActions } from "../../../components/controls/TablePaginationActions";
+import ProductOfferParams from "../../../components/productOffer/ProductOfferParams";
+import ModalMessage from "../../../components/layout/ModalMessage";
+import ModalForm from "../../../components/layout/ModalForm";
+import { useProductGraceStore } from "../../../store/productGraceStore";
+import { useProductGrace } from "../../../hooks/useProductGrace";
+import ProductGraceForm from "../../../components/productGrace/ProductGraceForm";
+import ProductGraceDtlHeader from "../../../components/productGrace/ProductGraceDtlHeader";
+import { colors } from "../../../utilities/color";
+import useCalculateTableHeight from "../../../hooks/useCalculateTableHeight";
 
 const ProductGrace = () => {
   const {
@@ -55,7 +55,7 @@ const ProductGrace = () => {
   //const { setField: setProductOfferField } = useProductOfferStore();
   const [data, setData] = useState<any[]>([]);
   const [dataDtl, setDataDtl] = useState<ProductGraceDtl[]>([]);
-  const { yearId, systemId, chartId } = useGeneralContext();
+  const { yearId, systemId, chartId ,defaultRowsPerPage} = useGeneralContext();
   const [selectedId, setSelectedId] = useState<number>(589);
   const [isNew, setIsNew] = useState<boolean>(false); //for new
   const [isEdit, setIsEdit] = useState<boolean>(false); //for edit
@@ -69,7 +69,7 @@ const ProductGrace = () => {
     useState<ProductGraceType | null>(null);
   // for pagination
   const [pageNumber, setPageNumber] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(12);
+  const [pageSize, setPageSize] = useState<number>(defaultRowsPerPage);
   const abortControllerRef = useRef<AbortController | null>(null);
   //add filter options
   const [srchId, setSrchId] = useState<number>(-1);

@@ -1,122 +1,72 @@
+import { columns } from "../../../components/productOffer/ProductOfferGeneral";
+import Accept from "../../../assets/images/GrayThem/img24_3.png";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-
-import Accept from "../../assets/images/GrayThem/img24_3.png";
-import { useGeneralContext } from "../../context/GeneralContext";
-import TTable from "../controls/TTable";
-import { useProductOfferStore } from "../../store/productOfferStore";
-import { useProductOffer } from "../../hooks/useProductOffer";
+import { useProductPerm } from "../../../hooks/useProductPerm";
+import { useProductPermStore } from "../../../store/productPermStore";
+import { useGeneralContext } from "../../../context/GeneralContext";
+import {
+  ProductPermDoFirstFlowRequest,
+  ProductPermDtl,
+  ProductPerm as ProductPermType,
+} from "../../../types/productPerm";
 import {
   convertPersianDate,
   convertToFarsiDigits,
   convertToLatinDigits,
-} from "../../utilities/general";
-import ModalMessage from "../layout/ModalMessage";
-import Skeleton from "../layout/Skeleton";
-import ProductOfferParams from "./ProductOfferParams";
-import ModalForm from "../layout/ModalForm";
-import ProductOfferForm from "./ProductOfferForm";
-import {
-  ProductOffer as ProductOfferType,
-  ProductOfferDtlTable,
-} from "../../types/productOffer";
+} from "../../../utilities/general";
 import { debounce } from "lodash";
-import { TablePaginationActions } from "../controls/TablePaginationActions";
-import ProductOfferTblHeader from "./ProductOfferTblHeader";
-import ProductOfferHeader from "./ProductOfferHeader";
-import { columns } from "./ProductOfferGeneral";
+import ProductOfferHeader from "../../../components/productOffer/ProductOfferHeader";
+import Skeleton from "../../../components/layout/Skeleton";
+import ProductOfferTblHeader from "../../../components/productOffer/ProductOfferTblHeader";
+import TTable from "../../../components/controls/TTable";
+import { TablePaginationActions } from "../../../components/controls/TablePaginationActions";
+import ProductOfferParams from "../../../components/productOffer/ProductOfferParams";
+import ModalMessage from "../../../components/layout/ModalMessage";
+import ModalForm from "../../../components/layout/ModalForm";
+import ProductPermForm from "../../../components/productPerm/ProductPermForm";
 
-const ProductOffer = () => {
-  const columnsDtl = React.useMemo(
-    () => [
-      {
-        Header: "ردیف",
-        accessor: "index",
-        width: "5%",
-      },
-      {
-        Header: "برند",
-        accessor: "bName",
-        width: "10%",
-      },
-      {
-        Header: "کالا",
-        accessor: "product",
-        width: "40%",
-      },
-      {
-        Header: convertToFarsiDigits("پ 1"),
-        accessor: "s1O",
-        width: "5%",
-      },
-      {
-        Header: convertToFarsiDigits("پ 2"),
-        accessor: "s2O",
-        width: "5%",
-      },
-      {
-        Header: convertToFarsiDigits("پ 3"),
-        accessor: "s3O",
-        width: "5%",
-      },
-      {
-        Header: convertToFarsiDigits("پ 4"),
-        accessor: "s4O",
-        width: "5%",
-      },
-      {
-        Header: "بدون آفر",
-        accessor: "no",
-        width: "5%",
-      },
-      {
-        Header: "توضیح",
-        accessor: "dtlDsc",
-        width: "20%",
-      },
-    ],
-    []
-  );
-
+const ProductPerm = () => {
   const {
     setField,
     id: prevId,
-    productOfferDelResponse,
-  } = useProductOfferStore();
+    productPermDoFirstFlowResponse,
+    productPermDelResponse,
+  } = useProductPermStore();
   const {
-    productOffer,
-    productOfferTotalCount,
-    productOfferDtl,
-    productOfferMeta,
+    productPerm,
+    productPermTotalCount,
+    refetch,
     isLoading,
     isLoadingDtl,
-    refetch,
+    productPermDtl,
+    productPermMeta,
     addProductList,
-    productOfferDtlHistory,
-    isLoadingProductOfferDtlHistory,
-    productOfferSave,
-    isLoadingProductOfferSave,
-    productOfferDoFirstFlow,
-    productOfferDel,
-  } = useProductOffer();
+    productPermDtlHistory,
+    isLoadingDtlHistory,
+    productPermSave,
+    isLoadingProductPermSave,
+    productPermDoFirstFlow,
+    productPermDel,
+  } = useProductPerm();
 
   //const { setField: setProductOfferField } = useProductOfferStore();
   const [data, setData] = useState<any[]>([]);
-  const [dataDtl, setDataDtl] = useState<ProductOfferDtlTable[]>([]);
-  const { yearId, systemId, chartId} = useGeneralContext();
-  const [selectedId, setSelectedId] = useState<number>(1363);
+  const [dataDtl, setDataDtl] = useState<ProductPermDtl[]>([]);
+  const { yearId, systemId, chartId, defaultRowsPerPage } = useGeneralContext();
+  const [selectedId, setSelectedId] = useState<number>(589);
   const [isNew, setIsNew] = useState<boolean>(false); //for new
   const [isEdit, setIsEdit] = useState<boolean>(false); //for edit
-  //for ProductOfferParams params
+  //for ProductPermParams params
   const [regFDate, setRegFDate] = useState<Date | null>(null);
   const [regTDate, setRegTDate] = useState<Date | null>(null);
   const [fDate, setFDate] = useState<Date | null>(null);
   const [tDate, setTDate] = useState<Date | null>(null);
   const [state, setState] = useState<number>(-1);
-  const [selectedProductOffer, setSelectedProductOffer] =
-    useState<ProductOfferType | null>(null);
+  const [selectedProductPerm, setSelectedProductPerm] =
+    useState<ProductPermType | null>(null);
   // for pagination
   const [pageNumber, setPageNumber] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(12);
+  const [pageSize, setPageSize] = useState<number>(defaultRowsPerPage);
   const abortControllerRef = useRef<AbortController | null>(null);
   //add filter options
   const [srchId, setSrchId] = useState<number>(-1);
@@ -133,12 +83,42 @@ const ProductOffer = () => {
   const [sortAccepted, setSortAccepted] = useState<number>(0);
   const [sortUsrName, setSortUsrName] = useState<number>(0);
   const [sortStep, setSortStep] = useState<number>(0);
+  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in productPerm table
+  const [selectedRowIndexDtl, setSelectedRowIndexDtl] = useState<number>(0); //for selected row index in productPermDtl table
 
+  const columnsDtl = React.useMemo(
+    () => [
+      {
+        Header: "ردیف",
+        accessor: "index",
+        width: "5%",
+      },
+      {
+        Header: "برند",
+        accessor: "bName",
+        width: "10%",
+      },
+      {
+        Header: "کالا",
+        accessor: "product",
+        width: "45%",
+      },
+      {
+        Header: "نیاز به مجوز",
+        accessor: "np",
+        width: "5%",
+      },
+      {
+        Header: "شرح",
+        accessor: "dtlDsc",
+        width: "35%",
+      },
+    ],
+    []
+  );
   // Refs for maintaining focus on input elements
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
-  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in productOffer table
-  const [selectedRowIndexDtl, setSelectedRowIndexDtl] = useState<number>(0); //for selected row index in productOfferDtl table
 
   // Function to preserve focus
   const preserveFocus = useCallback((inputName: string) => {
@@ -155,11 +135,11 @@ const ProductOffer = () => {
     if (focusedInput && inputRefs.current[focusedInput]) {
       inputRefs.current[focusedInput]?.focus();
     }
-  }, [focusedInput, data, productOffer]);
+  }, [focusedInput, data, productPerm]);
 
   useEffect(() => {
-    setField("acc_Year", yearId);
-    setField("acc_System", systemId);
+    setField("yearId", yearId);
+    setField("systemId", systemId);
     setField("state", state);
 
     setField(
@@ -280,13 +260,13 @@ const ProductOffer = () => {
       setField("id", selectedId);
     }
     selectedId !== 0 &&
-      setSelectedProductOffer(
-        productOffer?.find((item) => item.id === selectedId) || null
+      setSelectedProductPerm(
+        productPerm?.find((item) => item.id === selectedId) || null
       );
-  }, [selectedId]);
+  }, [selectedId, productPerm]);
 
   useEffect(() => {
-    const tempData = productOffer?.map((item, index) => {
+    const tempData = productPerm?.map((item, index) => {
       return {
         ...item,
         id: convertToFarsiDigits(item.id),
@@ -308,52 +288,17 @@ const ProductOffer = () => {
     } else {
       setSelectedId(0);
     }
-  }, [productOffer]);
+  }, [productPerm]);
 
   useEffect(() => {
-    let tempDataDtl: ProductOfferDtlTable[] = [];
-    if (productOfferDtl) {
-      tempDataDtl = productOfferDtl.map((item, index) => {
+    let tempDataDtl: any[] = [];
+    if (productPermDtl) {
+      tempDataDtl = productPermDtl.map((item, index) => {
         return {
           index: convertToFarsiDigits(index + 1),
-          id: item.id,
           bName: convertToFarsiDigits(item.bName),
-          pId: item.pId,
           product: convertToFarsiDigits(item.product),
-          lastDate: convertToFarsiDigits(item.lastDate),
-          s1O:
-            item.s1N + item.s1D < 0
-              ? ""
-              : convertToFarsiDigits(
-                  item.s1D.toString() + "+" + item.s1N.toString()
-                ),
-          s2O:
-            item.s2N + item.s2D < 0
-              ? ""
-              : convertToFarsiDigits(
-                  item.s2D.toString() + "+" + item.s2N.toString()
-                ),
-          s3O:
-            item.s3N + item.s3D < 0
-              ? ""
-              : convertToFarsiDigits(
-                  item.s3D.toString() + "+" + item.s3N.toString()
-                ),
-          s4O:
-            item.s4N + item.s4D < 0
-              ? ""
-              : convertToFarsiDigits(
-                  item.s4D.toString() + "+" + item.s4N.toString()
-                ),
-          s1N: "",
-          s1D: "",
-          s2N: "",
-          s2D: "",
-          s3N: "",
-          s3D: "",
-          s4N: "",
-          s4D: "",
-          no: item.no ? (
+          np: item.np ? (
             <img src={Accept} alt="Accept" className="w-4 h-4" />
           ) : null,
           dtlDsc: convertToFarsiDigits(item.dtlDsc),
@@ -363,7 +308,7 @@ const ProductOffer = () => {
         setDataDtl(tempDataDtl);
       }
     }
-  }, [productOfferDtl]);
+  }, [productPermDtl]);
 
   const handleSelectedIdChange = (id: number) => {
     //console.log(id, "id in WorkflowForm");
@@ -390,11 +335,14 @@ const ProductOffer = () => {
   }, [isModalOpen, isModalConfirmOpen, isModalDeleteOpen]);
 
   const handleConfirm = () => {
-    setField("chartIdProductOfferDoFirstFlow", chartId);
-    setField("acc_SystemProductOfferDoFirstFlow", systemId);
-    setField("acc_YearProductOfferDoFirstFlow", yearId);
-    setField("idProductOfferDoFirstFlow", selectedId);
-    setField("dscProductOfferDoFirstFlow", selectedProductOffer?.dsc || "");
+    const request: ProductPermDoFirstFlowRequest = {
+      chartId,
+      systemId,
+      yearId,
+      id: selectedId,
+      dsc: selectedProductPerm?.dsc || "",
+    };
+    productPermDoFirstFlow(request);
     setIsModalConfirmOpen(true);
   };
 
@@ -403,11 +351,11 @@ const ProductOffer = () => {
   };
 
   const handleDelete = () => {
-    productOfferDel(selectedId);
+    productPermDel(selectedId);
     setIsModalDeleteOpen(true);
   };
 
-  const ProductOfferInput = (
+  const ProductPermInput = (
     inputName: string,
     inputWidth: string,
     inputValue: string,
@@ -432,19 +380,17 @@ const ProductOffer = () => {
       />
     );
   };
-
   return (
     <div
       className={`sm:h-full overflow-y-scroll flex flex-col bg-gray-200 pt-2 gap-2`}
     >
-      {/* Top header */}
       <ProductOfferHeader
         columns={columns}
         setIsNew={setIsNew}
         handleDelete={handleDelete}
         handleEdit={handleEdit}
         handleConfirm={handleConfirm}
-        selectedProductOffer={selectedProductOffer as ProductOfferType}
+        selectedProductOffer={selectedProductPerm || ({} as ProductPermType)}
         data={data}
         refetch={refetch}
       />
@@ -479,9 +425,24 @@ const ProductOffer = () => {
                     style={{ width: columns[1].width }}
                     className={`border p-1 text-sm rounded-sm`}
                   />
-                  {ProductOfferInput("srchDate", columns[2].width, srchDate, setSrchDate)}
-                  {ProductOfferInput("srchTime", columns[3].width, srchTime, setSrchTime)}
-                  {ProductOfferInput("srchDsc", columns[4].width, srchDsc, setSrchDsc)}
+                  {ProductPermInput(
+                    "srchDate",
+                    columns[2].width,
+                    srchDate,
+                    setSrchDate
+                  )}
+                  {ProductPermInput(
+                    "srchTime",
+                    columns[3].width,
+                    srchTime,
+                    setSrchTime
+                  )}
+                  {ProductPermInput(
+                    "srchDsc",
+                    columns[4].width,
+                    srchDsc,
+                    setSrchDsc
+                  )}
                   <input
                     name="srchAccepted"
                     type="checkbox"
@@ -496,8 +457,18 @@ const ProductOffer = () => {
                     style={{ width: columns[5].width }}
                     className={`border p-1 text-sm rounded-sm`}
                   />
-                  {ProductOfferInput("srchUsrName", columns[6].width, srchUsrName, setSrchUsrName)}
-                  {ProductOfferInput("srchStep", columns[7].width, srchStep, setSrchStep)}
+                  {ProductPermInput(
+                    "srchUsrName",
+                    columns[6].width,
+                    srchUsrName,
+                    setSrchUsrName
+                  )}
+                  {ProductPermInput(
+                    "srchStep",
+                    columns[7].width,
+                    srchStep,
+                    setSrchStep
+                  )}
                 </div>
                 <ProductOfferTblHeader
                   columns={columns}
@@ -538,7 +509,7 @@ const ProductOffer = () => {
               setPage={setPageNumber}
               pageSize={pageSize}
               setPageSize={setPageSize}
-              totalCount={productOfferTotalCount ?? 0}
+              totalCount={productPermTotalCount ?? 0}
             />
           </div>
         </div>
@@ -557,7 +528,6 @@ const ProductOffer = () => {
           />
         </div>
       </div>
-
       <div className="px-2 h-full">
         {isLoadingDtl ? (
           <Skeleton />
@@ -571,7 +541,6 @@ const ProductOffer = () => {
             changeRowSelectColor={true}
             wordWrap={true}
             showToolTip={true}
-            maxVisibleColumns={8}
           />
         )}
       </div>
@@ -582,7 +551,7 @@ const ProductOffer = () => {
         bgColorButtonHover="bg-red-600"
         color="text-white"
         onClose={() => setIsModalOpen(false)}
-        message={productOfferMeta?.message || ""}
+        message={productPermMeta?.message || ""}
       />
       <ModalForm
         isOpen={isNew || isEdit}
@@ -590,21 +559,21 @@ const ProductOffer = () => {
           setIsNew(false);
           setIsEdit(false);
         }}
-        title="آفرهای کالا"
+        title="نیاز به مجوز"
         width="1"
       >
-        <ProductOfferForm
+        <ProductPermForm
           addProductList={addProductList}
-          productOfferDtlHistory={productOfferDtlHistory || []}
-          isLoadingProductOfferDtlHistory={isLoadingProductOfferDtlHistory}
-          productOfferSave={productOfferSave}
-          isLoadingProductOfferSave={isLoadingProductOfferSave}
-          selectedProductOffer={selectedProductOffer} //for check if selectedProductOffer.flwId===0 new else edit && sending selectedProductOffer.id in edit
-          productOfferDtls={productOfferDtl}
+          productPermDtlHistory={productPermDtlHistory || []}
+          isLoadingDtlHistory={isLoadingDtlHistory}
+          productPermSave={productPermSave}
+          isLoadingProductPermSave={isLoadingProductPermSave}
+          selectedProductPerm={selectedProductPerm} //for check if selectedProductPerm.flwId===0 new else edit && sending selectedProductPerm.id in edit
+          productPermDtls={productPermDtl}
           isNew={isNew} //for check if isNew new else edit
           setIsNew={setIsNew}
           setIsEdit={setIsEdit}
-          fromWorkFlow={false}
+          fromWorkFlow={false} //for not going to editting in product perm form as default
           canEditForm1={true}
         />
       </ModalForm>
@@ -612,17 +581,17 @@ const ProductOffer = () => {
         isOpen={isModalConfirmOpen}
         onClose={() => setIsModalConfirmOpen(false)}
         backgroundColor={
-          productOfferDoFirstFlow?.meta.errorCode === -1
+          productPermDoFirstFlowResponse?.meta.errorCode === -1
             ? "bg-green-200"
             : "bg-red-200"
         }
         bgColorButton={
-          productOfferDoFirstFlow?.meta.errorCode === -1
+          productPermDoFirstFlowResponse?.meta.errorCode === -1
             ? "bg-green-500"
             : "bg-red-500"
         }
         color="text-white"
-        message={productOfferDoFirstFlow?.meta.message || ""}
+        message={productPermDoFirstFlowResponse?.meta.message || ""}
         visibleButton={false}
       />
       <ModalMessage
@@ -633,8 +602,8 @@ const ProductOffer = () => {
         bgColorButtonHover="bg-red-600"
         color="text-white"
         message={
-          productOfferDelResponse?.meta.errorCode !== -1
-            ? productOfferDelResponse?.meta.message || ""
+          productPermDelResponse?.meta.errorCode !== -1
+            ? productPermDelResponse?.meta.message || ""
             : "اطلاعات با موفقیت حذف شد."
         }
         visibleButton={false}
@@ -643,4 +612,4 @@ const ProductOffer = () => {
   );
 };
 
-export default ProductOffer;
+export default ProductPerm;

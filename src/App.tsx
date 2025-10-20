@@ -16,14 +16,15 @@ import ProviderList from "./pages/reports/ProviderList";
 import ProducerList from "./pages/reports/ProducerList";
 import Workflow from "./pages/Workflow";
 import Dashboard from "./pages/Dashboard";
-import ProductOffer from "./components/productOffer/ProductOffer";
-import ProductPerm from "./components/productPerm/ProductPerm";
-import ProductGrace from "./components/productGrace/ProductGrace";
-import ProductPrice from "./components/productPrice/ProductPrice";
+import ProductOffer from "./pages/businessAccounting/operations/ProductOffer";
+import ProductPerm from "./pages/businessAccounting/operations/ProductPerm";
+import ProductGrace from "./pages/businessAccounting/operations/ProductGrace";
+import ProductPrice from "./pages/businessAccounting/operations/ProductPrice";
 import PayRequestOperation from "./components/payRequestPaybox/PayRequestOperation";
 import NotFound from "./pages/NotFound";
 import ClearBook from "./pages/definitions/ClearBook";
-import PurchaseRequestIndent from "./components/purchaseRequest/PurchaseRequestIndent";
+import PurchaseRequestIndent from "./pages/treasure/operation/PurchaseRequestIndent";
+import CupboardsReport from "./pages/warehouse/reports/CupboardsReport";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +63,7 @@ function AppContent() {
         <Route path="/admin/RpProviders" element={<PrivateRoute><ProviderList /></PrivateRoute>} />
         <Route path="/admin/RpProducers" element={<PrivateRoute><ProducerList /></PrivateRoute>} />
         <Route path="/Admin/ClearBook/index" element={<PrivateRoute><ClearBook /></PrivateRoute>} />
+        <Route path="/Admin/CupboardsReport" element={<PrivateRoute><CupboardsReport /></PrivateRoute>} />
         <Route path="/" element={<Navigate to="/admin/WFMS/index" />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
