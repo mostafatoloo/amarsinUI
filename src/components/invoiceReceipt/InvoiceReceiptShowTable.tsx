@@ -99,13 +99,13 @@ export const headCells = [
   },
   {
     Header: "فروش",
-    accessor: "storeStock",
+    accessor: "sumCompanyCnt",
     width: "5%",
     Cell: ({ value }: any) => convertToFarsiDigits(value),
   },
   {
     Header: "موجودی",
-    accessor: "sumCompanyCnt",
+    accessor: "storeStock",
     width: "5%",
     Cell: ({ value }: any) => convertToFarsiDigits(value),
   },

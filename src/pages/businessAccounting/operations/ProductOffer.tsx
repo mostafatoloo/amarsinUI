@@ -155,7 +155,7 @@ const ProductOffer = () => {
     if (focusedInput && inputRefs.current[focusedInput]) {
       inputRefs.current[focusedInput]?.focus();
     }
-  }, [focusedInput, data, productOffer]);
+  }, [focusedInput, data]);
 
   useEffect(() => {
     setField("acc_Year", yearId);

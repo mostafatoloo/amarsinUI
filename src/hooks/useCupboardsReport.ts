@@ -129,6 +129,7 @@ export function useCupboardReport() {
       }&sortADExpDate=${params.sortADExpDate}&sortProductGTIN=${
         params.sortProductGTIN
       }&sortProductIRC=${params.sortProductIRC}&sortUID=${params.sortUID}`;
+      console.log("CupboardsReport url", url);
       const response = await api.get(url);
       return response.data;
     },

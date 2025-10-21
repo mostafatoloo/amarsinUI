@@ -269,7 +269,12 @@ const ProductPermForm = ({
       }
     };
   }, [isModalOpen]);
-
+  ////////////////////////////////////////////////////////
+  useEffect(() => {
+    if (isNew && addList.length === 0) {
+      setAddList([newRow]);
+    }
+  }, []);
   ////////////////////////////////////////////////////////
   useEffect(() => {
     if (

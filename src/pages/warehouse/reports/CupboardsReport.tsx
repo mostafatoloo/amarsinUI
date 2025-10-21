@@ -6,8 +6,14 @@ import CupboardsReportShow from "../../../components/cupboardsReport/CupboardsRe
 import { handleExport } from "../../../utilities/ExcelExport";
 import { useEffect, useState } from "react";
 import { TableColumns } from "../../../types/general";
+import { useCupboardReport } from "../../../hooks/useCupboardsReport";
 
 const CupboardsReport = () => {
+  const {
+    cupboardsReportResponse,
+    isLoadingCupboardsReport,
+    refetchCupboardsReport,
+  } = useCupboardReport();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const columns: TableColumns = [
     {
@@ -86,14 +92,17 @@ const CupboardsReport = () => {
       width: "3%",
     },
     {
-      Header: "id",
-      accessor: "id",
+      Header: " ",
+      accessor: "statusImages",
       width: "5%",
     },
-  ];  
-  useEffect(()=>{console.log(isModalOpen)},[])
-  
-  const [data, setData] = useState<any[]>([])
+  ];
+  useEffect(() => {
+    console.log(isModalOpen);
+  }, []);
+
+  const [data, setData] = useState<any[]>([]);
+
   return (
     <div className="h-[calc(100vh-72px)] overflow-y-auto flex flex-col bg-gray-200 pt-2">
       <header className="flex flex-col gap-2 md:flex-row items-center justify-between border-gray-300 border-b pb-2">
@@ -103,29 +112,36 @@ const CupboardsReport = () => {
             <img src={Survey24} alt="Add32" className="w-6 h-6" />
             <p className="text-xs">استعلام</p>
           </div>
-          <div className="flex flex-col items-center cursor-pointer"
-          onClick={() => {
-            handleExport({
-              data,
-              setIsModalOpen,
-              headCells: columns,
-              fileName: "data_export.xlsx",
-            })
-          }}>
+          <div
+            className="flex flex-col items-center cursor-pointer"
+            onClick={() => {
+              handleExport({
+                data,
+                setIsModalOpen,
+                headCells: columns,
+                fileName: "data_export.xlsx",
+              });
+            }}
+          >
             <img src={ExcelIcon} alt="ExcelIcon" className="w-6 h-6" />
             <p className="text-xs">اکسل</p>
           </div>
           <div
             className="flex flex-col items-center cursor-pointer"
-            onClick={() => console.log("hello")}
+            onClick={() => refetchCupboardsReport()}
           >
-            {/*onClick={()=>getWorkTable()}>*/}
             <img src={Refresh32} alt="Refresh32" className="w-6 h-6" />
             <p className="text-xs">بازخوانی</p>
           </div>
         </div>
       </header>
-      <CupboardsReportShow data={data} setData={setData} columns={columns}/>
+      <CupboardsReportShow
+        cupboardsReportResponse={cupboardsReportResponse}
+        isLoadingCupboardsReport={isLoadingCupboardsReport}
+        data={data}
+        setData={setData}
+        columns={columns}
+      />
     </div>
   );
 };

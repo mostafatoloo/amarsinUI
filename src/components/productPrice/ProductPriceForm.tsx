@@ -344,6 +344,12 @@ const ProductPriceForm = ({
 
   ////////////////////////////////////////////////////////
   useEffect(() => {
+    if (isNew && addList.length === 0) {
+      setAddList([newRow]);
+    }
+  }, []);
+  ////////////////////////////////////////////////////////
+  useEffect(() => {
     if (
       isNew === false &&
       selectedProductPrice !== null &&
@@ -477,6 +483,7 @@ const ProductPriceForm = ({
     index: number,
     setData: Dispatch<SetStateAction<ProductPriceListItemTable2[]>>
   ) => {
+    console.log("hdjshdjhsjdhsjdhj");
     setData((prev: ProductPriceListItemTable2[]) => [
       ...prev,
       { ...newRow, index: index },
