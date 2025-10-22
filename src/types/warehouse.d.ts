@@ -143,33 +143,6 @@ export interface WarehouseTemporaryReceiptPurchaseShowResponse {
   meta: Meta;  
   data: DataWarehouseTemporaryReceiptPurchase;  
 }  
-///////آدرس سرور قبلی است
-export interface ProductCatalog {
-  data: {
-    Manufacturing: string;
-    Expiration: string;
-    BatchCode: string;
-    GenericName: string | null;
-    GenericCode: string;
-    UID: string;
-    GTIN: string;
-    IRC: string;
-    LicenseOwner: string;
-    EnglishProductName: string;
-    PersianProductName: string;
-    ProductCategory: string;
-    ProductCategoryCode: number;
-    PackageCount: number;
-    StatusCode: number;
-  };
-  statusCode: number;
-  statusMessage: string;
-  CupId: number;
-  UID: string;
-  IRC: string;
-  ttac: boolean;
-  SystemId: number;
-}
 
 type TemporaryReceiptIndent = {
   id: number;
@@ -330,7 +303,6 @@ export interface WarehouseState extends WarehouseSearchRequest {
   warehouseShowIdResponse: WarehouseShowIdResponse;
   warehouseTemporaryReceiptPurchaseShowResponse: WarehouseTemporaryReceiptPurchaseShowResponse;///api/WarehouseTemporaryReceipt/purchaseShow/1107390
   warehouseIndentListResponse: WarehouseIndentListResponse;
-  productCatalog: ProductCatalog;
   warehouseSearchResponse: WarehouseSearchResponse;
   id: number; //for api/WarehouseTemporaryReceipt/salesPrices?id=1106779&salesPriceId=1
   salesPriceId: number; //for api/WarehouseTemporaryReceipt/salesPrices?id=1106779&salesPriceId=1
@@ -342,7 +314,6 @@ export interface WarehouseState extends WarehouseSearchRequest {
   setWarehouseShowIdResponse: (
     warehouseShowIdResponse: WarehouseShowIdResponse
   ) => void;
-  setProductCatalog: (productCatalog: ProductCatalog) => void;
   setWarehouseIndentListResponse: (
     warehouseIndentListResponse: WarehouseIndentListResponse
   ) => void;

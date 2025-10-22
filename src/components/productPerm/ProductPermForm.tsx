@@ -313,7 +313,7 @@ const ProductPermForm = ({
     setProductField("accSystem", systemId);
     setProductField("accYear", yearId);
     //setProductField("searchTerm", convertToFarsiDigits(search));
-    handleDebounceFilterChange("searchTerm", convertToFarsiDigits(search));
+    handleDebounceFilterChange("search", convertToFarsiDigits(search));
     setProductField("page", 1);
   }, [search, systemId, yearId]);
   ///////////////////////////////////////////////////////

@@ -7,6 +7,11 @@ import { handleExport } from "../../../utilities/ExcelExport";
 import { useEffect, useState } from "react";
 import { TableColumns } from "../../../types/general";
 import { useCupboardReport } from "../../../hooks/useCupboardsReport";
+import { WarehouseTemporaryReceiptIndentDtl } from "../../../types/warehouse";
+import { convertToFarsiDigits } from "../../../utilities/general";
+import { FaCheck } from "react-icons/fa";
+import Flow16 from "../../../assets/images/GrayThem/flow16.png";
+import EditIcon from "../../../assets/images/GrayThem/edit_gray16.png";
 
 const CupboardsReport = () => {
   const {
@@ -14,7 +19,19 @@ const CupboardsReport = () => {
     isLoadingCupboardsReport,
     refetchCupboardsReport,
   } = useCupboardReport();
+
+  const [data, setData] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // for pagination
+  const [pageNumber, setPageNumber] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(35);
+  const [selectedProduct, setSelectedProduct] =
+    useState<WarehouseTemporaryReceiptIndentDtl | null>(null);
+  const [statusClicked, setStatusClicked] = useState(false);
+  const [checkSeekingInfo, setCheckSeekingInfo] = useState(false); // to control clicking on seeking info icon
+  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0);
+  const [uid, setUid] = useState<string | undefined>(undefined);
+
   const columns: TableColumns = [
     {
       Header: "ردیف",
@@ -100,15 +117,98 @@ const CupboardsReport = () => {
   useEffect(() => {
     console.log(isModalOpen);
   }, []);
+  // for initializing data
+  useEffect(() => {
+    const tempData = cupboardsReportResponse.data.result.map((c, index) => {
+      const dtl: WarehouseTemporaryReceiptIndentDtl = {
+        id: 0,
+        iocId: 0,
+        produce: c.prodDate,
+        expire: c.expDate,
+        uId: "", // for product catalog request
+        status: 0,
+        cId: c.id, // for product catalog request
+        code: c.code,
+        gtin: c.gtin,
+        irc: c.irc, // for product catalog request
+        pCode: "",
+        pName: c.fullName,
+        cnt: 0,
+        stock: 0,
+        pOffer: 0,
+        indents: [],
+        rCnt: 0,
+        rOffer: 0,
+      };
+      return {
+        ...c,
+        fullCode: convertToFarsiDigits(c.fullCode),
+        fullName: convertToFarsiDigits(c.fullName),
+        prodDate: convertToFarsiDigits(c.prodDate),
+        expDate: convertToFarsiDigits(c.expDate),
+        gtin: convertToFarsiDigits(c.gtin),
+        ttac: c.ttac ? <FaCheck /> : null,
+        code: convertToFarsiDigits(c.code), // for batch
+        irc: convertToFarsiDigits(c.irc),
+        uid: convertToFarsiDigits(c.uid),
+        tmp: convertToFarsiDigits(c.tmp),
+        inc: convertToFarsiDigits(c.inc),
+        outc: convertToFarsiDigits(c.outc),
+        stck: convertToFarsiDigits(c.stck),
+        status: convertToFarsiDigits(c.status),
+        index: convertToFarsiDigits((pageNumber - 1) * pageSize + index + 1),
+        statusImages: (
+          <div className="flex justify-evenly items-center w-full">
+            <input
+              type="checkbox"
+              checked={dtl.status === 0 ? false : true}
+              readOnly
+              onClick={() => handleStatusClick(dtl)}
+            />
+            <img src={Flow16} alt="Flow16" className="w-4 h-4" />
+            <img src={EditIcon} alt="EditIcon" className="w-4 h-4" />
+          </div>
+        ),
+      };
+    });
+    console.log(tempData);
+    setData(tempData);
+  }, [cupboardsReportResponse.data.result]);
 
-  const [data, setData] = useState<any[]>([]);
-
+  ///////////////////////////////////////////////////////////////////
+  const handleStatusClick = (dtl: any) => {
+    console.log(dtl, "dtl");
+    setSelectedProduct(dtl);
+    setStatusClicked(true);
+    setUid(undefined);
+  };
+  ////////////////////////////////////////////////////////////////////////
+  const seekInfo = () => {
+    console.log("enter seekInfo")
+    setCheckSeekingInfo(true);
+    console.log(data[selectedRowIndex]);
+    setSelectedProduct((prev) => ({
+      ...(prev || {} as WarehouseTemporaryReceiptIndentDtl),
+      cId: data[selectedRowIndex].id,
+      code: data[selectedRowIndex].code,
+      pName: data[selectedRowIndex].fullName,
+      produce: data[selectedRowIndex].prodDate,
+      expire: data[selectedRowIndex].expDate,
+      gtin: data[selectedRowIndex].gtin,
+      irc: data[selectedRowIndex].irc,
+    }));
+    setUid("");
+    setStatusClicked(true);
+  };
   return (
-    <div className="h-[calc(100vh-72px)] overflow-y-auto flex flex-col bg-gray-200 pt-2">
+    <div className="flex flex-col bg-gray-200 pt-2">
       <header className="flex flex-col gap-2 md:flex-row items-center justify-between border-gray-300 border-b pb-2">
         <PageTitle />
         <div className="flex px-4 items-center gap-4">
-          <div className="flex flex-col items-center cursor-pointer">
+          <div
+            className="flex flex-col items-center cursor-pointer"
+            onClick={seekInfo}
+          >
             <img src={Survey24} alt="Add32" className="w-6 h-6" />
             <p className="text-xs">استعلام</p>
           </div>
@@ -139,8 +239,20 @@ const CupboardsReport = () => {
         cupboardsReportResponse={cupboardsReportResponse}
         isLoadingCupboardsReport={isLoadingCupboardsReport}
         data={data}
-        setData={setData}
         columns={columns}
+        pageNumber={pageNumber}
+        setPageNumber={setPageNumber}
+        pageSize={pageSize}
+        setPageSize={setPageSize}
+        statusClicked={statusClicked}
+        setStatusClicked={setStatusClicked}
+        checkSeekingInfo={checkSeekingInfo}
+        selectedProduct={selectedProduct}
+        setSelectedProduct={setSelectedProduct}
+        selectedRowIndex={selectedRowIndex}
+        setSelectedRowIndex={setSelectedRowIndex}
+        uid={uid}
+        setUid={setUid}
       />
     </div>
   );

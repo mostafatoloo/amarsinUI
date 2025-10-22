@@ -37,7 +37,7 @@ const OrderEdit = ({
   useEffect(() => {
     setProductField("accSystem", systemId);
     setProductField("accYear", yearId);
-    handleDebounceFilterChange("searchTerm", productSearch);
+    handleDebounceFilterChange("search", productSearch);
     setProductField("page", 1);
   }, [productSearch, systemId, yearId]);
 

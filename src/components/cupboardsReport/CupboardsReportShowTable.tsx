@@ -11,9 +11,10 @@ import {
   convertToLatinDigits,
 } from "../../utilities/general";
 import ModalForm from "../layout/ModalForm";
-import ProductCatalogue from "../warehouse/ProductCatalogue";
 import { WarehouseTemporaryReceiptIndentDtl } from "../../types/warehouse";
 import { colors } from "../../utilities/color";
+import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
+import ProductCatalogue from "../warehouse/ProductCatalogue";
 
 type Props = {
   isLoading: boolean;
@@ -28,6 +29,11 @@ type Props = {
   setSelectedProduct: (dtl: WarehouseTemporaryReceiptIndentDtl | null) => void;
   statusClicked: boolean;
   setStatusClicked: (statusClicked: boolean) => void;
+  checkSeekingInfo: boolean;
+  selectedRowIndex: number;
+  setSelectedRowIndex: (selectedRowIndex: number) => void;
+  uid:string | undefined
+  setUid: (uid: string | undefined) => void
 };
 
 const CupboardsReportShowTable = ({
@@ -43,10 +49,14 @@ const CupboardsReportShowTable = ({
   setSelectedProduct,
   statusClicked,
   setStatusClicked,
+  checkSeekingInfo,
+  selectedRowIndex,
+  setSelectedRowIndex,
+  uid,
+  setUid
 }: Props) => {
   //const { width, height } = useCalculateTableHeight();
   const { setField } = useCupboardsReportStore();
-  const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0);
   //const [selectedId, setSelectedId] = useState<number>(1363444);
   const abortControllerRef = useRef<AbortController | null>(null);
   //add filter options
@@ -185,25 +195,27 @@ const CupboardsReportShowTable = ({
   const handleProductCatalogueClose = () => {
     setStatusClicked(false);
     setSelectedProduct(null);
+    setUid(undefined);
   };
-  
+
   /////////////////////////////////////////////////////
   // Custom cell click handler for Table
   const handleCellColorChange = (row: any): string | null => {
-    if (convertToLatinDigits(row.original.status)!=="0") {
+    if (convertToLatinDigits(row.original.status) !== "0") {
       return colors.red100;
     }
     return null;
   };
-    
+  const { width, height } = useCalculateTableHeight();
+
   return (
     <div className="px-2 h-full">
       {isLoading ? (
         <Skeleton />
       ) : (
         <div
-          //className="mt-2 overflow-y-auto"
-          //style={width > 640 ? { height: height - 50 } : { height: "fit" }}
+          className="mt-2 overflow-y-auto"
+          style={width > 640 ? { height: height } : { height: "fit" }}
         >
           <div className="w-full flex justify-center md:justify-end items-center ">
             <input
@@ -333,9 +345,18 @@ const CupboardsReportShowTable = ({
         title="کاتالوگ محصول"
         width="1/2"
       >
-        {selectedProduct && (
-          <ProductCatalogue dtl={selectedProduct} visible={true} />
-        )}
+        {checkSeekingInfo
+          ? selectedProduct && (
+              <ProductCatalogue
+                dtl={selectedProduct}
+                visible={true}
+                uid={uid}
+                setUid={setUid}
+              />
+            )
+          : selectedProduct && (
+              <ProductCatalogue dtl={selectedProduct} visible={true} />
+            )}
       </ModalForm>
     </div>
   );

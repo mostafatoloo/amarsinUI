@@ -13,6 +13,7 @@ import {
   IndentResponse,
   IndentSaveRequest,
   IndentShowProductListRequest,
+  ProductCatalog,
   ProductSearchRequest,
   ProductSearchResponse,
   SalesPricesSearchRequest,
@@ -61,6 +62,10 @@ export function useProducts() {
     sortStep,
     sortSRName,
     sortPayDuration,
+    //for api/Product/productInstanceCatalog?Id=166717&UID=0&IRC=0
+    idProductCatalogRequest,
+    uIDProductCatalogRequest,
+    iRCProductCatalogRequest,
     setSalesPricesSearchResponse,
     setIndentShowProductListResponse,
     setIndentSaveResponse,
@@ -68,6 +73,7 @@ export function useProducts() {
     setIndentResponse, // for /api/Indent/list
     setIndentDelResponse, // for delete /api/Indent/6480
     setIndentDoFirstFlowResponse, // for /api/Indent/doFirstFlow?Acc_System=4&Acc_Year=15&WFMS_FlowMapId=403020201&Id=6482&FlowNo=403020200&ChartId=1&Dsc=%D9%84%D8%A7%D9%84%DB%8C%D8%B3%D8%B3%D8%A8%D9%84%D8%A7%D8%A7
+    setProductCatalog, // for api/Product/productInstanceCatalog?Id=166717&UID=0&IRC=0
   } = useProductStore();
   //for indent/showProductList
   const addList = useMutation({
@@ -140,6 +146,7 @@ export function useProducts() {
       );
       return response.data;
     },
+    enabled: !!salesPricesSearch && !!salesPricesSearchPage && !!lastId,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
   } as UseQueryOptions<SalesPricesSearchResponse, Error, SalesPricesSearchResponse, unknown[]>);
@@ -169,7 +176,7 @@ export function useProducts() {
         params.accSystem
       }&page=${params.page}${
         params.searchTerm
-          ? `&searchTerm=${encodeURIComponent(params.searchTerm ?? "")}`
+          ? `&search=${encodeURIComponent(params.searchTerm ?? "")}`
           : ""
       }`;
       console.log(url, "url in useProducts");
@@ -194,7 +201,6 @@ export function useProducts() {
   >({
     queryKey: [
       "indentList",
-      id,
       acc_YearIndentRequest,
       acc_SystemIndentRequest,
       showDeletedInentDtl,
@@ -251,6 +257,7 @@ export function useProducts() {
         sortSRName,
         sortPayDuration,
       };
+      console.log("enterd");
       const url = `/api/Indent/list?Id=0&OrdrId=${
         params.ordrIdIndentRequest
       }&MrsId=0&Acc_Year=${params.acc_YearIndentRequest}&Acc_System=${
@@ -302,6 +309,7 @@ export function useProducts() {
       const response = await api.get(url);
       return response.data;
     },
+    enabled:!!id,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -429,6 +437,7 @@ export function useProducts() {
       const response = await api.get(url);
       return response.data;
     },
+    enabled: !!id ,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -449,6 +458,35 @@ export function useProducts() {
       queryClient.invalidateQueries({ queryKey: ["indentListDtl"] });
     },
   });
+
+  //for product catalog: /api/Product/productInstanceCatalog?Id=166717&UID=0&IRC=0
+  const productCatalogQuery = useQuery<
+    ProductCatalog,
+    Error,
+    ProductCatalog,
+    unknown[]
+  >({
+    queryKey: [
+      "productCatalog",
+      idProductCatalogRequest,
+      uIDProductCatalogRequest,
+      iRCProductCatalogRequest,
+    ],
+    queryFn: async () => {
+      const url: string = `api/Product/productInstanceCatalog?Id=${idProductCatalogRequest}&UID=${uIDProductCatalogRequest}&IRC=${iRCProductCatalogRequest}`;
+
+      console.log(url, "url");
+
+      const response = await api.get(url);
+      return response.data;
+    },
+    //enabled: productId !== 0 ? true : false, // Only fetch if param is available
+    refetchOnWindowFocus: false, // Refetch data when the window is focused
+    refetchOnReconnect: false, // Refetch data when the network reconnects
+    onSuccess: (data: any) => {
+      setProductCatalog(data);
+    },
+  } as UseQueryOptions<ProductCatalog, Error, ProductCatalog, unknown[]>);
   //for /api/Indent/doFirstFlow?Acc_System=4&Acc_Year=15&WFMS_FlowMapId=403020201&Id=6482&FlowNo=403020200&ChartId=1&Dsc=%D9%84%D8%A7%D9%84%DB%8C%D8%B3%D8%B3%D8%A8%D9%84%D8%A7%D8%A7
   const indentDoFirstFlowQuery = useMutation({
     mutationFn: async (request: IndentDoFirstFlowRequest) => {
@@ -503,6 +541,40 @@ export function useProducts() {
     isLoadingIndentListDtl: indentListDtlQuery.isLoading,
     errorIndentListDtl: indentListDtlQuery.error,
     indentListDtl: indentListDtlQuery.data?.data.result.indentDtls ?? [],
+    //output for productCatalog : api/Product/productInstanceCatalog?Id=166717&UID=0&IRC=0
+    isLoadingProductCatalog: productCatalogQuery.isLoading,
+    errorProductCatalog: productCatalogQuery.error,
+    productCatalog: productCatalogQuery.data ?? {
+      meta: { errorCode: 0, message: "", type: "" },
+      data: {
+        result: {
+          data: {
+            manufacturing: "",
+            expiration: "",
+            batchCode: "",
+            genericName: "",
+            genericCode: "",
+            uid: "",
+            gtin: "",
+            irc: "",
+            licenseOwner: "",
+            englishProductName: "",
+            persianProductName: "",
+            productCategory: "",
+            productCategoryCode: 0,
+            packageCount: 0,
+            statusCode: 0,
+          },
+          statusCode: 0,
+          statusMessage: "",
+          cupId: 0,
+          uid: "",
+          irc: "",
+          ttac: false,
+          systemId: 0,
+        },
+      },
+    },
     //output for delete /api/Indent/6480
     isLoadingIndentDel: indentDelQuery.isPending,
     errorIndentDel: indentDelQuery.error,

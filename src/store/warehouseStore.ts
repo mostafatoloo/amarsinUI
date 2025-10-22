@@ -31,32 +31,6 @@ export const useWarehouseStore = create<WarehouseState>()((set) => ({
       },
     },
   },
-  productCatalog: {
-    data: {
-      Manufacturing: "",
-      Expiration: "",
-      BatchCode: "",
-      GenericName: "",
-      GenericCode: "",
-      UID: "",
-      GTIN: "",
-      IRC: "",
-      LicenseOwner: "",
-      EnglishProductName: "",
-      PersianProductName: "",
-      ProductCategory: "",
-      ProductCategoryCode: 0,
-      PackageCount: 0,
-      StatusCode: 0,
-    },
-    statusCode: 0,
-    statusMessage: "",
-    CupId: 0,
-    UID: "",
-    IRC: "",
-    ttac: false,
-    SystemId: 0,
-  },
   warehouseIndentListResponse: {
     meta: { errorCode: 0, message: "", type: "" },
     data: {
@@ -156,7 +130,6 @@ export const useWarehouseStore = create<WarehouseState>()((set) => ({
   },
   setWarehouseShowIdResponse: (warehouseShowIdResponse) =>
     set({ warehouseShowIdResponse }),
-  setProductCatalog: (productCatalog) => set({ productCatalog }),
   setWarehouseIndentListResponse: (warehouseIndentListResponse) =>
     set({ warehouseIndentListResponse }),
   setSelectIndentsResponse: (selectIndentsResponse) =>

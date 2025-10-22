@@ -64,7 +64,9 @@ const ModalForm: React.FC<ModalProps> = ({
             </h2>
           </header>
         )}
-        <div>{children}</div>
+        <div className="w-full">
+          {children}
+        </div>
       </div>
     </div>
   );

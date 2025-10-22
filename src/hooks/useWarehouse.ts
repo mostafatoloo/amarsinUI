@@ -2,7 +2,6 @@ import { useMutation, useQuery, UseQueryOptions } from "@tanstack/react-query";
 import api from "../api/axios";
 import { useWarehouseStore } from "../store/warehouseStore";
 import {
-  ProductCatalog,
   WarehouseShowIdResponse,
   WarehouseIndentListResponse,
   SelectIndentsRequest,
@@ -12,13 +11,10 @@ import {
   WarehouseTemporaryReceiptSalesPricesResponse,
   WarehouseTemporaryReceiptPurchaseRegResponse,
 } from "../types/warehouse";
-import axios from "axios";
-import { useGeneralContext } from "../context/GeneralContext";
 
 export function useWarehouse() {
   const {
     formId,
-    productId,
     iocId,
     //for api/Warehouse/Search?search=%D8%A7&page=1&pageSize=30&lastId=0&CustomerTypeId=-1
     search,
@@ -33,9 +29,9 @@ export function useWarehouse() {
     salesPriceId, //for api/WarehouseTemporaryReceipt/salesPrices?id=1106779&salesPriceId=1
     idReg, //for api/WarehouseTemporaryReceipt/purchaseReg?id=1106779&salesPriceId=1
     salesPriceIdReg, //for api/WarehouseTemporaryReceipt/purchaseReg?id=1106779&salesPriceId=1
+    //end of api/Product/productInstanceCatalog?Id=166717&UID=0&IRC=0
     setWarehouseTemporaryReceiptPurchaseShowResponse, //for api/WarehouseTemporaryReceipt/purchaseShow/1107390
     setWarehouseShowIdResponse,
-    setProductCatalog,
     setWarehouseIndentListResponse,
     setSelectIndentsResponse,
     setRegResponse,
@@ -43,7 +39,7 @@ export function useWarehouse() {
     setWarehouseTemporaryReceiptSalesPricesResponse, //for api/WarehouseTemporaryReceipt/salesPrices?id=1106779&salesPriceId=1
     setWarehouseTemporaryReceiptPurchaseRegResponse, //for api/WarehouseTemporaryReceipt/purchaseReg?id=1106779&salesPriceId=1
   } = useWarehouseStore();
-  const { url: apiUrl } = useGeneralContext();
+  //const { url: apiUrl } = useGeneralContext();
   //console.log("[useWarehouse] Setting formId to", formId)
   // for warehouseShowIdResponse
   const warehouseShowIdQuery = useQuery<
@@ -67,31 +63,6 @@ export function useWarehouse() {
       setWarehouseShowIdResponse(data);
     },
   } as UseQueryOptions<WarehouseShowIdResponse, Error, WarehouseShowIdResponse, unknown[]>);
-
-  //for product catalog
-
-  const productCatalogQuery = useQuery<
-    ProductCatalog,
-    Error,
-    ProductCatalog,
-    unknown[]
-  >({
-    queryKey: ["productCatalog", productId],
-    queryFn: async () => {
-      const url: string = `admin/Product/productInstancecatalog?Id=${productId}`;
-
-      console.log(url, "url");
-
-      const response = await axios.get(`${apiUrl}${url}`);
-      return response.data;
-    },
-    //enabled: productId !== 0 ? true : false, // Only fetch if param is available
-    refetchOnWindowFocus: false, // Refetch data when the window is focused
-    refetchOnReconnect: false, // Refetch data when the network reconnects
-    onSuccess: (data: any) => {
-      setProductCatalog(data);
-    },
-  } as UseQueryOptions<ProductCatalog, Error, ProductCatalog, unknown[]>);
 
   //for warehouseSearchResponse
   const warehouseSearchQuery = useQuery<
@@ -270,36 +241,6 @@ export function useWarehouse() {
         },
       },
     },
-    //output for productCatalog
-    //getProductCatalog: () => productCatalogQuery.refetch(), // Optional manual trigger
-    isLoadingProductCatalog: productCatalogQuery.isLoading,
-    errorProductCatalog: productCatalogQuery.error,
-    productCatalog: productCatalogQuery.data ?? {
-      data: {
-        Manufacturing: "",
-        Expiration: "",
-        BatchCode: "",
-        GenericName: "",
-        GenericCode: "",
-        UID: "",
-        GTIN: "",
-        IRC: "",
-        LicenseOwner: "",
-        EnglishProductName: "",
-        PersianProductName: "",
-        ProductCategory: "",
-        ProductCategoryCode: 0,
-        PackageCount: 0,
-        StatusCode: 0,
-      },
-      statusCode: 0,
-      statusMessage: "",
-      CupId: 0,
-      UID: "",
-      IRC: "",
-      ttac: false,
-      SystemId: 0,
-    },
     //output for WarehouseTemporaryReceiptIndentList
     //getWarehouseIndentList: () => warehouseIndentListQuery.refetch(), // Optional manual trigger
     isLoadingWarehouseIndentList: warehouseIndentListQuery.isLoading,
@@ -315,7 +256,8 @@ export function useWarehouse() {
       },
     },
     //output for warehouseTemporaryReceiptPurchaseShowResponse
-    refetchWarehouseTemporaryReceiptPurchaseShow: () => warehouseTemporaryReceiptPurchaseShowQuery.refetch(),
+    refetchWarehouseTemporaryReceiptPurchaseShow: () =>
+      warehouseTemporaryReceiptPurchaseShowQuery.refetch(),
     isLoadingWarehouseTemporaryReceiptPurchaseShow:
       warehouseTemporaryReceiptPurchaseShowQuery.isLoading,
     errorWarehouseTemporaryReceiptPurchaseShow:

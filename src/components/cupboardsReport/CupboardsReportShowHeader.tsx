@@ -60,9 +60,10 @@ const CupboardsReportShowHeader = ({
         <label>نمایش خطادارها</label>
       </div>
       <select
-        className="w-full rounded-md p-1"
+        className="w-full rounded-md p-1 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
         onChange={handleDropdownChange}
         value={errId}
+        disabled={!err}
       >
         {options.map((option, index) => (
           <option key={index} value={option.num}>
