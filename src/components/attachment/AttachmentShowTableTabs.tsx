@@ -1,28 +1,20 @@
 import { colors } from "../../utilities/color";
-import {
-  convertToFarsiDigits,
-  formatNumberWithCommas,
-} from "../../utilities/general";
 
 type Props = {
   //for tab 0
-  totalRem: number;
-  sumRem: number;
+  tab0Title: string;
   //for tab 1
-  remSumTab1: number;
-  sumStatus: string;
+  tab1Title: string;
   //for tab 2
-  amountTab2: number;
+  tab2Title: string;
   activeTab: number;
-  setActiveTab: (tab: number) => void;
+  setActiveTab: React.Dispatch<React.SetStateAction<number>>
 };
 
-const PayRequestShowTableHeader = ({
-  totalRem,
-  sumRem,
-  remSumTab1,
-  sumStatus,
-  amountTab2,
+const AttachmentShowTableTabs = ({
+  tab0Title,
+  tab1Title,
+  tab2Title,
   activeTab,
   setActiveTab,
 }: Props) => {
@@ -40,14 +32,7 @@ const PayRequestShowTableHeader = ({
           onClick={() => setActiveTab(0)}
         >
           <div className="flex items-center justify-center">
-            <p>فاکتورهای باز:</p>
-            <p className="mx-2">
-              {convertToFarsiDigits(formatNumberWithCommas(sumRem))}
-            </p>
-            <p>{"/"}</p>
-            <p className="mx-2">
-              {convertToFarsiDigits(formatNumberWithCommas(totalRem))}
-            </p>
+            <p>{tab0Title}</p>
           </div>
         </div>
         <div
@@ -61,11 +46,7 @@ const PayRequestShowTableHeader = ({
           onClick={() => setActiveTab(1)}
         >
           <div className="flex items-center justify-center">
-            <p>مانده حساب:</p>
-            <p className="mx-2">
-              {convertToFarsiDigits(formatNumberWithCommas(remSumTab1))}
-            </p>
-            <p className="mx-2">({sumStatus})</p>
+            <p>{tab1Title}</p>
           </div>
         </div>
         <div
@@ -79,10 +60,7 @@ const PayRequestShowTableHeader = ({
           onClick={() => setActiveTab(2)}
         >
           <div className="flex items-center justify-center">
-            <p>لیست چکها:</p>
-            <p className="mx-2">
-              {convertToFarsiDigits(formatNumberWithCommas(amountTab2))}
-            </p>
+            <p>{tab2Title}</p>
           </div>
         </div>
       </div>
@@ -90,4 +68,4 @@ const PayRequestShowTableHeader = ({
   );
 };
 
-export default PayRequestShowTableHeader;
+export default AttachmentShowTableTabs;

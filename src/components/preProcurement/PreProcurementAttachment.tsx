@@ -6,43 +6,55 @@ import {
   useRef,
   useState,
 } from "react";
-import { useAttachments } from "../../hooks/useAttachments";
-import { useAttachmentStore } from "../../store/attachmentStore";
+import { v4 as uuidv4 } from "uuid";
 import Add32 from "../../assets/images/GrayThem/add32.png";
 import Refresh32 from "../../assets/images/GrayThem/rfrsh32.png";
 import TrashIcon from "../../assets/images/GrayThem/delete_gray_16.png";
 import { convertToFarsiDigits } from "../../utilities/general";
 import { TableColumns } from "../../types/general";
-import { AttachmentResult, Result } from "../../types/attachment";
+import { AttachmentResult } from "../../types/attachment";
 import { useAuthStore } from "../../store/authStore";
 import RestoreIcon from "../../assets/images/GrayThem/restore_gray_16.png";
 import { colors } from "../../utilities/color";
 import { useGeneralContext } from "../../context/GeneralContext";
 import AttachmentShowTable from "../attachment/AttachmentShowTable";
+import AttachmentShowTableTabs from "../attachment/AttachmentShowTableTabs";
+import { useProcurementAttachment } from "../../hooks/useProcurementAttachment";
+import { useProcurementAttachmentStore } from "../../store/procurementAttachmentStore";
+import ModalMessage from "../layout/ModalMessage";
 
 type Props = {
   formId: number;
-  prefix:string;
+  activeTab: number;
+  setActiveTab: React.Dispatch<React.SetStateAction<number>>;
+  prefix: string;
+  setPrefix: Dispatch<SetStateAction<string>>;
   setCnt: Dispatch<SetStateAction<number>>;
   guid: string;
 };
 
-const PayRequestAttachment = ({
+const PreProcurementAttachment = ({
   formId,
+  activeTab,
+  setActiveTab,
   prefix,
+  setPrefix,
   setCnt,
   guid,
 }: Props) => {
   const {
-    attachments,
-    refetch,
-    deleteAttachment,
-    restoreAttachment,
-    saveAttachment,
-    //attachmentSaveResponse : attachmentSaveResponseHook,
-  } = useAttachments();
-  const { setField, attachmentSaveResponse, deleteRestoreResponse } =
-    useAttachmentStore();
+    procurementAttachmentResponse: attachments,
+    refetchProcurementAttachment: refetch,
+    deleteProcurementAttachment: deleteAttachment,
+    restoreProcurementAttachment: restoreAttachment,
+    procurementAttachmentUpload: saveAttachment,
+    procurementAttachmentUploadResponse: saveResponse
+  } = useProcurementAttachment();
+  const {
+    setField,
+    procurementAttachmentUploadResponse,
+    procurementAttachmentdeleteRestoreResponse,
+  } = useProcurementAttachmentStore();
   const [data, setData] = useState<AttachmentResult[]>([]);
   const { authApiResponse } = useAuthStore();
   const token = authApiResponse?.data.result.login.token ?? "";
@@ -51,6 +63,7 @@ const PayRequestAttachment = ({
   const { systemId, yearId } = useGeneralContext();
   const [attachmentId, setAttachmentId] = useState<number>(0);
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in payRequestAttachment table
+  const [isModalOpen, setIsModalOpen]= useState(false)
 
   const columns: TableColumns = [
     {
@@ -96,21 +109,38 @@ const PayRequestAttachment = ({
 
   useEffect(() => {
     //calculate attachment counts
-    setSelectedRowIndex(attachments.data.result.length-1);
+    setSelectedRowIndex(attachments.data.result.length - 1);
   }, [attachments.data.result.length]);
   /////////////////////////////////////////////////////////////////
- /* useEffect(() => {
+  //for api/ProcurementAttachment/attachments request
+  useEffect(() => {
     setField("systemId", systemId);
     setField("yearId", yearId);
-    setField("formId", formId);
-    setField("prefix", prefix);
-    setField("GUID", guid);
-  }, [formId,attachmentSaveResponseHook,systemId,yearId,guid]);*/
-
+    setField("preProcurementId", formId);
+    setField("form", prefix);
+    setField("guid", guid);
+  }, [formId, systemId, yearId, prefix, guid]);
+  //////////////////////////////////////////////////////////////////
   useEffect(() => {
-    let tempData: AttachmentResult[] = [];
+    switch (activeTab) {
+      case 0:
+        setPrefix("PreProcurement");
+        break;
+      case 1:
+        setPrefix("Procurement");
+        break;
+      case 2:
+        setPrefix("Payment");
+        break;
+      default:
+        break;
+    }
+  }, [activeTab]);
+  //////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    let tempData: any[] = [];
     if (attachments) {
-      tempData = attachments.data.result.map((item: Result, index: number) => ({
+      tempData = attachments.data.result.map((item, index: number) => ({
         ...item,
         index: index + 1,
         isDeleted: false,
@@ -118,22 +148,36 @@ const PayRequestAttachment = ({
       setData(tempData);
     }
     //console.log(attachments, "attachments");
-    setSelectedId(tempData[tempData.length-1]?.id);
+    setSelectedId(tempData[tempData.length - 1]?.id);
     //console.log(tempData);
   }, [attachments]);
   ////////////////////////////////////////////////////////////////
-  useEffect(() => {
-    setCnt(attachmentSaveResponse.data.result.cnt ?? 0);
-  }, [attachmentSaveResponse]);
+ useEffect(() => {
+    setCnt(procurementAttachmentUploadResponse.data.result.cnt ?? 0);
+  }, [procurementAttachmentUploadResponse]);
   ////////////////////////////////////////////////////////////////
   useEffect(() => {
-    setCnt(deleteRestoreResponse.data.result.cnt ?? 0);
-  }, [deleteRestoreResponse]);
+    setCnt(procurementAttachmentdeleteRestoreResponse.data.result.cnt ?? 0);
+  }, [procurementAttachmentdeleteRestoreResponse]);
   ////////////////////////////////////////////////////////////////
   useEffect(() => {
     setCnt(attachments.data.result.length ?? 0);
   }, [attachments]);
   ////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    if (isModalOpen ) {
+      timeoutId = setTimeout(() => {
+        setIsModalOpen(false);
+      }, 3000);
+    }
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [isModalOpen]);
+  /////////////////////////////////////////////////////////////
   const updateToDeleted = (row: any) => {
     console.log("updateToDeleted", row.original.id);
     setData((old) =>
@@ -152,6 +196,9 @@ const PayRequestAttachment = ({
         idDeleteRestore: row.original.id,
         formIdDeleteRestore: formId,
         prefixDeleteRestore: prefix,
+        temporaryReceiptId: 0,
+        procurementId: 0,
+        receiptId: 0,
       });
     } else {
       //if deleted, restore the attachment
@@ -161,6 +208,9 @@ const PayRequestAttachment = ({
         idDeleteRestore: attachmentId,
         formIdDeleteRestore: formId,
         prefixDeleteRestore: prefix,
+        temporaryReceiptId: 0,
+        procurementId: 0,
+        receiptId: 0,
       });
     }
   };
@@ -205,18 +255,24 @@ const PayRequestAttachment = ({
       const formData = new FormData();
       formData.append("img", file); // Keep file in FormData
 
+      const newGuid = uuidv4();
       // Generate query parameters
       const params = new URLSearchParams({
-        prefix: prefix,
-        formId: formId.toString(),
+        form: prefix,
+        preProcurementId: formId.toString(),
         systemId: systemId.toString(),
         yearId: yearId.toString(),
-        guid: guid,
+        guid: newGuid,
+        temporaryReceiptId: "0",
+        procurementId: "0",
+        receiptId: "0",
+        description: ""
       });
 
       setField("GUID", guid);
       console.log("Request params:", params.toString());
-      saveAttachment({ formData, params});
+      setIsModalOpen(true);
+      saveAttachment({ formData, params });
     });
 
     if (e.target) {
@@ -252,6 +308,13 @@ const PayRequestAttachment = ({
           <p className="text-xs">بازخوانی</p>
         </div>
       </div>
+      <AttachmentShowTableTabs
+        tab0Title={`پیش فاکتور کالا/خدمات`}
+        tab1Title={`فاکتور کالا/خدمات`}
+        tab2Title={`پرداخت`}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
       <AttachmentShowTable
         columns={columns}
         selectedRowIndex={selectedRowIndex}
@@ -262,8 +325,25 @@ const PayRequestAttachment = ({
         token={token}
         handleCellColorChange={handleCellColorChange}
       />
+      <ModalMessage
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        backgroundColor={
+          saveResponse?.meta.errorCode === -1
+            ? "bg-green-200"
+            : "bg-red-200"
+        }
+        bgColorButton={
+          saveResponse?.meta.errorCode === -1
+            ? "bg-green-500"
+            : "bg-red-500"
+        }
+        color="text-white"
+        message={saveResponse?.meta.message || ""}
+        visibleButton={false}
+      />
     </div>
   );
 };
 
-export default PayRequestAttachment;
+export default PreProcurementAttachment;

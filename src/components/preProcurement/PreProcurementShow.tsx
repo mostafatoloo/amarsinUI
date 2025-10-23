@@ -5,11 +5,11 @@ import { usePreProcurementStore } from "../../store/preProcurementStore";
 import { usePreProcurement } from "../../hooks/usePreProcurement";
 import PreProcurementShowHeader from "./PreProcurementShowHeader";
 import ModalForm from "../layout/ModalForm";
-import PayRequestAttachment from "../payRequest/PayRequestAttachment";
 import PreProcurementShowTable from "./PreProcurementShowTable";
 import { useGeneralContext } from "../../context/GeneralContext";
 import { useAttachmentStore } from "../../store/attachmentStore";
 import { v4 as uuidv4 } from "uuid";
+import PreProcurementAttachment from "./PreProcurementAttachment";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -33,6 +33,8 @@ const PreProcurementShow = ({
   const [showAttachment, setShowAttachment] = useState(false);
   const [cnt, setCnt] = useState(0);
   const [guid, setGuid] = useState<string>("");
+  const [activeTab, setActiveTab] = useState(0);
+  const [prefix, setPrefix] = useState("Procurement");
   // for refetchPreProcurement if refetchSwitch is true
   useEffect(() => {
     if (!refetchSwitch) return;
@@ -93,14 +95,12 @@ const PreProcurementShow = ({
         width="1/2"
         height="90vh"
       >
-        <PayRequestAttachment
-          formId={
-            //isNew || workFlowRowSelectResponse.msg === "PayRequestOperationForm" //is not in workflow menu
-            //? 0
-            //:
-            workFlowRowSelectResponse.workTableRow.formId
-          }
-          prefix={"PreProcurement"}
+        <PreProcurementAttachment
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          formId={workFlowRowSelectResponse.workTableRow.formId} //PreProcurementId
+          prefix={prefix} //form
+          setPrefix={setPrefix}
           setCnt={setCnt}
           guid={guid}
         />

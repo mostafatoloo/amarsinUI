@@ -6,7 +6,6 @@ import PayRequestShowHeader from "./PayRequestShowHeader";
 import { usePayRequestStore } from "../../store/payRequestStore";
 import { useAuthStore } from "../../store/authStore";
 //import { AuthApiResponse } from "../../types/auth";
-import PayRequestShowTableHeader from "./PayRequestShowTableHeader";
 import PayRequestActiveTab0 from "./PayRequestActiveTab0";
 import {
   PayRequestDtlTable,
@@ -39,6 +38,7 @@ import ModalMessage from "../layout/ModalMessage";
 import { v4 as uuidv4 } from "uuid";
 import { useAttachments } from "../../hooks/useAttachments";
 import { useAttachmentStore } from "../../store/attachmentStore";
+import AttachmentShowTableTabs from "../attachment/AttachmentShowTableTabs";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -494,14 +494,19 @@ const PayRequestShow = ({
         setProviderAmnt={setProviderAmnt}
         //authApiResponse={authApiResponse as AuthApiResponse}
       />
-      <PayRequestShowTableHeader
-        totalRem={totalRem}
-        sumRem={sumRem}
-        remSumTab1={remSumTab1}
-        amountTab2={amountTab2}
-        sumStatus={sumStatus}
+      <AttachmentShowTableTabs
+        tab0Title={`فاکتورهای باز: ${convertToFarsiDigits(
+          formatNumberWithCommas(sumRem)
+        )} / ${convertToFarsiDigits(formatNumberWithCommas(totalRem))}`}
+        tab1Title={`مانده حساب: ${convertToFarsiDigits(
+          formatNumberWithCommas(remSumTab1)
+        )} (${sumStatus})`}
+        tab2Title={`لیست چکها: ${convertToFarsiDigits(
+          formatNumberWithCommas(amountTab2)
+        )}`}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
+        
       />
       {activeTab === 0 && (
         <PayRequestActiveTab0

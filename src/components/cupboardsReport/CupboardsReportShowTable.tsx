@@ -32,8 +32,8 @@ type Props = {
   checkSeekingInfo: boolean;
   selectedRowIndex: number;
   setSelectedRowIndex: (selectedRowIndex: number) => void;
-  uid:string | undefined
-  setUid: (uid: string | undefined) => void
+  uid: string | undefined;
+  setUid: (uid: string | undefined) => void;
 };
 
 const CupboardsReportShowTable = ({
@@ -53,7 +53,7 @@ const CupboardsReportShowTable = ({
   selectedRowIndex,
   setSelectedRowIndex,
   uid,
-  setUid
+  setUid,
 }: Props) => {
   //const { width, height } = useCalculateTableHeight();
   const { setField } = useCupboardsReportStore();
