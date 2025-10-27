@@ -1,3 +1,4 @@
+//گزارش بچ ها 
 import PageTitle from "../../../components/layout/PageTitle";
 import Refresh32 from "../../../assets/images/GrayThem/rfrsh32.png";
 import ExcelIcon from "../../../assets/images/GrayThem/excel24.png";
@@ -17,6 +18,7 @@ const CupboardsReport = () => {
   const {
     cupboardsReportResponse,
     isLoadingCupboardsReport,
+    isFetchingCupboardsReport,
     refetchCupboardsReport,
   } = useCupboardReport();
 
@@ -31,7 +33,6 @@ const CupboardsReport = () => {
   const [checkSeekingInfo, setCheckSeekingInfo] = useState(false); // to control clicking on seeking info icon
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0);
   const [uid, setUid] = useState<string | undefined>(undefined);
-
   const columns: TableColumns = [
     {
       Header: "ردیف",
@@ -64,7 +65,7 @@ const CupboardsReport = () => {
       width: "9%",
     },
     {
-      Header: "تتیاک",
+      Header: "تیتاک",
       accessor: "ttac",
       width: "2%",
     },
@@ -200,6 +201,10 @@ const CupboardsReport = () => {
     setUid("");
     setStatusClicked(true);
   };
+
+  const handleRefetchCupboardsReport=()=>{
+    refetchCupboardsReport()
+  }
   return (
     <div className="flex flex-col bg-gray-200 pt-2">
       <header className="flex flex-col gap-2 md:flex-row items-center justify-between border-gray-300 border-b pb-2">
@@ -228,7 +233,7 @@ const CupboardsReport = () => {
           </div>
           <div
             className="flex flex-col items-center cursor-pointer"
-            onClick={() => refetchCupboardsReport()}
+            onClick={handleRefetchCupboardsReport}
           >
             <img src={Refresh32} alt="Refresh32" className="w-6 h-6" />
             <p className="text-xs">بازخوانی</p>
@@ -237,7 +242,7 @@ const CupboardsReport = () => {
       </header>
       <CupboardsReportShow
         cupboardsReportResponse={cupboardsReportResponse}
-        isLoadingCupboardsReport={isLoadingCupboardsReport}
+        isLoadingCupboardsReport={isLoadingCupboardsReport || isFetchingCupboardsReport}
         data={data}
         columns={columns}
         pageNumber={pageNumber}

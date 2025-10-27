@@ -61,6 +61,7 @@ export function useClearBook() {
   return {
     //for clearBookProducts
     refetch: query.refetch,
+    isFetching: query.isFetching,
     isLoading: query.isLoading,
     error: query.error,
     clearBookProducts: query.data?.data.result ?? {

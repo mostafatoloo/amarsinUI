@@ -40,27 +40,13 @@ const PurchaseRequestIndent = () => {
     //indentListMeta,
     refetchIndentList,
     isLoadingIndentList,
+    isFetchingIndentList,
     errorIndentList,
     //indentListTotalCount,
     isLoadingIndentListDtl,
     indentListTotalCount,
     indentDoFirstFlow,
     indentDel,
-    /*productPrice,
-    productPriceTotalCount,
-    refetch,
-    isLoading,
-    error,
-    isLoadingDtl,
-    productPriceDtl,
-    productPriceMeta,
-    addProductList,
-    productPriceDtlHistory,
-    isLoadingDtlHistory,
-    productPriceSave,
-    isLoadingProductPriceSave,
-    productPriceDoFirstFlow,
-    productPriceDel,*/
   } = useProducts();
 
   //const { setField: setProductOfferField } = useProductOfferStore();
@@ -227,6 +213,7 @@ const PurchaseRequestIndent = () => {
   }, [focusedInput, data]);
 
   useEffect(() => {
+    console.log("state", state);
     setField("id", 0);
     setField("ordrIdIndentRequest", 0);
     setField("showDeletedInentDtl", false);
@@ -511,7 +498,7 @@ const PurchaseRequestIndent = () => {
                 onRetry={() => refetchIndentList()}
                 showHomeButton={true}
               />
-            ) : isLoadingIndentList ? (
+            ) : isLoadingIndentList || isFetchingIndentList ? (
               <Skeleton />
             ) : (
               <>

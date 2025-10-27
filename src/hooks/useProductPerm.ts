@@ -350,6 +350,7 @@ export function useProductPerm() {
     //for productPerm
     refetch: query.refetch,
     isLoading: query.isLoading,
+    isFetching: query.isFetching,
     error: query.error,
     productPerm: query.data?.data.result.productPerms,
     productPermMeta: query.data?.meta,

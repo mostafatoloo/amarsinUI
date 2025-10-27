@@ -39,6 +39,7 @@ const ProductPrice = () => {
     productPriceTotalCount,
     refetch,
     isLoading,
+    isFetching,
     error,
     isLoadingDtl,
     productPriceDtl,
@@ -448,7 +449,7 @@ const ProductPrice = () => {
                 onRetry={() => refetch()}
                 showHomeButton={true}
               />
-            ) : isLoading ? (
+            ) : isLoading || isFetching ? (
               <Skeleton />
             ) : (
               <>

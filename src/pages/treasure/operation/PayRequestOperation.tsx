@@ -1,31 +1,31 @@
 //حسابداری -> خزانه داری ->عملیات -> درخواست پرداخت
-import Accept from "../../assets/images/GrayThem/img24_3.png";
+import Accept from "../../../assets/images/GrayThem/img24_3.png";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useGeneralContext } from "../../context/GeneralContext";
+import { useGeneralContext } from "../../../context/GeneralContext";
 import {
   convertPersianDate,
   convertToFarsiDigits,
   convertToLatinDigits,
   formatNumberWithCommas,
-} from "../../utilities/general";
+} from "../../../utilities/general";
 import { debounce } from "lodash";
-import ProductOfferHeader from "../productOffer/ProductOfferHeader";
-import Skeleton from "../layout/Skeleton";
-import ProductOfferTblHeader from "../productOffer/ProductOfferTblHeader";
-import TTable from "../controls/TTable";
-import { TablePaginationActions } from "../controls/TablePaginationActions";
-import ProductOfferParams from "../productOffer/ProductOfferParams";
-import ModalMessage from "../layout/ModalMessage";
-import ModalForm from "../layout/ModalForm";
-import { usePayRequest } from "../../hooks/usePayRequest";
-import { usePayRequestStore } from "../../store/payRequestStore";
+import ProductOfferHeader from "../../../components/productOffer/ProductOfferHeader";
+import Skeleton from "../../../components/layout/Skeleton";
+import ProductOfferTblHeader from "../../../components/productOffer/ProductOfferTblHeader";
+import TTable from "../../../components/controls/TTable";
+import { TablePaginationActions } from "../../../components/controls/TablePaginationActions";
+import ProductOfferParams from "../../../components/productOffer/ProductOfferParams";
+import ModalMessage from "../../../components/layout/ModalMessage";
+import ModalForm from "../../../components/layout/ModalForm";
+import { usePayRequest } from "../../../hooks/usePayRequest";
+import { usePayRequestStore } from "../../../store/payRequestStore";
 import {
   PayRequestDoFirstFlowRequest,
   PayRequestDtl,
   PayRequest as PayRequestType,
-} from "../../types/payRequest";
-import PayRequestOperationForm from "./PayRequestOperationForm";
-import ConfirmCard from "../layout/ConfirmCard";
+} from "../../../types/payRequest";
+import PayRequestOperationForm from "../../../components/payRequestPaybox/PayRequestOperationForm";
+import ConfirmCard from "../../../components/layout/ConfirmCard";
 
 const PayRequestOperation = () => {
   const {
@@ -40,6 +40,7 @@ const PayRequestOperation = () => {
     payRequestMeta,
     refetch,
     isLoadingPayRequest,
+    isFetchingPayRequest,
     isLoadingDtl,
     payRequestDtl,
     payRequestDoFirstFlow,
@@ -486,7 +487,7 @@ const PayRequestOperation = () => {
       <div className="flex flex-col md:flex-row gap-2 px-2 h-1/2">
         <div className="flex flex-col w-full md:w-3/4 h-full">
           <div className="w-full overflow-y-scroll bg-white rounded-md h-full">
-            {isLoadingPayRequest ? (
+            {isLoadingPayRequest || isFetchingPayRequest ? (
               <Skeleton />
             ) : (
               <>

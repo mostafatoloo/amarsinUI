@@ -20,11 +20,12 @@ import ProductOffer from "./pages/businessAccounting/operations/ProductOffer";
 import ProductPerm from "./pages/businessAccounting/operations/ProductPerm";
 import ProductGrace from "./pages/businessAccounting/operations/ProductGrace";
 import ProductPrice from "./pages/businessAccounting/operations/ProductPrice";
-import PayRequestOperation from "./components/payRequestPaybox/PayRequestOperation";
+import PayRequestOperation from "./pages/treasure/operation/PayRequestOperation";
 import NotFound from "./pages/NotFound";
 import ClearBook from "./pages/definitions/ClearBook";
-import PurchaseRequestIndent from "./pages/treasure/operation/PurchaseRequestIndent";
+import PurchaseRequestIndent from "./pages/businessAccounting/operations/PurchaseRequestIndent";
 import CupboardsReport from "./pages/warehouse/reports/CupboardsReport";
+import GetInventoryBalance from "./pages/businessAccounting/reports/GetInventoryBalance";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +65,7 @@ function AppContent() {
         <Route path="/admin/RpProducers" element={<PrivateRoute><ProducerList /></PrivateRoute>} />
         <Route path="/Admin/ClearBook/index" element={<PrivateRoute><ClearBook /></PrivateRoute>} />
         <Route path="/Admin/CupboardsReport" element={<PrivateRoute><CupboardsReport /></PrivateRoute>} />
+        <Route path="/Admin/ttac/InventoryBalance" element={<PrivateRoute><GetInventoryBalance /></PrivateRoute>} />
         <Route path="/" element={<Navigate to="/admin/WFMS/index" />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

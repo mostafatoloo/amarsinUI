@@ -358,6 +358,7 @@ export function useProductOffer() {
   } as UseQueryOptions<ProductOfferDoFirstFlowResponse, Error, ProductOfferDoFirstFlowResponse, unknown[]>);
   return {
     refetch: query.refetch,
+    isFetching: query.isFetching,
     isLoading: query.isLoading,
     error: query.error,
     productOffer: query.data?.data.result.productOffers,

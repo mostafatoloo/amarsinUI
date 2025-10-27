@@ -348,6 +348,7 @@ import { ShowProductListRequest } from "../types/productOperation";
       //for productGrace
       refetch: query.refetch,
       isLoading: query.isLoading,
+      isFetching: query.isFetching,
       error: query.error,
       productGrace: query.data?.data.result.productGraces,
       productGraceMeta: query.data?.meta,

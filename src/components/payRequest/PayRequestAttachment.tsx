@@ -34,6 +34,8 @@ const PayRequestAttachment = ({
   guid,
 }: Props) => {
   const {
+    isLoading,
+    isFetching,
     attachments,
     refetch,
     deleteAttachment,
@@ -261,6 +263,7 @@ const PayRequestAttachment = ({
         imageUrl={imageUrl ?? ""}
         token={token}
         handleCellColorChange={handleCellColorChange}
+        isLoading={isFetching || isLoading }
       />
     </div>
   );

@@ -156,6 +156,7 @@ export function useCupboardReport() {
     //for clearBookProducts
     refetchCupboardsReport: query.refetch,
     isLoadingCupboardsReport: query.isLoading,
+    isFetchingCupboardsReport: query.isFetching,
     errorCupboardsReport: query.error,
     cupboardsReportResponse: query.data ?? {
       meta: { errorCode: 0, message: "", type: "" },

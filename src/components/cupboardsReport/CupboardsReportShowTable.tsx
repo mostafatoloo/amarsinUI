@@ -127,15 +127,15 @@ const CupboardsReportShowTable = ({
 
   useEffect(() => {
     //setSelectedId(0);
-    setField("fullCode", srchFullCode);
-    setField("fullName", srchFullName);
-    setField("prodDate", srchADProdDate);
-    setField("expDate", srchADExpDate);
-    setField("gtin", srchProductGTIN);
-    setField("ttac", srchTtac);
-    setField("code", srchCode);
-    setField("irc", srchProductIRC);
-    setField("uid", srchUID);
+    setField("srchFullCode", srchFullCode);
+    setField("srchFullName", srchFullName);
+    setField("srchADProdDate", srchADProdDate);
+    setField("srchADExpDate", srchADExpDate);
+    setField("srchProductGTIN", srchProductGTIN);
+    setField("srchTtac", srchTtac);
+    setField("srchCode", srchCode);
+    setField("srchProductIRC", srchProductIRC);
+    setField("srchUID", srchUID);
   }, []);
 
   useEffect(() => {

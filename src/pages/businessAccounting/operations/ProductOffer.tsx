@@ -88,6 +88,7 @@ const ProductOffer = () => {
     productOfferDtl,
     productOfferMeta,
     isLoading,
+    isFetching,
     isLoadingDtl,
     refetch,
     addProductList,
@@ -451,7 +452,7 @@ const ProductOffer = () => {
       <div className="flex flex-col md:flex-row gap-2 px-2 h-1/2">
         <div className="flex flex-col w-full md:w-3/4 h-full">
           <div className="w-full overflow-y-scroll bg-white rounded-md h-full">
-            {isLoading ? (
+            {isLoading || isFetching ? (
               <Skeleton />
             ) : (
               <>

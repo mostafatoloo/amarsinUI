@@ -74,59 +74,6 @@ const ProductOfferFormList = ({
   const [data, setData] = useState<ProductOfferProductTable2[]>([]);
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in productOfferFormList table
 
-  const columnsHistory: TableColumns = [
-    {
-      Header: "ردیف",
-      accessor: "index",
-      width: "5%",
-    },
-    {
-      Header: "تغییر",
-      accessor: "date",
-      width: "10%",
-    },
-    {
-      Header: "تایید",
-      accessor: "accepted",
-      width: "5%",
-    },
-    {
-      Header: "پ 1",
-      accessor: "s1O",
-      width: "10%",
-    },
-    {
-      Header: "پ 2",
-      accessor: "s2O",
-      width: "10%",
-    },
-    {
-      Header: "پ 3",
-      accessor: "s3O",
-      width: "10%",
-    },
-    {
-      Header: "پ 4",
-      accessor: "s4O",
-      width: "10%",
-    },
-    {
-      Header: "پ 5",
-      accessor: "s5O",
-      width: "10%",
-    },
-    {
-      Header: "شرح",
-      accessor: "dtlDsc",
-      width: "25%",
-    },
-    {
-      Header: "بدون آفر",
-      accessor: "no",
-      width: "5%",
-    },
-  ];
-
   // Initialize data when addList changes
   useEffect(() => {
     if (addList.length > 0) {
@@ -339,7 +286,6 @@ const ProductOfferFormList = ({
         setShowHistory={setShowHistory}
         isDtlHistoryLoading={isDtlHistoryLoading}
         productOfferDtlHistory={productOfferDtlHistory}
-        columnsHistory={columnsHistory}
       />
       <ModalMessage
         isOpen={isModalRegOpen}

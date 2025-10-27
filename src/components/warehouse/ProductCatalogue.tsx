@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  ProductCatalogTable,
   WarehouseTemporaryReceiptIndentDtl,
 } from "../../types/warehouse";
 import { green, red } from "@mui/material/colors";
@@ -16,6 +15,7 @@ import ModalMessage from "../layout/ModalMessage";
 import { debounce } from "lodash";
 import { useProducts } from "../../hooks/useProducts";
 import { useProductStore } from "../../store/productStore";
+import { ProductCatalogTable } from "../../types/product";
 
 type Props = {
   dtl: WarehouseTemporaryReceiptIndentDtl;

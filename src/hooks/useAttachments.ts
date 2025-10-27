@@ -129,6 +129,7 @@ export function useAttachments() {
     deleteAttachmentSuccess: deleteAttachment.isSuccess,
     //////////////////////////////////////////////////////////////
     refetch: query.refetch,
+    isFetching: query.isFetching,
     isLoading: query.isLoading,
     error: query.error,
     attachments: query.data ?? {

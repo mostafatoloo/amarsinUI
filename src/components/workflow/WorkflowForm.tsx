@@ -53,6 +53,7 @@ const WorkflowForm = ({
         error={error}
         isLoading={isLoading}
         isLoadingdoFlow={isLoadingdoFlow}
+        refetchSwitch={refetchSwitch}
       />
       <WorkflowChild
         selectedId={selectedId} //{selectedIdRef.current}

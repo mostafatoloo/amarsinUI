@@ -1,6 +1,7 @@
 import { Autocomplete, TextField } from "@mui/material";
 import { colors } from "../../utilities/color";
 import React, { forwardRef } from "react";
+import { normalizeInputForSearch } from "../../utilities/general";
 
 type Props<T extends { id: string | number; title: string }> = {
   options: T[];
@@ -179,7 +180,7 @@ const AutoComplete = forwardRef(
         inputValue={inputValue}
         onInputChange={onInputChange}
         onChange={handleChange}
-        getOptionLabel={(option) => option.title || ""}
+        getOptionLabel={(option) => normalizeInputForSearch(option.title) || ""}
         isOptionEqualToValue={(option, value) => option.id === value.id}
         noOptionsText="پیدا نشد"
         size="small"

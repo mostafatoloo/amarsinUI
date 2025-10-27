@@ -26,7 +26,8 @@ const RegRecievedCheque = ({
     cashPosSystemSearch,
     paymentAttachmentResponse,
     isLoadingPaymentAttachment,
-    getPayment
+    getPayment,
+    sayadChequeInquiryByPaymentIdResponse,
   } = useCheques();
 
   const {setField,formId:chequeFormId}=useChequeStore()
@@ -55,6 +56,7 @@ const RegRecievedCheque = ({
         updateFields={updateFields}
         isLoadingUpdateFields={isLoadingUpdateFields}
         cashPosSystemSearch={cashPosSystemSearch}
+        sayadChequeInquiryByPaymentIdResponse={sayadChequeInquiryByPaymentIdResponse}
       />
       <RegRecievedChequeImg
         paymentAttachmentResponse={paymentAttachmentResponse}

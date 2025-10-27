@@ -10,11 +10,7 @@ import OrderRegShowTable from "./OrderRegShowTable";
 import { useOrderStore } from "../../store/orderStore";
 import { useOrders } from "../../hooks/useOrders";
 import { DefaultOptionType, TableColumns } from "../../types/general";
-import {
-  DtlsItem,
-  InOutsItem,
-  orderRegRequest,
-} from "../../types/order";
+import { DtlsItem, InOutsItem, orderRegRequest } from "../../types/order";
 import {
   convertToFarsiDigits,
   convertToLatinDigits,
@@ -33,6 +29,9 @@ import OrderEdit from "./OrderEdit";
 import OrderCupboardList from "./OrderCupboardList";
 import { useWarehouse } from "../../hooks/useWarehouse";
 import { useProducts } from "../../hooks/useProducts";
+import ProductOfferFormListHistory from "../productOffer/ProductOfferFormListHistory";
+import { useProductOfferStore } from "../../store/productOfferStore";
+import { useProductOffer } from "../../hooks/useProductOffer";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -40,7 +39,11 @@ type Props = {
   setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const OrderRegShow = ({ workFlowRowSelectResponse, refetchSwitch, setRefetchSwitch }: Props) => {
+const OrderRegShow = ({
+  workFlowRowSelectResponse,
+  refetchSwitch,
+  setRefetchSwitch,
+}: Props) => {
   const canEditForm1Mst1 =
     workFlowRowSelectResponse.workTableForms.canEditForm1Mst1;
   const [cash1, setCash1] = useState(false);
@@ -81,6 +84,11 @@ const OrderRegShow = ({ workFlowRowSelectResponse, refetchSwitch, setRefetchSwit
   const [editClicked2, setEditClicked2] = useState(false);
   const [otId, setOtId] = useState<number>(0);
   const [checkSum, setCheckSum] = useState<number>(0);
+  //for showing  سوابق آفر
+  const [showHistory, setShowHistory] = useState(false);
+  const { setField: setProductOfferDtlHistoryField } = useProductOfferStore();
+  const { productOfferDtlHistory, isLoadingProductOfferDtlHistory } =
+    useProductOffer();
   const columns: TableColumns = [
     {
       Header: "اطلاعات سفارش",
@@ -152,6 +160,18 @@ const OrderRegShow = ({ workFlowRowSelectResponse, refetchSwitch, setRefetchSwit
           accessor: "historyIcon",
           width: "3%",
           backgroundColor: colors.orang100,
+          Cell: ({ row }: any) => {
+            return (
+              <div className="flex w-full">
+                <img
+                  src={HistoryIcon}
+                  onClick={() => handleShowHistory(row)}
+                  className="cursor-pointer"
+                  alt="HistoryIcon"
+                />
+              </div>
+            );
+          },
         },
       ],
     },
@@ -222,7 +242,13 @@ const OrderRegShow = ({ workFlowRowSelectResponse, refetchSwitch, setRefetchSwit
       ],
     },
   ];
-
+  ////////////////////////////////////////////////////////
+  const handleShowHistory = (row: any) => {
+    if (row.original.pId !== 0) {
+      setProductOfferDtlHistoryField("pId", row.original.pId);
+      setShowHistory(true);
+    }
+  };
   //////////////////////////////////////////////////////////////
   const handleEditClick1 = (dtl: any) => {
     setEditClicked1(true);
@@ -287,9 +313,11 @@ const OrderRegShow = ({ workFlowRowSelectResponse, refetchSwitch, setRefetchSwit
     });
     setWarehouse({
       id: orderRegShowResponse.data.result.defaultWarehouseId,
-      title: convertToFarsiDigits(orderRegShowResponse.data.result.warehouseName),
+      title: convertToFarsiDigits(
+        orderRegShowResponse.data.result.warehouseName
+      ),
     });
-  }, [orderRegShowResponse]);  
+  }, [orderRegShowResponse]);
   //////////////////////////////////////////////////////////////////
   //for initializing data for OrderCupboardList
   useEffect(() => {
@@ -324,6 +352,7 @@ const OrderRegShow = ({ workFlowRowSelectResponse, refetchSwitch, setRefetchSwit
     const tempData = orderRegShowResponse.data.result.orderDtls.map(
       (item, index) => ({
         index: convertToFarsiDigits(index + 1),
+        pId: item.pId,
         pName: convertToFarsiDigits(item.pName),
         cost: convertToFarsiDigits(formatNumberWithCommas(item.cost)),
         dcrmnt: convertToFarsiDigits(item.dcrmnt),
@@ -471,7 +500,8 @@ const OrderRegShow = ({ workFlowRowSelectResponse, refetchSwitch, setRefetchSwit
 
   const [salesPriceSearch, setSalesPriceSearch] = useState<string>("");
   const [warehouseSearch, setWarehouseSearch] = useState<string>("");
-  const {setField:setSalesPriceField,setField:setWarehouseField}=useOrderStore();
+  const { setField: setSalesPriceField, setField: setWarehouseField } =
+    useOrderStore();
   const { salesPricesSearchResponse } = useProducts();
   const { warehouseSearchResponse } = useWarehouse();
   useEffect(() => {
@@ -482,7 +512,10 @@ const OrderRegShow = ({ workFlowRowSelectResponse, refetchSwitch, setRefetchSwit
 
   useEffect(() => {
     //console.log(convertToLatinDigits(warehouseSearch),"warehouseSearch");
-    setWarehouseField("search", convertToLatinDigits(warehouseSearch) ? null :"ا");
+    setWarehouseField(
+      "search",
+      convertToLatinDigits(warehouseSearch) ? null : "ا"
+    );
     setWarehouseField("page", 1);
     setWarehouseField("pageSize", 30);
     setWarehouseField("lastId", 0);
@@ -625,6 +658,13 @@ const OrderRegShow = ({ workFlowRowSelectResponse, refetchSwitch, setRefetchSwit
           setData={setData}
         />
       </ModalForm>
+      {/* open سوابق آفر */}
+      <ProductOfferFormListHistory
+        showHistory={showHistory}
+        setShowHistory={setShowHistory}
+        isDtlHistoryLoading={isLoadingProductOfferDtlHistory}
+        productOfferDtlHistory={productOfferDtlHistory || []}
+      />
     </div>
   );
 };

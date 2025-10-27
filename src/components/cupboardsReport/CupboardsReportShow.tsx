@@ -52,6 +52,7 @@ const CupboardsReportShow = ({
   const [err, setErr] = useState<boolean>(true);
   const [existsCupboards, setExistsCupboards] = useState<boolean>(true);
 
+ //////////////////////////////////////////////////////////////
   useEffect(() => {
     setCupboardsReportField("errId", errId);
     setCupboardsReportField("err", err);

@@ -299,6 +299,7 @@ const ProductOfferForm = ({
   ////////////////////////////////////////////////////////
   const handleShowHistory = (row: any) => {
     if (row.original.pId !== 0) {
+      console.log(row.original, "row in product offer form");
       setProductOfferDtlHistoryField("pId", row.original.pId);
       setShowHistory(true);
     }
@@ -435,6 +436,7 @@ const ProductOfferForm = ({
   const abortControllerRef = useRef<AbortController | null>(null);
   const handleDebounceFilterChange = useCallback(
     debounce((field: string, value: string | number) => {
+      console.log(field, value, "field, value in product offer form");
       // Cancel any existing request
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();

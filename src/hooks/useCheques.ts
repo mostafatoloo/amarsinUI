@@ -7,7 +7,11 @@ import {
 import { useEffect } from "react";
 import api from "../api/axios";
 
-import { LoadPaymentResponse, UpdateFieldsRequest } from "../types/cheque";
+import {
+  LoadPaymentResponse,
+  SayadChequeInquiryByPaymentIdResponse,
+  UpdateFieldsRequest,
+} from "../types/cheque";
 import { useChequeStore } from "../store/chequeStore";
 
 export function useCheques() {
@@ -26,8 +30,10 @@ export function useCheques() {
     page,
     lastId,
     systemId,
+    paymentId,
     setCashPosSystemSearchResponse,
     setPaymentAttachmentResponse,
+    setSayadChequeInquiryByPaymentIdResponse,
   } = useChequeStore();
 
   const queryClient = useQueryClient();
@@ -70,25 +76,16 @@ export function useCheques() {
   });
   //for Payment/cashPosSystemSearch
   const cashPosSystemSearch = useQuery({
-    queryKey: [
-      "cashPosSystemSearch",
-      search,
-      page,
-      lastId,
-      systemId,
-      payKind,
-    ],
+    queryKey: ["cashPosSystemSearch", search, page, lastId, systemId, payKind],
     queryFn: async () => {
       const url: string = `/api/Payment/cashPosSystemSearch?page=${page}${
         search ? `&search=${encodeURIComponent(search)}` : ""
-      }&lastId=${lastId}&systemId=${systemId}&payKind=${
-        payKind
-      }`;
+      }&lastId=${lastId}&systemId=${systemId}&payKind=${payKind}`;
       console.log(url, "url");
       const response = await api.get(url);
       return response.data;
     },
-    enabled: payKind!==-1 && systemId!==0,
+    enabled: payKind !== -1 && systemId !== 0,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
@@ -112,7 +109,7 @@ export function useCheques() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: formId!==0,
+    enabled: formId !== 0,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
@@ -131,25 +128,43 @@ export function useCheques() {
     LoadPaymentResponse,
     unknown[]
   >({
-    queryKey: ["loadPayment",formId],
+    queryKey: ["loadPayment", formId],
     queryFn: async () => {
       const url: string = `/api/Payment/load/${formId}`;
-
-      //const {workFlowRowSelectResponse}=useWorkflowRowSelectStore()
-
-      //console.log(workFlowRowSelectResponse, "workFlowRowSelectResponse");
       console.log(url, "url");
 
       const response = await api.get(url);
       return response.data;
     },
-    enabled: formId!==0,
+    enabled: formId !== 0,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
       setLoadPaymentResponse(data);
     },
   } as UseQueryOptions<LoadPaymentResponse, Error, LoadPaymentResponse, unknown[]>);
+
+  //for Payment/sayadChequeInquiryByPaymentId
+  const sayadChequeInquiryByPaymentIdQuery = useQuery<
+    SayadChequeInquiryByPaymentIdResponse,
+    Error,
+    SayadChequeInquiryByPaymentIdResponse,
+    unknown[]
+  >({
+    queryKey: ["sayadChequeInquiryByPaymentId", paymentId],
+    queryFn: async () => {
+      const url: string = `/api/Payment/sayadChequeInquiryByPaymentId?PaymentId=${paymentId}`;
+      console.log(url, "url");
+      const response = await api.get(url);
+      return response.data;
+    },
+    enabled: paymentId !== 0,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    onSuccess: (data: any) => {
+      setSayadChequeInquiryByPaymentIdResponse(data);
+    },
+  } as UseQueryOptions<SayadChequeInquiryByPaymentIdResponse, Error, SayadChequeInquiryByPaymentIdResponse, unknown[]>);
 
   return {
     //Payment/attachment
@@ -172,46 +187,62 @@ export function useCheques() {
       meta: { errorCode: 0, message: "", type: "" },
       data: {
         result: {
-          err: 0,
-          msg: "",
-          payment: {
-            id: 0,
-            customerId: 0,
-            acc_System: 0,
-            systemTitle: "",
-            acc_Year: 0,
-            yearTitle: "",
-            srName: "",
-            marketerSrName: "",
-            kind: 0,
-            payKind: 0,
-            dat: "",
-            sayadi: "",
-            sarDate: "",
-            usrId: 0,
-            prsn: "",
-            bankId: 0,
-            bankName_Partners: "",
-            fixSerial: "",
-            no: "",
-            transferenceOwner: "",
-            cash_PosSystem: 0,
-            cash_PosSystemTitle: "",
-            dsc: "",
-            partner: 0,
-            accNo: "",
-            amount: "",
-            attachCount: 0,
-            canEdit: false,
-            acc_BankAccountId: 0,
-            assignedAccountName: "",
-            sanadNum: "",
-            sanadDate: "",
-            sayadiStatus: 0,
-            sayadiMessage: "",
-          },
+          id: 0,
+          customerId: 0,
+          acc_System: 0,
+          systemTitle: "",
+          acc_Year: 0,
+          yearTitle: "",
+          srName: "",
+          marketerSrName: "",
+          kind: 0,
+          payKind: 0,
+          dat: "",
+          sayadi: "",
+          sarDate: "",
+          usrId: 0,
+          prsn: "",
+          bankId: 0,
+          bankName_Partners: "",
+          fixSerial: "",
+          no: "",
+          transferenceOwner: "",
+          cash_PosSystem: 0,
+          cash_PosSystemTitle: "",
+          dsc: "",
+          partner: 0,
+          accNo: "",
+          amount: "",
+          attachCount: 0,
+          canEdit: false,
+          acc_BankAccountId: 0,
+          assignedAccountName: "",
+          sanadNum: "",
+          sanadDate: "",
+          sayadiStatus: 0,
+          sayadiMessage: "",
+          eCheck: false,
         },
       },
     },
+    //for Payment/sayadChequeInquiryByPaymentId
+    getSayadChequeInquiryByPaymentId: () => sayadChequeInquiryByPaymentIdQuery.refetch(),
+    isLoadingSayadChequeInquiryByPaymentId: sayadChequeInquiryByPaymentIdQuery.isLoading,
+    errorSayadChequeInquiryByPaymentId: sayadChequeInquiryByPaymentIdQuery.error,
+    sayadChequeInquiryByPaymentIdResponse: sayadChequeInquiryByPaymentIdQuery.data ?? {
+        meta: { errorCode: 0, message: "", type: "" },
+        data: {
+          result: {
+            err: 0,
+            sayadiStatus: 0,
+            msg: "",
+            response: {
+              amountDiscrepancy: 0,
+              dateDiscrepancy: "",
+              reasonDiscrepancy: "",
+            },
+          },
+        },
+      },
   };
 }

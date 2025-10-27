@@ -4,7 +4,7 @@ import { ProductOperationRequest } from "./productOperation";
 export interface ProductSearchRequest {
   accYear: number;
   accSystem: number;
-  searchTerm?: string;
+  search?: string;
   page: number;
 }
 
@@ -311,6 +311,13 @@ interface DataProductCatalog2 {
 export interface ProductCatalog {
   meta: Meta;
   data: DataProductCatalog2;
+}
+
+export interface ProductCatalogTable {
+  rowId: string;
+  title: string;
+  systemInfo: string;
+  samaneInfo: string;
 }
 
 export interface ProductState

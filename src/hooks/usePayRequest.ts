@@ -503,12 +503,13 @@ export function usePayRequest() {
   });
   return {
     //output for PayRequest (using fpr PayRequestShow)
+    refetch: payRequest.refetch,
     isLoadingPayRequest: payRequest.isLoading,
+    isFetchingPayRequest:payRequest.isFetching,
     errorPayRequest: payRequest.error,
     payRequest: payRequest.data?.data.result.payRequest.payRequests,
     payRequestMeta: payRequest.data?.meta,
     payRequestTotalCount: payRequest.data?.data.result.payRequest.total_count,
-    refetch: payRequest.refetch,
     //for productPriceDtl
     isLoadingDtl: payRequestDtl.isLoading,
     errorDtl: payRequestDtl.error,

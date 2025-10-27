@@ -45,6 +45,8 @@ const PreProcurementAttachment = ({
   const {
     procurementAttachmentResponse: attachments,
     refetchProcurementAttachment: refetch,
+    isFetchingProcurementAttachment: isFetching,
+    isLoadingProcurementAttachment: isLoading,
     deleteProcurementAttachment: deleteAttachment,
     restoreProcurementAttachment: restoreAttachment,
     procurementAttachmentUpload: saveAttachment,
@@ -324,6 +326,7 @@ const PreProcurementAttachment = ({
         imageUrl={imageUrl ?? ""}
         token={token}
         handleCellColorChange={handleCellColorChange}
+        isLoading={isFetching || isLoading}
       />
       <ModalMessage
         isOpen={isModalOpen}

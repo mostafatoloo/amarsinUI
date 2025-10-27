@@ -52,12 +52,6 @@ export interface WarehouseTemporaryReceiptIndentDtlTable {
   rOffer: number;
 }
 
-export interface ProductCatalogTable {
-  rowId: string;
-  title: string;
-  systemInfo: string;
-  samaneInfo: string;
-}
 
 interface WarehouseTemporaryReceiptMst {
   id: number;

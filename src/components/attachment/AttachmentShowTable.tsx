@@ -1,6 +1,7 @@
 import { TableColumns } from "../../types/general";
 import AttachmentImageLoader from "../../utilities/AttachmentImageLoader";
 import TTable from "../controls/TTable";
+import Skeleton from "../layout/Skeleton";
 
 type Props = {
   columns: TableColumns;
@@ -11,6 +12,7 @@ type Props = {
   imageUrl: string;
   token: string;
   handleCellColorChange: (row: any) => string | null;
+  isLoading: boolean;
 };
 
 const AttachmentShowTable = ({
@@ -22,21 +24,26 @@ const AttachmentShowTable = ({
   imageUrl,
   token,
   handleCellColorChange,
+  isLoading,
 }: Props) => {
   return (
     <div className="w-full flex gap-2">
-      <div className="w-1/2">
-        <TTable
-          columns={columns}
-          selectedRowIndex={selectedRowIndex}
-          setSelectedRowIndex={setSelectedRowIndex}
-          data={data}
-          changeRowSelectColor={true}
-          fontSize="14px"
-          setSelectedId={setSelectedId}
-          CellColorChange={handleCellColorChange}
-        />
-      </div>
+      {isLoading ? (
+        <Skeleton />
+      ) : (
+        <div className="w-1/2">
+          <TTable
+            columns={columns}
+            selectedRowIndex={selectedRowIndex}
+            setSelectedRowIndex={setSelectedRowIndex}
+            data={data}
+            changeRowSelectColor={true}
+            fontSize="14px"
+            setSelectedId={setSelectedId}
+            CellColorChange={handleCellColorChange}
+          />
+        </div>
+      )}
       <div className="w-1/2 h-full">
         {imageUrl && (
           <div className="flex w-full h-full justify-center items-center overflow-y-auto">

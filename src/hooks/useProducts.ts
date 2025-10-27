@@ -25,7 +25,7 @@ export function useProducts() {
   const {
     accYear,
     accSystem,
-    searchTerm,
+    search,
     page,
     setProductSearchResponse,
     salesPricesSearch,
@@ -164,26 +164,25 @@ export function useProducts() {
     ProductSearchResponse,
     unknown[]
   >({
-    queryKey: ["products", accYear, accSystem, searchTerm, page],
+    queryKey: ["products", accYear, accSystem, search, page],
     queryFn: async () => {
       const params: ProductSearchRequest = {
         accYear,
         accSystem,
-        searchTerm,
+        search,
         page,
       };
       const url = `/api/Product/search?accYear=${params.accYear}&accSystem=${
         params.accSystem
       }&page=${params.page}${
-        params.searchTerm
-          ? `&search=${encodeURIComponent(params.searchTerm ?? "")}`
+        params.search
+          ? `&search=${encodeURIComponent(params.search ?? "")}`
           : ""
       }`;
       console.log(url, "url in useProducts");
       const response = await api.get(url);
       return response.data;
     },
-    enabled: !!accSystem && !!accYear, // Only run if accSystem exists
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -309,7 +308,7 @@ export function useProducts() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled:!!id,
+    //enabled:!!id,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -437,7 +436,7 @@ export function useProducts() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: !!id ,
+    // enabled: !!id ,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -520,7 +519,7 @@ export function useProducts() {
     isSalesPricesSearchLoading: salesPricesSearchQuery.isLoading,
     salesPricesSearchError: salesPricesSearchQuery.error,
     salesPricesSearchResponse: salesPricesSearchQuery.data?.searchResults ?? [],
-
+    //for productSearch req: /api/Product/search?accSystem=4&accYear=15&page=1&searchTerm=%D8%B3%D9%81
     isProductSearchLoading: productSearchQuery.isLoading,
     productSearchError: productSearchQuery.error,
     products: productSearchQuery.data?.data.result.searchResults ?? [],
@@ -532,6 +531,7 @@ export function useProducts() {
 
     //output for  indent/list
     refetchIndentList: indentListQuery.refetch,
+    isFetchingIndentList: indentListQuery.isFetching,
     isLoadingIndentList: indentListQuery.isLoading,
     errorIndentList: indentListQuery.error,
     indentList: indentListQuery.data?.data.result.indents ?? [],

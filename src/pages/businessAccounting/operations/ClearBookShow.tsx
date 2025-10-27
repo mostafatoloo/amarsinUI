@@ -10,15 +10,53 @@ import { useGeneralContext } from "../../../context/GeneralContext";
 import useCalculateTableHeight from "../../../hooks/useCalculateTableHeight";
 import TTable, { EditableInput } from "../../../components/controls/TTable";
 import { convertToFarsiDigits } from "../../../utilities/general";
-import { DefaultOptionTypeStringId, TableColumns } from "../../../types/general";
-import { useClearBook } from "../../../hooks/useClearBook";
+import {
+  DefaultOptionTypeStringId,
+  TableColumns,
+} from "../../../types/general";
 import { useClearBookStore } from "../../../store/clearBookStore";
 import ErrorPage from "../../../components/common/ErrorPage";
-import { ClearBookProductsSetProductRequest } from "../../../types/clearBook";
+import {
+  ClearBook,
+  ClearBookProductsName,
+  ClearBookProductsResponse,
+  ClearBookProductsSetProductRequest,
+} from "../../../types/clearBook";
+import {
+  QueryObserverResult,
+  RefetchOptions,
+  UseMutateFunction,
+} from "@tanstack/react-query";
 
-export default function ClearBookShow() {
-  const { clearBookProducts, error, isLoading, refetch, setProduct } =
-    useClearBook();
+type Props = {
+  isFetching: boolean;
+  clearBookProducts: {
+    err: number;
+    msg: string;
+    clearBookProductsName: ClearBookProductsName[];
+    clearBooks: ClearBook[];
+  };
+  error: Error | null;
+  isLoading: boolean;
+  refetch: (
+    options?: RefetchOptions
+  ) => Promise<QueryObserverResult<ClearBookProductsResponse, Error>>;
+  setProduct: UseMutateFunction<
+    any,
+    Error,
+    ClearBookProductsSetProductRequest,
+    unknown
+  >;
+};
+
+export default function ClearBookShow({
+  isFetching,
+  clearBookProducts,
+  error,
+  isLoading,
+  refetch,
+  setProduct,
+}: Props) {
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in clearBookShow table
   const columns: TableColumns = [
     {
@@ -134,7 +172,7 @@ export default function ClearBookShow() {
                       ? true
                       : false
                   }
-                  onChange={()=>console.log("changed")}
+                  onChange={() => console.log("changed")}
                   /*onClick={() =>
                     handleSetProduct(
                       clearBook.id,
@@ -214,7 +252,7 @@ export default function ClearBookShow() {
             onRetry={() => refetch()}
             showHomeButton={true}
           />
-        ) : isLoading ? (
+        ) : isLoading || isFetching ? (
           <div className="text-center">{<Skeleton />}</div>
         ) : clearBookProducts.clearBookProductsName?.length > 0 ? (
           <div

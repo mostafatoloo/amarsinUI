@@ -142,6 +142,7 @@ export function useProcurementAttachment() {
   });
   return {
     refetchProcurementAttachment: () => procurementAttachmentQuery.refetch(),
+    isFetchingProcurementAttachment: procurementAttachmentQuery.isFetching,
     isLoadingProcurementAttachment: procurementAttachmentQuery.isLoading,
     errorProcurementAttachment: procurementAttachmentQuery.error,
     procurementAttachmentResponse: procurementAttachmentQuery.data ?? {

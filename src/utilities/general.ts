@@ -9,13 +9,13 @@ export const convertToLatinDigits = (
   if (str === null || str === undefined) {
     return "";
   }
-  if (typeof str === "number") {
-    return str;
-  }
-  return str.replace(/[۰-۹]/g, (d) => {
+  // Convert Farsi digits to Latin digits, preserve minus sign and other characters
+  const result = str.replace(/[۰-۹]/g, (d) => {
     const index = farsiDigits.indexOf(d);
     return index !== -1 ? index.toString() : d;
   });
+  
+  return result;
 };
 /////////////////////////////////////////////////////////////
 export const convertToFarsiDigits = (
@@ -249,3 +249,17 @@ export const addPersianDays = (date: string, days: number): string => {
   newDate.add(days, "days");
   return convertToPersianDate(newDate.toDate() ?? new Date());
 };
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//normalize input for search for ی و ک
+export function normalizeInputForSearch(input: string): string {
+  return input
+    .replace(/[يك]/g, (c) => {
+      // تبدیل کاراکترهای عربی/فارسی به نسخهٔ همسان
+      if (c === 'ي' || c === 'ی') return 'ی';
+      if (c === 'ك' || c === 'ک') return 'ک';
+      return c;
+    })
+    .normalize('NFKC')
+    .replace(/\s+/g, ' ')
+    .trim();
+}

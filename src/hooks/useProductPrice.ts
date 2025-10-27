@@ -349,6 +349,7 @@ import { ShowProductListRequest } from "../types/productOperation";
       //for productPrice
       refetch: query.refetch,
       isLoading: query.isLoading,
+      isFetching: query.isFetching,
       error: query.error,
       productPrice: query.data?.data.result.productPrices,
       productPriceMeta: query.data?.meta,
