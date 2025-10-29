@@ -30,6 +30,7 @@ type Props = {
     |Indent |null;
   data: any[];
   refetch: () => void;
+  //setIsOpen?: (isOpen: boolean) => void; //if it comes from menu it will be set to true else it will be set to false
 };
 
 const ProductOfferHeader = ({
@@ -41,6 +42,7 @@ const ProductOfferHeader = ({
   selectedProductOffer,
   data,
   refetch,
+  //setIsOpen,
 }: Props) => {
   return (
     <header className="flex flex-col gap-2 md:flex-row items-center justify-between border-gray-300 border-b pb-2">
@@ -48,7 +50,9 @@ const ProductOfferHeader = ({
       <div className="flex px-4 items-center gap-4">
         <div
           className="flex flex-col items-center cursor-pointer"
-          onClick={() => setIsNew(true)} // for new
+          onClick={() => {
+            setIsNew(true);
+          }} // for new
         >
           <img src={Add32} alt="Add32" className="w-6 h-6" />
           <p className="text-xs">جدید</p>

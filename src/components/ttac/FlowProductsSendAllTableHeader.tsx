@@ -1,5 +1,6 @@
 import React from "react";
 import { TableColumns } from "../../types/general";
+import Question16 from "../../assets/images/GrayThem/question16.png";
 type Props = {
   columns: TableColumns;
   sendSortId: number;
@@ -40,6 +41,7 @@ type Props = {
   setSendSortIsCancel: (sendSortIsCancel: number) => void;
   setSendSortFlowMapName: (sendSortFlowMapName: number) => void;
   setSendSortCompleteDate: (sendSortCompleteDate: number) => void;
+  handleStatusSelectAllClick: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 const FlowProductsSendAllTableHeader = React.memo(
@@ -83,6 +85,7 @@ const FlowProductsSendAllTableHeader = React.memo(
     setSendSortIsCancel,
     setSendSortFlowMapName,
     setSendSortCompleteDate,
+    handleStatusSelectAllClick,
   }: Props) => {
     const setSort = (
       setHeaderList: ((sort: number) => void)[],
@@ -583,7 +586,14 @@ const FlowProductsSendAllTableHeader = React.memo(
                 }
               }}
             >
-              {column.Header}
+              {column.accessor !== "statusImages" ? (
+                column.Header
+              ) : (
+                <div className="flex justify-evenly items-center w-full">
+                  <input type="checkbox" onChange={(e) => handleStatusSelectAllClick(e)}/>
+                  <img src={Question16} alt="Question16" className="w-4 h-4" />
+                </div>
+              )}
             </div>
           ))}
       </div>

@@ -105,17 +105,70 @@ interface FlowProductsSendAllResponse {
   meta: Meta;
   data: FlowProductsSendAllData;
 }
+//api/TTAC/CupboardCapture?Id=3936018&CurrentDateTime=false
+//request in state:
+/*interface CupboardCaptureRequest {
+  id: number;
+  currentDateTime: boolean;
+}*/
+interface Result {
+  id: number;
+  err: number;
+  status: number;
+  successed: number;
+  msg: string;
+  formId: number;
+  logId: number;
+  eventId: string;
+  stockQuantity: number;
+}
+
+interface DataCupboardCapture {
+  result: Result;
+}
+export interface CupboardCaptureResponse {
+  meta: Meta;
+  data: DataCupboardCapture;
+}
+
+///api/TTAC/ImportTtacStatus?SystemId=4&ltId=620871
+//request in state:
+/*interface ImportTTacStatusRequest {
+  systemId: number;
+  ltId: number;
+}*/
+interface ImportTTacStatusResponse {
+  meta: Meta;
+  data: ImportTTacStatusData;
+}
+interface ImportTTacStatusData {
+  result: Result;
+}
+
 
 export interface ttacState
   extends GetInventoryBalanceRequest,
     FlowProductsSendAllRequest {
+  cupboardCaptureId: number; //for api/TTAC/CupboardCapture
+  cupboardCaptureCurrentDateTime: boolean; //for api/TTAC/CupboardCapture
+  cupboardCaptureIdempotencyKey: string; //for api/TTAC/CupboardCapture
+  importTTacStatusSystemId: number; //for api/TTAC/ImportTTacStatus
+  importTTacStatusLtId: number; //for api/TTAC/ImportTTacStatus
   getInventoryBalanceResponse: GetInventoryBalanceResponse;
   flowProductsSendAllResponse: FlowProductsSendAllResponse;
+  cupboardCaptureResponse: CupboardCaptureResponse; //for api/TTAC/CupboardCapture
+  importTTacStatusResponse: ImportTTacStatusResponse; //for api/TTAC/ImportTTacStatus
   setField: (field: string | number | symbol, value: any) => void;
   setGetInventoryBalanceResponse: (
     getInventoryBalanceResponse: GetInventoryBalanceResponse
   ) => void;
   setFlowProductsSendAllResponse: (
     flowProductsSendAllResponse: FlowProductsSendAllResponse
+  ) => void;
+  setCupboardCaptureResponse: (
+    cupboardCaptureResponse: CupboardCaptureResponse
+  ) => void;
+  setImportTTacStatusResponse: (
+    importTTacStatusResponse: ImportTTacStatusResponse
   ) => void;
 }

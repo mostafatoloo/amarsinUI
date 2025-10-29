@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { ttacState } from "../types/ttac";
 
 export const useTTacStore = create<ttacState>()((set) => ({
-    //for GetInventoryBalance
+  //for GetInventoryBalance
   systemId: 0,
   yearId: 0,
   hasErr: false,
@@ -38,7 +38,7 @@ export const useTTacStore = create<ttacState>()((set) => ({
   sendSrchSuccessed: "",
   sendSrchIsCancel: "",
   sendSrchFlowMapName: "",
-  sendSrchCompleteDate:"",
+  sendSrchCompleteDate: "",
   sendSortId: 0,
   sendSortFId: 0,
   sendSortTId: 0,
@@ -62,6 +62,49 @@ export const useTTacStore = create<ttacState>()((set) => ({
     meta: { errorCode: 0, message: "", type: "" },
     data: { result: [], total_count: 0 },
   },
+  //for api/TTAC/CupboardCapture
+  cupboardCaptureId: 0,
+  cupboardCaptureCurrentDateTime: false,
+  cupboardCaptureIdempotencyKey: "550e8400-e29b-41d4-a716-446655440000",
+  cupboardCaptureResponse: {
+    meta: { errorCode: 0, message: "", type: "" },
+    data: {
+      result: {
+        id: 0,
+        err: 0,
+        status: 0,
+        successed: 0,
+        msg: "",
+        formId: 0,
+        logId: 0,
+        eventId: "",
+        stockQuantity: 0,
+      },
+    },
+  },
+  //for api/TTAC/ImportTTacStatus
+  importTTacStatusSystemId: 0,
+  importTTacStatusLtId: 0,
+  importTTacStatusResponse: {
+    meta: { errorCode: 0, message: "", type: "" },
+    data: {
+      result: {
+        id: 0,
+        err: 0,
+        status: 0,
+        successed: 0,
+        msg: "",
+        formId: 0,
+        logId: 0,
+        eventId: "",
+        stockQuantity: 0,
+      },
+    },
+  },
+  setImportTTacStatusResponse: (importTTacStatusResponse) =>
+    set({ importTTacStatusResponse }),
+  setCupboardCaptureResponse: (cupboardCaptureResponse) =>
+    set({ cupboardCaptureResponse }),
   setField: (field: string | number | symbol, value: any) =>
     set((state) => ({ ...state, [field]: value })),
   setGetInventoryBalanceResponse: (getInventoryBalanceResponse) =>

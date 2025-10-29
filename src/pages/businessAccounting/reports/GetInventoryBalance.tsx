@@ -176,6 +176,7 @@ const GetInventoryBalance = () => {
         onClose={() => setIsFlowProductsSendAll(false)}
         title="لیست ارسال"
         width="1"
+        //height={height.toString()}
       >
         <FlowProductsSendAll />
       </ModalForm>

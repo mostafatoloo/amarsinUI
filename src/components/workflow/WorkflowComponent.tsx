@@ -70,6 +70,8 @@ export default function WorkflowComponent({
           refetchSwitch={refetchSwitch}
           setRefetchSwitch={setRefetchSwitch}
           isNew={false}
+          setIsNew={() => {}}
+          setIsEdit={() => {}}
         />
       );
       break;
@@ -237,6 +239,8 @@ export default function WorkflowComponent({
           refetchSwitch={refetchSwitch}
           setRefetchSwitch={setRefetchSwitch}
           isNew={false}
+          setIsNew={() => {}}
+          setIsEdit={() => {}}
         />
       );
       break;

@@ -6,14 +6,14 @@ import { Indent } from "../../types/product";
 type Props = {
   selectedIndent: Indent | null;
   isNew: boolean;
-  //setIsNew: (isNew: boolean) => void;
-  //setIsEdit: (isEdit: boolean) => void;
+  setIsNew: (isNew: boolean) => void;
+  setIsEdit: (isEdit: boolean) => void;
 };
 const PurchaseRequestIndentForm = ({
   selectedIndent,
   isNew,
-  //setIsNew,
-  //setIsEdit,
+  setIsNew,
+  setIsEdit,
 }: Props) => {
   ///////////////////////////////////////////////////////
   const [refetchSwitch, setRefetchSwitch] = useState(false);
@@ -65,6 +65,7 @@ const PurchaseRequestIndentForm = ({
     ],
   };
 
+  
   return (
     <div>
       <InvoiceReceiptShow
@@ -72,8 +73,8 @@ const PurchaseRequestIndentForm = ({
         refetchSwitch={refetchSwitch}
         setRefetchSwitch={setRefetchSwitch}
         isNew={isNew}
-        //setIsNew={setIsNew}
-        //setIsEdit={setIsEdit}
+        setIsNew={setIsNew}
+        setIsEdit={setIsEdit}
       />
     </div>
   );

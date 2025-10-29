@@ -2,12 +2,15 @@ import { toJalaali } from "jalaali-js";
 import DateObject from "react-date-object";
 import persian from "react-date-object/calendars/persian";
 export const convertToLatinDigits = (
-  str: string | null | undefined
+  str: string | null | undefined 
 ): string => {
   const farsiDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
 
   if (str === null || str === undefined) {
     return "";
+  }
+  if (typeof str === "number") {
+    return str
   }
   // Convert Farsi digits to Latin digits, preserve minus sign and other characters
   const result = str.replace(/[۰-۹]/g, (d) => {

@@ -55,7 +55,7 @@ const InvoiceReceipShowHeader = ({
     setBrandField("search", brandsearch);
   }, [brandsearch, systemId]);
   const { brands } = useBrand();
-
+//for api/Product/salesPricesSearch req
   useEffect(() => {
     console.log(cusomerSearch);
     setSalesPriceField("salesPricesSearch", salesPricesearch);

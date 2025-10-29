@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import Skeleton from "../layout/Skeleton";
 import TTable from "../controls/TTable";
 import { TableColumns } from "../../types/general";
 import { TablePaginationActions } from "../controls/TablePaginationActions";
@@ -12,6 +11,7 @@ import { colors } from "../../utilities/color";
 import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
 import { useTTacStore } from "../../store/ttacStore";
 import FlowProductsSendAllTableHeader from "./FlowProductsSendAllTableHeader";
+import Spinner from "../controls/Spinner";
 
 type Props = {
   isLoading: boolean;
@@ -24,6 +24,7 @@ type Props = {
   totalCount: number;
   selectedRowIndex: number;
   setSelectedRowIndex: (selectedRowIndex: number) => void;
+  handleStatusSelectAllClick: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 const FlowProductsSendAllTable = ({
@@ -37,6 +38,7 @@ const FlowProductsSendAllTable = ({
   totalCount,
   selectedRowIndex,
   setSelectedRowIndex,
+  handleStatusSelectAllClick,
 }: Props) => {
   //const { width, height } = useCalculateTableHeight();
   const { setField } = useTTacStore();
@@ -258,12 +260,13 @@ const FlowProductsSendAllTable = ({
     }
     return "";
   };
+  //////////////////////////////////////////////////////////////
   const { width, height } = useCalculateTableHeight();
-
+  ////////////////////////////////////////////////////////////
   return (
-    <div className="px-2 h-full text-xs">
+    <div className="h-full text-xs">
       {isLoading ? (
-        <Skeleton />
+        <Spinner />
       ) : (
         <div
           className="mt-2 overflow-y-auto"
@@ -407,6 +410,7 @@ const FlowProductsSendAllTable = ({
             setSendSortIsCancel={setSendSortIsCancel}
             setSendSortFlowMapName={setSendSortFlowMapName}
             setSendSortCompleteDate={setSendSortCompleteDate}
+            handleStatusSelectAllClick={handleStatusSelectAllClick}
           />
           <TTable
             selectedRowIndex={selectedRowIndex}

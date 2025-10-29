@@ -69,6 +69,8 @@ type Props = {
   isDtHistoryLoading: boolean;
   getIndentMrsResponse: () => void;
   setProductSearchinTable: React.Dispatch<React.SetStateAction<string>>;
+  setIsNew: (isNew: boolean) => void;
+  setIsEdit: (isEdit: boolean) => void;
 };
 export const headCells = [
   {
@@ -218,6 +220,8 @@ const InvoiceReceiptShowTable = ({
   isLoadingSaveList,
   isDtHistoryLoading,
   getIndentMrsResponse,
+  setIsNew,
+  setIsEdit,
 }: Props) => {
   const [showHistory, setShowHistory] = useState<boolean>(false);
   const [brandSearch, setBrandSearch] = useState<string>("");
@@ -614,11 +618,14 @@ const InvoiceReceiptShowTable = ({
     try {
       const response = await saveList(request);
       getIndentMrsResponse();
+      setIsNew(false);
+      setIsEdit(false);
       return response;
     } catch (error) {
       console.error("Error ثبت :", error);
     }
   };
+  ///////////////////////////////////////////////////////
   const { height } = useCalculateTableHeight();
   return (
     <>

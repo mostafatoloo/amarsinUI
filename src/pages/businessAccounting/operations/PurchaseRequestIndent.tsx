@@ -56,6 +56,7 @@ const PurchaseRequestIndent = () => {
   const [selectedId, setSelectedId] = useState<number>(0);
   const [isNew, setIsNew] = useState<boolean>(false); //for new
   const [isEdit, setIsEdit] = useState<boolean>(false); //for edit
+  const [isOpen, setIsOpen] = useState<boolean>(false); //for open modal
   //for ProductPermParams params
   const [regFDate, setRegFDate] = useState<Date | null>(null);
   const [regTDate, setRegTDate] = useState<Date | null>(null);
@@ -421,6 +422,19 @@ const PurchaseRequestIndent = () => {
       }
     };
   }, [isModalOpen, isModalConfirmOpen, isModalDeleteOpen]);
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    if (isOpen) {
+      timeoutId = setTimeout(() => {
+        setIsOpen(false);
+      }, 3000);
+    }
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [isOpen]);
 
   const handleConfirm = () => {
     const request: IndentDoFirstFlowRequest = {
@@ -481,6 +495,7 @@ const PurchaseRequestIndent = () => {
       <ProductOfferHeader
         columns={columns}
         setIsNew={setIsNew}
+        //setIsOpen={setIsOpen}//for open/close modal
         handleDelete={handleDelete}
         handleEdit={handleEdit}
         handleConfirm={handleConfirm}
@@ -661,10 +676,11 @@ const PurchaseRequestIndent = () => {
         )}
       </div>
       <ModalForm
-        isOpen={isNew || isEdit}
+        isOpen={ isNew || isEdit}
         onClose={() => {
           setIsNew(false);
           setIsEdit(false);
+          //setIsOpen(false);
         }}
         title="سفارش"
         width="1"
@@ -673,6 +689,9 @@ const PurchaseRequestIndent = () => {
         <PurchaseRequestIndentForm
           selectedIndent={selectedIndent}
           isNew={isNew}
+          setIsNew={setIsNew}
+          setIsEdit={setIsEdit}
+          //setIsOpen={setIsOpen}//for open/close modal
           //setIsNew={setIsNew}
           //setIsEdit={setIsEdit}
         />

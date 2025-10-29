@@ -45,9 +45,9 @@ const ModalForm: React.FC<ModalProps> = ({
 
   return (
     <div
-      className={`fixed w-full inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 transition-opacity duration-300 opacity-100`}
+      className={`fixed mt-4 w-full inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 transition-opacity duration-300 opacity-100 h-screen`}
     >
-      <div className={classname} style={{ height: height }}>
+      <div className={classname} style={{ height: height ? height : 'auto'}}>
         {showCloseButton && (
           <button
             className="absolute top-2 right-2 text-gray-200 hover:text-white text-4xl w-16 h-16"
@@ -64,9 +64,7 @@ const ModalForm: React.FC<ModalProps> = ({
             </h2>
           </header>
         )}
-        <div className="w-full">
-          {children}
-        </div>
+        <div className="w-full">{children}</div>
       </div>
     </div>
   );

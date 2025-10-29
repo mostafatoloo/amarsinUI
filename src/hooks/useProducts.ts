@@ -146,7 +146,7 @@ export function useProducts() {
       );
       return response.data;
     },
-    enabled: !!salesPricesSearch && !!salesPricesSearchPage && !!lastId,
+    //enabled: !!salesPricesSearch && !!salesPricesSearchPage && !!lastId,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
   } as UseQueryOptions<SalesPricesSearchResponse, Error, SalesPricesSearchResponse, unknown[]>);

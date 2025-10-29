@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import Skeleton from "../layout/Skeleton";
 import TTable from "../controls/TTable";
 import { TableColumns } from "../../types/general";
 import { TablePaginationActions } from "../controls/TablePaginationActions";
@@ -12,6 +11,7 @@ import {
 import { colors } from "../../utilities/color";
 import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
 import { useTTacStore } from "../../store/ttacStore";
+import Spinner from "../controls/Spinner";
 
 type Props = {
   isLoading: boolean;
@@ -190,7 +190,7 @@ const GetInventoryBalanceShowTable = ({
   return (
     <div className="px-2 h-full">
       {isLoading ? (
-        <Skeleton />
+        <Spinner />
       ) : (
         <div
           className="mt-2 overflow-y-auto"

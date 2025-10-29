@@ -40,8 +40,8 @@ type Props = {
   refetchSwitch: boolean;
   setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
   isNew: boolean;
-  //setIsNew?: (isNew: boolean) => void;
-  //setIsEdit?: (isEdit: boolean) => void;
+  setIsNew: (isNew: boolean) => void;
+  setIsEdit: (isEdit: boolean) => void;
 };
 
 export type Fields = {
@@ -62,8 +62,10 @@ const InvoiceReceiptShow = ({
   refetchSwitch,
   setRefetchSwitch,
   isNew,
-}: //setIsNew,
-//setIsEdit,
+  setIsNew,
+  setIsEdit,
+  //setIsOpen,//for close modal
+}: 
 Props) => {
   const canEditForm = workFlowRowSelectResponse.workTableForms.canEditForm1;
   const { setField, mrsId } = useInvoiceReceiptStore();
@@ -135,7 +137,7 @@ Props) => {
       setRefetchSwitch(false);
     }
   }, [refetchSwitch]);
-
+///////////////////////////////////////////////////////
   useEffect(() => {
     setFields((prev: Fields) => ({
       ...prev,
@@ -182,7 +184,7 @@ Props) => {
   {
     isLoading && <p>در حال بارگذاری...</p>;
   }
-
+///////////////////////////////////////////////////////
   const handleSubmit = async (
     e?: React.MouseEvent<HTMLButtonElement>,
     productId: number = 0
@@ -214,7 +216,7 @@ Props) => {
       console.error("Error editing indents:", error);
     }
   };
-
+///////////////////////////////////////////////////////
   const newRow: IndentDtlTable = {
     index: 0,
     id: 0,
@@ -306,6 +308,7 @@ Props) => {
         },
       ]);
     }
+    //setIsOpen!==undefined && setIsOpen(false); //for close modal
   };
 
   const handleShowDeleted = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -354,7 +357,12 @@ Props) => {
     }, 500),
     [setProductField]
   );
-  //////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////
+  useEffect(() => {
+    if (isNew && addList.length === 0) {
+      setAddList([newRow]);
+    }
+  }, []);
   return (
     <div className="w-full flex flex-col">
       <InvoiceReceipShowHeader
@@ -427,6 +435,8 @@ Props) => {
         isLoadingSaveList={isLoadingSaveList}
         isDtHistoryLoading={isDtHistoryLoading}
         getIndentMrsResponse={getIndentMrsResponse}
+        setIsNew={setIsNew}
+        setIsEdit={setIsEdit}
       />
     </div>
   );

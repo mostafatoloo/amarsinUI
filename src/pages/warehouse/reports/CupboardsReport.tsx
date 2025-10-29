@@ -4,7 +4,6 @@ import Refresh32 from "../../../assets/images/GrayThem/rfrsh32.png";
 import ExcelIcon from "../../../assets/images/GrayThem/excel24.png";
 import Survey24 from "../../../assets/images/GrayThem/survey24.png";
 import CupboardsReportShow from "../../../components/cupboardsReport/CupboardsReportShow";
-import { handleExport } from "../../../utilities/ExcelExport";
 import { useEffect, useState } from "react";
 import { TableColumns } from "../../../types/general";
 import { useCupboardReport } from "../../../hooks/useCupboardsReport";
@@ -20,10 +19,12 @@ const CupboardsReport = () => {
     isLoadingCupboardsReport,
     isFetchingCupboardsReport,
     refetchCupboardsReport,
+    refetchDownloadExcel,
+    isLoadingDownloadExcel,
+    downloadExcelResponse,
   } = useCupboardReport();
 
   const [data, setData] = useState<any[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   // for pagination
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(35);
@@ -116,8 +117,58 @@ const CupboardsReport = () => {
     },
   ];
   useEffect(() => {
-    console.log(isModalOpen);
-  }, []);
+    if (downloadExcelResponse) {
+      console.log("downloadExcelResponse", downloadExcelResponse);
+      handleDownloadExcel(downloadExcelResponse);
+    }
+  }, [downloadExcelResponse]);
+
+  const handleDownloadExcel = async (data: any) => {
+    const blob = new Blob([data], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    // Check if the browser supports the File System Access API
+    if ('showSaveFilePicker' in window) {
+      try {
+        const handle = await (window as any).showSaveFilePicker({
+          suggestedName: "CupboardsReport.xlsx",
+          types: [
+            {
+              description: "Excel Files",
+              accept: {
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+              },
+            },
+          ],
+        });
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+      } catch (err: any) {
+        // User cancelled or error occurred
+        if (err.name !== 'AbortError') {
+          console.error("Error saving file:", err);
+          // Fallback to traditional download
+          fallbackDownload(blob);
+        }
+      }
+    } else {
+      // Fallback for browsers that don't support File System Access API
+      fallbackDownload(blob);
+    }
+  };
+
+  const fallbackDownload = (blob: Blob) => {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "CupboardsReport.xlsx";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
   // for initializing data
   useEffect(() => {
     const tempData = cupboardsReportResponse.data.result.map((c, index) => {
@@ -217,20 +268,13 @@ const CupboardsReport = () => {
             <img src={Survey24} alt="Add32" className="w-6 h-6" />
             <p className="text-xs">استعلام</p>
           </div>
-          <div
+          <button
             className="flex flex-col items-center cursor-pointer"
-            onClick={() => {
-              handleExport({
-                data,
-                setIsModalOpen,
-                headCells: columns,
-                fileName: "data_export.xlsx",
-              });
-            }}
+            onClick={() => refetchDownloadExcel()} disabled={isLoadingDownloadExcel}
           >
             <img src={ExcelIcon} alt="ExcelIcon" className="w-6 h-6" />
             <p className="text-xs">اکسل</p>
-          </div>
+          </button>
           <div
             className="flex flex-col items-center cursor-pointer"
             onClick={handleRefetchCupboardsReport}

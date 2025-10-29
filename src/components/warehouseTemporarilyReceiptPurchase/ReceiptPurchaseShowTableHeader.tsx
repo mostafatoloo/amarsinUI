@@ -44,9 +44,9 @@ const ReceiptPurchaseShowTableHeader = ({
   const { salesPricesSearchResponse } = useProducts();
   const [salesPriceSearch, setSalesPriceSearch] = useState<string>("");
   const { setField: setSalesPriceField } = useWarehouseStore();
-
+//for api/Product/salesPricesSearch req
   useEffect(() => {
-    setSalesPriceField("salesPricesSearch", salesPriceSearch);
+    setSalesPriceField("salesPricesSearch", salesPriceSearch); 
     setSalesPriceField("salesPricesSearchPage", 1);
     setSalesPriceField("lastId", 0);
   }, [salesPriceSearch]);
