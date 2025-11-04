@@ -1,4 +1,4 @@
-//گزارش غذا و دارو 
+//خسابداری->حسابداری بازرگانی->گزارشات-> گزارش غذا و دارو
 import PageTitle from "../../../components/layout/PageTitle";
 import Refresh32 from "../../../assets/images/GrayThem/rfrsh32.png";
 import Okform from "../../../assets/images/GrayThem/okform24.png";
@@ -19,6 +19,14 @@ const GetInventoryBalance = () => {
     isLoadingGetInventoryBalance,
     isFetchingGetInventoryBalance,
     refetchGetInventoryBalance,
+    refetchFlowProductsSendAll,
+    flowProductsSendAllResponse,
+    isLoadingFlowProductsSendAll,
+    isFetchingFlowProductsSendAll,
+    cupboardCaptureResponse,
+    isLoadingCupboardCapture,
+    importTTacStatusResponse,
+    isLoadingImportTTacStatus,
   } = useTtac();
 
   const [data, setData] = useState<any[]>([]);
@@ -124,31 +132,35 @@ const GetInventoryBalance = () => {
         <PageTitle />
         <div className="flex px-4 items-center gap-4">
           <div
-            className="flex flex-col items-center cursor-pointer"
+            className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1"
             onClick={handleFlowProductsSendAll}
           >
-            <img src={Okform} alt="Okform" className="w-6 h-6" 
-            onClick={handleStatusClick}/>
+            <img
+              src={Okform}
+              alt="Okform"
+              className="w-6 h-6"
+              onClick={handleStatusClick}
+            />
             <p className="text-xs">ارسال</p>
           </div>
-          <div className="flex flex-col items-center cursor-pointer">
+          <div className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1">
             <img src={Okform} alt="Okform" className="w-6 h-6" />
             <p className="text-xs">موجودی</p>
           </div>
-          <div className="flex flex-col items-center cursor-pointer">
+          <div className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1">
             <img src={Okform} alt="Okform" className="w-6 h-6" />
             <p className="text-xs">انبارگردانی</p>
           </div>
-          <div className="flex flex-col items-center cursor-pointer">
+          <div className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1">
             <img src={Checklist} alt="Checklist" className="w-6 h-6" />
             <p className="text-xs">وقایع</p>
           </div>
-          <div className="flex flex-col items-center cursor-pointer">
+          <div className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1">
             <img src={Okform} alt="Okform" className="w-6 h-6" />
             <p className="text-xs">حذف</p>
           </div>
           <div
-            className="flex flex-col items-center cursor-pointer"
+            className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1"
             onClick={handleRefetchCupboardsReport}
           >
             <img src={Refresh32} alt="Refresh32" className="w-6 h-6" />
@@ -178,7 +190,16 @@ const GetInventoryBalance = () => {
         width="1"
         //height={height.toString()}
       >
-        <FlowProductsSendAll />
+        <FlowProductsSendAll
+          refetchFlowProductsSendAll={refetchFlowProductsSendAll}
+          flowProductsSendAllResponse={flowProductsSendAllResponse}
+          isLoadingFlowProductsSendAll={isLoadingFlowProductsSendAll}
+          isFetchingFlowProductsSendAll={isFetchingFlowProductsSendAll}
+          cupboardCaptureResponse={cupboardCaptureResponse}
+          isLoadingCupboardCapture={isLoadingCupboardCapture}
+          importTTacStatusResponse={importTTacStatusResponse}
+          isLoadingImportTTacStatus={isLoadingImportTTacStatus}
+        />
       </ModalForm>
     </div>
   );

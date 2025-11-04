@@ -25,6 +25,9 @@ const ModalForm: React.FC<ModalProps> = ({
   let classname = `md:w-${width} bg-white rounded-lg shadow-lg w-full relative p-4 mt-4 animate-open-modal`;
 
   switch (width) {
+    case "1/3":
+      classname = `bg-white rounded-lg shadow-lg w-full md:w-1/3 relative p-4 mt-4 md:animate-open-modal`;
+      break;
     case "1/2":
       classname = `bg-white rounded-lg shadow-lg w-full md:w-1/2 relative p-4 mt-4 md:animate-open-modal`;
       break;
@@ -46,8 +49,18 @@ const ModalForm: React.FC<ModalProps> = ({
   return (
     <div
       className={`fixed mt-4 w-full inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 transition-opacity duration-300 opacity-100 h-screen`}
+      onClick={() => {
+        // just close the modal if width is 1/2 || 1/3
+        if (width === "1/2" || width === "1/3") {
+          onClose();
+        }
+      }}
     >
-      <div className={classname} style={{ height: height ? height : 'auto'}}>
+      <div 
+        className={classname} 
+        style={{ height: height ? height : 'auto'}}
+        onClick={(e) => e.stopPropagation()}
+      >
         {showCloseButton && (
           <button
             className="absolute top-2 right-2 text-gray-200 hover:text-white text-4xl w-16 h-16"

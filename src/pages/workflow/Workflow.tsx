@@ -1,11 +1,11 @@
-import PageTitle from "../components/layout/PageTitle";
-import Add32 from "../assets/images/GrayThem/add32.png";
-import FormFlow24 from "../assets/images/GrayThem/FormFlow24.png";
-import SentForm24 from "../assets/images/GrayThem/SentForm24.png";
-import Refresh32 from "../assets/images/GrayThem/rfrsh32.png";
+import PageTitle from "../../components/layout/PageTitle";
+import Add32 from "../../assets/images/GrayThem/add32.png";
+import FormFlow24 from "../../assets/images/GrayThem/FormFlow24.png";
+import SentForm24 from "../../assets/images/GrayThem/SentForm24.png";
+import Refresh32 from "../../assets/images/GrayThem/rfrsh32.png";
 //import { useWorkflow } from "../hooks/useWorkflow";
-import WorkflowForm from "../components/workflow/WorkflowForm";
-import { useWorkflow } from "../hooks/useWorkflow";
+import WorkflowForm from "../../components/workflow/WorkflowForm";
+import { useWorkflow } from "../../hooks/useWorkflow";
 import {  useState } from "react";
 
 export default function Workflow() {
@@ -17,9 +17,12 @@ export default function Workflow() {
     workFlowRowSelectResponse,
     errorRowSelect,
     doFlow,
+    workFlowDoFlowResponse,
     isLoadingdoFlow,
-    getWorkTable,
-    getWorkTableRowSelect,
+    refetchWorkTable,
+    refetchWorkTableRowSelect,
+    isRefetchingWorkTable,
+    isRefetchingWorkTableRowSelect,
   } = useWorkflow();
   //const { setField: setWorkFlowStoreField, workTableId } = useWorkflowStore();
   //const { systemId } = useGeneralContext();
@@ -27,8 +30,8 @@ export default function Workflow() {
   const [refetchSwitch, setRefetchSwitch] = useState(false);
 
   const refetchWorkTables = () => {
-    getWorkTable();
-    getWorkTableRowSelect();
+    refetchWorkTable();
+    refetchWorkTableRowSelect();
     setRefetchSwitch(true);
   };
   return (
@@ -36,21 +39,21 @@ export default function Workflow() {
       {/* Top blue header */}
       <header className="flex flex-col md:flex-row items-center justify-between gap-2">
         <PageTitle />
-        <div className="flex px-4 items-center gap-4">
-          <div className="flex flex-col items-center cursor-pointer">
+        <div className="flex px-4 items-center gap-2">
+          <div className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1">
             <img src={Add32} alt="Add32" className="w-6 h-6" />
             <p className="text-xs">جدید</p>
           </div>
-          <div className="flex flex-col items-center cursor-pointer">
+          <div className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1">
             <img src={SentForm24} alt="SentForm24" className="w-6 h-6" />
             <p className="text-xs">ارسال شده ها</p>
           </div>
-          <div className="flex flex-col items-center cursor-pointer">
+          <div className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1">
             <img src={FormFlow24} alt="FormFlow24" className="w-6 h-6" />
             <p className="text-xs">گردش</p>
           </div>
           <div
-            className="flex flex-col items-center cursor-pointer"
+            className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1"
             onClick={refetchWorkTables}
           >
             {/*onClick={()=>getWorkTable()}>*/}
@@ -72,10 +75,13 @@ export default function Workflow() {
           errorRowSelect={errorRowSelect}
           doFlow={doFlow}
           isLoadingdoFlow={isLoadingdoFlow}
-          getWorkTable={getWorkTable}
-          getWorkTableRowSelect={getWorkTableRowSelect}
+          refetchWorkTable={refetchWorkTable}
+          refetchWorkTableRowSelect={refetchWorkTableRowSelect}
+          isRefetchingWorkTable={isRefetchingWorkTable}
+          isRefetchingWorkTableRowSelect={isRefetchingWorkTableRowSelect}
           refetchSwitch={refetchSwitch}
           setRefetchSwitch={setRefetchSwitch}
+          workFlowDoFlowResponse={workFlowDoFlowResponse}
         />
       </main>
 

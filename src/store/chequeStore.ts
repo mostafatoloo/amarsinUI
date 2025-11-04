@@ -15,7 +15,7 @@ export const useChequeStore = create<ChequeState>()((set) => ({
         srName: "",
         marketerSrName: "",
         kind: 0,
-        payKind: 0,
+        payKind: -1,
         dat: "",
         sayadi: "",
         sarDate: "",
@@ -44,7 +44,7 @@ export const useChequeStore = create<ChequeState>()((set) => ({
       },
     },
   },
-  id: 0,
+  id: -1,
   updateFieldsResponse: {
     meta: { errorCode: 0, message: "", type: "" },
     data: {
@@ -76,7 +76,7 @@ export const useChequeStore = create<ChequeState>()((set) => ({
   search: "",
   page: 1,
   lastId: 0,
-  systemId: 0,
+  systemId: -1,
   payKind: -1,
   cashPosSystemSearchResponse: {
     total_count: 0,
@@ -108,15 +108,25 @@ export const useChequeStore = create<ChequeState>()((set) => ({
       },
     },
   },
-  formId: 0,
-  actCode: "",
-  curId: 0,
+  formId: -1,
+  actCode: "Last",
+  curId: -1,
   includeBase64: false,
-  paymentId: 0, //for Payment/sayadChequeInquiryByPaymentId
-  sayadChequeInquiryByPaymentIdResponse: {//for Payment/sayadChequeInquiryByPaymentId
+  paymentId: -1, //for Payment/sayadChequeInquiryByPaymentId
+  sayadChequeInquiryByPaymentIdResponse: {
+    //for Payment/sayadChequeInquiryByPaymentId
     meta: { errorCode: 0, message: "", type: "" },
     data: {
-      result: { err: 0, sayadiStatus: 0, msg: "", response: { amountDiscrepancy: 0, dateDiscrepancy: "", reasonDiscrepancy: "" } },
+      result: {
+        err: 0,
+        sayadiStatus: 0,
+        msg: "",
+        response: {
+          amountDiscrepancy: 0,
+          dateDiscrepancy: "",
+          reasonDiscrepancy: "",
+        },
+      },
     },
   },
   setCashPosSystemSearchResponse: (cashPosSystemSearchResponse) =>
@@ -129,6 +139,7 @@ export const useChequeStore = create<ChequeState>()((set) => ({
   setUpdateStatus: (updateStatus) => set({ updateStatus }),
   setPaymentAttachmentResponse: (paymentAttachmentResponse) =>
     set({ paymentAttachmentResponse }),
-  setSayadChequeInquiryByPaymentIdResponse: (sayadChequeInquiryByPaymentIdResponse) =>
-    set({ sayadChequeInquiryByPaymentIdResponse }),
+  setSayadChequeInquiryByPaymentIdResponse: (
+    sayadChequeInquiryByPaymentIdResponse
+  ) => set({ sayadChequeInquiryByPaymentIdResponse }),
 }));

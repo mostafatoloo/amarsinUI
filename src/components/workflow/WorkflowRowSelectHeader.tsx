@@ -3,6 +3,7 @@ import OkForm from "../../assets/images/GrayThem/img24_3.png";
 import CancelForm from "../../assets/images/GrayThem/img24_4.png";
 import {
   WorkFlowDoFlowRequest,
+  WorkFlowDoFlowResponse,
   WorkflowRowSelectResponse,
 } from "../../types/workflow";
 import { convertToFarsiDigits } from "../../utilities/general";
@@ -10,33 +11,43 @@ import { useGeneralContext } from "../../context/GeneralContext";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import ModalMessage from "../layout/ModalMessage";
-import { useWorkflowStore } from "../../store/workflowStore";
+import ModalForm from "../layout/ModalForm";
+import WorkflowComponent from "./WorkflowComponent";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   doFlow: UseMutateAsyncFunction<any, Error, WorkFlowDoFlowRequest, unknown>;
+  workFlowDoFlowResponse: WorkFlowDoFlowResponse;
   isLoadingdoFlow: boolean;
-  getWorkTable: () => void;
-  getWorkTableRowSelect:() => void;
+  refetchWorkTable: () => void;
+  refetchWorkTableRowSelect: () => void;
   selectedId: number;
-  setSelectedId: React.Dispatch<React.SetStateAction<number>>
+  setSelectedId: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const WorkflowRowSelectHeader = ({
   workFlowRowSelectResponse,
   doFlow,
+  workFlowDoFlowResponse,
   isLoadingdoFlow,
-  getWorkTable,
-  getWorkTableRowSelect,
+  refetchWorkTable,
+  refetchWorkTableRowSelect,
   selectedId,
   setSelectedId,
 }: Props) => {
   const flowButtons = workFlowRowSelectResponse.flowButtons;
   const flowDescriptions = workFlowRowSelectResponse.flowDescriptions;
-  const { workFlowDoFlowResponse } = useWorkflowStore();
   const { chartId, systemId, yearId } = useGeneralContext();
   const [dsc, setDsc] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  //for open/close DocumentChangeDate form
+  const [isDoFlowClicked, setIsDoFlowClicked] = useState(false);
+  const [isDocumentChangeDateOpen, setIsDocumentChangeDateOpen] =
+    useState(false);
+  //for DocumentChangeDate param
+  const [flowMapId, setFlowMapId] = useState(-1); // for DocumentChangeDate param
+  const [newWorkFlowRowSelectResponse, setNewWorkFlowRowSelectResponse] =
+    useState(workFlowRowSelectResponse);
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -44,10 +55,12 @@ const WorkflowRowSelectHeader = ({
       timeoutId = setTimeout(() => {
         setIsModalOpen(false);
         //setSelectedId(selectedId);
-        let tempId=selectedId
-        getWorkTableRowSelect();
-        getWorkTable();
-        setSelectedId(tempId)
+        if (workFlowDoFlowResponse.meta.errorCode === -1) {
+          let tempId = selectedId;
+          refetchWorkTableRowSelect();
+          refetchWorkTable();
+          setSelectedId(tempId);
+        }
       }, 3000);
     }
     return () => {
@@ -57,11 +70,13 @@ const WorkflowRowSelectHeader = ({
     };
   }, [isModalOpen]);
 
-  const handleDoFlow = (
+  const handleDoFlow = async (
     e: React.MouseEvent<HTMLButtonElement>,
     flowMapId: number
   ) => {
     e.preventDefault();
+    setIsDoFlowClicked(true);
+    setFlowMapId(flowMapId);
     const request: WorkFlowDoFlowRequest = {
       chartId,
       systemId,
@@ -77,10 +92,36 @@ const WorkflowRowSelectHeader = ({
       idempotencyKey: uuidv4(),
     };
     console.log(request, "request");
-    doFlow(request);
-    setIsModalOpen(true);
-
+    try {
+      await doFlow(request);
+    } catch (error) {}
   };
+
+  useEffect(() => {
+    if (isDoFlowClicked) {
+      if (
+        workFlowDoFlowResponse.data.result.formAfterClick.viewPath === "" ||
+        workFlowDoFlowResponse.data.result.formAfterClick.viewPath === null
+      ) {
+        setIsModalOpen(true);
+      } else {
+        setNewWorkFlowRowSelectResponse((prev) => {
+          return {
+            ...prev,
+            workTableForms: {
+              ...prev.workTableForms,
+              form1ViewPath:
+                workFlowDoFlowResponse.data.result.formAfterClick.viewPath ??
+                "",
+              form2ViewPath: "",
+            },
+          };
+        });
+        setIsDocumentChangeDateOpen(true);
+      }
+    }
+  }, [workFlowDoFlowResponse]);
+
   return (
     <form className="p-1 gap-1 flex flex-col sm:flex-row bg-gray-200 border border-gray-300 rounded-md w-full">
       <div className="w-full sm:w-2/3 flex flex-col gap-1">
@@ -148,6 +189,36 @@ const WorkflowRowSelectHeader = ({
           visibleButton={false}
         />
       )}
+      {!isLoadingdoFlow &&
+        isDocumentChangeDateOpen && //just for DocumentChangeDate form
+        !(
+          workFlowDoFlowResponse.data.result.formAfterClick.viewPath === "" ||
+          workFlowDoFlowResponse.data.result.formAfterClick.viewPath === null
+        ) && (
+          <ModalForm
+            isOpen={isDocumentChangeDateOpen}
+            onClose={() => {
+              setIsDocumentChangeDateOpen(false);
+            }}
+            children={
+              <WorkflowComponent
+                doFlow={doFlow}
+                workFlowRowSelectResponse={newWorkFlowRowSelectResponse}
+                refetchSwitch={false}
+                setRefetchSwitch={() => {}}
+                isLoadingdoFlow={isLoadingdoFlow}
+                refetchWorkTable={refetchWorkTable}
+                refetchWorkTableRowSelect={refetchWorkTableRowSelect}
+                dsc={dsc}
+                flowMapId={flowMapId}
+                setIsDocumentChangeDateOpen={setIsDocumentChangeDateOpen}
+              />
+            }
+            title="تاریخ سند"
+            width="1/3"
+            height="1/2"
+          />
+        )}
     </form>
   );
 };

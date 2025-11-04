@@ -68,10 +68,27 @@ const InvoiceReceiptShow = ({
 }: 
 Props) => {
   const canEditForm = workFlowRowSelectResponse.workTableForms.canEditForm1;
-  const { setField, mrsId } = useInvoiceReceiptStore();
+  const { setField, mrsId:mrsIdStore } = useInvoiceReceiptStore();
   const { yearId, systemId } = useGeneralContext();
+  
+  // Set mrsId BEFORE useInvoiceReceipt hook runs to prevent stale queries
+  if (mrsIdStore !== workFlowRowSelectResponse.workTableRow.formId)
+    setField("mrsId", workFlowRowSelectResponse.workTableRow.formId);
+  
   const { indentMrsResponse, isLoading, getIndentMrsResponse } =
     useInvoiceReceipt();
+  
+  // Reset pId and mrsId in productStore to prevent stale dtlHistory queries
+  // These should only be set when handleShowHistory is called
+  const { setField: setProductField } = useProductStore();
+  const { pId: pIdStore, mrsId: mrsIdInProductStore } = useProductStore();
+  useEffect(() => {
+    if (pIdStore !== -1 || mrsIdInProductStore !== -1) {
+      setProductField("pId", -1);
+      setProductField("mrsId", -1);
+    }
+  }, []);
+  
   const {
     salesPricesSearchResponse,
     addProductList,
@@ -82,11 +99,12 @@ Props) => {
   } = useProducts();
 
   const { definitionDateTime } = useDefinitionInvironment();
-
-  useEffect(() => {
+  if (mrsIdStore !== workFlowRowSelectResponse.workTableRow.formId)
+    setField("mrsId", workFlowRowSelectResponse.workTableRow.formId);
+  /*useEffect(() => {
     if (mrsId !== workFlowRowSelectResponse.workTableRow.formId)
       setField("mrsId", workFlowRowSelectResponse.workTableRow.formId);
-  }, [workFlowRowSelectResponse.workTableRow.formId]);
+  }, [workFlowRowSelectResponse.workTableRow.formId]);*/
 
   const [fields, setFields] = useState<Fields>({
     customer: {
@@ -192,7 +210,7 @@ Props) => {
     if (e) e.preventDefault();
     let request: IndentShowProductListRequest;
     request = {
-      mrsId,
+      mrsId:workFlowRowSelectResponse.workTableRow.formId,
       productId: productId,
       acc_Year: yearId,
       providers:
@@ -333,14 +351,12 @@ Props) => {
   }, [isModalOpen]);
 
   const [search, setSearch] = useState<string>("");
-  const { setField: setProductField } = useProductStore();
   //send params to /api/Product/search?accSystem=4&accYear=15&page=1&searchTerm=%D8%B3%D9%81
   useEffect(() => {
-    setProductField("accSystem", systemId);
-    setProductField("accYear", yearId);
-    //setProductField("searchTerm", convertToFarsiDigits(search));
-    handleDebounceFilterChange("search", convertToFarsiDigits(search));
-    setProductField("page", 1);
+    setProductField("productSearchAccSystem", systemId);
+    setProductField("productSearchAccYear", yearId);
+    handleDebounceFilterChange("productSearchSearch", convertToFarsiDigits(search));
+    setProductField("productSearchPage", 1);
   }, [search, systemId, yearId]);
   const abortControllerRef = useRef<AbortController | null>(null);
   ///////////////////////////////////////////////////////
@@ -424,7 +440,7 @@ Props) => {
         addList={addList}
         handleAddRow={handleAddRow}
         showDeleted={showDeleted}
-        mrsId={mrsId}
+        mrsId={workFlowRowSelectResponse.workTableRow.formId}
         fields={fields}
         newRow={newRow}
         products={products.map((p) => ({

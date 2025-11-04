@@ -23,14 +23,14 @@ import {
 export function useProducts() {
   const queryClient = useQueryClient();
   const {
-    accYear,
-    accSystem,
-    search,
-    page,
+    productSearchAccYear,
+    productSearchAccSystem,
+    productSearchSearch,
+    productSearchPage,
     setProductSearchResponse,
-    salesPricesSearch,
+    salesPricesSearchSearch,
     salesPricesSearchPage,
-    lastId,
+    salesPricesSearchLastId,
     pId,
     mrsId,
     // for indent/list
@@ -105,10 +105,11 @@ export function useProducts() {
     queryKey: ["dtlHistory", pId, mrsId],
     queryFn: async () => {
       const url: string = `api/Indent/dtlHistory?PId=${pId}&MrsId=${mrsId}`;
+      console.log(url, "url")
       const response = await api.get<IndentDtlHistoryResponse>(url);
       return response.data;
     },
-    enabled: !!pId && !!mrsId,
+    enabled: pId!==-1 && mrsId!==-1,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
@@ -127,15 +128,15 @@ export function useProducts() {
   >({
     queryKey: [
       "salesPricesSearch",
-      salesPricesSearch,
+      salesPricesSearchSearch,
       salesPricesSearchPage,
-      lastId,
+      salesPricesSearchLastId,
     ],
     queryFn: async () => {
       const params: SalesPricesSearchRequest = {
-        salesPricesSearch,
+        salesPricesSearch :salesPricesSearchSearch,
         salesPricesSearchPage,
-        lastId,
+        lastId: salesPricesSearchLastId ?? 0,
       };
       const response = await api.get(
         `/api/Product/salesPricesSearch?page=${
@@ -146,7 +147,7 @@ export function useProducts() {
       );
       return response.data;
     },
-    //enabled: !!salesPricesSearch && !!salesPricesSearchPage && !!lastId,
+    enabled: salesPricesSearchPage!==-1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
   } as UseQueryOptions<SalesPricesSearchResponse, Error, SalesPricesSearchResponse, unknown[]>);
@@ -164,13 +165,19 @@ export function useProducts() {
     ProductSearchResponse,
     unknown[]
   >({
-    queryKey: ["products", accYear, accSystem, search, page],
+    queryKey: [
+      "products",
+      productSearchAccYear,
+      productSearchAccSystem,
+      productSearchSearch,
+      productSearchPage,
+    ],
     queryFn: async () => {
       const params: ProductSearchRequest = {
-        accYear,
-        accSystem,
-        search,
-        page,
+        accYear: productSearchAccYear,
+        accSystem: productSearchAccSystem,
+        search: productSearchSearch,
+        page: productSearchPage,
       };
       const url = `/api/Product/search?accYear=${params.accYear}&accSystem=${
         params.accSystem
@@ -183,6 +190,7 @@ export function useProducts() {
       const response = await api.get(url);
       return response.data;
     },
+    enabled: productSearchAccYear !== -1 && productSearchAccSystem !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -256,7 +264,6 @@ export function useProducts() {
         sortSRName,
         sortPayDuration,
       };
-      console.log("enterd");
       const url = `/api/Indent/list?Id=0&OrdrId=${
         params.ordrIdIndentRequest
       }&MrsId=0&Acc_Year=${params.acc_YearIndentRequest}&Acc_System=${
@@ -308,7 +315,7 @@ export function useProducts() {
       const response = await api.get(url);
       return response.data;
     },
-    //enabled:!!id,
+    enabled: id !== -1 && productSearchAccYear !== -1 && productSearchAccSystem !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -436,7 +443,7 @@ export function useProducts() {
       const response = await api.get(url);
       return response.data;
     },
-    // enabled: !!id ,
+    enabled: id !== -1 && productSearchAccYear !== -1 && productSearchAccSystem !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -479,7 +486,7 @@ export function useProducts() {
       const response = await api.get(url);
       return response.data;
     },
-    //enabled: productId !== 0 ? true : false, // Only fetch if param is available
+    enabled: idProductCatalogRequest !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -515,7 +522,7 @@ export function useProducts() {
     isLoadingSaveList: saveList.isPending,
     errorSaveList: saveList.error,
     saveList: saveList.mutateAsync,
-
+    //output for /api/Product/salesPricesSearch?page=1&lastId=0&Search=%D8%B3%D9%81
     isSalesPricesSearchLoading: salesPricesSearchQuery.isLoading,
     salesPricesSearchError: salesPricesSearchQuery.error,
     salesPricesSearchResponse: salesPricesSearchQuery.data?.searchResults ?? [],
@@ -540,7 +547,10 @@ export function useProducts() {
     refetchIndentListDtl: indentListDtlQuery.refetch,
     isLoadingIndentListDtl: indentListDtlQuery.isLoading,
     errorIndentListDtl: indentListDtlQuery.error,
-    indentListDtl: indentListDtlQuery.data?.data.result.indentDtls ?? [],
+    indentListDtl:
+      ((indentListQuery.data?.data.result.indents?.length ?? 0) > 0
+        ? indentListDtlQuery.data?.data.result.indentDtls
+        : []) ?? [],
     //output for productCatalog : api/Product/productInstanceCatalog?Id=166717&UID=0&IRC=0
     isLoadingProductCatalog: productCatalogQuery.isLoading,
     errorProductCatalog: productCatalogQuery.error,

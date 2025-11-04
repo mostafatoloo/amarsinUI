@@ -56,12 +56,12 @@ export function useWarehouse() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: formId !== 0 ? true : false, // Only fetch if param is available
-    refetchOnWindowFocus: false, // Refetch data when the window is focused
-    refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
       setWarehouseShowIdResponse(data);
     },
+    enabled: formId !== -1, // Only fetch if param is available
+    refetchOnWindowFocus: false, // Refetch data when the window is focused
+    refetchOnReconnect: false, // Refetch data when the network reconnects
   } as UseQueryOptions<WarehouseShowIdResponse, Error, WarehouseShowIdResponse, unknown[]>);
 
   //for warehouseSearchResponse
@@ -91,6 +91,9 @@ export function useWarehouse() {
     onSuccess: (data: any) => {
       setWarehouseSearchResponse(data);
     },
+    enabled: page !== -1, // Only fetch if param is available
+    refetchOnWindowFocus: false, // Refetch data when the window is focused
+    refetchOnReconnect: false, // Refetch data when the network reconnects
   } as UseQueryOptions<WarehouseSearchResponse, Error, WarehouseSearchResponse, unknown[]>);
 
   //for warehouseTemporaryReceiptIndentListResponse
@@ -108,7 +111,7 @@ export function useWarehouse() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: iocId !== 0 && iocId !== undefined ? true : false, // Only fetch if param is available
+    enabled: iocId !== -1 && iocId!==undefined, // Only fetch if param is available
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -133,6 +136,9 @@ export function useWarehouse() {
     onSuccess: (data: any) => {
       setWarehouseTemporaryReceiptPurchaseShowResponse(data);
     },
+    enabled: receiptPurchaseId !== -1 && receiptPurchaseId!==undefined, // Only fetch if param is available
+    refetchOnWindowFocus: false, // Refetch data when the window is focused
+    refetchOnReconnect: false, // Refetch data when the network reconnects
   } as UseQueryOptions<WarehouseTemporaryReceiptPurchaseShowResponse, Error, WarehouseTemporaryReceiptPurchaseShowResponse, unknown[]>);
 
   //for api/WarehouseTemporaryReceipt/salesPrices?id=1106779&salesPriceId=1
@@ -152,6 +158,9 @@ export function useWarehouse() {
     onSuccess: (data: any) => {
       setWarehouseTemporaryReceiptSalesPricesResponse(data);
     },
+    enabled: id !== 0 && salesPriceId!==0, // Only fetch if param is available
+    refetchOnWindowFocus: false, // Refetch data when the window is focused
+    refetchOnReconnect: false, // Refetch data when the network reconnects    
   } as UseQueryOptions<WarehouseTemporaryReceiptSalesPricesResponse, Error, WarehouseTemporaryReceiptSalesPricesResponse, unknown[]>);
 
   //for api/WarehouseTemporaryReceipt/purchaseReg?id=1106779&salesPriceId=1
@@ -169,7 +178,7 @@ export function useWarehouse() {
       console.log(response.data, "response.data");
       return response.data;
     },
-    enabled: idReg !== 0 && salesPriceIdReg !== 0 ? true : false, // Only fetch if param is available
+    enabled: idReg !== -1 && salesPriceIdReg !== -1, // Only fetch if param is available
     onSuccess: (data: any) => {
       setWarehouseTemporaryReceiptPurchaseRegResponse(data);
     },

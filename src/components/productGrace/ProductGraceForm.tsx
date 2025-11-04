@@ -335,6 +335,7 @@ const ProductGraceForm = ({
       productGraceDtls !== undefined
     ) {
       //for edit
+      console.log(productGraceDtls, "productGraceDtls");
       setAddList(
         productGraceDtls.map((item) => ({
           ...item,
@@ -363,11 +364,13 @@ const ProductGraceForm = ({
 
   //send params to /api/Product/search?accSystem=4&accYear=15&page=1&searchTerm=%D8%B3%D9%81
   useEffect(() => {
-    setProductField("accSystem", systemId);
-    setProductField("accYear", yearId);
-    //setProductField("searchTerm", convertToFarsiDigits(search));
-    handleDebounceFilterChange("search", convertToFarsiDigits(search));
-    setProductField("page", 1);
+    setProductField("productSearchAccSystem", systemId);
+    setProductField("productSearchAccYear", yearId);
+    handleDebounceFilterChange(
+      "productSearchSearch",
+      convertToFarsiDigits(search)
+    );
+    setProductField("productSearchPage", 1);
   }, [search, systemId, yearId]);
   ///////////////////////////////////////////////////////
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -415,27 +418,35 @@ const ProductGraceForm = ({
       // Map through the new products
       res.data.result.productGraceProducts.forEach(
         (product: ProductGraceListItem) => {
-          setAddList((prev) => [
-            ...prev,
-            {
-              id: product.id,
-              pId: product.pId,
-              bName: product.bName,
-              product: product.product,
-              lastDate: product.lastDate,
-              gd: product.gdo > 0 ? product.gdo : 0,
-              sc: product.sco > 0 ? product.sco : 0,
-              cc: product.cco > 0 ? product.cco : 0,
-              ec: product.eco > 0 ? product.eco : 0,
-              gdo: 0,
-              sco: 0,
-              cco: 0,
-              eco: 0,
-              dtlDsc: product.dtlDsc,
-              deleted: product.deleted,
-              isDeleted: false,
-            },
-          ]);
+          setAddList((prev) => {
+            // Filter out newRow entries (empty rows) before adding new records
+            // Check by properties since items might be clones of newRow
+            const filteredPrev = prev.filter((item) => {
+              // Remove items that match newRow pattern (id === 0 and product is empty)
+              return !(item.id === 0 && item.product === "" && item.pId === 0);
+            });
+            return [
+              ...filteredPrev,
+              {
+                id: product.id,
+                pId: product.pId,
+                bName: product.bName,
+                product: product.product,
+                lastDate: product.lastDate,
+                gd: product.gdo > 0 ? product.gdo : 0,
+                sc: product.sco > 0 ? product.sco : 0,
+                cc: product.cco > 0 ? product.cco : 0,
+                ec: product.eco > 0 ? product.eco : 0,
+                gdo: 0,
+                sco: 0,
+                cco: 0,
+                eco: 0,
+                dtlDsc: product.dtlDsc,
+                deleted: product.deleted,
+                isDeleted: false,
+              },
+            ];
+          });
         }
       );
       setAddList((prev) => [

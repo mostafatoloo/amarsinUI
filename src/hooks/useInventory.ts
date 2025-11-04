@@ -33,7 +33,7 @@ export function useInventory() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: !!accSystem && !!accYear && !!brandId, // Only fetch if params are available
+    enabled: accSystem!==-1  && accYear!==-1 && brandId!==-1, // Only fetch if params are available
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -55,7 +55,7 @@ export function useInventory() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: !!id,
+    enabled: id!==-1,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     onSuccess: (data: any) => {
@@ -99,7 +99,7 @@ export function useInventory() {
       meta: { errorCode: 0, message: "", type: "" },
       data: {
         result: {
-          id: 0,
+          id: -1,
           title: "",
           wName: "",
           pCode: "",

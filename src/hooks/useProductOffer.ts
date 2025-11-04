@@ -152,7 +152,7 @@ export function useProductOffer() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: !!pageNumber,
+    enabled: acc_Year !== -1 && acc_System !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -257,7 +257,7 @@ export function useProductOffer() {
       const response = await api.get(url);
       return response.data;
     },
-    //enabled: id!==0,
+    enabled: acc_Year !== -1 && acc_System !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -279,7 +279,7 @@ export function useProductOffer() {
       const response = await api.get(url);
       return response.data;
     },
-    //enabled: !!pId,
+    enabled: pId!==-1,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     onSuccess: (data: any) => {
@@ -350,6 +350,7 @@ export function useProductOffer() {
       queryClient.invalidateQueries({ queryKey: ["productOffer"] });
       return response.data;
     },
+    enabled:acc_SystemProductOfferDoFirstFlow!==-1 && acc_YearProductOfferDoFirstFlow!==-1 && chartIdProductOfferDoFirstFlow!==-1,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     onSuccess: (data: any) => {

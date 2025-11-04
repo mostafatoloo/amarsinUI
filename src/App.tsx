@@ -14,7 +14,6 @@ import User from "./pages/User";
 import InventoryGoodList from "./pages/reports/InventoryGoodList";
 import ProviderList from "./pages/reports/ProviderList";
 import ProducerList from "./pages/reports/ProducerList";
-import Workflow from "./pages/Workflow";
 import Dashboard from "./pages/Dashboard";
 import ProductOffer from "./pages/businessAccounting/operations/ProductOffer";
 import ProductPerm from "./pages/businessAccounting/operations/ProductPerm";
@@ -22,10 +21,11 @@ import ProductGrace from "./pages/businessAccounting/operations/ProductGrace";
 import ProductPrice from "./pages/businessAccounting/operations/ProductPrice";
 import PayRequestOperation from "./pages/treasure/operation/PayRequestOperation";
 import NotFound from "./pages/NotFound";
-import ClearBook from "./pages/definitions/ClearBook";
+import ClearBook from "./pages/businessAccounting/operations/ClearBook";
 import PurchaseRequestIndent from "./pages/businessAccounting/operations/PurchaseRequestIndent";
 import CupboardsReport from "./pages/warehouse/reports/CupboardsReport";
 import GetInventoryBalance from "./pages/businessAccounting/reports/GetInventoryBalance";
+import Workflow from "./pages/workflow/Workflow";
 
 const queryClient = new QueryClient();
 

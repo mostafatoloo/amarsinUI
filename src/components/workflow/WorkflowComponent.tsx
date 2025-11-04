@@ -1,6 +1,9 @@
 import InvoiceShow from "../invoice/InvoiceShow";
 import WarehouseShow from "../warehouse/WarehouseShow";
-import { WorkflowRowSelectResponse } from "../../types/workflow";
+import {
+  WorkFlowDoFlowRequest,
+  WorkflowRowSelectResponse,
+} from "../../types/workflow";
 import InvoiceReceiptShow from "../invoiceReceipt/InvoiceReceiptShow";
 import RegRecievedCheque from "../cheque/RegRecievedCheque";
 import PaymentInvoiceShow from "../paymentInvoices/PaymentInvoiceShow";
@@ -16,20 +19,38 @@ import BankAssignShow from "../bankAssign/BankAssignShow";
 import DeliveryShow from "../delivery/DeliveryShow";
 import InventoryDetailShow from "../inventory/inventoryDetail/InventoryDetailShow";
 import PreProcurementShow from "../preProcurement/PreProcurementShow";
+import DocumentChangeDate from "../../pages/workflow/DocumentChangeDate";
+import { UseMutateAsyncFunction } from "@tanstack/react-query";
+import { useWorkflowStore } from "../../store/workflowStore";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   refetchSwitch: boolean;
   setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
+  doFlow: UseMutateAsyncFunction<any, Error, WorkFlowDoFlowRequest, unknown>;
+  isLoadingdoFlow: boolean;
+  refetchWorkTable: () => void;
+  refetchWorkTableRowSelect: () => void;
+  dsc?:string // for  هامش  
+  flowMapId?:number
+  setIsDocumentChangeDateOpen?: React.Dispatch<React.SetStateAction<boolean>>
 };
 
 export default function WorkflowComponent({
   workFlowRowSelectResponse,
   refetchSwitch,
   setRefetchSwitch,
+  doFlow,
+  isLoadingdoFlow,
+  refetchWorkTable,
+  refetchWorkTableRowSelect,
+  dsc,
+  flowMapId,
+  setIsDocumentChangeDateOpen
 }: Props) {
   let componentToRender1: React.ReactNode | null = null;
   let componentToRender2: React.ReactNode | null = null;
+  const { workFlowDoFlowResponse } = useWorkflowStore();
 
   switch (workFlowRowSelectResponse.workTableForms.form1ViewPath) {
     case "Invoice/_Show":
@@ -75,7 +96,7 @@ export default function WorkflowComponent({
         />
       );
       break;
-    case "Payment/_Cheque": //کمک حسابداری
+    case "Payment/_Cheque": //کمک حسابداری-> ثبت اولیه چک -دریافتی
       componentToRender1 = (
         <RegRecievedCheque
           workFlowRowSelectResponse={workFlowRowSelectResponse}
@@ -183,6 +204,21 @@ export default function WorkflowComponent({
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           refetchSwitch={refetchSwitch}
           setRefetchSwitch={setRefetchSwitch}
+        />
+      );
+      break;
+    case "Account/_DocumentChangeDate": //تاریخ سند
+      componentToRender1 = (
+        <DocumentChangeDate
+          flowMapId={flowMapId ?? -1}
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          isLoadingdoFlow={isLoadingdoFlow}
+          doFlow={doFlow}
+          workFlowDoFlowResponse={workFlowDoFlowResponse}
+          refetchWorkTable={refetchWorkTable}
+          refetchWorkTableRowSelect={refetchWorkTableRowSelect}
+          dsc={dsc ?? ""} // for  هامش  
+          setIsDocumentChangeDateOpen={setIsDocumentChangeDateOpen ?? (() => {})}
         />
       );
       break;
@@ -352,6 +388,21 @@ export default function WorkflowComponent({
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           refetchSwitch={refetchSwitch}
           setRefetchSwitch={setRefetchSwitch}
+        />
+      );
+      break;
+      case "Account/_DocumentChangeDate": //تاریخ سند
+      componentToRender2 = (
+        <DocumentChangeDate
+          flowMapId={flowMapId ?? -1}
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          isLoadingdoFlow={isLoadingdoFlow}
+          doFlow={doFlow}
+          workFlowDoFlowResponse={workFlowDoFlowResponse}
+          refetchWorkTable={refetchWorkTable}
+          refetchWorkTableRowSelect={refetchWorkTableRowSelect}
+          dsc={dsc ?? ""} // for  هامش  
+          setIsDocumentChangeDateOpen={setIsDocumentChangeDateOpen ?? (() => {})}
         />
       );
       break;

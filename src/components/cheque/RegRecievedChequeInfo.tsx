@@ -81,10 +81,12 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
     updateStatus,
     setUpdateStatus,
   } = useChequeStore();
-  const [payKind, setPayKind] = useState<number>(0);
+  const [payKind, setPayKind] = useState<number>(-1);
+  const hasInitializedPayKind = useRef(false);
+  
   useEffect(() => {
-    setPayKind(loadPaymentResponse.data.result?.payKind ?? 0);
-  }, [loadPaymentResponse]);
+    setPayKind(loadPaymentResponse.data.result?.payKind ?? -1);
+  }, [loadPaymentResponse.data.result?.payKind]);
 
   const [cheque, setCheque] = useState({
     sayadiMessage: "",
@@ -162,17 +164,32 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
     setField("search", bankSearch);
   }, [bankSearch]);
   /////////////////////////////////////////////////////////////////////
+  // Set search-related fields when search changes
   useEffect(() => {
     setChequeField("search", cashPosSystemSerch);
     setChequeField("page", 1);
     setChequeField("lastId", 0);
-    setChequeField("systemId", initData?.systemId ?? 0);
-    setChequeField("payKind", payKind);
-  }, [cashPosSystemSerch, payKind, initData?.systemId]);
+  }, [cashPosSystemSerch]);
+  
+  // Initialize systemId and payKind only once per record
+  useEffect(() => {
+    const newSystemId = initData?.systemId ?? -1;
+    const newPayKind = payKind;
+    
+    // Only set if payKind is valid and we haven't initialized yet for this record
+    if (newPayKind !== -1 && !hasInitializedPayKind.current) {
+      setChequeField("systemId", newSystemId);
+      setChequeField("payKind", newPayKind);
+      hasInitializedPayKind.current = true;
+    }
+  }, [payKind, initData?.systemId]);
+  
   ///////////////////////////////////////////////////////////////////
   useEffect(() => {
     console.log(yearSearch, systemSearch);
     setChequeField("id", workFlowRowSelectResponse.workTableRow.formId);
+    // Reset initialization flag when record changes
+    hasInitializedPayKind.current = false;
     setUpdateStatus({
       ...updateStatus,
       prsn: {},
@@ -207,10 +224,11 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
   }, [workFlowRowSelectResponse]);
   ///////////////////////////////////////////////////////////////////
   useEffect(() => {
-    console.log(
+    /*console.log(
       loadPaymentResponse,
       "loadPaymentResponse in reg recieved cheque info"
-    );
+    );*/
+    setIsSayadiClick(false);
     setCheque({
       sayadiMessage: convertToFarsiDigits(
         loadPaymentResponse.data.result?.sayadiMessage ?? ""
@@ -904,12 +922,12 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
           />
           {showValidationError("dsc")}
         </div>
-        <div className="flex justify-start items-center gap-2">
+        {payKind === 2 && (<div className="flex justify-start items-center gap-2">
           <input
             type="checkbox"
             name="eCheck"
             checked={cheque.eCheck}
-            disabled={payKind === 1 || !canEditForm}
+            disabled={!canEditForm}
             /*onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setChequeFields("eCheck", e.target.checked)
           }
@@ -919,7 +937,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
           />
           <label>الکترونیکی</label>
           {showValidationError("eCheck")}
-        </div>
+        </div>)}
       </div>
 
       <RegRecievedChequeInfoSanad

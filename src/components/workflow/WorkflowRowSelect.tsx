@@ -2,6 +2,7 @@ import WorkflowRowSelectHeader from "./WorkflowRowSelectHeader";
 import { Skeleton } from "@mui/material";
 import {
   WorkFlowDoFlowRequest,
+  WorkFlowDoFlowResponse,
   WorkflowRowSelectResponse,
 } from "../../types/workflow";
 import { UseMutateAsyncFunction } from "@tanstack/react-query";
@@ -9,11 +10,12 @@ import { UseMutateAsyncFunction } from "@tanstack/react-query";
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   doFlow: UseMutateAsyncFunction<any, Error, WorkFlowDoFlowRequest, unknown>;
+  workFlowDoFlowResponse: WorkFlowDoFlowResponse;
   isLoadingdoFlow:boolean;
   isLoading: boolean;
   error: Error | null;
-  getWorkTable: () => void;
-  getWorkTableRowSelect:() => void;
+  refetchWorkTable: () => void;
+  refetchWorkTableRowSelect:() => void;
   selectedId: number;
   setSelectedId: React.Dispatch<React.SetStateAction<number>>
 };
@@ -21,11 +23,12 @@ type Props = {
 const WorkflowRowSelect = ({
   workFlowRowSelectResponse,
   doFlow,
+  workFlowDoFlowResponse,
   isLoadingdoFlow,
   isLoading,
   error,
-  getWorkTable,
-  getWorkTableRowSelect,
+  refetchWorkTable,
+  refetchWorkTableRowSelect,
   selectedId,
   setSelectedId,
 }: Props) => {
@@ -42,10 +45,11 @@ const WorkflowRowSelect = ({
         <div className="w-full mt-2">
           <WorkflowRowSelectHeader
             workFlowRowSelectResponse={workFlowRowSelectResponse}
+            workFlowDoFlowResponse={workFlowDoFlowResponse}
             doFlow={doFlow}
             isLoadingdoFlow={isLoadingdoFlow}
-            getWorkTable={getWorkTable}
-            getWorkTableRowSelect={getWorkTableRowSelect}
+            refetchWorkTable={refetchWorkTable}
+            refetchWorkTableRowSelect={refetchWorkTableRowSelect}
             selectedId={selectedId}
             setSelectedId={setSelectedId}
           />

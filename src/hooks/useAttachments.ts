@@ -46,7 +46,7 @@ export function useAttachments() {
       console.log(url,response.data, "url,response.data in attachments");
       return response.data;
     },
-    //enabled: !!GUID, // Only run if GUID exists
+    enabled:yearId!==-1 && systemId!==-1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -107,7 +107,6 @@ export function useAttachments() {
     },
     onError: (error: any) => {
       console.error("خطای بارگذاری فایل", error);
-      // Optional: Add user feedback (e.g., toast notification)
     },
   });
   return {

@@ -1,10 +1,16 @@
 import { create } from "zustand";
 import { ProductState } from "../types/product";
 export const useProductStore = create<ProductState>()((set) => ({
+  //for /api/Product/search?search=search&page=1
+  productSearchAccYear: -1,
+  productSearchAccSystem: -1,
+  productSearchSearch: "",
+  productSearchPage: 1,
   productSearchResponse: {
     meta: { errorCode: 0, message: "", type: "" },
     data: { totalCount: 0, result: { total_count: 0, searchResults: [] } },
   },
+  //for /api/SalesPrices/search?salesPricesSearch=salesPricesSearch&salesPricesSearchPage=1&lastId=0
   salesPricesSearchResponse: {
     total_count: 0,
     err: 0,
@@ -15,17 +21,17 @@ export const useProductStore = create<ProductState>()((set) => ({
     meta: { errorCode: 0, message: "", type: "" },
     data: { result: [] },
   },
-  accYear: 0,
-  accSystem: 0,
+  accYear: -1,
+  accSystem: -1,
   search: "",
   page: 1,
   //for salesPricesSearch req
-  salesPricesSearch: "",
-  salesPricesSearchPage: 1,
-  lastId: 0,
+  salesPricesSearchSearch: "",
+  salesPricesSearchPage: -1,
+  salesPricesSearchLastId: 0,
   //for indent/showProductList req
-  mrsId: 0,
-  pId: 0,
+  mrsId: -1,
+  pId: -1,
   productId: 0,
   acc_Year: 0,
   providers: [],
@@ -62,9 +68,9 @@ export const useProductStore = create<ProductState>()((set) => ({
     data: { result: { err: 0, msg: "", indentDtlHistories: [] } },
   },
   // for /api/Indent/list?Id=6430&OrdrId=-1&MrsId=0&Acc_Year=0&Acc_System=0&State=0&ShowDeletedInentDtl=false
-  id: 0,
-  acc_SystemIndentRequest: 0,
-  acc_YearIndentRequest: 0,
+  id: -1,
+  acc_SystemIndentRequest: -1,
+  acc_YearIndentRequest: -1,
   showDeletedInentDtl: false,
   ordrIdIndentRequest: 0,
   mrsIdIndentRequest: 0,
@@ -94,7 +100,7 @@ export const useProductStore = create<ProductState>()((set) => ({
     meta: { errorCode: 0, message: "", type: "" },
     data: { result: { total_count: 0, indents: [], indentDtls: [] } },
   },
-  //for delete /api/Indent/6480   
+  //for delete /api/Indent/6480
   indentDelResponse: {
     meta: { errorCode: 0, message: "", type: "" },
     data: { result: { systemId: 0, id: 0, err: 0, msg: "", hasFlow: false } },
@@ -104,55 +110,56 @@ export const useProductStore = create<ProductState>()((set) => ({
     meta: { errorCode: 0, message: "", type: "" },
     data: { result: { systemId: 0, id: 0, err: 0, msg: "", hasFlow: false } },
   },
-    //for api/Product/productInstanceCatalog?Id=166717&UID=0&IRC=0
-    idProductCatalogRequest: 0,
-    uIDProductCatalogRequest: "",
-    iRCProductCatalogRequest: "",
-    productCatalog: {
-      meta: { errorCode: 0, message: "", type: "" },
-      data: {
-        result: {
-          data: {
-            manufacturing: "",
-            expiration: "",
-            batchCode: "",
-            genericName: "",
-            genericCode: "",
-            uid: "",
-            gtin: "",
-            irc: "",
-            licenseOwner: "",
-            englishProductName: "",
-            persianProductName: "",
-            productCategory: "",
-            productCategoryCode: 0,
-            packageCount: 0,
-            statusCode: 0,
-          },
-          statusCode: 0,
-          statusMessage: "",
-          cupId: 0,
+  //for api/Product/productInstanceCatalog?Id=166717&UID=0&IRC=0
+  idProductCatalogRequest: -1,
+  uIDProductCatalogRequest: "",
+  iRCProductCatalogRequest: "",
+  productCatalog: {
+    meta: { errorCode: 0, message: "", type: "" },
+    data: {
+      result: {
+        data: {
+          manufacturing: "",
+          expiration: "",
+          batchCode: "",
+          genericName: "",
+          genericCode: "",
           uid: "",
+          gtin: "",
           irc: "",
-          ttac: false,
-          systemId: 0,
+          licenseOwner: "",
+          englishProductName: "",
+          persianProductName: "",
+          productCategory: "",
+          productCategoryCode: 0,
+          packageCount: 0,
+          statusCode: 0,
         },
+        statusCode: 0,
+        statusMessage: "",
+        cupId: 0,
+        uid: "",
+        irc: "",
+        ttac: false,
+        systemId: 0,
       },
     },
-  
+  },
+
   setField: (field: string, value: any) =>
     set((state) => ({ ...state, [field]: value })),
   setProductSearchResponse: (productSearchResponse) =>
-    set({ productSearchResponse }),//for /api/Product/search?search=search&page=1
+    set({ productSearchResponse }), //for /api/Product/search?search=search&page=1
   setSalesPricesSearchResponse: (salesPricesSearchResponse) =>
-    set({ salesPricesSearchResponse }),//for /api/SalesPrices/search?salesPricesSearch=salesPricesSearch&salesPricesSearchPage=1&lastId=0
+    set({ salesPricesSearchResponse }), //for /api/SalesPrices/search?salesPricesSearch=salesPricesSearch&salesPricesSearchPage=1&lastId=0
   setIndentShowProductListResponse: (indentShowProductListResponse) =>
-    set({ indentShowProductListResponse }),//for /api/Indent/showProductList?mrsId=6480&productId=0&acc_Year=0&providers=[]&brands=[]&salesPriceId=0&saleFDate=&saleTDate=
-  setIndentSaveResponse: (indentSaveResponse) => set({ indentSaveResponse }),//for /api/Indent/save
+    set({ indentShowProductListResponse }), //for /api/Indent/showProductList?mrsId=6480&productId=0&acc_Year=0&providers=[]&brands=[]&salesPriceId=0&saleFDate=&saleTDate=
+  setIndentSaveResponse: (indentSaveResponse) => set({ indentSaveResponse }), //for /api/Indent/save
   setIndentDtlHistoryResponse: (indentDtlHistoryResponse) =>
-    set({ indentDtlHistoryResponse }),//for /api/Indent/dtlHistory?pId=6480&mrsId=6480
-  setIndentResponse: (indentResponse) => set({ indentResponse }),//for /api/Indent/list?Id=6430&OrdrId=-1&MrsId=0&Acc_Year=0&Acc_System=0&State=0&ShowDeletedInentDtl=false
-  setIndentDelResponse: (indentDelResponse) => set({ indentDelResponse }),//for delete /api/Indent/6480   
-  setIndentDoFirstFlowResponse: (indentDoFirstFlowResponse) => set({ indentDoFirstFlowResponse }),//for /api/Indent/doFirstFlow?Acc_System=4&Acc_Year=15&WFMS_FlowMapId=403020201&Id=6482&FlowNo=403020200&ChartId=1&Dsc=%D9%84%D8%A7%D9%84%DB%8C%D8%B3%D8%B3%D8%A8%D9%84%D8%A7%D8%A7
-  setProductCatalog: (productCatalog) => set({ productCatalog })//for api/Product/productInstanceCatalog?Id=166717&UID=0&IRC=0
+    set({ indentDtlHistoryResponse }), //for /api/Indent/dtlHistory?pId=6480&mrsId=6480
+  setIndentResponse: (indentResponse) => set({ indentResponse }), //for /api/Indent/list?Id=6430&OrdrId=-1&MrsId=0&Acc_Year=0&Acc_System=0&State=0&ShowDeletedInentDtl=false
+  setIndentDelResponse: (indentDelResponse) => set({ indentDelResponse }), //for delete /api/Indent/6480
+  setIndentDoFirstFlowResponse: (indentDoFirstFlowResponse) =>
+    set({ indentDoFirstFlowResponse }), //for /api/Indent/doFirstFlow?Acc_System=4&Acc_Year=15&WFMS_FlowMapId=403020201&Id=6482&FlowNo=403020200&ChartId=1&Dsc=%D9%84%D8%A7%D9%84%DB%8C%D8%B3%D8%B3%D8%A8%D9%84%D8%A7%D8%A7
+  setProductCatalog: (productCatalog) => set({ productCatalog }), //for api/Product/productInstanceCatalog?Id=166717&UID=0&IRC=0
 }));

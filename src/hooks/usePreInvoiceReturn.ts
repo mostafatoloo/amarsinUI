@@ -9,7 +9,7 @@ import {
 
 export function usePreInvoiceReturn() {
   const {
-    id,
+    temporaryReceiptShowId,
     setResponseWarehouseTemporaryReceiptShow,
     setResponsePreInvoiceDtlSearch,
     setWarehouseTemporaryReceiptSaveResponse,
@@ -24,15 +24,16 @@ export function usePreInvoiceReturn() {
     ResponseWarehouseTemporaryReceiptShow,
     unknown[]
   >({
-    queryKey: ["warehouseTemporaryReceiptShow", id],
+    queryKey: ["warehouseTemporaryReceiptShow", temporaryReceiptShowId],
     queryFn: async () => {
       const params = {
-        id,
+        temporaryReceiptShowId,
       };
-      const url = `/api/PreInvoiceReturn/warehouseTemporaryReceiptShow?Id=${params.id}`;
+      const url = `/api/PreInvoiceReturn/warehouseTemporaryReceiptShow?Id=${params.temporaryReceiptShowId}`;
       const response = await api.get(url);
       return response.data;
     },
+    enabled: temporaryReceiptShowId!==-1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -62,6 +63,7 @@ export function usePreInvoiceReturn() {
       const response = await api.get(url);
       return response.data;
     },
+    enabled: preInvoiceDtlId!==-1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {

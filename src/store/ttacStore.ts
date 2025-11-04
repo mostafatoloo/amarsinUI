@@ -3,8 +3,8 @@ import { ttacState } from "../types/ttac";
 
 export const useTTacStore = create<ttacState>()((set) => ({
   //for GetInventoryBalance
-  systemId: 0,
-  yearId: 0,
+  systemId: -1,
+  yearId: -1,
   hasErr: false,
   srchIRC: "",
   srchLotNumber: "",
@@ -21,8 +21,8 @@ export const useTTacStore = create<ttacState>()((set) => ({
     data: { result: [], total_count: 0 },
   },
   //for FlowProductsSendAll
-  sendSystemId: 0,
-  sendYearId: 0,
+  sendSystemId: -1,
+  sendYearId: -1,
   sendDate: "",
   sendTtacSent: false,
   sendPageNumber: 1,
@@ -63,7 +63,7 @@ export const useTTacStore = create<ttacState>()((set) => ({
     data: { result: [], total_count: 0 },
   },
   //for api/TTAC/CupboardCapture
-  cupboardCaptureId: 0,
+  cupboardCaptureId: -1,
   cupboardCaptureCurrentDateTime: false,
   cupboardCaptureIdempotencyKey: "550e8400-e29b-41d4-a716-446655440000",
   cupboardCaptureResponse: {
@@ -83,8 +83,9 @@ export const useTTacStore = create<ttacState>()((set) => ({
     },
   },
   //for api/TTAC/ImportTTacStatus
-  importTTacStatusSystemId: 0,
-  importTTacStatusLtId: 0,
+  importTTacStatusSystemId: -1,
+  importTTacStatusLtId: -1,
+  importTTacStatusTrigger: 0,
   importTTacStatusResponse: {
     meta: { errorCode: 0, message: "", type: "" },
     data: {
@@ -101,6 +102,26 @@ export const useTTacStore = create<ttacState>()((set) => ({
       },
     },
   },
+  //for /api/TTAC/Titac?Id=1123156
+  ttacRequestId: -1,
+  ttacResponse: {
+    meta: { errorCode: 0, message: "", type: "" },
+    data: {
+      result: {
+        id: 0,
+        err: 0,
+        status: 0,
+        successed: 0,
+        msg: "",
+        formId: 0,
+        logId: 0,
+        eventId: "",
+        stockQuantity: 0,
+      },
+    },
+  },
+  setTTacResponse: (ttacResponse) => //for /api/TTAC/Titac?Id=1123156
+    set({ ttacResponse }),
   setImportTTacStatusResponse: (importTTacStatusResponse) =>
     set({ importTTacStatusResponse }),
   setCupboardCaptureResponse: (cupboardCaptureResponse) =>

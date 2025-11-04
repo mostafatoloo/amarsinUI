@@ -225,7 +225,7 @@ export function usePayRequest() {
       const response = await api.get(url);
       return response.data;
     },
-    //enabled: acc_year !== 0 && acc_system !== 0,
+    enabled: yearId !== -1 && systemId !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -341,7 +341,7 @@ export function usePayRequest() {
       const response = await api.get(url);
       return response.data;
     },
-    //enabled: id !== 0 && acc_year !== 0 && acc_system !== 0,
+    enabled: id !== -1 && yearId !== -1 && systemId !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -373,10 +373,10 @@ export function usePayRequest() {
       setPayRequestInvoicesResponse(data);
     },
     enabled:
-      payRequestId !== 0 &&
-      systemIdPayRequestInvoice !== 0 &&
-      yearIdPayRequestInvoice !== 0 &&
-      customerId !== 0,
+      payRequestId !== -1 &&
+      systemIdPayRequestInvoice !== -1 &&
+      yearIdPayRequestInvoice !== -1 &&
+      customerId !== -1,
   } as UseQueryOptions<PayRequestInvoicesResponse, Error, PayRequestInvoicesResponse, unknown[]>);
 
   //for Payment/chequeBookSearch
@@ -435,7 +435,7 @@ export function usePayRequest() {
       console.log(data, "data in chequeBookDtlSearchQuery");
       setChequeBookDtlSearchResponse(data);
     },*/
-    enabled: chequeBookIdChequeBookDtlSearch !== 0,
+    enabled: chequeBookIdChequeBookDtlSearch !== -1,
   } as UseQueryOptions<ChequeBookDtlSearchResponse, Error, ChequeBookDtlSearchResponse, unknown[]>);
   //for Payment/chequeBookDtlById
   const chequeBookDtlByIdQuery = useQuery<
@@ -454,7 +454,7 @@ export function usePayRequest() {
     onSuccess: (data: any) => {
       setChequeBookDtlByIdResponse(data);
     },
-    enabled: chequeBookDtlId !== 0,
+    enabled: chequeBookDtlId !== -1,
   } as UseQueryOptions<ChequeBookDtlByIdResponse, Error, ChequeBookDtlByIdResponse, unknown[]>);
   //for PayRequest/Save
   const payRequestSaveFn = useMutation({

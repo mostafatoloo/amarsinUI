@@ -28,9 +28,9 @@ export function useBrand() {
 
       return response.data;
     },
-    enabled: !!accSystem, // Only run if accSystem exists
-    refetchOnWindowFocus: true, // Refetch data when the window is focused
-    refetchOnReconnect: true, // Refetch data when the network reconnects
+    enabled: accSystem!==-1, // Only run if accSystem exists
+    refetchOnWindowFocus: false, // Refetch data when the window is focused
+    refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data:any) => {
       setBrands(data.results);
     },

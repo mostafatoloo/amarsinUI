@@ -133,6 +133,7 @@ export function useCupboardReport() {
       const response = await api.get(url);
       return response.data;
     },
+    enabled: systemId !== -1 && yearId !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -216,72 +217,6 @@ export function useCupboardReport() {
     },
     enabled: false, // Disable auto-fetch
   });
-   /* queryFn: async () => {
-      const params: CupboardsReportRequest = {
-        systemId,
-        yearId,
-        err,
-        errId,
-        existsCupboards,
-        recent,
-        pageNumber,
-        srchCode,
-        srchFullCode,
-        srchFullName,
-        srchTtac,
-        srchADProdDate,
-        srchADExpDate,
-        srchProductGTIN,
-        srchProductIRC,
-        srchUID,
-        sortCode,
-        sortFullCode,
-        sortFullName,
-        sortTtac,
-        sortADProdDate,
-        sortADExpDate,
-        sortProductGTIN,
-        sortProductIRC,
-        sortUID,
-      };      
-      const url = `/api/CupboardsReport/report?SystemId=${
-        params.systemId
-      }&YearId=${params.yearId}&err=${params.err}&errId=${
-        params.errId
-      }&existsCupboards=${params.existsCupboards}&recent=${
-        params.recent
-      }&pageNumber=${params.pageNumber}&srchCode=${encodeURIComponent(
-        params.srchCode
-      )}&srchFullCode=${encodeURIComponent(
-        params.srchFullCode
-      )}&srchFullName=${encodeURIComponent(
-        params.srchFullName
-      )}&srchTtac=${encodeURIComponent(
-        params.srchTtac
-      )}&srchADProdDate=${encodeURIComponent(
-        params.srchADProdDate
-      )}&srchADExpDate=${encodeURIComponent(
-        params.srchADExpDate
-      )}&srchProductGTIN=${encodeURIComponent(
-        params.srchProductGTIN
-      )}&srchProductIRC=${encodeURIComponent(
-        params.srchProductIRC
-      )}&srchUID=${encodeURIComponent(params.srchUID)}&sortCode=${
-        params.sortCode
-      }&sortFullCode=${params.sortFullCode}&sortFullName=${
-        params.sortFullName
-      }&sortTtac=${params.sortTtac}&sortADProdDate=${
-        params.sortADProdDate
-      }&sortADExpDate=${params.sortADExpDate}&sortProductGTIN=${
-        params.sortProductGTIN
-      }&sortProductIRC=${params.sortProductIRC}&sortUID=${params.sortUID}`;
-      console.log("downloadExcel url", url);
-      const response = await api.get(url, {
-        responseType: "blob",
-      });
-      return response.data;
-    },
-  });*/
   return {
     //for CupboardsReport/downloadExcel
     refetchDownloadExcel: downloadExcelQuery.refetch,

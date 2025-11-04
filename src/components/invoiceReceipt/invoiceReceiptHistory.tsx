@@ -15,7 +15,6 @@ type Props = {
   indentDtlHistoryResponse: IndentDtlHistoryResponse;
   columnsHistory: any[];
 };
-
 const invoiceReceiptHistory = ({
   showHistory,
   setShowHistory,
@@ -24,6 +23,7 @@ const invoiceReceiptHistory = ({
   columnsHistory,
 }: Props) => {
   const { height, width } = useCalculateTableHeight();
+  //console.log(indentDtlHistoryResponse.data.result.indentDtlHistories)
   return (
     <ModalForm
       isOpen={showHistory}

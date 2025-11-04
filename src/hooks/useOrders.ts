@@ -41,6 +41,9 @@ export function useOrders() {
     onSuccess: (data: any) => {
       setOrderCupListResponse(data);
     },
+    enabled: OrderDtlId!==-1 && WarehauseId!==-1, // Only fetch if param is available
+    refetchOnWindowFocus: false, // Refetch data when the window is focused
+    refetchOnReconnect: false, // Refetch data when the network reconnects
   } as UseQueryOptions<OrderCupListResponse, Error, OrderCupListResponse, unknown[]>);
   //for Order/orderSalesPrices
   const orderSalesPricesQuery = useQuery<
@@ -58,7 +61,7 @@ export function useOrders() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: !!orderIdForSalesPrice && !!salesPriceId,
+    enabled: orderIdForSalesPrice!==-1 && salesPriceId!==-1,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     onSuccess: (data: any) => {
@@ -92,7 +95,7 @@ export function useOrders() {
       );
       return response.data;
     },
-    enabled: !!orderId,
+    enabled: orderId!==0,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     onSuccess: (data: any) => {

@@ -3,16 +3,16 @@ import { InventoryState } from "../types/inventory";
 
 export const useInventoryStore = create<InventoryState>()((set) => ({
   inventoryList: { err: 0, msg: "", rpProviderInventories: [] },
-  accSystem: 4, // Provide a default value for accSystem
-  accYear: 15, // Provide a default value for accYear
-  brandId: 72, // Provide a default value for brandId
+  accSystem: -1, // Provide a default value for accSystem
+  accYear: -1, // Provide a default value for accYear
+  brandId: -1, // Provide a default value for brandId
   //for Inventory/detail
-  id: 0,
+  id: -1,
   inventoryDetailResponse: {
     meta: { errorCode: 0, message: "", type: "" },
     data: {
       result: {
-        id: 0,
+        id: -1,
         title: "",
         wName: "",
         pCode: "",

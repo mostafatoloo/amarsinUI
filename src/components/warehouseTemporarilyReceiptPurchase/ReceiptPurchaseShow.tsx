@@ -16,7 +16,7 @@ type Props = {
 const ReceiptPurchaseShow = ({ workFlowRowSelectResponse, refetchSwitch, setRefetchSwitch }: Props) => {
   const canEditForm1Mst2 =
     workFlowRowSelectResponse.workTableForms.canEditForm1Mst2;
-  const { setField: setWarehouseField } = useWarehouseStore();
+  const { setField: setWarehouseField,receiptPurchaseId } = useWarehouseStore();
   const {
     warehouseTemporaryReceiptPurchaseShowResponse,
     isLoadingWarehouseTemporaryReceiptPurchaseShow,
@@ -36,13 +36,20 @@ const ReceiptPurchaseShow = ({ workFlowRowSelectResponse, refetchSwitch, setRefe
     }
   }, [refetchSwitch]);
   ////////////////////////////////////////////////////////////////////////
-  useEffect(() => {
+  if (receiptPurchaseId!==workFlowRowSelectResponse?.workTableRow.formId)
+  {
+    setWarehouseField(
+      "receiptPurchaseId",
+      workFlowRowSelectResponse?.workTableRow.formId
+    ); 
+  }
+  /*useEffect(() => {
     console.log(workFlowRowSelectResponse?.workTableRow.formId);
     setWarehouseField(
       "receiptPurchaseId",
       workFlowRowSelectResponse?.workTableRow.formId
     );
-  }, [workFlowRowSelectResponse.workTableRow.formId]);
+  }, [workFlowRowSelectResponse.workTableRow.formId]);*/
 
   return (
     <div className="w-full flex flex-col">

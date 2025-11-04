@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { DeliveryState } from "../types/delivery";
 export const useDeliveryStore = create<DeliveryState>()((set) => ({
   //Delivery/:id
-  id: 0,
+  id: -1,
   meta: { errorCode: 0, message: null, type: "" },
   data: {
     result: {

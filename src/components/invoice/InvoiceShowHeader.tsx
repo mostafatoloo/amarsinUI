@@ -10,11 +10,12 @@ type Props = {
 
 const InvoiceShowHeader = ({ workFlowRowSelectResponse }: Props) => {
   const { invoiceShowIdResponse } = useInvoice();
-  const { setField } = useInvoiceStore();
+  const { setField, formId:formIdStore } = useInvoiceStore();
 
   useEffect(() => {
     //console.log(workFlowRowSelectResponse.workTableRow.formId, "formId in InvoiceShowHeader");
-    setField("formId", workFlowRowSelectResponse.workTableRow.formId);
+    if (formIdStore !== workFlowRowSelectResponse.workTableRow.formId)
+      setField("formId", workFlowRowSelectResponse.workTableRow.formId);
   }, [workFlowRowSelectResponse.workTableRow.formId]);
 
   return (
@@ -33,7 +34,9 @@ const InvoiceShowHeader = ({ workFlowRowSelectResponse }: Props) => {
           <label className="p-1 w-20 text-left">تاریخ:</label>
           <input
             type="text"
-            value={convertToFarsiDigits(invoiceShowIdResponse.data.result.invoice.dat)}
+            value={convertToFarsiDigits(
+              invoiceShowIdResponse.data.result.invoice.dat
+            )}
             disabled
             className="text-sm text-gray-400 w-full p-1 border border-gray-300 rounded-md"
           />
@@ -43,7 +46,9 @@ const InvoiceShowHeader = ({ workFlowRowSelectResponse }: Props) => {
         <label className="p-1 w-20 text-left">توضیحات:</label>
         <input
           type="text"
-          value={convertToFarsiDigits(invoiceShowIdResponse.data.result.invoice.exp)}
+          value={convertToFarsiDigits(
+            invoiceShowIdResponse.data.result.invoice.exp
+          )}
           disabled
           className="text-sm text-gray-400 w-full p-1 border border-gray-300 rounded-md"
         />

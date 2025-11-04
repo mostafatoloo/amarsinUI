@@ -4,7 +4,7 @@ import { PreInvoiceReturnState } from "../types/preInvoiceReturn";
 export const usePreInvoiceReturnStore = create<PreInvoiceReturnState>()(
   (set) => ({
     ///api/PreInvoiceReturn/warehouseTemporaryReceiptShow?Id=924865
-    id: 0,
+    temporaryReceiptShowId: -1,
     responseWarehouseTemporaryReceiptShow: {
       meta: { errorCode: 0, message: null, type: "" },
       data: {
@@ -27,7 +27,7 @@ export const usePreInvoiceReturnStore = create<PreInvoiceReturnState>()(
     //api/WarehouseTemporaryReceipt/preInvoiceDtSearch?PreInvoiceDtlId=4512744&page=1
     searchPreInvoiceDtlSearch: "",
     pagePreInvoiceDtlSearch: 1,
-    preInvoiceDtlId: 0,
+    preInvoiceDtlId: -1,
     responsePreInvoiceDtlSearch: {
       meta: { errorCode: 0, message: null, type: "" },
       data: { result: { total_count: 0, results: [] } },

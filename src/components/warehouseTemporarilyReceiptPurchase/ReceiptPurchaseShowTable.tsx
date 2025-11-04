@@ -512,6 +512,7 @@ const ReceiptPurchaseShowTable = ({
           selectedProductPrice={selectedProductPrice} //for check if selectedProductPrice.flwId===0 new else edit && sending selectedProductPrice.id in edit
           productPriceDtls={productPriceDtl}
           isNew={isNewPrice} //for check if isNew new else edit
+          isEdit={false}
           setIsNew={setIsNewPrice}
           setIsEdit={() => false}
           fromWorkFlow={false}

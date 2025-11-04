@@ -21,7 +21,7 @@ const SideMenu = () => {
     //  , chartId
   } = useGeneralContext();
   const { definitionInvironment } = useDefinitionInvironment();
-  const { authApiResponse, logout } = useAuthStore();
+  const { authApiResponse } = useAuthStore();
 
   const userInfo = authApiResponse?.data.result.login;
   const initData = authApiResponse?.data.result.initData;
@@ -47,16 +47,14 @@ const SideMenu = () => {
     }
   }, [isMenuOpened]);
 
-  const openLogin = () => {
-    console.log(search);
-    logout();
-  };
 
   useEffect(() => {
     if (chart?.id !== undefined && chart.id !== 0) {
       setChartId(Number(chart.id));
+      console.log(search, "search");
     }
   }, [chart]);
+
 
   const formatted = formatPersianDate(
     definitionInvironment.curDay,
@@ -79,20 +77,20 @@ const SideMenu = () => {
         <div className="flex flex-col w-full items-center justify-center">
           {/* User Info */}
           <div
-            className={`${colors.cyan} w-full flex items-center justify-center border-b-2 p-2 hover:cursor-pointer`}
-            onClick={openLogin}
+            className={`${colors.cyan} w-full flex items-center justify-center border-b-2 p-2`}
+            //onClick={openLogin}
           >
             <label className=" text-white px-3 py-1 rounded">{formatted}</label>
           </div>
           {/* User Info */}
           <div
-            className="w-full flex items-center justify-center border-b-2 p-2 hover:cursor-pointer"
-            onClick={openLogin}
+            className="w-full flex items-center justify-center border-b-2 p-2"
+            //onClick={openLogin}
           >
             {userInfo?.nam || "کاربر سیستم"}
           </div>
           {/* سمت */}
-          <div className="w-full flex justify-center items-center">
+          <div className="w-full flex justify-center items-center hover:cursor-pointer">
             <AutoComplete
               options={
                 definitionInvironment?.charts !== undefined

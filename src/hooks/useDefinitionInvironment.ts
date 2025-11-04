@@ -21,7 +21,6 @@ export function useDefinitionInvironment() {
       const response = await api.get(`/api/Definition/Environment`);
       return response.data;
     },
-
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: DefinitionInvironment) => {

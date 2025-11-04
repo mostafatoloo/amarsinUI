@@ -22,6 +22,7 @@ import {
 import { useProducts } from "../../hooks/useProducts";
 import { useProductStore } from "../../store/productStore";
 import { debounce } from "lodash";
+import { v4 as uuidv4 } from "uuid";
 import { ProductSearchRequest } from "../../types/product";
 import { useBrandStore } from "../../store/brandStore";
 import { EditableInput } from "../controls/TTable";
@@ -42,6 +43,11 @@ import { useProductPriceStore } from "../../store/productPriceStore";
 import ProductPriceFormList from "./ProductPriceFormList";
 import { ShowProductListRequest } from "../../types/productOperation";
 import { useAuthStore } from "../../store/authStore";
+import { colors } from "../../utilities/color";
+import ModalForm from "../layout/ModalForm";
+import PayRequestAttachment from "../payRequest/PayRequestAttachment";
+import { useAttachmentStore } from "../../store/attachmentStore";
+import { useAttachments } from "../../hooks/useAttachments";
 
 type Props = {
   addProductList: (
@@ -56,6 +62,7 @@ type Props = {
   selectedProductPrice: ProductPrice | null;
   productPriceDtls: ProductPriceDtl[] | undefined;
   isNew: boolean;
+  isEdit: boolean;
   setIsNew: (isNew: boolean) => void;
   setIsEdit: (isEdit: boolean) => void;
   fromWorkFlow: boolean;
@@ -211,6 +218,7 @@ const ProductPriceForm = ({
   selectedProductPrice,
   productPriceDtls,
   isNew,
+  isEdit,
   setIsNew,
   setIsEdit,
   fromWorkFlow,
@@ -237,6 +245,12 @@ const ProductPriceForm = ({
   const [dsc, setDsc] = useState<string>("");
   const [isModalRegOpen, setIsModalRegOpen] = useState(false);
   const [isModalEmptyOpen, setIsModalEmptyOpen] = useState(false);
+  //for attachment
+  const { attachments } = useAttachments();
+  const { setField: setAttachmentField } = useAttachmentStore();
+  const [showAttachment, setShowAttachment] = useState<boolean>(false);
+  const [guid, setGuid] = useState<string>("");
+  const [cnt, setCnt] = useState<number>(0);
 
   const columns: TableColumns = useMemo(() => {
     return headCells.map((item) => {
@@ -368,16 +382,16 @@ const ProductPriceForm = ({
           lastDate: item.lastDate,
           lastBuyPrice: item.lastBuyPrice,
           tax: item.tax,
-          p1O: item.p1O,
-          p2O: item.p2O,
-          p3O: item.p3O,
-          p4O: item.p4O,
-          p5O: item.p5O,
-          p1: item.p1,
-          p2: item.p2,
-          p3: item.p3,
-          p4: item.p4,
-          p5: item.p5,
+          p1O: item.p1,
+          p2O: item.p2,
+          p3O: item.p3,
+          p4O: item.p4,
+          p5O: item.p5,
+          p1: item.p1O,
+          p2: item.p2O,
+          p3: item.p3O,
+          p4: item.p4O,
+          p5: item.p5O,
           dtlDsc: item.dtlDsc,
           deleted: item.deleted,
           isDeleted: false,
@@ -390,11 +404,13 @@ const ProductPriceForm = ({
 
   //send params to /api/Product/search?accSystem=4&accYear=15&page=1&searchTerm=%D8%B3%D9%81
   useEffect(() => {
-    setProductField("accSystem", systemId);
-    setProductField("accYear", yearId);
-    //setProductField("searchTerm", convertToFarsiDigits(search));
-    handleDebounceFilterChange("search", convertToFarsiDigits(search));
-    setProductField("page", 1);
+    setProductField("productSearchAccSystem", systemId);
+    setProductField("productSearchAccYear", yearId);
+    handleDebounceFilterChange(
+      "productSearchSearch",
+      convertToFarsiDigits(search)
+    );
+    setProductField("productSearchPage", 1);
   }, [search, systemId, yearId]);
   ///////////////////////////////////////////////////////
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -442,31 +458,39 @@ const ProductPriceForm = ({
     if (res && res.data.result) {
       // Map through the new products
       res.data.result.forEach((product: ProductPriceListItem) => {
-        setAddList((prev) => [
-          ...prev,
-          {
-            id: product.id,
-            pId: product.pId,
-            bName: product.bName,
-            product: product.product,
-            lastDate: product.lastDate,
-            lastBuyPrice: product.lastBuyPrice,
-            tax: product.tax,
-            p1O: 0,
-            p2O: 0,
-            p3O: 0,
-            p4O: 0,
-            p5O: 0,
-            p1: product.p1O > 0 ? product.p1O : 0,
-            p2: product.p2O > 0 ? product.p2O : 0,
-            p3: product.p3O > 0 ? product.p3O : 0,
-            p4: product.p4O > 0 ? product.p4O : 0,
-            p5: product.p5O > 0 ? product.p5O : 0,
-            dtlDsc: product.dtlDsc,
-            deleted: product.deleted,
-            isDeleted: false,
-          },
-        ]);
+        setAddList((prev) => {
+          // Filter out newRow entries (empty rows) before adding new records
+          // Check by properties since items might be clones of newRow
+          const filteredPrev = prev.filter((item) => {
+            // Remove items that match newRow pattern (id === 0 and product is empty)
+            return !(item.id === 0 && item.product === "" && item.pId === 0);
+          });
+          return [
+            ...filteredPrev,
+            {
+              id: product.id,
+              pId: product.pId,
+              bName: product.bName,
+              product: product.product,
+              lastDate: product.lastDate,
+              lastBuyPrice: product.lastBuyPrice,
+              tax: product.tax,
+              p1O: 0,
+              p2O: 0,
+              p3O: 0,
+              p4O: 0,
+              p5O: 0,
+              p1: product.p1O > 0 ? product.p1O : 0,
+              p2: product.p2O > 0 ? product.p2O : 0,
+              p3: product.p3O > 0 ? product.p3O : 0,
+              p4: product.p4O > 0 ? product.p4O : 0,
+              p5: product.p5O > 0 ? product.p5O : 0,
+              dtlDsc: product.dtlDsc,
+              deleted: product.deleted,
+              isDeleted: false,
+            },
+          ];
+        });
       });
       setAddList((prev) => [
         ...prev,
@@ -491,8 +515,10 @@ const ProductPriceForm = ({
   };
   ////////////////////////////////////////////////////////
   const handleSubmitSave = async (
-    e?: React.MouseEvent<HTMLButtonElement>
-  ): Promise<string | undefined> => {
+    e?: React.MouseEvent<HTMLButtonElement>,
+    skipWarning: boolean = false
+  ) => {
+    //: Promise<string | undefined>
     if (e) e.preventDefault();
     let request: ProductPriceSaveRequest;
     const dtls = originalData
@@ -526,11 +552,10 @@ const ProductPriceForm = ({
     console.log(dtls, "dtls");
     if (dtls.length === 0) {
       setIsModalEmptyOpen(true);
-      return "اقلام مشخص نشده!";
+      //return "اقلام مشخص نشده!";
     }
     request = {
       usrId: authApiResponse?.data.result.login.usrId ?? 0,
-      skipWarning: true,
       chartId: chartId,
       id: isNew ? 0 : selectedProductPrice?.id ?? 0, //if isNew is true, id is 0, otherwise id is selectedProductPerm?.id for edit
       acc_System: systemId,
@@ -539,13 +564,14 @@ const ProductPriceForm = ({
       dat: convertToLatinDigits(dat),
       tim: convertToLatinDigits(tim),
       saveAndSend: false,
+      skipWarning,
       dtls: dtls,
     };
     console.log(request);
     try {
       await productPriceSave(request);
       setIsModalRegOpen(true);
-      return "اطلاعات با موفقیت ثبت شد.";
+      //return "اطلاعات با موفقیت ثبت شد.";
       //setIsNew(false);
       //setIsEdit(false);
       //return response;
@@ -554,7 +580,40 @@ const ProductPriceForm = ({
       console.error("Error ثبت :", error);
     }
   };
+  /////////////////////////////////////////////////////////////for defining cnt
+  useEffect(() => {
+    let tempCnt = 0;
+    if (isNew && attachments.data.result.length === 0) {
+      tempCnt = 0;
+    } else if (attachments.data.result.length !== 0) {
+      tempCnt = attachments.data.result.length ?? 0;
+    } else {
+      tempCnt =
+        selectedProductPrice?.attachCount ?? 0;
+    }
+    setCnt(tempCnt);
+  }, [
+    attachments.data.result.length,
+    isNew,
+    selectedProductPrice?.attachCount,
+  ]);
   ///////////////////////////////////////////////////////
+  useEffect(() => {
+    if (isNew) {
+      setGuid(uuidv4());
+    } else {
+      setGuid(selectedProductPrice?.guid ?? "");
+    }
+  }, [isNew, selectedProductPrice?.guid]);
+
+  /////////////////////////////////////////////////////////////
+  useEffect(() => {
+    setAttachmentField("systemId", systemId);
+    setAttachmentField("yearId", yearId);
+    setAttachmentField("formId", isNew ? 0 : selectedProductPrice?.id ?? 0);
+    setAttachmentField("prefix", "ProductPrice");
+    setAttachmentField("GUID", guid);
+  }, [selectedProductPrice?.productPriceId, systemId, yearId, guid, isNew]);
   return (
     <div className="flex flex-col gap-2">
       <ProductOfferFormParams
@@ -570,6 +629,19 @@ const ProductPriceForm = ({
         setBrand={setBrand}
         setBrandSearch={setBrandSearch}
         canEditForm1={canEditForm1}
+        childButton={
+          <Button
+            text={`ضمائم ${`(${convertToFarsiDigits(cnt)})`}`}
+            backgroundColor={colors.blue_400}
+            backgroundColorHover={colors.blue_500}
+            variant="w-32"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setShowAttachment(true);
+            }}
+          />
+        }
       />
       <ConfirmCard
         variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end"
@@ -620,6 +692,8 @@ const ProductPriceForm = ({
         canEditForm1={canEditForm1}
         setIsNew={setIsNew}
         setIsEdit={setIsEdit}
+        isNew={isNew}
+        isEdit={isEdit}
         columns={columns}
         originalData={originalData}
         setOriginalData={setOriginalData}
@@ -638,6 +712,25 @@ const ProductPriceForm = ({
         isModalRegOpen={isModalRegOpen}
         setIsModalRegOpen={setIsModalRegOpen}
       />
+      {/* show attachment component */}
+      <ModalForm
+        isOpen={showAttachment}
+        onClose={() => setShowAttachment(false)}
+        title="ضمائم  لیست قیمت"
+        width="1/2"
+        height="90vh"
+      >
+        <PayRequestAttachment
+          formId={
+            isNew //|| workFlowRowSelectResponse.msg === "PayRequestOperationForm" //is not in workflow menu
+              ? 0
+              : selectedProductPrice?.id ?? 0
+          }
+          setCnt={setCnt}
+          prefix={"ProductPrice"}
+          guid={guid}
+        />
+      </ModalForm>
     </div>
   );
 };

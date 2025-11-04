@@ -548,7 +548,7 @@ const PayRequestShow = ({
           workFlowRowSelectResponse={workFlowRowSelectResponse}
         />
       )}
-      {workFlowRowSelectResponse.workTableForms.canEditForm1Dtl2 && (
+      {workFlowRowSelectResponse.workTableForms.canEditForm1 && (
         <ConfirmCard
           backgroundColor="bg-gray-300"
           variant="flex-row gap-2 rounded-lg justify-end"

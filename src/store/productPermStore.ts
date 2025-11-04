@@ -11,8 +11,8 @@ import {
 export const useProductPermStore = create<ProductPermState>()((set) => ({
   //productPerm
   id: 0,
-  yearId: 0,
-  systemId: 0,
+  yearId: -1,
+  systemId: -1,
   state: 0,
   regFDate: "",
   regTDate: "",
@@ -56,7 +56,7 @@ export const useProductPermStore = create<ProductPermState>()((set) => ({
     data: { result: [] },
   },
   ////////////
-  pId: 0,
+  pId: -1,
   //productPermSaveResponse
   productPermSaveResponse: {
     meta: { errorCode: 0, message: null, type: "" },

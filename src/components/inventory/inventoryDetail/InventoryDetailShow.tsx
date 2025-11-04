@@ -17,7 +17,7 @@ const InventoryDetailShow = ({
   refetchSwitch,
   setRefetchSwitch,
 }: Props) => {
-  const { setField } = useInventoryStore();
+  const { setField,id } = useInventoryStore();
   const {
     inventoryDetailResponse,
     inventoryUpdateIssue,
@@ -32,9 +32,14 @@ const InventoryDetailShow = ({
   const [isModalOpenCost, setIsModalOpenCost] = useState(false);
   const [isModalOpenIssue, setIsModalOpenIssue] = useState(false);
   /////////////////////////////////////////////////////////////////
-  useEffect(() => {
+  if (id!==workFlowRowSelectResponse.workTableRow.formId)
+  {
     setField("id", workFlowRowSelectResponse.workTableRow.formId);
-  }, [workFlowRowSelectResponse.workTableRow.formId]);
+  }
+  /*useEffect(() => {
+    setField("id", workFlowRowSelectResponse.workTableRow.formId);
+  }, [workFlowRowSelectResponse.workTableRow.formId]);*/
+
   /////////////////////////////////////////////////////////////////
   //refetch inventoryDetailResponse if refetchSwitch is true
   useEffect(() => {

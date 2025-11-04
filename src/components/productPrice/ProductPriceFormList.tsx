@@ -23,6 +23,8 @@ import ShowMessages from "../controls/ShowMessages";
 type Props = {
   setIsNew: (isNew: boolean) => void;
   setIsEdit: (isEdit: boolean) => void;
+  isNew: boolean;
+  isEdit: boolean;  
   addList: ProductPriceListItemTable[];
   showDeleted: boolean;
   handleSubmit: (
@@ -30,7 +32,10 @@ type Props = {
     productId?: number
   ) => Promise<ProductPriceListResponse | undefined>;
   isLoadingProductPriceSave: boolean;
-  handleSubmitSave: () => Promise<string | undefined>;
+  handleSubmitSave: (
+    e?: React.MouseEvent<HTMLButtonElement>,
+    skipWarning?: boolean
+  ) => void; //Promise<string | undefined>;
   isDtlHistoryLoading: boolean;
   handleAddRow: (
     index: number,
@@ -47,12 +52,15 @@ type Props = {
   isModalEmptyOpen: boolean;
   setIsModalEmptyOpen: Dispatch<SetStateAction<boolean>>;
   canEditForm1: boolean;
+
 };
 
 const ProductPriceFormList = ({
   canEditForm1,
   setIsNew,
   setIsEdit,
+  isNew,
+  isEdit,
   addList,
   showDeleted,
   handleSubmit,
@@ -217,7 +225,6 @@ const ProductPriceFormList = ({
     const response = await handleSubmit(undefined, productId);
     let productPriceProducts: ProductPriceListItem[] | undefined =
       response?.data.result;
-    console.log(productPriceProducts, "productPriceProducts");
     setOriginalData((old) =>
       old.map((row, index) => {
         if (index === rowIndex && productPriceProducts) {
@@ -257,11 +264,11 @@ const ProductPriceFormList = ({
   ////////////////////////////////////////////////////////
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
-    if (isModalRegOpen) {
+    if (isModalRegOpen && !isNew && !isEdit) {
       timeoutId = setTimeout(() => {
         setIsModalRegOpen(false);
-        setIsNew(false);
-        setIsEdit(false);
+        //setIsNew(false);
+        //setIsEdit(false);
       }, 3000);
     }
     return () => {
@@ -269,7 +276,7 @@ const ProductPriceFormList = ({
         clearTimeout(timeoutId);
       }
     };
-  }, [isModalRegOpen]);
+  }, [isNew,isEdit]);
   ////////////////////////////////////////////////////////
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -286,6 +293,12 @@ const ProductPriceFormList = ({
   }, [isModalEmptyOpen]);
   ////////////////////////////////////////////////////////
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in productGraceFormList table
+  const handleSubmitSaveWithSkipWarning = (e?: React.MouseEvent<HTMLButtonElement>) => {
+    handleSubmitSave(e, true);
+    //setIsModalRegOpen(false);
+    setIsNew(false);
+    setIsEdit(false);
+  };
   return (
     <>
       <div className="mt-2 w-full bg-white rounded-md">
@@ -327,7 +340,7 @@ const ProductPriceFormList = ({
             backgroundColorHover="bg-green-600"
             colorHover="text-white"
             variant="shadow-lg w-64"
-            onClick={handleSubmitSave}
+            onClick={(e) => handleSubmitSave(e, false)}
           />
         </ConfirmCard>
       </div>
@@ -342,32 +355,30 @@ const ProductPriceFormList = ({
         isOpen={isModalRegOpen}
         onClose={() => setIsModalRegOpen(false)}
         backgroundColor={
-          productPriceSaveResponse?.meta.errorCode === -1
+          productPriceSaveResponse?.meta.errorCode !== -1
             ? "bg-green-200"
             : "bg-red-200"
         }
         bgColorButton={
-          productPriceSaveResponse?.meta.errorCode === -1
+          productPriceSaveResponse?.meta.errorCode !== -1
             ? "bg-green-500"
             : "bg-red-500"
         }
         color="text-white"
-        message={
-          productPriceSaveResponse?.meta.errorCode !== -1
-            ? productPriceSaveResponse?.meta.message || ""
-            : "اطلاعات با موفقیت ثبت شد."
-        }
+        message={productPriceSaveResponse?.meta.message}
         visibleButton={false}
       />
-      {<ModalMessage
-        isOpen={isModalEmptyOpen}
-        onClose={() => setIsModalEmptyOpen(false)}
-        backgroundColor={"bg-red-200"}
-        bgColorButton={"bg-red-500"}
-        color="text-white"
-        message={"اقلام مشخص نشده!"}
-        visibleButton={false}
-      />}
+      {
+        <ModalMessage
+          isOpen={isModalEmptyOpen}
+          onClose={() => setIsModalEmptyOpen(false)}
+          backgroundColor={"bg-red-200"}
+          bgColorButton={"bg-red-500"}
+          color="text-white"
+          message={"اقلام مشخص نشده!"}
+          visibleButton={false}
+        />
+      }
 
       {productPriceSaveResponse?.data.result.dtlErrMsgs?.length > 0 && (
         <ModalForm
@@ -380,7 +391,21 @@ const ProductPriceFormList = ({
             dtlErrMsgs={productPriceSaveResponse.data.result.dtlErrMsgs || []}
             color={colors.red100}
             heightWindow={300}
-          />
+          >
+            <ConfirmCard variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end ">
+              <Button
+                text={
+                  isLoadingProductPriceSave ? "در حال ثبت اطلاعات..." : "ثبت"
+                }
+                backgroundColor="bg-green-500"
+                color="text-white"
+                backgroundColorHover="bg-green-600"
+                colorHover="text-white"
+                variant="shadow-lg w-64"
+                onClick={handleSubmitSaveWithSkipWarning}
+              />
+            </ConfirmCard>
+          </ShowMessages>
         </ModalForm>
       )}
     </>

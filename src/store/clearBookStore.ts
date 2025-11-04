@@ -2,16 +2,16 @@ import { create } from "zustand";
 import { ClearBookProductsState } from "../types/clearBook";
 export const useClearBookStore = create<ClearBookProductsState>()((set) => ({
   //clearBookProducts
-  systemId: 0,
-  yearId: 0,
+  systemId: -1,
+  yearId: -1,
   brandId: 0,
   clearBookProductsResponse: {
     meta: { errorCode: 0, message: null, type: "" },
     data: { result: { err: 0, msg: "", clearBookProductsName: [], clearBooks: [] } },
   },
   //clearBookProductsSetProduct
-  clearBookId: 0,
-  productId: 0,
+  clearBookId: -1,
+  productId: -1,
   check: false,
   clearBookProductsSetProductResponse: {
     meta: { errorCode: 0, message: null, type: "" },

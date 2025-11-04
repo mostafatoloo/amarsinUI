@@ -1,3 +1,4 @@
+//خسابداری->حسابداری بازرگانی->عملیات-> مجوز کالا
 import { columns } from "../../../components/productOffer/ProductOfferGeneral";
 import Accept from "../../../assets/images/GrayThem/img24_3.png";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -511,6 +512,7 @@ const ProductPerm = () => {
               pageSize={pageSize}
               setPageSize={setPageSize}
               totalCount={productPermTotalCount ?? 0}
+              showPagination={true}
             />
           </div>
         </div>

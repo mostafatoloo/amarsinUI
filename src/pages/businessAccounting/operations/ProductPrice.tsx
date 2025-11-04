@@ -1,3 +1,4 @@
+//خسابداری->حسابداری بازرگانی->عملیات-> قیمت کالا
 import { columns } from "../../../components/productOffer/ProductOfferGeneral";
 import Accept from "../../../assets/images/GrayThem/img24_3.png";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -562,6 +563,7 @@ const ProductPrice = () => {
               setPageSize={setPageSize}
               totalCount={productPriceTotalCount ?? 0}
               setSelectedRowIndex={setSelectedRowIndex}
+              showPagination={true}
             />
           </div>
         </div>
@@ -626,6 +628,7 @@ const ProductPrice = () => {
           selectedProductPrice={selectedProductPrice} //for check if selectedProductPrice.flwId===0 new else edit && sending selectedProductPrice.id in edit
           productPriceDtls={productPriceDtl}
           isNew={isNew} //for check if isNew new else edit
+          isEdit={isEdit}
           setIsNew={setIsNew}
           setIsEdit={setIsEdit}
           fromWorkFlow={false}

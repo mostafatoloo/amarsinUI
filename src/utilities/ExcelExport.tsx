@@ -74,7 +74,7 @@ const ExcelExport = <T extends object>({
   return (
     <>
       <div
-        className="flex flex-col items-center justify-center  cursor-pointer"
+        className="flex flex-col items-center justify-center  cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1"
         onClick={() =>
           handleExport({ data, setIsModalOpen, headCells, fileName })
         }

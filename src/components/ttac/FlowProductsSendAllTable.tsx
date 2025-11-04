@@ -11,7 +11,7 @@ import { colors } from "../../utilities/color";
 import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
 import { useTTacStore } from "../../store/ttacStore";
 import FlowProductsSendAllTableHeader from "./FlowProductsSendAllTableHeader";
-import Spinner from "../controls/Spinner";
+import Skeleton from "../layout/Skeleton";
 
 type Props = {
   isLoading: boolean;
@@ -258,7 +258,7 @@ const FlowProductsSendAllTable = ({
     if (Number(row.original.err) > 0) {
       return colors.red200;
     }
-    return "";
+    return null;
   };
   //////////////////////////////////////////////////////////////
   const { width, height } = useCalculateTableHeight();
@@ -266,7 +266,7 @@ const FlowProductsSendAllTable = ({
   return (
     <div className="h-full text-xs">
       {isLoading ? (
-        <Spinner />
+        <Skeleton />
       ) : (
         <div
           className="mt-2 overflow-y-auto"
@@ -433,6 +433,7 @@ const FlowProductsSendAllTable = ({
               pageSize={pageSize}
               setPageSize={setPageSize}
               totalCount={totalCount ?? 0}
+              showPagination={true}
             />
           </div>
         </div>

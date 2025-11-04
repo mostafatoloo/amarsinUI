@@ -85,7 +85,7 @@ export function useCheques() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: payKind !== -1 && systemId !== 0,
+    enabled: payKind !== -1 && systemId !== -1,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
@@ -109,7 +109,7 @@ export function useCheques() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: formId !== 0,
+    enabled: formId !== -1,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
@@ -136,7 +136,7 @@ export function useCheques() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: formId !== 0,
+    enabled: formId !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -158,7 +158,7 @@ export function useCheques() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: paymentId !== 0,
+    enabled: paymentId !== -1,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     onSuccess: (data: any) => {
@@ -196,7 +196,7 @@ export function useCheques() {
           srName: "",
           marketerSrName: "",
           kind: 0,
-          payKind: 0,
+          payKind: -1,
           dat: "",
           sayadi: "",
           sarDate: "",

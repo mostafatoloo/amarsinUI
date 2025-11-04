@@ -426,11 +426,13 @@ const ProductOfferForm = ({
 
   //send params to /api/Product/search?accSystem=4&accYear=15&page=1&searchTerm=%D8%B3%D9%81
   useEffect(() => {
-    setProductField("accSystem", systemId);
-    setProductField("accYear", yearId);
-    //setProductField("searchTerm", convertToFarsiDigits(search));
-    handleDebounceFilterChange("search", convertToFarsiDigits(search));
-    setProductField("page", 1);
+    setProductField("productSearchAccSystem", systemId);
+    setProductField("productSearchAccYear", yearId);
+    handleDebounceFilterChange(
+      "productSearchSearch",
+      convertToFarsiDigits(search)
+    );
+    setProductField("productSearchPage", 1);
   }, [search, systemId, yearId]);
   ///////////////////////////////////////////////////////
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -479,45 +481,53 @@ const ProductOfferForm = ({
     if (res && res.data.result) {
       // Map through the new products
       res.data.result.forEach((product) => {
-        setAddList((prev) => [
-          ...prev,
-          {
-            id: product.id,
-            pId: product.pId,
-            bName: product.bName,
-            product: product.product,
-            lastDate: product.lastDate,
-            s1O:
-              product.s1NO + product.s1DO > 0
-                ? product.s1DO.toString() + "+" + product.s1NO.toString()
-                : "",
-            s2O:
-              product.s2NO + product.s2DO > 0
-                ? product.s2DO.toString() + "+" + product.s2NO.toString()
-                : "",
-            s3O:
-              product.s3NO + product.s3DO > 0
-                ? product.s3DO.toString() + "+" + product.s3NO.toString()
-                : "",
-            s4O:
-              product.s4NO + product.s4DO > 0
-                ? product.s4DO.toString() + "+" + product.s4NO.toString()
-                : "",
-            s1N: "",
-            s1D: "",
-            s2N: "",
-            s2D: "",
-            s3N: "",
-            s3D: "",
-            s4N: "",
-            s4D: "",
-            dtlDsc: product.dtlDsc,
-            deleted: product.deleted,
-            no: false,
-            //index: index + 1,
-            isDeleted: false,
-          },
-        ]);
+        setAddList((prev) => {
+          // Filter out newRow entries (empty rows) before adding new records
+          // Check by properties since items might be clones of newRow
+          const filteredPrev = prev.filter((item) => {
+            // Remove items that match newRow pattern (id === 0 and product is empty)
+            return !(item.id === 0 && item.product === "" && item.pId === 0);
+          });
+          return [
+            ...filteredPrev,
+            {
+              id: product.id,
+              pId: product.pId,
+              bName: product.bName,
+              product: product.product,
+              lastDate: product.lastDate,
+              s1O:
+                product.s1NO + product.s1DO > 0
+                  ? product.s1DO.toString() + "+" + product.s1NO.toString()
+                  : "",
+              s2O:
+                product.s2NO + product.s2DO > 0
+                  ? product.s2DO.toString() + "+" + product.s2NO.toString()
+                  : "",
+              s3O:
+                product.s3NO + product.s3DO > 0
+                  ? product.s3DO.toString() + "+" + product.s3NO.toString()
+                  : "",
+              s4O:
+                product.s4NO + product.s4DO > 0
+                  ? product.s4DO.toString() + "+" + product.s4NO.toString()
+                  : "",
+              s1N: "",
+              s1D: "",
+              s2N: "",
+              s2D: "",
+              s3N: "",
+              s3D: "",
+              s4N: "",
+              s4D: "",
+              dtlDsc: product.dtlDsc,
+              deleted: product.deleted,
+              no: false,
+              //index: index + 1,
+              isDeleted: false,
+            },
+          ];
+        });
       });
       setAddList((prev) => [
         ...prev,
@@ -569,8 +579,21 @@ const ProductOfferForm = ({
           dtlDsc: item.dtlDsc,
           deleted: item.isDeleted,
         };
-        return dtl;
-      });
+        if (
+          item.s1N !== "" ||
+          item.s2N !== "" ||
+          item.s3N !== "" ||
+          item.s4N !== "" ||
+          item.s1D !== "" ||
+          item.s2D !== "" ||
+          item.s3D !== "" ||
+          item.s4D !== ""
+        ) {
+          return dtl;
+        } else {
+          return undefined;
+        }
+      }).filter((item) => item !== undefined);
 
     request = {
       chartId: chartId,

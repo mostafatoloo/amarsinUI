@@ -84,7 +84,10 @@ export function EditableInput<T extends object>({
   const [isFocused, setIsFocused] = React.useState(false);
 
   React.useEffect(() => {
-    if (initialValue && initialValue.props?.children?.props.type === "checkbox") {
+    if (
+      initialValue &&
+      initialValue.props?.children?.props.type === "checkbox"
+    ) {
       setValue(initialValue.props.children.props.checked);
     } else if (typeof initialValue === "boolean") {
       setValue(initialValue);
@@ -352,11 +355,14 @@ export default function TTable<T extends object>({
 
   const tHead = (
     <thead className="bg-gray-200 ">
-      {headerGroups.map((headerGroup) => (
-        <tr
-          {...headerGroup.getHeaderGroupProps()}
-          className="border-b border-gray-300 "
-        >
+      {headerGroups.map((headerGroup, i) => {
+        const { key, ...headerGroupProps } = headerGroup.getHeaderGroupProps();
+        return (
+          <tr 
+            key={i}
+            {...headerGroupProps}
+            className="border-b border-gray-300 "
+          >
           {headerGroup.headers.map((column: any) =>
             column.visible === false ? null : (
               <th
@@ -378,7 +384,8 @@ export default function TTable<T extends object>({
             )
           )}
         </tr>
-      ))}
+        );
+      })}
     </thead>
   );
 
@@ -388,10 +395,31 @@ export default function TTable<T extends object>({
         rows.map((row: any, i: number) => {
           //console.log(row,"row in tBody processedData");
           prepareRow(row);
+          const { key, ...rowProps } = row.getRowProps();
           return (
             <tr
-              {...row.getRowProps()}
+              key={i}
+              {...rowProps}
               className="border-b border-gray-300 hover:cursor-pointer hover:bg-yellow-50"
+              onMouseUp={() => {
+                // Check if text was selected after mouse up
+                const selection = window.getSelection();
+                const hasTextSelection =
+                  selection && selection.toString().length > 0;
+
+                // Only trigger row selection if no text was selected
+                if (!hasTextSelection) {
+                  if (setSelectedId) {
+                    //console.log(row.original["id" as keyof T],"row.original in TTable")
+                    const itemId = Number(
+                      convertToLatinDigits(row.original["id" as keyof T])
+                    );
+                    setSelectedId?.(itemId);
+                  }
+                  //setRowSelect(i);
+                  setSelectedRowIndex?.(i);
+                }
+              }}
             >
               {row.cells.map((cell: any) => {
                 if (cell.column.visible === false) return null;
@@ -399,7 +427,7 @@ export default function TTable<T extends object>({
                 return (
                   <td
                     {...cell.getCellProps()}
-                    className="text-gray-500  flex justify-start items-center px-1"
+                    className="text-gray-500  flex justify-start items-center px-1 select-text"
                     key={cell.column.id}
                     title={showToolTip ? cell.value : ""}
                     style={{
@@ -418,6 +446,8 @@ export default function TTable<T extends object>({
                       whiteSpace: "pre-wrap",
                       textWrap: !wordWrap && width > 768 ? "nowrap" : "wrap",
                       overflow: !wordWrap && width > 768 ? "hidden" : "visible",
+                      userSelect: "text",
+                      WebkitUserSelect: "text",
                       ...(hasSumRow && i === rows.length - 1
                         ? {
                             backgroundColor: colors.gray200,
@@ -425,17 +455,6 @@ export default function TTable<T extends object>({
                             textAlign: "right",
                           }
                         : {}),
-                    }}
-                    onClick={() => {
-                      if (setSelectedId) {
-                        //console.log(row.original["id" as keyof T],"row.original in TTable")
-                        const itemId = Number(
-                          convertToLatinDigits(row.original["id" as keyof T])
-                        );
-                        setSelectedId?.(itemId);
-                      }
-                      //setRowSelect(i);
-                      setSelectedRowIndex?.(i);
                     }}
                   >
                     {hasSumRow &&

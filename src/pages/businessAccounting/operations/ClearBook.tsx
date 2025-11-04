@@ -1,10 +1,11 @@
-import PageTitle from "../../components/layout/PageTitle";
-import Refresh32 from "../../assets/images/GrayThem/rfrsh32.png";
+//خسابداری->حسابداری بازرگانی->عملیات-> کلیربوک
+import PageTitle from "../../../components/layout/PageTitle";
+import Refresh32 from "../../../assets/images/GrayThem/rfrsh32.png";
 import { useEffect } from "react";
-import { useGeneralContext } from "../../context/GeneralContext";
-import { useClearBookStore } from "../../store/clearBookStore";
-import { useClearBook } from "../../hooks/useClearBook";
-import ClearBookShow from "../businessAccounting/operations/ClearBookShow";
+import { useGeneralContext } from "../../../context/GeneralContext";
+import { useClearBookStore } from "../../../store/clearBookStore";
+import { useClearBook } from "../../../hooks/useClearBook";
+import ClearBookShow from "../../../components/clearbook/ClearBookShow";
 
 export default function InventoryGoodList() {
   const {
@@ -29,7 +30,7 @@ export default function InventoryGoodList() {
       <header className="flex items-center justify-between px-2 border-gray-300">
         <PageTitle />
         <div
-          className="flex flex-col items-center cursor-pointer"
+          className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1"
           onClick={() => refetch()}
         >
           {/*onClick={()=>getWorkTable()}>*/}

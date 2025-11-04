@@ -73,8 +73,7 @@ const OrderRegShow = ({
     refetchOrderRegShow,
   } = useOrders();
 
-  const { orderId } = useOrderStore();
-  const { setField: setOrderCupListField } = useOrderStore();
+  const { setField: setOrderCupListField ,orderId} = useOrderStore();
   const [warehouse, setWarehouse] = useState<DefaultOptionType | null>(null);
   const { authApiResponse } = useAuthStore();
   const usrId = authApiResponse?.data?.result?.login?.usrId ?? 0;
@@ -280,10 +279,13 @@ const OrderRegShow = ({
     }
   }, [refetchSwitch]);
   ////////////////////////////////////////////////////////////////////////
-  useEffect(() => {
+  if (orderId!==workFlowRowSelectResponse?.workTableRow.formId){
+    setOrderField("orderId", workFlowRowSelectResponse?.workTableRow.formId);
+  }
+  /*useEffect(() => {
     //console.log(workFlowRowSelectResponse?.workTableRow.formId);
     setOrderField("orderId", workFlowRowSelectResponse?.workTableRow.formId);
-  }, [workFlowRowSelectResponse?.workTableRow.formId]);
+  }, [workFlowRowSelectResponse?.workTableRow.formId]);*/
   //////////////////////////////////////////////////////////////
   useEffect(() => {
     if (editClicked2) {

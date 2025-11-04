@@ -1,3 +1,4 @@
+//خسابداری->حسابداری بازرگانی->عملیات-> فرجه و پورسانت کالا
 import { columns } from "../../../components/productOffer/ProductOfferGeneral";
 import Accept from "../../../assets/images/GrayThem/img24_3.png";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -277,7 +278,7 @@ const ProductGrace = () => {
   }, []);
 
   useEffect(() => {
-    console.log("selectedId", selectedId);
+    //console.log("selectedId", selectedId);
     if (prevId !== selectedId) {
       setField("id", selectedId);
     }
@@ -536,6 +537,7 @@ const ProductGrace = () => {
               pageSize={pageSize}
               setPageSize={setPageSize}
               totalCount={productGraceTotalCount ?? 0}
+              showPagination={true}
             />
           </div>
         </div>

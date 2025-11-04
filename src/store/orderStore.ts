@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import { OrderState } from "../types/order";
 export const useOrderStore = create<OrderState>()((set) => ({
-  orderId: 0,
-  orderIdForSalesPrice:0,
+  orderId: -1,
+  orderIdForSalesPrice:-1,
   orderRegShowResponse: {
     meta: {
       errorCode: 0,
@@ -51,7 +51,7 @@ export const useOrderStore = create<OrderState>()((set) => ({
       },
     },
   },
-  salesPriceId: 0,
+  salesPriceId: -1,
   orderSalesPricesResponse: {
     meta: {
       errorCode: 0,
@@ -81,8 +81,8 @@ export const useOrderStore = create<OrderState>()((set) => ({
       },
     },
   },
-  OrderDtlId: 0,
-  WarehauseId: 0,
+  OrderDtlId: -1,
+  WarehauseId: -1,
   //end for Order/orderCupList
   setField: (field: string | number | symbol, value: any) =>
     set((state) => ({ ...state, [field]: value })),

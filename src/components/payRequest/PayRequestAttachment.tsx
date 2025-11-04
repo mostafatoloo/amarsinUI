@@ -232,7 +232,7 @@ const PayRequestAttachment = ({
       <div className="flex px-4 items-center justify-end w-full bg-gray-200 rounded-md">
         <div
           onClick={onButtonClick}
-          className="flex flex-col items-center cursor-pointer border-2 hover:border-gray-300 rounded-md py-1 px-2"
+          className="flex flex-col items-center cursor-pointer border-2 hover:font-bold hover:bg-gray-300 rounded-md p-1"
         >
           <img src={Add32} alt="Add32" className="w-6 h-6" />
           <p className="text-xs">جدید</p>
@@ -246,7 +246,7 @@ const PayRequestAttachment = ({
           accept="image/*"
         />
         <div
-          className="flex flex-col items-center cursor-pointer border-2 hover:border-gray-300 rounded-md p-1"
+          className="flex flex-col items-center cursor-pointer border-2 hover:font-bold hover:bg-gray-300 rounded-md p-1"
           onClick={() => refetch()}
         >
           {/*onClick={()=>getWorkTable()}>*/}

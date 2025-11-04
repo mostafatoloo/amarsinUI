@@ -152,7 +152,7 @@ export function useProductPerm() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: !!pageNumber,
+    enabled: systemId!==-1 && yearId!== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -258,7 +258,7 @@ export function useProductPerm() {
       const response = await api.get(url);
       return response.data;
     },
-    //enabled: id!==0,
+    enabled: systemId!==-1 && yearId!== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -291,7 +291,7 @@ export function useProductPerm() {
       const response = await api.get(url);
       return response.data;
     },
-    //enabled: !!pId,
+    enabled: pId!==-1,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     onSuccess: (data: any) => {

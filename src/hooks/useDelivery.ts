@@ -1,4 +1,4 @@
-import {  useQuery, UseQueryOptions } from "@tanstack/react-query";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 
 import api from "../api/axios";
 import { useDeliveryStore } from "../store/deliveryStore";
@@ -23,6 +23,7 @@ export function useDelivery() {
       const response = await api.get(url);
       return response.data;
     },
+    enabled: id !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {

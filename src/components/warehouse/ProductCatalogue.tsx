@@ -121,12 +121,13 @@ const ProductCatalogue = ({ dtl, visible, uid, setUid }: Props) => {
   //initialize product catalog request
   useEffect(() => {
     console.log(dtl,uid, "dtl in ProductCatalogue")
-    uid !== undefined
-      ? setField("idProductCatalogRequest", 0)
-      : setField("idProductCatalogRequest", dtl.cId);
-    uid !== undefined
-      ? setField("uIDProductCatalogRequest", uid!)
-      : setField("uIDProductCatalogRequest", dtl.uId);
+    if (uid !== undefined) {
+      setField("idProductCatalogRequest", 0);
+      setField("uIDProductCatalogRequest", uid!);
+    } else {
+      setField("idProductCatalogRequest", dtl.cId);
+      setField("uIDProductCatalogRequest", dtl.uId);
+    }
     //setField("iRCProductCatalogRequest", dtl.irc);
     //getProductCatalog()
   }, [dtl.cId, dtl.uId, dtl.irc]);

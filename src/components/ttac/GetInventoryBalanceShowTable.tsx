@@ -11,7 +11,7 @@ import {
 import { colors } from "../../utilities/color";
 import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
 import { useTTacStore } from "../../store/ttacStore";
-import Spinner from "../controls/Spinner";
+import Skeleton from "../layout/Skeleton";
 
 type Props = {
   isLoading: boolean;
@@ -58,6 +58,10 @@ const GetInventoryBalanceShowTable = ({
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
 
+  //for pagination
+  const [hasPagination, setHasPagination] = useState<boolean>(true);
+  const [showPagination, setShowPagination] = useState<boolean>(true);
+
   // Function to preserve focus
   const preserveFocus = useCallback((inputName: string) => {
     setFocusedInput(inputName);
@@ -102,9 +106,18 @@ const GetInventoryBalanceShowTable = ({
 
   useEffect(() => {
     //setSelectedId(0);
+    setHasPagination(true)
     setField("srchIRC", srchIRC);
     setField("srchLotNumber", srchLotNumber);
   }, []);
+
+  useEffect(() => {
+    if (!showPagination) {
+      setField("pageNumber", 0);
+    } else {
+      setField("pageNumber", 1);
+    }
+  }, [showPagination]);
 
   useEffect(() => {
     setField("sortId", sortId);
@@ -190,7 +203,7 @@ const GetInventoryBalanceShowTable = ({
   return (
     <div className="px-2 h-full">
       {isLoading ? (
-        <Spinner />
+        <Skeleton width={width} height={height}/>
       ) : (
         <div
           className="mt-2 overflow-y-auto"
@@ -267,6 +280,9 @@ const GetInventoryBalanceShowTable = ({
               pageSize={pageSize}
               setPageSize={setPageSize}
               totalCount={totalCount ?? 0}
+              hasPagination={hasPagination}
+              showPagination={showPagination}
+              setShowPagination={setShowPagination}
             />
           </div>
         </div>

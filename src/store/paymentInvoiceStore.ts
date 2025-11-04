@@ -31,13 +31,13 @@ export const usePaymentInvoiceStore = create<InvoiceOutStandingState>()(
         },
       },
     },
-    usrId: 0,
+    usrId: -1,
     paymentInvoices: [],
     dsc: "",
     rem: 0,
-    paymentId: 0,
-    systemId: 0,
-    yearId: 0,
+    paymentId: -1,
+    systemId: -1,
+    yearId: -1,
     //for Payment/settlementAverages
     settlementAveragesResponse: {
       meta: { errorCode: 0, message: "", type: "" },

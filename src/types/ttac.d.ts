@@ -101,7 +101,7 @@ interface FlowProductsSendAllData {
   total_count: number;
 }
 
-interface FlowProductsSendAllResponse {
+export interface FlowProductsSendAllResponse {
   meta: Meta;
   data: FlowProductsSendAllData;
 }
@@ -144,7 +144,14 @@ interface ImportTTacStatusResponse {
 interface ImportTTacStatusData {
   result: Result;
 }
-
+//  http://apitest.dotis.ir/api/TTAC/Titac?Id=1123156
+export interface TTacResponse{
+  meta: Meta;
+  data: DataTitac;
+}
+interface DataTitac {
+  result: Result;
+}
 
 export interface ttacState
   extends GetInventoryBalanceRequest,
@@ -154,10 +161,13 @@ export interface ttacState
   cupboardCaptureIdempotencyKey: string; //for api/TTAC/CupboardCapture
   importTTacStatusSystemId: number; //for api/TTAC/ImportTTacStatus
   importTTacStatusLtId: number; //for api/TTAC/ImportTTacStatus
+  importTTacStatusTrigger: number; //for api/TTAC/ImportTTacStatus - triggers refetch
+  ttacRequestId:number; // for /api/TTAC/Titac?Id=1123156
   getInventoryBalanceResponse: GetInventoryBalanceResponse;
   flowProductsSendAllResponse: FlowProductsSendAllResponse;
   cupboardCaptureResponse: CupboardCaptureResponse; //for api/TTAC/CupboardCapture
   importTTacStatusResponse: ImportTTacStatusResponse; //for api/TTAC/ImportTTacStatus
+  ttacResponse: TTacResponse; // for /api/TTAC/Titac?Id=1123156
   setField: (field: string | number | symbol, value: any) => void;
   setGetInventoryBalanceResponse: (
     getInventoryBalanceResponse: GetInventoryBalanceResponse
@@ -170,5 +180,8 @@ export interface ttacState
   ) => void;
   setImportTTacStatusResponse: (
     importTTacStatusResponse: ImportTTacStatusResponse
+  ) => void;
+  setTTacResponse: (
+    ttacResponse: TTacResponse
   ) => void;
 }

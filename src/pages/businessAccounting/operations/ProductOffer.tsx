@@ -1,5 +1,5 @@
+//خسابداری->حسابداری بازرگانی->عملیات-> آفر کالا
 import React, { useCallback, useEffect, useRef, useState } from "react";
-
 import Accept from "../../../assets/images/GrayThem/img24_3.png";
 import { useGeneralContext } from "../../../context/GeneralContext";
 import TTable from "../../../components/controls/TTable";
@@ -540,6 +540,7 @@ const ProductOffer = () => {
               pageSize={pageSize}
               setPageSize={setPageSize}
               totalCount={productOfferTotalCount ?? 0}
+              showPagination={true}
             />
           </div>
         </div>

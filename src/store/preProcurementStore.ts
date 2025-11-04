@@ -25,7 +25,7 @@ export const usePreProcurementStore = create<PreProcurementState>()((set) => ({
       },
     },
   },
-  id: 0,
+  id: -1,
   setField: (field: string, value: any) =>
     set((state) => ({ ...state, [field]: value })),
   setPreProcurementResponse: (preProcurementResponse) =>

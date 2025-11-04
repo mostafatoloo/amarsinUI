@@ -20,6 +20,7 @@ type Props = {
   statusClicked:boolean;
   setStatusClicked: (value: React.SetStateAction<boolean>) => void
   checkSeekingInfo:boolean
+  setCheckSeekingInfo: (checkSeekingInfo: boolean) => void
   selectedProduct:WarehouseTemporaryReceiptIndentDtl | null
   setSelectedProduct: (selectedProduct: WarehouseTemporaryReceiptIndentDtl | null) => void
   selectedRowIndex:number
@@ -40,6 +41,7 @@ const CupboardsReportShow = ({
   statusClicked,
   setStatusClicked,
   checkSeekingInfo,
+  setCheckSeekingInfo,
   selectedProduct,
   setSelectedProduct,
   selectedRowIndex,
@@ -91,6 +93,7 @@ const CupboardsReportShow = ({
         statusClicked={statusClicked}
         setStatusClicked={setStatusClicked}
         checkSeekingInfo={checkSeekingInfo}
+        setCheckSeekingInfo={setCheckSeekingInfo}
         selectedRowIndex={selectedRowIndex}
         setSelectedRowIndex={setSelectedRowIndex}
         uid={uid}

@@ -3,7 +3,7 @@ import type { BrandState } from "../types/brand";
 import { createJSONStorage, persist } from "zustand/middleware";
 export const useBrandStore = create<BrandState>()(persist((set) => ({
   brands: [],
-  accSystem: 0, // Provide a default value for accSystem
+  accSystem: -1, // Provide a default value for accSystem
   page: 1, // Provide a default value for page
   lastId: 0, // Provide a default value for lastId
   usrPerm: false, // Provide a default value for usrPerm

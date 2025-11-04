@@ -3,6 +3,7 @@ import WorkflowParent from "./WorkflowParent";
 import { WorkflowChild } from "./WorkflowChild";
 import {
   WorkFlowDoFlowRequest,
+  WorkFlowDoFlowResponse,
   WorkflowResponse,
   WorkflowRowSelectResponse,
 } from "../../types/workflow";
@@ -16,9 +17,12 @@ type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   errorRowSelect: Error | null;
   doFlow: UseMutateAsyncFunction<any, Error, WorkFlowDoFlowRequest, unknown>;
+  workFlowDoFlowResponse: WorkFlowDoFlowResponse;
   isLoadingdoFlow: boolean;
-  getWorkTable: (options?: RefetchOptions) => Promise<QueryObserverResult<WorkflowResponse, Error>>
-  getWorkTableRowSelect: ()=>void
+  refetchWorkTable: (options?: RefetchOptions) => Promise<QueryObserverResult<WorkflowResponse, Error>>
+  refetchWorkTableRowSelect: ()=>void
+  isRefetchingWorkTable: boolean;
+  isRefetchingWorkTableRowSelect: boolean;
   refetchSwitch: boolean;
   setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>
 };
@@ -31,13 +35,16 @@ const WorkflowForm = ({
   workFlowRowSelectResponse,
   errorRowSelect,
   doFlow,
+  workFlowDoFlowResponse,
   isLoadingdoFlow,
-  getWorkTable,
-  getWorkTableRowSelect,
+  refetchWorkTable,
+  refetchWorkTableRowSelect,
+  isRefetchingWorkTable,
+  isRefetchingWorkTableRowSelect,
   refetchSwitch,
   setRefetchSwitch
 }: Props) => {
-  const [selectedId, setSelectedId] = useState<number>(148201);
+  const [selectedId, setSelectedId] = useState<number>(-1);
 
   const handleSelectedIdChange = (id: number) => {
     //console.log(id, "id in WorkflowForm");
@@ -53,19 +60,22 @@ const WorkflowForm = ({
         error={error}
         isLoading={isLoading}
         isLoadingdoFlow={isLoadingdoFlow}
-        refetchSwitch={refetchSwitch}
+        isRefetchingWorkTable={isRefetchingWorkTable}
+        isRefetchingWorkTableRowSelect={isRefetchingWorkTableRowSelect}
       />
       <WorkflowChild
         selectedId={selectedId} //{selectedIdRef.current}
         setSelectedId={setSelectedId}
         workFlowResponse={workFlowResponse}
         workFlowRowSelectResponse={workFlowRowSelectResponse}
-        isLoadingRowSelect={isLoadingRowSelect}
+        isLoading={isLoading} // for parent table loading
+        isLoadingRowSelect={isLoadingRowSelect} // for child table loading
         errorRowSelect={errorRowSelect}
         doFlow={doFlow}
+        workFlowDoFlowResponse={workFlowDoFlowResponse}
         isLoadingdoFlow={isLoadingdoFlow}
-        getWorkTable={getWorkTable}
-        getWorkTableRowSelect={getWorkTableRowSelect}
+        refetchWorkTable={refetchWorkTable}
+        refetchWorkTableRowSelect={refetchWorkTableRowSelect}
         refetchSwitch={refetchSwitch}
         setRefetchSwitch={setRefetchSwitch}
       />

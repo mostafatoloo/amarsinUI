@@ -6,8 +6,8 @@ import {
 import { WorkTable } from "../types/workflow";
 
 export const useWorkflowStore = create<WorkFlowState>()((set) => ({
-  chartId: 0,
-  systemId: 0,
+  chartId: -1,
+  systemId: -1,
   page: 1,
   pageSize: 10,
   flowMapId: -1,
@@ -24,7 +24,7 @@ export const useWorkflowStore = create<WorkFlowState>()((set) => ({
     flowMapTitles: [],
     workTables: [],
   },
-  workTableId: 0,
+  workTableId: -1,
   workFlowRowSelectResponse: {
     err: 0,
     msg: "",

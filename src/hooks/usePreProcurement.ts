@@ -21,6 +21,7 @@ export function usePreProcurement() {
       const response = await api.get(url);
       return response.data;
     },
+    enabled: id!==-1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -39,7 +40,7 @@ export function usePreProcurement() {
           err: 0,
           msg: "",
           mst: {
-            id: 0,
+            id: -1,
             systemId: 0,
             systemTitle: "",
             factorNo: "",

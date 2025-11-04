@@ -58,9 +58,9 @@ const InvoiceReceipShowHeader = ({
 //for api/Product/salesPricesSearch req
   useEffect(() => {
     console.log(cusomerSearch);
-    setSalesPriceField("salesPricesSearch", salesPricesearch);
+    setSalesPriceField("salesPricesSearchSearch", salesPricesearch);
     setSalesPriceField("salesPricesSearchPage", 1);
-    setSalesPriceField("lastId", 0);
+    setSalesPriceField("salesPricesSearchLastId", 0);
   }, [salesPricesearch]);
 
   //const { salesPricesSearchResponse } = useProducts();

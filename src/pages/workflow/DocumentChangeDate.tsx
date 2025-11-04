@@ -1,0 +1,134 @@
+import { useEffect, useState } from "react";
+import Button from "../../components/controls/Button";
+import PersianDatePicker from "../../components/controls/PersianDatePicker";
+import { convertToPersianDate } from "../../utilities/general";
+import {
+  WorkFlowDoFlowRequest,
+  WorkFlowDoFlowResponse,
+  WorkflowRowSelectResponse,
+} from "../../types/workflow";
+import { UseMutateAsyncFunction } from "@tanstack/react-query";
+import { v4 as uuidv4 } from "uuid";
+import { useGeneralContext } from "../../context/GeneralContext";
+import ModalMessage from "../../components/layout/ModalMessage";
+
+type Props = {
+  doFlow: UseMutateAsyncFunction<any, Error, WorkFlowDoFlowRequest, unknown>;
+  workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  flowMapId: number;
+  isLoadingdoFlow: boolean;
+  workFlowDoFlowResponse: WorkFlowDoFlowResponse;
+  refetchWorkTable: () => void;
+  refetchWorkTableRowSelect: () => void;
+  dsc: string;
+  setIsDocumentChangeDateOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const DocumentChangeDate = ({
+  doFlow,
+  workFlowRowSelectResponse,
+  flowMapId,
+  isLoadingdoFlow,
+  workFlowDoFlowResponse,
+  refetchWorkTable,
+  refetchWorkTableRowSelect,
+  dsc,
+  setIsDocumentChangeDateOpen,
+}: Props) => {
+  const { chartId, systemId, yearId } = useGeneralContext();
+  const [isModalOpenMessage, setIsModalOpenMessage] = useState(false);
+  const [date, setDate] = useState<Date | null>(new Date());
+  /////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    if (isModalOpenMessage) {
+      timeoutId = setTimeout(() => {
+        setIsModalOpenMessage(false);
+        if (workFlowDoFlowResponse.meta.errorCode === -1) {
+          refetchWorkTableRowSelect();
+          refetchWorkTable();
+        }
+      }, 3000);
+    }
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [isModalOpenMessage]);
+  ////////////////////////////////////////////////////////////
+  const handleDoFlow = async (
+    e: React.MouseEvent<HTMLButtonElement>,
+    date: string
+  ) => {
+    e.preventDefault();
+    setIsDocumentChangeDateOpen(false);
+    const request: WorkFlowDoFlowRequest = {
+      chartId,
+      systemId,
+      yearId,
+      workTableId: workFlowRowSelectResponse.workTableRow.id,
+      flowMapId,
+      formId: workFlowRowSelectResponse.workTableRow.formId,
+      flowNo: 0,
+      flowId: workFlowRowSelectResponse.workTableRow.wfmS_FlowId,
+      dsc,
+      date,
+      params: `{\"Date\":\"${date}\"}`,
+      idempotencyKey: uuidv4(),
+    };
+    console.log(request, "request");
+    try {
+      const response = await doFlow(request);
+      console.log(response, "response");
+    } catch (error) {
+    } finally {
+      console.log("succeed");
+      setIsModalOpenMessage(true);
+    }
+  };
+  return (
+    <>
+      <div className="w-full flex flex-col justify-end items-end gap-2">
+        <div className="w-full flex items-center">
+          <label className="p-1 w-32 text-left"> تاریخ:</label>
+          <PersianDatePicker
+            name="fDate"
+            label="از:"
+            value={date}
+            onChange={(event) => setDate(event.target.value as Date | null)}
+          />
+        </div>
+        <Button
+          text="ثبت"
+          onClick={(e) =>
+            handleDoFlow(e, date ? convertToPersianDate(date) : "")
+          }
+          variant="shadow-lg w-48"
+        />
+        {isModalOpenMessage && <p>dhsjdhj</p>}
+      </div>
+      {!isLoadingdoFlow && (
+        <ModalMessage
+          isOpen={isModalOpenMessage}
+          onClose={() => setIsModalOpenMessage(false)}
+          backgroundColor={
+            workFlowDoFlowResponse?.meta.errorCode === -1
+              ? "bg-green-200"
+              : "bg-red-200"
+          }
+          bgColorButton={
+            workFlowDoFlowResponse?.meta.errorCode === -1
+              ? "bg-green-500"
+              : "bg-red-500"
+          }
+          color="text-white"
+          message={workFlowDoFlowResponse?.meta.message || ""}
+          visibleButton={false}
+        />
+      )}
+    </>
+  );
+};
+
+export default DocumentChangeDate;

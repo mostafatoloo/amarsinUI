@@ -54,6 +54,7 @@ export const convertStringToInteger = (str: string | null) => {
   return isNaN(result) ? null : result; // Return null for NaN
 };
 /////////////////////////////////////////////////////////////
+
 export function formatPersianDate(
   curDay: number,
   curMonth: number,
@@ -83,9 +84,23 @@ export function formatPersianDate(
     "اسفند",
   ];
 
-  // curDay: 0 (شنبه) to 6 (جمعه)
-  // curMonth: 1 (فروردین) to 12 (اسفند)
-  const dayName = persianDays[curDay % 7];
+  // curDay: day of month (1-31)
+  // curMonth: month number (1-12)
+  // Calculate the actual day of the week from the Persian date
+  const dateObject = new DateObject({ 
+    year: curYear, 
+    month: curMonth, 
+    day: curDay, 
+    calendar: persian 
+  });
+  // Convert to native Date to get day of week
+  const gregorianDate = dateObject.toDate();
+  // JavaScript getDay(): 0=Sunday, 1=Monday, ..., 6=Saturday
+  // Persian week starts from Saturday (شنبه), so we need to shift:
+  // Saturday (JS=6) -> 0 (شنبه), Sunday (JS=0) -> 1 (یکشنبه), etc.
+  const jsDayOfWeek = gregorianDate.getDay();
+  const dayOfWeek = (jsDayOfWeek + 1) % 7; // Shift to match Persian week (Saturday=0)
+  const dayName = persianDays[dayOfWeek];
   const monthName = persianMonths[(curMonth - 1) % 12];
 
   return convertToFarsiDigits(`${dayName}، ${curDay} ${monthName} ${curYear}`);

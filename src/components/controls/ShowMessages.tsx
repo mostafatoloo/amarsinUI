@@ -7,9 +7,10 @@ type Props = {
   dtlErrMsgs: any;
   color: string;
   heightWindow?: number;
+  children?: React.ReactNode;
 };
-function ShowMessages({ dtlErrMsgs, color, heightWindow }: Props) {
-  const columns:Column[] =[
+function ShowMessages({ dtlErrMsgs, color, heightWindow, children }: Props) {
+  const columns: Column[] = [
     {
       Header: "ردیف",
       accessor: "index",
@@ -28,16 +29,13 @@ function ShowMessages({ dtlErrMsgs, color, heightWindow }: Props) {
     },
   ];
   const handleCellColorChange = (row: any): string | null => {
-    let rowColor=""
-    if (row.original.err===1)
-      rowColor = colors.red100;
-    else if (row.original.err===0)
-      rowColor = colors.yellow100;
-    else
-      rowColor = color;
+    let rowColor = "";
+    if (row.original.err === 1) rowColor = colors.red100;
+    else if (row.original.err === 0) rowColor = colors.yellow100;
+    else rowColor = color;
     return rowColor;
   };
-///////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////
   const { height, width } = useCalculateTableHeight();
   const data = dtlErrMsgs?.map((dtlErrMsg: any, index: number) => ({
     index: index + 1,
@@ -55,6 +53,7 @@ function ShowMessages({ dtlErrMsgs, color, heightWindow }: Props) {
         wordWrap={true}
         CellColorChange={handleCellColorChange}
       />
+      {children}
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { BankAccountState } from "../types/bankAccount";
 export const useBankAccountStore = create<BankAccountState>()((set) => ({
   //bankAccountSearch
-  systemId: 0,
+  systemId: -1,
   search: "",
   page: 1,
   lastId: 0,
@@ -11,8 +11,8 @@ export const useBankAccountStore = create<BankAccountState>()((set) => ({
     data: { result: [] },
   },
   //getChequeAssignBankAccount
-  paymentId: 0,
-  asnadId: 0,
+  paymentId: -1,
+  asnadId: -1,
   getChequeAssignBankAccountResponse: {
     meta: { errorCode: 0, message: null, type: "" },
     data: { result: { id: 0, name: "" } },

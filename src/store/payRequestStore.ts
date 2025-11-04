@@ -3,9 +3,9 @@ import { PayRequestState } from "../types/payRequest";
 import { RpCustomerBillsResponse } from "../types/sales";
 export const usePayRequestStore = create<PayRequestState>()((set) => ({
   //for PayRequest
-  id: 0,
-  yearId: 0,
-  systemId: 0,
+  id: -1,
+  yearId: -1,
+  systemId: -1,
   state: -1,
   regFDate: "",
   regTDate: "",
@@ -65,14 +65,14 @@ export const usePayRequestStore = create<PayRequestState>()((set) => ({
       },
     },
   },
-  payRequestId: 0,
-  systemIdPayRequestInvoice: 0,
-  yearIdPayRequestInvoice: 0,
-  customerId: 0,
+  payRequestId: -1,
+  systemIdPayRequestInvoice: -1,
+  yearIdPayRequestInvoice: -1,
+  customerId: -1,
   //for SalesReport/RpCustomerBills
-  customerIdRpCustomerBills: 0,
-  systemIdRpCustomerBills: 0,
-  yearIdRpCustomerBills: 0,
+  customerIdRpCustomerBills: -1,
+  systemIdRpCustomerBills: -1,
+  yearIdRpCustomerBills: -1,
   fDateRpCustomerBills: "",
   tDateRpCustomerBills: "",
   rpCustomerBillsResponse: {
@@ -86,7 +86,7 @@ export const usePayRequestStore = create<PayRequestState>()((set) => ({
     },
   },
   //Payment/chequeBookSearch requests
-  acc_systemChequeBookSearch:4,
+  acc_systemChequeBookSearch:-1,
   searchChequeBookSearch: "",
   pageChequeBookSearch: 1,
   lastIdChequeBookSearch: 0,
@@ -104,7 +104,7 @@ export const usePayRequestStore = create<PayRequestState>()((set) => ({
     },
   },
   //Payment/chequeBookDtlSearch requests
-  chequeBookIdChequeBookDtlSearch: 0,
+  chequeBookIdChequeBookDtlSearch: -1,
   pageChequeBookDtlSearch: 1,
   lastIdChequeBookDtlSearch: 0,
   searchChequeBookDtlSearch: "",
@@ -122,7 +122,7 @@ export const usePayRequestStore = create<PayRequestState>()((set) => ({
     },
   },
   //Payment/chequeBookDtlById requests
-  chequeBookDtlId: 0,
+  chequeBookDtlId: -1,
   chequeBookDtlByIdResponse: {
     meta: {
       errorCode: 0,

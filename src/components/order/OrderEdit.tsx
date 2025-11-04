@@ -35,10 +35,10 @@ const OrderEdit = ({
   const abortControllerRef = useRef<AbortController | null>(null);
   //send params to /api/Product/search?accSystem=4&accYear=15&page=1&searchTerm=%D8%B3%D9%81
   useEffect(() => {
-    setProductField("accSystem", systemId);
-    setProductField("accYear", yearId);
-    handleDebounceFilterChange("search", productSearch);
-    setProductField("page", 1);
+    setProductField("productSearchAccSystem", systemId);
+    setProductField("productSearchAccYear", yearId);
+    handleDebounceFilterChange("productSearchSearch", productSearch);
+    setProductField("productSearchPage", 1);
   }, [productSearch, systemId, yearId]);
 
   ///////////////////////////////////////////////////////

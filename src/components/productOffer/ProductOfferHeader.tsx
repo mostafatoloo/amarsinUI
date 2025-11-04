@@ -49,7 +49,7 @@ const ProductOfferHeader = ({
       <PageTitle />
       <div className="flex px-4 items-center gap-4">
         <div
-          className="flex flex-col items-center cursor-pointer"
+          className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1"
           onClick={() => {
             setIsNew(true);
           }} // for new
@@ -58,7 +58,7 @@ const ProductOfferHeader = ({
           <p className="text-xs">جدید</p>
         </div>
         <div
-          className={`flex flex-col items-center ${
+          className={`flex flex-col items-center hover:font-bold hover:bg-gray-300 rounded-md p-1 ${
             selectedProductOffer === null || selectedProductOffer.flwId !== 0
               ? "cursor-not-allowed"
               : "cursor-pointer"
@@ -82,7 +82,7 @@ const ProductOfferHeader = ({
           <p className="text-xs">حذف</p>
         </div>
         <div
-          className={`flex flex-col items-center ${
+          className={`flex flex-col items-center hover:font-bold hover:bg-gray-300 rounded-md p-1 ${
             selectedProductOffer === null || selectedProductOffer.flwId !== 0
               ? "cursor-not-allowed"
               : "cursor-pointer"
@@ -106,7 +106,7 @@ const ProductOfferHeader = ({
           <p className="text-xs">ویرایش</p>
         </div>
         <div
-          className={`flex flex-col items-center ${
+          className={`flex flex-col items-center hover:font-bold hover:bg-gray-300 rounded-md p-1 ${
             selectedProductOffer === null || selectedProductOffer.flwId !== 0
               ? "cursor-not-allowed"
               : "cursor-pointer"
@@ -135,7 +135,7 @@ const ProductOfferHeader = ({
         <ExcelExport data={data} headCells={columns} />
 
         <div
-          className="flex flex-col items-center cursor-pointer"
+          className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1"
           onClick={() => refetch()}
         >
           <img src={Refresh32} alt="Refresh32" className="w-6 h-6" />

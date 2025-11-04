@@ -28,7 +28,7 @@ const WarehouseTemporaryReceiptShow = ({
     warehouseTemporaryReceiptSave,
     refetchWarehouseTemporaryReceiptShow,
   } = usePreInvoiceReturn();
-  const { setField } = usePreInvoiceReturnStore();
+  const { setField, temporaryReceiptShowId } = usePreInvoiceReturnStore();
   const [preInvoiceDtlSearchOptions, setPreInvoiceDtlSearchOptions] = useState<
     DefaultOptionType[]
   >([]);
@@ -45,18 +45,22 @@ const WarehouseTemporaryReceiptShow = ({
     }
   }, [refetchSwitch]);
   //////////////////////////////////////////////////////////////
-  useEffect(() => {
-    setField("id", workFlowRowSelectResponse.workTableRow.formId);
-  }, [workFlowRowSelectResponse.workTableRow.formId]);
+  if (temporaryReceiptShowId!==workFlowRowSelectResponse.workTableRow.formId) 
+  {
+    setField("temporaryReceiptShowId", workFlowRowSelectResponse.workTableRow.formId);
+  }
+  /*useEffect(() => {
+    setField("temporaryReceiptShowId", workFlowRowSelectResponse.workTableRow.formId);
+  }, [workFlowRowSelectResponse.workTableRow.formId]);*/
 
   useEffect(() => {
     setField("pagePreInvoiceDtlSearch", 1);
     setField("searchPreInvoiceDtlSearch", search);
     setField(
       "preInvoiceDtlId",
-      warehouseTemporaryReceiptShowResponse?.preInvoiceReturnDtls?.[0]?.id
+      warehouseTemporaryReceiptShowResponse?.preInvoiceReturnDtls?.[0]?.id ?? -1
     );
-  }, [ search]);
+  }, [search, warehouseTemporaryReceiptShowResponse?.preInvoiceReturnDtls?.[0]?.id]);
 /////////////////////////////////////////////////////////////
   useEffect(() => {
     setPreInvoiceDtlSearchOptions(

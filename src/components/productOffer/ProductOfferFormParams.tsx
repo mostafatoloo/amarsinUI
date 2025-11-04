@@ -25,6 +25,7 @@ type Props = {
   setTim: React.Dispatch<React.SetStateAction<string>>;
   setDsc: React.Dispatch<React.SetStateAction<string>>;
   canEditForm1: boolean;
+  childButton?: React.ReactNode;
 };
 
 const ProductOfferFormParams = ({
@@ -40,6 +41,7 @@ const ProductOfferFormParams = ({
   setTim,
   setDsc,
   canEditForm1,
+  childButton,
 }: Props) => {
   const { brands } = useBrand();
   const { definitionDateTime } = useDefinitionInvironment();
@@ -90,7 +92,7 @@ const ProductOfferFormParams = ({
           />
         </div>
       </div>
-      <div className="w-full">
+      <div className="w-full flex items-center gap-2">
         <Input
           name="dsc"
           value={dsc}
@@ -101,38 +103,39 @@ const ProductOfferFormParams = ({
           widthLabel="w-24"
           widthInput="w-full-minus-24"
         />
+        {childButton}
       </div>
       {canEditForm1 && (
         <>
-        <div className="flex gap-2 items-center">
-          <label className="text-lg font-bold">شرایط</label>
-          <hr className="w-full border-2 border-gray-300" />
-        </div>
-        <div className="w-full flex items-center">
-          <label className="p-1 w-24 text-left">برند:</label>
-          <div className="bg-slate-50 flex w-full">
-            <AutoComplete
-              options={brands.map((b) => ({
-                id: b.id,
-                title: b.text,
-              }))}
-              value={brand}
-              handleChange={(_event, newValue) => {
-                return setBrand(newValue as DefaultOptionTypeStringId[]);
-              }}
-              multiple={true}
-              setSearch={setBrandSearch}
-              showLabel={false}
-              outlinedInputPadding="10px"
-              placeholder={
-                Array.isArray(brand) && brand.length > 0
-                  ? undefined
-                  : "برند را انتخاب کنید..."
-              }
-            />
+          <div className="flex gap-2 items-center">
+            <label className="text-lg font-bold">شرایط</label>
+            <hr className="w-full border-2 border-gray-300" />
           </div>
-        </div>
-      </>
+          <div className="w-full flex items-center">
+            <label className="p-1 w-24 text-left">برند:</label>
+            <div className="bg-slate-50 flex w-full">
+              <AutoComplete
+                options={brands.map((b) => ({
+                  id: b.id,
+                  title: b.text,
+                }))}
+                value={brand}
+                handleChange={(_event, newValue) => {
+                  return setBrand(newValue as DefaultOptionTypeStringId[]);
+                }}
+                multiple={true}
+                setSearch={setBrandSearch}
+                showLabel={false}
+                outlinedInputPadding="10px"
+                placeholder={
+                  Array.isArray(brand) && brand.length > 0
+                    ? undefined
+                    : "برند را انتخاب کنید..."
+                }
+              />
+            </div>
+          </div>
+        </>
       )}
     </form>
   );

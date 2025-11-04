@@ -624,6 +624,7 @@ const PayRequestOperation = () => {
               pageSize={pageSize}
               setPageSize={setPageSize}
               totalCount={payRequestTotalCount ?? 0}
+              showPagination={true}
             />
           </div>
         </div>

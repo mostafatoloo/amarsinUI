@@ -42,6 +42,7 @@ export function useBankAccount() {
       );
       return response.data;
     },
+    enabled: systemId !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -67,6 +68,7 @@ export function useBankAccount() {
       const response = await api.get(url);
       return response.data;
     },
+    enabled: paymentId !== -1 && asnadId !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {

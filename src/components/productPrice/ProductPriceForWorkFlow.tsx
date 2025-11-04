@@ -53,6 +53,7 @@ const ProductPriceForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
         selectedProductPrice={selectedProductPrice} //for check if selectedProductPrice.flwId===0 new else edit && sending selectedProductPrice.id in edit
         productPriceDtls={productPriceDtl}
         isNew={false} //for check if isNew new else edit
+        isEdit={true}
         setIsNew={() => false}
         setIsEdit={() => true}
         fromWorkFlow={true} //for going to editting in product grace form as default

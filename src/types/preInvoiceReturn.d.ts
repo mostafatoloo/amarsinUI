@@ -101,7 +101,7 @@ export interface PreInvoiceReturnState extends WarehouseTemporaryReceiptSaveRequ
   searchPreInvoiceDtlSearch: string;
   pagePreInvoiceDtlSearch: number;
   preInvoiceDtlId: number;
-  id: number;
+  temporaryReceiptShowId: number;
   responsePreInvoiceDtlSearch: ResponsePreInvoiceDtlSearch;
   responseWarehouseTemporaryReceiptShow: ResponseWarehouseTemporaryReceiptShow;
   warehouseTemporaryReceiptSaveResponse:WarehouseTemporaryReceiptSaveResponse;//api/PreInvoiceReturn/warehouseTemporaryReceiptSave

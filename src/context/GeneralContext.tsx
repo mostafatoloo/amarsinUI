@@ -50,12 +50,12 @@ export const GeneralProvider: React.FC<{ children: ReactNode }> = ({
   const [treeNodeTitle, setTreeNodeTitle] = useState<string>(() =>
     getInitial("treeNodeTitle", "")
   );
-  const [yearId, setYearId] = useState<number>(() => getInitial("yearId", 0));
+  const [yearId, setYearId] = useState<number>(() => getInitial("yearId", -1));
   const [systemId, setSystemId] = useState<number>(() =>
-    getInitial("systemId", 0)
+    getInitial("systemId", -1)
   );
   const [chartId, setChartId] = useState<number>(() =>
-    getInitial("chartId", 0)
+    getInitial("chartId", -1)
   );
   const [defaultRowsPerPage, setDefaultRowsPerPage] = useState<number>(pageNumbers[1])
   

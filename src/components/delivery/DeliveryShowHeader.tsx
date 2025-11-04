@@ -5,6 +5,9 @@ import { ResultDeliveryShow } from "../../types/delivery";
 import { convertToFarsiDigits } from "../../utilities/general";
 import AutoComplete from "../controls/AutoComplete";
 import { FaCircle } from "react-icons/fa";
+import { useTTacStore } from "../../store/ttacStore";
+import { useTtac } from "../../hooks/useTtac";
+import { colors } from "../../utilities/color";
 
 type Props = {
   deliveryShowResponse: ResultDeliveryShow;
@@ -13,9 +16,12 @@ type Props = {
 
 const DeliveryShowHeader = ({ deliveryShowResponse, canEditForm }: Props) => {
   const { warehouseSearchResponse } = useWarehouse();
+  const { titacResponse } = useTtac();
+  const { setField: setTTacField } = useTTacStore();
   const { setField: setWarehouseField } = useOrderStore();
   const [warehouseSearch, setWarehouseSearch] = useState<string>("");
   const [ttacTextColor, setTtacTextColor] = useState<string>("");
+  const [isTitacClick, setIsTitacClick] = useState<boolean>(false);
 
   useEffect(() => {
     //console.log(convertToLatinDigits(warehouseSearch),"warehouseSearch");
@@ -28,25 +34,51 @@ const DeliveryShowHeader = ({ deliveryShowResponse, canEditForm }: Props) => {
   }, []);
 
   useEffect(() => {
-    console.log(warehouseSearch)
+    console.log(warehouseSearch);
+    setIsTitacClick(false);
     switch (
       deliveryShowResponse.deliveryMst &&
       deliveryShowResponse.deliveryMst?.status
     ) {
       case 0:
-        setTtacTextColor("text-blue-600");
+        setTtacTextColor(colors.blue500);
         break;
       case 1:
-        setTtacTextColor("text-green-700");
+        setTtacTextColor(colors.green700);
         break;
       case -1:
-        setTtacTextColor("text-gray-500");
+        setTtacTextColor(colors.gray_500);
         break;
       default:
-        setTtacTextColor("text-red-700");
+        setTtacTextColor(colors.red500);
         break;
     }
   }, [deliveryShowResponse]);
+
+  useEffect(() => {
+    switch (
+      titacResponse.data.result &&
+      titacResponse.data.result?.status
+    ) {
+      case 0:
+        setTtacTextColor(colors.blue500);
+        break;
+      case 1:
+        setTtacTextColor(colors.green700);
+        break;
+      case -1:
+        setTtacTextColor(colors.gray_500);
+        break;
+      default:
+        setTtacTextColor(colors.red500);
+        break;
+    }
+  }, [titacResponse]);
+  //for /api/TTAC/Titac?Id=1123156
+  const ttacClick = () => {
+    setIsTitacClick(true);
+    setTTacField("ttacRequestId", deliveryShowResponse.deliveryMst.id);
+  };
   return (
     <div className="mt-2 text-sm w-full flex flex-col gap-2 border border-gray-400 rounded-md p-2">
       <div className="w-full flex flex-col md:flex-row md:items-center justify-between gap-2">
@@ -130,17 +162,24 @@ const DeliveryShowHeader = ({ deliveryShowResponse, canEditForm }: Props) => {
         />
       </div>
       <div className="flex items-center justify-center">
-        <div className="flex items-center justify-right w-24">
-          <label className="p-1 w-full text-left">تیتک:</label>
+        <div className="flex items-center justify-right w-24" onClick={ttacClick}>
+          <label className="p-1 w-full text-left cursor-pointer hover:font-bold hover:underline">
+            تیتک:
+          </label>
           <div>
-            <FaCircle className={ttacTextColor} size={10} />
+            <FaCircle style={{color:ttacTextColor}} size={10} />
           </div>
         </div>
         <input
           type="text"
           disabled={!canEditForm}
-          value={convertToFarsiDigits(deliveryShowResponse.deliveryMst.msg)}
-          className={`text-sm text-gray-400 w-full p-1 border border-gray-300 rounded-md bg-transparent ${ttacTextColor}`}
+          value={
+            isTitacClick
+              ? convertToFarsiDigits(titacResponse.data.result.msg)
+              : convertToFarsiDigits(deliveryShowResponse.deliveryMst.msg)
+          }
+          className={`text-sm text-gray-400 w-full p-1 border border-gray-300 rounded-md bg-transparent`}
+          style={{color:ttacTextColor}}
         />
       </div>
     </div>

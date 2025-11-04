@@ -85,7 +85,7 @@ export function useWorkflow() {
       const response = await api.get(url, { signal });
       return response.data;
     },
-    //enabled: systemId !== 0 && chartId !== 0 ? true : false,
+    enabled: systemId !== -1, 
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     /*staleTime: 30000, // Consider data fresh for 30 seconds
@@ -119,7 +119,7 @@ export function useWorkflow() {
       setWorkFlowRowSelectResponse(response.data);
       return response.data;
     },
-    enabled: workTableId !== 0 && chartId !== 0 ? true : false,
+    enabled: workTableId !== -1 && chartId !== -1,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     onSuccess: (data: any) => {
@@ -144,7 +144,8 @@ export function useWorkflow() {
   });
 
   return {
-    getWorkTable: query.refetch,
+    refetchWorkTable: query.refetch,
+    isRefetchingWorkTable: query.isRefetching,
     isLoading: query.isLoading,
     error: query.error,
     workFlowResponse: query.data ?? {
@@ -155,14 +156,15 @@ export function useWorkflow() {
       workTables: [],
     },
 
-    getWorkTableRowSelect: queryRowSelect.refetch,
+    refetchWorkTableRowSelect: queryRowSelect.refetch,
+    isRefetchingWorkTableRowSelect: queryRowSelect.isRefetching,
     isLoadingRowSelect: queryRowSelect.isLoading,
     errorRowSelect: queryRowSelect.error,
     workFlowRowSelectResponse: queryRowSelect.data ?? {
       err: 0,
       msg: "",
       workTableRow: {
-        id: 148201, //parent id
+        id: -1, //parent id
         regFDate: "",
         regTime: "",
         regDateTime: "",
@@ -204,5 +206,20 @@ export function useWorkflow() {
     isLoadingdoFlow: doFlow.isPending,
     errordoFlow: doFlow.error,
     doFlow: doFlow.mutateAsync,
+    workFlowDoFlowResponse: doFlow.data ?? {
+      meta: { errorCode: 0, message: "", type: "" },
+      data: {
+        result: {
+          id: 0,
+          err: 0,
+          msg: "",
+          formAfterClick: {
+            id: 0,
+            title: null,
+            viewPath: "-1",
+          },
+        },
+      },
+    },
   };
 }

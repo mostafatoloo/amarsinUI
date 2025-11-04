@@ -9,8 +9,8 @@ export const useProductOfferStore = create<ProductOfferState>()((set) => ({
     },
   },
   id: 0,
-  acc_Year: 0,
-  acc_System: 0,
+  acc_Year: -1,
+  acc_System: -1,
   state: -1,
   regFDate: "",
   regTDate: "",
@@ -41,7 +41,7 @@ export const useProductOfferStore = create<ProductOfferState>()((set) => ({
     data: { result: [] },
   },
   //productOfferDtlHistory
-  pId: 0,
+  pId: -1,
   productOfferDtlHistoryResponse: {
     meta: { errorCode: 0, message: null, type: "" },
     data: { result: [] },
@@ -57,9 +57,9 @@ export const useProductOfferStore = create<ProductOfferState>()((set) => ({
     data: { result: { id: 0, err: 0, msg: "", formAfterClick: { id: 0, title: null, viewPath: null } } },
   },
   idProductOfferDoFirstFlow: 0,
-  acc_SystemProductOfferDoFirstFlow: 0,
-  acc_YearProductOfferDoFirstFlow: 0,
-  chartIdProductOfferDoFirstFlow: 0,
+  acc_SystemProductOfferDoFirstFlow: -1,
+  acc_YearProductOfferDoFirstFlow: -1,
+  chartIdProductOfferDoFirstFlow: -1,
   dscProductOfferDoFirstFlow: "",
   //productOfferDel
   productOfferDelResponse: {

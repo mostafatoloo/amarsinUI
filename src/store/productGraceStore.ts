@@ -14,9 +14,9 @@ export const useProductGraceStore = create<ProductGraceState>()((set) => ({
       },
     },
   },
-  id: 0,
-  yearId: 0,
-  systemId: 0,
+  id: -1,
+  yearId: -1,
+  systemId: -1,
   state: -1,
   regFDate: "",
   regTDate: "",
@@ -38,7 +38,7 @@ export const useProductGraceStore = create<ProductGraceState>()((set) => ({
   sortUsrName: 0,
   sortStep: 0,
   //productOfferDtlHistory
-  pId: 0,
+  pId: -1,
   productGraceDtlHistoryResponse: {
     meta: { errorCode: 0, message: null, type: "" },
     data: { result: [] },

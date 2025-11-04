@@ -30,6 +30,7 @@ type Props = {
   statusClicked: boolean;
   setStatusClicked: (statusClicked: boolean) => void;
   checkSeekingInfo: boolean;
+  setCheckSeekingInfo: (checkSeekingInfo: boolean) => void;
   selectedRowIndex: number;
   setSelectedRowIndex: (selectedRowIndex: number) => void;
   uid: string | undefined;
@@ -50,6 +51,7 @@ const CupboardsReportShowTable = ({
   statusClicked,
   setStatusClicked,
   checkSeekingInfo,
+  setCheckSeekingInfo,
   selectedRowIndex,
   setSelectedRowIndex,
   uid,
@@ -195,6 +197,7 @@ const CupboardsReportShowTable = ({
   const handleProductCatalogueClose = () => {
     setStatusClicked(false);
     setSelectedProduct(null);
+    setCheckSeekingInfo(false);
     setUid(undefined);
   };
 
@@ -334,6 +337,7 @@ const CupboardsReportShowTable = ({
               pageSize={pageSize}
               setPageSize={setPageSize}
               totalCount={totalCount ?? 0}
+              showPagination={true}
             />
           </div>
         </div>
@@ -349,7 +353,7 @@ const CupboardsReportShowTable = ({
           ? selectedProduct && (
               <ProductCatalogue
                 dtl={selectedProduct}
-                visible={true}
+                visible={false} //dont show system info column
                 uid={uid}
                 setUid={setUid}
               />

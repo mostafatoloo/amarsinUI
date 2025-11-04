@@ -1,4 +1,4 @@
-import  { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { Paper } from "@mui/material";
 import Skeleton from "../layout/Skeleton";
 import { useNavigate } from "react-router-dom";
@@ -22,8 +22,9 @@ type Props = {
   workFlowResponse: WorkflowResponse;
   error: Error | null;
   isLoading: boolean;
-  isLoadingdoFlow:boolean
-  refetchSwitch:boolean
+  isRefetchingWorkTable: boolean;
+  isRefetchingWorkTableRowSelect: boolean;
+  isLoadingdoFlow: boolean;
 };
 
 export default function WorkflowParent({
@@ -32,8 +33,9 @@ export default function WorkflowParent({
   workFlowResponse,
   error,
   isLoading,
+  isRefetchingWorkTable,
+  isRefetchingWorkTableRowSelect,
   isLoadingdoFlow,
-  refetchSwitch
 }: Props) {
   const { flowMapId: flowMapIdStore, setField } = useWorkflowStore();
   const { systemId, chartId, defaultRowsPerPage } = useGeneralContext();
@@ -102,12 +104,12 @@ export default function WorkflowParent({
   }, [error, navigate]);
 
   useEffect(() => {
-    console.log(
+   /* console.log(
       "one of these were changed:" + systemId,
       chartId,
       pageNumber,
       pageSize
-    );
+    );*/
     setField("systemId", systemId);
     setField("chartId", chartId);
     setField("page", pageNumber);
@@ -136,7 +138,7 @@ export default function WorkflowParent({
   const [dsc, setDsc] = useState("");
 
   useEffect(() => {
-    console.log(flowMapIdStore,"flowMapIdStore in WorkflowParent");
+    //console.log(flowMapIdStore, "flowMapIdStore in WorkflowParent");
     setPageNumber(1);
   }, [
     flowMapIdStore,
@@ -203,14 +205,19 @@ export default function WorkflowParent({
   useEffect(() => {
     // Only set first record as selected if there's no current selection
     // This prevents losing selection when data is refetched
-    console.log(selectedId);
+    //console.log(selectedId);
     if (workFlowResponse.workTables.length > 0) {
-      setSelectedId(workFlowResponse.workTables[0].id);
+      // Only reset if selectedId doesn't exist in current data
+      const selectedExists = workFlowResponse.workTables.some(table => table.id === selectedId);
+      if (!selectedExists) {
+        setSelectedId(workFlowResponse.workTables[0].id);
+        setSelectedRowIndex(0);
+      }
+      // If selectedId exists, don't reset selectedRowIndex - preserve user's selection
     } else {
       setSelectedId(0);
+      setSelectedRowIndex(0);
     }
-    console.log(selectedId,"selectedId in WorkflowParent");
-    setSelectedRowIndex(0);
   }, [workFlowResponse]);
 
   if (error) return <div>Error: {error.message} </div>;
@@ -337,9 +344,8 @@ export default function WorkflowParent({
             style={{ width: "20%" }}
           />
         </div>
-
-        {isLoading || isLoadingdoFlow || refetchSwitch ? (
-          <div className="text-center">{<Skeleton />}</div>
+        {isLoading || isLoadingdoFlow || isRefetchingWorkTable || isRefetchingWorkTableRowSelect ? (
+          <div className="w-full text-center">{<Skeleton />}</div>
         ) : workFlowResponse.err !== 0 ? (
           <p className="p-6 text-red-400 text-sm md:text-base font-bold">
             {workFlowResponse.msg}
@@ -370,6 +376,7 @@ export default function WorkflowParent({
               setPageSize={setPageSize}
               totalCount={workFlowResponse.totalCount}
               setSelectedRowIndex={setSelectedRowIndex}
+              showPagination={true}
             />
           </div>
         )}

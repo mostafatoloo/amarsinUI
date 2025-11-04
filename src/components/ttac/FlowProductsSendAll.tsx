@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { useTtac } from "../../hooks/useTtac";
+import { useEffect, useState, useRef } from "react";
 import FlowProductsSendAllHeader from "./FlowProductsSendAllHeader";
 import FlowProductsSendAllTable from "./FlowProductsSendAllTable";
 import { TableColumns } from "../../types/general";
@@ -15,23 +14,42 @@ import { useGeneralContext } from "../../context/GeneralContext";
 import Spinner from "../controls/Spinner";
 import { v4 as uuidv4 } from "uuid";
 import ModalMessage from "../layout/ModalMessage";
+import {
+  CupboardCaptureResponse,
+  FlowProductsSendAllResponse,
+  ImportTTacStatusResponse,
+} from "../../types/ttac";
+import { QueryObserverResult } from "@tanstack/react-query";
 
-const FlowProductsSendAll = () => {
-  const {
-    refetchFlowProductsSendAll,
-    flowProductsSendAllResponse,
-    isLoadingFlowProductsSendAll,
-    isFetchingFlowProductsSendAll,
-    cupboardCaptureResponse,
-    isLoadingCupboardCapture,
-    importTTacStatusResponse,
-    isLoadingImportTTacStatus,
-  } = useTtac();
+type Props = {
+  refetchFlowProductsSendAll: () => Promise<
+    QueryObserverResult<FlowProductsSendAllResponse, Error>
+  >;
+  flowProductsSendAllResponse: FlowProductsSendAllResponse;
+  isLoadingFlowProductsSendAll: boolean;
+  isFetchingFlowProductsSendAll: boolean;
+  cupboardCaptureResponse: CupboardCaptureResponse;
+  isLoadingCupboardCapture: boolean;
+  importTTacStatusResponse: ImportTTacStatusResponse;
+  isLoadingImportTTacStatus: boolean;
+};
+const FlowProductsSendAll = ({
+  refetchFlowProductsSendAll,
+  flowProductsSendAllResponse,
+  isLoadingFlowProductsSendAll,
+  isFetchingFlowProductsSendAll,
+  cupboardCaptureResponse,
+  isLoadingCupboardCapture,
+  importTTacStatusResponse,
+  isLoadingImportTTacStatus,
+}: Props) => {
+
   const { setField } = useTTacStore();
   const { yearId, systemId } = useGeneralContext();
   const [sendDate, setSendDate] = useState<Date | null>(new Date());
   const [sendTtacSent, setSendTtacSent] = useState<boolean>(false);
   const [data, setData] = useState<any[]>([]);
+  const dataRef = useRef<any[]>([]);
 
   // for pagination
   const [pageNumber, setPageNumber] = useState<number>(1);
@@ -159,7 +177,6 @@ const FlowProductsSendAll = () => {
   }, [sendDate, sendTtacSent, systemId, yearId]);
   // for initializing data
   useEffect(() => {
-    console.log(flowProductsSendAllResponse, "flowProductsSendAllResponse");
     if (flowProductsSendAllResponse.data.result.length === 0) return;
     const tempData = flowProductsSendAllResponse.data.result.map((c, index) => {
       return {
@@ -201,19 +218,20 @@ const FlowProductsSendAll = () => {
         ),
       };
     });
-    console.log(tempData);
     setData(tempData);
+    dataRef.current = tempData;
   }, [flowProductsSendAllResponse.data.result, isFetchingFlowProductsSendAll]);
   //////////////////////////////////////////////////////////////
   const handleStatusClick = (rowIndex: number) => {
-    const cupboardCapturedId = data[rowIndex]?.id ?? 0;
+    // Read from ref to ensure we have the latest data
+    const cupboardCapturedId = dataRef.current[rowIndex]?.id ?? 0;
     setPendingCupboardCaptureRowIndex(rowIndex);
     setField("cupboardCaptureId", cupboardCapturedId);
     setField("cupboardCaptureCurrentDateTime", true);
     setField("cupboardCaptureIdempotencyKey", uuidv4());
     // Show loading state immediately
-    setData((old) =>
-      old.map((row, index) => {
+    setData((old) => {
+      const updated = old.map((row, index) => {
         if (index === rowIndex) {
           return {
             ...row,
@@ -234,8 +252,10 @@ const FlowProductsSendAll = () => {
           };
         }
         return row;
-      })
-    );
+      });
+      dataRef.current = updated;
+      return updated;
+    });
     // Trigger API call
     //refetchCupboardCapture();
   };
@@ -247,18 +267,10 @@ const FlowProductsSendAll = () => {
       cupboardCaptureResponse?.data?.result &&
       isLoadingCupboardCapture === false
     ) {
-      console.log("enter useEffect cupboardCaptureResponse");
-      console.log(
-        pendingCupboardCaptureRowIndex,
-        "pendingCupboardCaptureRowIndex"
-      );
-      console.log(cupboardCaptureResponse, "cupboardCaptureResponse");
       const rowIndex = pendingCupboardCaptureRowIndex;
-      if (cupboardCaptureResponse.data.result.err !== 0) {
-        setIsOpenCaptureMessageModal(true);
-      }
-      setData((old) =>
-        old.map((row, index) => {
+      setIsOpenCaptureMessageModal(true);
+      setData((old) => {
+        const updated = old.map((row, index) => {
           if (index === rowIndex) {
             return {
               ...row,
@@ -275,41 +287,52 @@ const FlowProductsSendAll = () => {
                   ? 1
                   : row.successed,
               err: cupboardCaptureResponse.data.result.err,
-              statusImages:
-                cupboardCaptureResponse.data.result.err === 0 ? (
-                  <div className="flex justify-evenly items-center w-full">
+              statusImages: (
+                <div className="flex justify-evenly items-center w-full">
+                  {cupboardCaptureResponse.data.result.err === 0 ? (
                     <img
                       src={Question16}
                       alt="Question16"
                       className="cursor-pointer w-4 h-4"
                       onClick={() => handleQuestionClick(rowIndex)}
                     />
-                    <img
-                      src={Flow16}
-                      alt="Flow16"
-                      className="cursor-pointer w-4 h-4"
+                  ) : (
+                    <input
+                      type="checkbox"
+                      checked={false}
+                      onChange={() => handleStatusClick(rowIndex)}
                     />
-                  </div>
-                ) : (
-                  row.statusImages
-                ),
+                  )}
+                  <img
+                    src={Flow16}
+                    alt="Flow16"
+                    className="cursor-pointer w-4 h-4"
+                  />
+                </div>
+              ),
             };
           }
           return row;
-        })
-      );
+        });
+        dataRef.current = updated;
+        return updated;
+      });
       setPendingCupboardCaptureRowIndex(null);
     }
   }, [cupboardCaptureResponse, pendingCupboardCaptureRowIndex]);
   ////////////////////////////////////////////////////////////
   const handleQuestionClick = (rowIndex: number) => {
-    console.log(data[rowIndex]?.tId,"enter handleQuestionClick");
     setPendingImportTTacStatusRowIndex(rowIndex);
+    // Read tId from the ref to get the latest value (avoids closure issues)
+    const currentRow = dataRef.current[rowIndex];
+    const tId = currentRow?.tId ?? 0;
     setField("importTTacStatusSystemId", systemId);
-    setField("importTTacStatusLtId", data[rowIndex]?.tId ?? 0);
+    setField("importTTacStatusLtId", tId);
+    // Increment trigger to force refetch even with same values
+    setField("importTTacStatusTrigger", Date.now());
     // Show loading state immediately
-    setData((old) =>
-      old.map((row, index) => {
+    setData((old) => {
+      const updated = old.map((row, index) => {
         if (index === rowIndex) {
           return {
             ...row,
@@ -330,8 +353,10 @@ const FlowProductsSendAll = () => {
           };
         }
         return row;
-      })
-    );
+      });
+      dataRef.current = updated;
+      return updated;
+    });
     // Trigger API call
     //refetchImportTTacStatus();
   };
@@ -344,35 +369,38 @@ const FlowProductsSendAll = () => {
       isLoadingImportTTacStatus === false
     ) {
       const rowIndex = pendingImportTTacStatusRowIndex;
-      console.log("enter useEffect importTTacStatusResponse");
-      console.log(
-        pendingImportTTacStatusRowIndex,
-        "pendingImportTTacStatusRowIndex"
-      );
-      console.log(importTTacStatusResponse, "importTTacStatusResponse");
       if (importTTacStatusResponse.data.result.err !== 0) {
         setIsOpenImportTTacStatusMessageModal(true);
       }
-      setData((old) =>
-        old.map((row, index) => {
+      setData((old) => {
+        const updated = old.map((row, index) => {
           if (index === rowIndex) {
             return {
               ...row,
               status: "ImportTTacStatus",
-              eventId: importTTacStatusResponse.data.result.eventId,
               msg: importTTacStatusResponse.data.result.msg,
-              tId: importTTacStatusResponse.data.result.logId,
+              err: importTTacStatusResponse.data.result.err,
               successed:
                 importTTacStatusResponse.data.result.status === 1
                   ? 1
                   : row.successed,
               statusImages: (
                 <div className="flex justify-evenly items-center w-full">
-                  <img
-                    src={Report16}
-                    alt="Report16"
-                    className="cursor-pointer w-4 h-4"
-                  />
+                  {importTTacStatusResponse.data.result.err === 0 ? (
+                    <img
+                      src={Report16}
+                      alt="Report16"
+                      className="cursor-pointer w-4 h-4"
+                      onClick={() => handleQuestionClick(rowIndex)}
+                    />
+                  ) : (
+                    <img
+                      src={Question16}
+                      alt="Question16"
+                      className="cursor-pointer w-4 h-4"
+                      onClick={() => handleQuestionClick(rowIndex)}
+                    />
+                  )}
                   <img
                     src={Flow16}
                     alt="Flow16"
@@ -383,8 +411,10 @@ const FlowProductsSendAll = () => {
             };
           }
           return row;
-        })
-      );
+        });
+        dataRef.current = updated;
+        return updated;
+      });
       setPendingImportTTacStatusRowIndex(null);
     }
   }, [importTTacStatusResponse, pendingImportTTacStatusRowIndex]);
@@ -431,7 +461,7 @@ const FlowProductsSendAll = () => {
         onClose={() => setIsOpenCaptureMessageModal(false)}
         message={cupboardCaptureResponse?.data?.result?.msg || ""}
         color="text-white"
-        backgroundColor="bg-red-200"
+        backgroundColor={cupboardCaptureResponse?.data?.result?.err===0 ? "bg-green-200" : "bg-red-200"}
         visibleButton={false}
       />
       <ModalMessage
@@ -439,7 +469,7 @@ const FlowProductsSendAll = () => {
         onClose={() => setIsOpenImportTTacStatusMessageModal(false)}
         message={importTTacStatusResponse?.data?.result?.msg || ""}
         color="text-white"
-        backgroundColor="bg-red-200"
+        backgroundColor={importTTacStatusResponse?.data?.result?.err===0 ? "bg-green-200" : "bg-red-200"}
         visibleButton={false}
       />
     </div>

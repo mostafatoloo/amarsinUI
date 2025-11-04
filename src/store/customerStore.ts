@@ -5,8 +5,8 @@ export const useCustomerStore = create<CustomerState>()((set) => ({
     meta: { errorCode: 0, message: null, type: "" },
     data: { result: { total_count: 0, err: 0, msg: null, searchResults: [] } },
   },
-  systemId: 0,
-  yearId: 0,
+  systemId: -1,
+  yearId: -1,
   centerType: 0,
   search: "",
   page: 1, // Provide a default value for page

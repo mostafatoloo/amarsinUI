@@ -27,7 +27,7 @@ const PreProcurementShow = ({
     preProcurementResponse,
     isLoadingPreProcurement,
   } = usePreProcurement();
-  const { setField } = usePreProcurementStore();
+  const { setField, id } = usePreProcurementStore();
   const { setField: setAttachmentField } = useAttachmentStore();
   const { systemId, yearId } = useGeneralContext();
   const [showAttachment, setShowAttachment] = useState(false);
@@ -44,9 +44,13 @@ const PreProcurementShow = ({
     }
   }, [refetchSwitch]);
   ////////////////////////////////////////////////////////////////////////
-  useEffect(() => {
+  if (id!==workFlowRowSelectResponse.workTableRow.formId)
+  {
     setField("id", workFlowRowSelectResponse.workTableRow.formId);
-  }, [workFlowRowSelectResponse.workTableRow.formId]);
+  }
+  /*useEffect(() => {
+    setField("id", workFlowRowSelectResponse.workTableRow.formId);
+  }, [workFlowRowSelectResponse.workTableRow.formId]);*/
   ////////////////////////////////////////////////////////for defining guid
   /*useEffect(() => {
         if (isNew) {
@@ -64,7 +68,7 @@ const PreProcurementShow = ({
   }, []);
   ////////////////////////////////////////////////////////
   useEffect(() => {
-    console.log("give attachment fields");
+    //console.log("give attachment fields");
     setAttachmentField("systemId", systemId);
     setAttachmentField("yearId", yearId);
     setAttachmentField("formId", workFlowRowSelectResponse.workTableRow.formId);

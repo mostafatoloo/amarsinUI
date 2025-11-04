@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import { CupboardsReportState } from "../types/cupboardsReport";
 export const useCupboardsReportStore = create<CupboardsReportState>()((set) => ({
-    systemId: 0,
-    yearId: 0,
+    systemId: -1,
+    yearId: -1,
     err: false,
     errId: 0,
     existsCupboards: false,

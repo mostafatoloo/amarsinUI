@@ -47,9 +47,9 @@ export const useWarehouseStore = create<WarehouseState>()((set) => ({
       result: { err: 0, msg: "", indents: [] },
     },
   },
-  formId: 0,
-  productId: 0,
-  iocId: 0,
+  formId: -1,
+  productId: -1,
+  iocId: -1,
   selectIndentsRequest: {
     iocId: 0,
     indents: {
@@ -72,14 +72,14 @@ export const useWarehouseStore = create<WarehouseState>()((set) => ({
   },
   //for api/Warehouse/Search?search=%D8%A7&page=1&pageSize=30&lastId=0&CustomerTypeId=-1
   search: "ا",
-  page: 1,
+  page: -1,
   pageSize: 30,
   lastId: 0,
   CustomerTypeId: -1,
   PartKey: 0,
   //end of api/Warehouse/Search?search=%D8%A7&page=1&pageSize=30&lastId=0&CustomerTypeId=-1
   //for api/WarehouseTemporaryReceipt/purchaseShow/1107390
-  receiptPurchaseId: 0,
+  receiptPurchaseId: -1,
   warehouseTemporaryReceiptPurchaseShowResponse: {
     meta: { errorCode: 0, message: "", type: "" },
     data: {
@@ -119,8 +119,8 @@ export const useWarehouseStore = create<WarehouseState>()((set) => ({
     data: { result: { err: 0, msg: "", salesPrices: [] } },
   },
   //for api/WarehouseTemporaryReceipt/purchaseReg?id=1106779&salesPriceId=1
-  idReg: 0,
-  salesPriceIdReg: 0,
+  idReg: -1,
+  salesPriceIdReg: -1,
   warehouseTemporaryReceiptPurchaseRegResponse: {
     meta: { errorCode: 0, message: "", type: "" },
     data: { result: { id: 0, err: 0, msg: "", dtlErrMsgs: [] } },

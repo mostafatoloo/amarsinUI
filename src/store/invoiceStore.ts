@@ -23,7 +23,7 @@ export const useInvoiceStore = create<InvoiceState>()((set) => ({
       },
     },
   },
-  formId: 0,
+  formId: -1,
   setField: (field: string, value: any) =>
     set((state) => ({ ...state, [field]: value })),
   setInvoiceShowIdResponse: (invoiceShowIdResponse) =>

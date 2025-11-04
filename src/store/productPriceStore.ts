@@ -15,8 +15,8 @@ export const useProductPriceStore = create<ProductPriceState>()((set) => ({
     },
   },
   id: 0,
-  yearId: 0,
-  systemId: 0,
+  yearId: -1,
+  systemId: -1,
   state: -1,
   regFDate: "",
   regTDate: "",
@@ -38,7 +38,7 @@ export const useProductPriceStore = create<ProductPriceState>()((set) => ({
   sortUsrName: 0, 
   sortStep: 0,
    //productPriceDtlHistory
-  pId: 0,
+  pId: -1,
   productPriceDtlHistoryResponse: {
     meta: { errorCode: 0, message: null, type: "" },
     data: { result: [] },

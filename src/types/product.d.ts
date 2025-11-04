@@ -7,7 +7,7 @@ export interface ProductSearchRequest {
   search?: string;
   page: number;
 }
-
+//
 export interface SalesPricesSearchRequest {
   salesPricesSearch: string;
   salesPricesSearchPage: number;
@@ -326,11 +326,17 @@ export interface ProductState
     IndentRequest,
     ProductCatalogRequest {
 
-  salesPricesSearch: string;
+  //for /api/Product/salesPricesSearch?page=1&lastId=0&Search=%D8%B3%D9%81
+  salesPricesSearchSearch: string;
   salesPricesSearchPage: number;
-  lastId: number;
+  salesPricesSearchLastId: number;
   pId: number;
   mrsId: number;
+  //for /api/Product/search?search=search&page=1
+  productSearchAccYear: number;
+  productSearchAccSystem: number;
+  productSearchSearch: string;
+  productSearchPage: number;
   productSearchResponse: ProductSearchResponse;
   salesPricesSearchResponse: SalesPricesSearchResponse;
   indentShowProductListResponse: IndentShowProductListResponse;

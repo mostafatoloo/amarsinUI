@@ -30,6 +30,12 @@ const WarehouseShow = ({
   const [confirmHasError, setConfirmHasError] = useState(false);
   const { selectIndentsResponse, regResponse, formId, setField } =
     useWarehouseStore();
+  
+  // Set formId BEFORE useWarehouse hook runs to prevent stale queries
+  if (formId !== workFlowRowSelectResponse.workTableRow.formId) {
+    setField("formId", workFlowRowSelectResponse.workTableRow.formId);
+  }
+  
   const {
     warehouseShowIdResponse,
     isLoadingWarehouseShowId,
@@ -50,15 +56,15 @@ const WarehouseShow = ({
     }
   }, [refetchSwitch]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     console.log(
       workFlowRowSelectResponse.workTableRow.formId,
       "formId in WarehouseShow"
-    );
+    )
     if (formId !== workFlowRowSelectResponse.workTableRow.formId)
       setField("formId", workFlowRowSelectResponse.workTableRow.formId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [workFlowRowSelectResponse.workTableRow.formId]);
+  }, [workFlowRowSelectResponse.workTableRow.formId]);*/
 
   const [customer, setCustomer] = useState<{
     id: string;

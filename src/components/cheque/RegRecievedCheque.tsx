@@ -18,6 +18,13 @@ const RegRecievedCheque = ({
   refetchSwitch,
   setRefetchSwitch,
 }: Props) => {
+  const {setField,formId:chequeFormId}=useChequeStore()
+  
+  // Set formId BEFORE useCheques hook runs to prevent stale queries
+  if(chequeFormId!==workFlowRowSelectResponse.workTableRow.formId){
+    setField("formId", workFlowRowSelectResponse.workTableRow.formId);
+  }
+  
   const {
     loadPaymentResponse,
     isLoading: isLoadingLoadPayment,
@@ -30,7 +37,6 @@ const RegRecievedCheque = ({
     sayadChequeInquiryByPaymentIdResponse,
   } = useCheques();
 
-  const {setField,formId:chequeFormId}=useChequeStore()
   const canEditForm = workFlowRowSelectResponse.workTableForms.canEditForm1;
   // refetch getPayment if refetchSwitch is true
   useEffect(() => {
@@ -41,11 +47,11 @@ const RegRecievedCheque = ({
     }
   }, [refetchSwitch]);
   ////////////////////////////////////////////////////////////////////////////
-  useEffect(() => {
+  /*useEffect(() => {
     if(chequeFormId!==workFlowRowSelectResponse.workTableRow.formId){
       setField("formId", workFlowRowSelectResponse.workTableRow.formId);
     }
-  }, [workFlowRowSelectResponse.workTableRow.formId, setField,chequeFormId]);
+  }, [workFlowRowSelectResponse.workTableRow.formId, setField,chequeFormId]);*/
   return (
     <div className="flex flex-col md:flex-row w-full text-sm gap-2 text-gray-600">
       <RegRecievedChequeInfo

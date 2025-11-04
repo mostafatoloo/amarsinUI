@@ -8,6 +8,7 @@ import {
   GetInventoryBalanceRequest,
   GetInventoryBalanceResponse,
   ImportTTacStatusResponse,
+  TTacResponse,
 } from "../types/ttac";
 
 export function useTtac() {
@@ -70,7 +71,10 @@ export function useTtac() {
     setCupboardCaptureResponse, // for api/TTAC/CupboardCapture
     importTTacStatusSystemId, //for api/TTAC/ImportTTacStatus
     importTTacStatusLtId, //for api/TTAC/ImportTTacStatus
+    importTTacStatusTrigger, //for api/TTAC/ImportTTacStatus
     setImportTTacStatusResponse, //for api/TTAC/ImportTTacStatus
+    ttacRequestId, //for  /api/TTAC/Titac?Id=1123156
+    setTTacResponse, //for  /api/TTAC/Titac?Id=1123156
   } = useTTacStore();
   //for /api/TTAC/GetInventoryBalance?SystemId=4&YearId=15&SortId=0&SortIRC=0&SortLotNumber=0&SortWStock=0&SortCnt=0&SortNotSent=0&SortTCnt=0&PageNumber=1
   const query = useQuery<
@@ -129,6 +133,7 @@ export function useTtac() {
       const response = await api.get(url);
       return response.data;
     },
+    enabled: systemId !== -1 && yearId !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -274,7 +279,7 @@ export function useTtac() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: sendDate !== "",
+    enabled: sendDate !== "" && systemId !== -1 && yearId !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -299,7 +304,7 @@ export function useTtac() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: cupboardCaptureId !== 0 ,
+    enabled: cupboardCaptureId !== -1,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     onSuccess: (data: any) => {
@@ -308,7 +313,6 @@ export function useTtac() {
   } as UseQueryOptions<CupboardCaptureResponse, Error, CupboardCaptureResponse, unknown[]>);
 
   //for api/TTAC/ImportTTacStatus
-
   const importTTacStatusQuery = useQuery<
     ImportTTacStatusResponse,
     Error,
@@ -319,6 +323,7 @@ export function useTtac() {
       "importTTacStatus",
       importTTacStatusSystemId,
       importTTacStatusLtId,
+      importTTacStatusTrigger,
     ],
     queryFn: async () => {
       const url: string = `/api/TTAC/ImportTTacStatus?SystemId=${importTTacStatusSystemId}&ltId=${importTTacStatusLtId}`;
@@ -326,13 +331,35 @@ export function useTtac() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: importTTacStatusLtId !== 0 && importTTacStatusSystemId !== 0 ,
+    enabled: importTTacStatusLtId !== -1 && importTTacStatusSystemId !== -1,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     onSuccess: (data: any) => {
       setImportTTacStatusResponse(data);
     },
   } as UseQueryOptions<ImportTTacStatusResponse, Error, ImportTTacStatusResponse, unknown[]>);
+
+  //for  /api/TTAC/Titac?Id=1123156
+  const titacQuery = useQuery<
+    TTacResponse,
+    Error,
+    TTacResponse,
+    unknown[]
+  >({
+    queryKey: ["titac", ttacRequestId],
+    queryFn: async () => {
+      const url: string = `/api/TTAC/Titac?Id=${ttacRequestId}`;
+      console.log(url, "url");
+      const response = await api.get(url);
+      return response.data;
+    },
+    enabled: ttacRequestId !== -1,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    onSuccess: (data: any) => {
+      setTTacResponse(data);
+    },
+  } as UseQueryOptions<TTacResponse, Error, TTacResponse, unknown[]>);
 
   return {
     //output for GetInventoryBalance
@@ -356,7 +383,8 @@ export function useTtac() {
     //output for CupboardCapture
     refetchCupboardCapture: () => cupboardCaptureQuery.refetch(),
     isFetchingCupboardCapture: cupboardCaptureQuery.isFetching,
-    isLoadingCupboardCapture: cupboardCaptureQuery.isLoading,
+    isLoadingCupboardCapture:
+      cupboardCaptureQuery.isLoading || cupboardCaptureQuery.isPending,
     errorCupboardCapture: cupboardCaptureQuery.error,
     cupboardCaptureResponse: cupboardCaptureQuery.data ?? {
       meta: { errorCode: 0, message: "", type: "" },
@@ -377,9 +405,32 @@ export function useTtac() {
     //output for ImportTTacStatus
     refetchImportTTacStatus: () => importTTacStatusQuery.refetch(),
     isFetchingImportTTacStatus: importTTacStatusQuery.isFetching,
-    isLoadingImportTTacStatus: importTTacStatusQuery.isLoading,
+    isLoadingImportTTacStatus:
+      importTTacStatusQuery.isLoading || importTTacStatusQuery.isPending,
     errorImportTTacStatus: importTTacStatusQuery.error,
     importTTacStatusResponse: importTTacStatusQuery.data ?? {
+      meta: { errorCode: 0, message: "", type: "" },
+      data: {
+        result: {
+          id: 0,
+          err: 0,
+          status: 0,
+          successed: 0,
+          msg: "",
+          formId: 0,
+          logId: 0,
+          eventId: "",
+          stockQuantity: 0,
+        },
+      },
+    },
+    //output for ImportTitac
+    refetchImportTitac: () => titacQuery.refetch(),
+    isFetchingTitac: titacQuery.isFetching, 
+    isLoadingTitac:
+      titacQuery.isLoading || titacQuery.isPending,
+    errorTitac: titacQuery.error,
+    titacResponse: titacQuery.data ?? {
       meta: { errorCode: 0, message: "", type: "" },
       data: {
         result: {

@@ -636,6 +636,7 @@ const PurchaseRequestIndent = () => {
               setPageSize={setPageSize}
               totalCount={indentListTotalCount ?? 0}
               setSelectedRowIndex={setSelectedRowIndex}
+              showPagination={true}
             />
           </div>
         </div>
@@ -682,7 +683,7 @@ const PurchaseRequestIndent = () => {
           setIsEdit(false);
           //setIsOpen(false);
         }}
-        title="سفارش"
+        title="درخواست خرید"
         width="1"
         height="90vh"
       >

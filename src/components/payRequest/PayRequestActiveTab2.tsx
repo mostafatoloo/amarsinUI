@@ -115,9 +115,7 @@ const PayRequestActiveTab2 = ({
       Header: "در وجه",
       accessor: "prsn",
       width: "22%",
-      Cell: CanEditForm1Dtl2
-        ? EditableInput
-        : ({ value }: any) => convertToFarsiDigits(value),
+      Cell: EditableInput
     },
     {
       Header: "صیادی",
@@ -131,23 +129,19 @@ const PayRequestActiveTab2 = ({
       Header: "سررسید",
       accessor: "dat",
       width: "5%",
-      Cell: CanEditForm1Dtl2
-        ? EditableInput
-        : ({ value }: any) => convertToFarsiDigits(value),
+      Cell: EditableInput
     },
     {
       Header: "مبلغ",
       accessor: "amount",
       width: "8%",
-      Cell: CanEditForm1Dtl2 ? EditableInput : ({ value }: any) => value,
+      Cell: EditableInput
     },
     {
       Header: "شرح",
       accessor: "dtlDsc",
       width: "15%",
-      Cell: CanEditForm1Dtl2
-        ? EditableInput
-        : ({ value }: any) => convertToFarsiDigits(value),
+      Cell: EditableInput
     },
     {
       Header: " ",
@@ -238,7 +232,7 @@ const PayRequestActiveTab2 = ({
   ////////////////////////////////////////////////////////////////
   //initializing data
   useEffect(() => {
-    console.log(originalData, "originalData in useEffect");
+    //console.log(originalData, "originalData in useEffect");
     if (isChecked) {
       setData(originalData);
     } else {
@@ -344,7 +338,7 @@ const PayRequestActiveTab2 = ({
   };
   ////////////////////////////////////////////////////////////////////
   useEffect(() => {
-    console.log(data, "data in useEffect");
+    //console.log(data, "data in useEffect");
     setAmountTab2(
       data.reduce(
         (acc, curr) =>
@@ -454,7 +448,7 @@ const PayRequestActiveTab2 = ({
         wordWrap={true}
         changeRowValues={changeRowValues}
         showToolTip={true}
-        canEditForm={workFlowRowSelectResponse.workTableForms.canEditForm1Dtl2}
+        canEditForm={workFlowRowSelectResponse.workTableForms.canEditForm1}
         CellColorChange={handleCellColorChange}
       />
       {workFlowRowSelectResponse.workTableForms.canEditForm1Dtl2 && (

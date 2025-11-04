@@ -326,9 +326,10 @@ const InvoiceReceiptShowTable = ({
   ];
 
   const handleShowHistory = (row: any) => {
+    //console.log("enter handleShowHistory")
     if (row.original.pId !== 0) {
-      setProductField("pId", row.original.pId);
-      setProductField("mrsId", mrsId);
+      setProductField("pId", row.original.pId)
+      setProductField("mrsId", mrsId)
       setShowHistory(true);
     }
   };

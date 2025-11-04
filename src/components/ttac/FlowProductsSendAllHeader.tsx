@@ -36,7 +36,7 @@ const FlowProductsSendAllHeader = ({
         <label>ارسال شده</label>
       </div>
       <div
-        className="flex flex-col items-center cursor-pointer"
+        className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1"
         onClick={refetchFlowProductsSendAll}
       >
         <img src={Refresh32} alt="Refresh32" className="w-6 h-6" />

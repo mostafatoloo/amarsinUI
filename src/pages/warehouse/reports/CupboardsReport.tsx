@@ -1,4 +1,4 @@
-//گزارش بچ ها 
+//گزارش بچ ها
 import PageTitle from "../../../components/layout/PageTitle";
 import Refresh32 from "../../../assets/images/GrayThem/rfrsh32.png";
 import ExcelIcon from "../../../assets/images/GrayThem/excel24.png";
@@ -32,6 +32,7 @@ const CupboardsReport = () => {
     useState<WarehouseTemporaryReceiptIndentDtl | null>(null);
   const [statusClicked, setStatusClicked] = useState(false);
   const [checkSeekingInfo, setCheckSeekingInfo] = useState(false); // to control clicking on seeking info icon
+  const [isDownloadingExcel, setIsDownloadingExcel] = useState(false); // set true if user clicked on  استعلام
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0);
   const [uid, setUid] = useState<string | undefined>(undefined);
   const columns: TableColumns = [
@@ -117,11 +118,12 @@ const CupboardsReport = () => {
     },
   ];
   useEffect(() => {
-    if (downloadExcelResponse) {
+    if (downloadExcelResponse && isDownloadingExcel) {
       console.log("downloadExcelResponse", downloadExcelResponse);
       handleDownloadExcel(downloadExcelResponse);
+      setIsDownloadingExcel(false)
     }
-  }, [downloadExcelResponse]);
+  }, [downloadExcelResponse, isDownloadingExcel]);
 
   const handleDownloadExcel = async (data: any) => {
     const blob = new Blob([data], {
@@ -129,7 +131,7 @@ const CupboardsReport = () => {
     });
 
     // Check if the browser supports the File System Access API
-    if ('showSaveFilePicker' in window) {
+    if ("showSaveFilePicker" in window) {
       try {
         const handle = await (window as any).showSaveFilePicker({
           suggestedName: "CupboardsReport.xlsx",
@@ -137,7 +139,8 @@ const CupboardsReport = () => {
             {
               description: "Excel Files",
               accept: {
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                  [".xlsx"],
               },
             },
           ],
@@ -147,7 +150,7 @@ const CupboardsReport = () => {
         await writable.close();
       } catch (err: any) {
         // User cancelled or error occurred
-        if (err.name !== 'AbortError') {
+        if (err.name !== "AbortError") {
           console.error("Error saving file:", err);
           // Fallback to traditional download
           fallbackDownload(blob);
@@ -236,11 +239,11 @@ const CupboardsReport = () => {
   };
   ////////////////////////////////////////////////////////////////////////
   const seekInfo = () => {
-    console.log("enter seekInfo")
+    console.log("enter seekInfo");
     setCheckSeekingInfo(true);
     console.log(data[selectedRowIndex]);
     setSelectedProduct((prev) => ({
-      ...(prev || {} as WarehouseTemporaryReceiptIndentDtl),
+      ...(prev || ({} as WarehouseTemporaryReceiptIndentDtl)),
       cId: data[selectedRowIndex].id,
       code: data[selectedRowIndex].code,
       pName: data[selectedRowIndex].fullName,
@@ -252,31 +255,38 @@ const CupboardsReport = () => {
     setUid("");
     setStatusClicked(true);
   };
-
-  const handleRefetchCupboardsReport=()=>{
-    refetchCupboardsReport()
-  }
+  ////////////////////////////////////////////////////////////////////
+  const handleRefetchCupboardsReport = () => {
+    refetchCupboardsReport();
+  };
+  ////////////////////////////////////////////////////////////////////////
+  const downloadExcel = () => {
+    refetchDownloadExcel();
+    setIsDownloadingExcel(true)
+  };
+  ////////////////////////////////////////////////////////////////////////
   return (
     <div className="flex flex-col bg-gray-200 pt-2">
       <header className="flex flex-col gap-2 md:flex-row items-center justify-between border-gray-300 border-b pb-2">
         <PageTitle />
         <div className="flex px-4 items-center gap-4">
           <div
-            className="flex flex-col items-center cursor-pointer"
+            className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1"
             onClick={seekInfo}
           >
             <img src={Survey24} alt="Add32" className="w-6 h-6" />
             <p className="text-xs">استعلام</p>
           </div>
           <button
-            className="flex flex-col items-center cursor-pointer"
-            onClick={() => refetchDownloadExcel()} disabled={isLoadingDownloadExcel}
+            className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1"
+            onClick={downloadExcel}
+            disabled={isLoadingDownloadExcel}
           >
             <img src={ExcelIcon} alt="ExcelIcon" className="w-6 h-6" />
             <p className="text-xs">اکسل</p>
           </button>
           <div
-            className="flex flex-col items-center cursor-pointer"
+            className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1"
             onClick={handleRefetchCupboardsReport}
           >
             <img src={Refresh32} alt="Refresh32" className="w-6 h-6" />
@@ -286,7 +296,9 @@ const CupboardsReport = () => {
       </header>
       <CupboardsReportShow
         cupboardsReportResponse={cupboardsReportResponse}
-        isLoadingCupboardsReport={isLoadingCupboardsReport || isFetchingCupboardsReport}
+        isLoadingCupboardsReport={
+          isLoadingCupboardsReport || isFetchingCupboardsReport
+        }
         data={data}
         columns={columns}
         pageNumber={pageNumber}
@@ -296,6 +308,7 @@ const CupboardsReport = () => {
         statusClicked={statusClicked}
         setStatusClicked={setStatusClicked}
         checkSeekingInfo={checkSeekingInfo}
+        setCheckSeekingInfo={setCheckSeekingInfo}
         selectedProduct={selectedProduct}
         setSelectedProduct={setSelectedProduct}
         selectedRowIndex={selectedRowIndex}
