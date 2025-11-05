@@ -32,7 +32,7 @@ export function useAttachments() {
     AttachmentListResponse,
     unknown[]
   >({
-    queryKey: ["attachments", formId, prefix, GUID,yearId,systemId],
+    queryKey: ["attachments", formId, prefix, GUID, yearId, systemId],
     queryFn: async () => {
       const params: AttachmentListRequest = {
         systemId,
@@ -43,10 +43,10 @@ export function useAttachments() {
       };
       const url = `/api/Attachment/list?formId=${params.formId}&prefix=${params.prefix}&GUID=${params.GUID}&yearId=${params.yearId}&systemId=${params.systemId}`;
       const response = await api.get(url);
-      console.log(url,response.data, "url,response.data in attachments");
+      console.log(url, response.data, "url,response.data in attachments");
       return response.data;
     },
-    enabled:yearId!==-1 && systemId!==-1,
+    enabled: formId !== -1 && yearId !== -1 && systemId !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {

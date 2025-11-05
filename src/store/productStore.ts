@@ -68,7 +68,7 @@ export const useProductStore = create<ProductState>()((set) => ({
     data: { result: { err: 0, msg: "", indentDtlHistories: [] } },
   },
   // for /api/Indent/list?Id=6430&OrdrId=-1&MrsId=0&Acc_Year=0&Acc_System=0&State=0&ShowDeletedInentDtl=false
-  id: -1,
+  id: 0,
   acc_SystemIndentRequest: -1,
   acc_YearIndentRequest: -1,
   showDeletedInentDtl: false,

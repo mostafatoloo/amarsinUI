@@ -56,6 +56,7 @@ interface IndentDtl {
   cost: number;
   dcrmntPrcnt: number;
   dcrmnt: number;
+  tax: number;
   taxValue: number;
   total: number;
   dtlDsc: string;

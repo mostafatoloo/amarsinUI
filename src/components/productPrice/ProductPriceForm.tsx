@@ -583,6 +583,7 @@ const ProductPriceForm = ({
   /////////////////////////////////////////////////////////////for defining cnt
   useEffect(() => {
     let tempCnt = 0;
+    console.log(isNew,attachments.data.result.length, "isNew and attachments.data.result.length === 0");
     if (isNew && attachments.data.result.length === 0) {
       tempCnt = 0;
     } else if (attachments.data.result.length !== 0) {
@@ -607,10 +608,11 @@ const ProductPriceForm = ({
   }, [isNew, selectedProductPrice?.guid]);
 
   /////////////////////////////////////////////////////////////
+  //initializing attachment fields for api/Attachment/list
   useEffect(() => {
     setAttachmentField("systemId", systemId);
     setAttachmentField("yearId", yearId);
-    setAttachmentField("formId", isNew ? 0 : selectedProductPrice?.id ?? 0);
+    setAttachmentField("formId", isNew ? 0 : selectedProductPrice?.id ?? -1);
     setAttachmentField("prefix", "ProductPrice");
     setAttachmentField("GUID", guid);
   }, [selectedProductPrice?.productPriceId, systemId, yearId, guid, isNew]);
@@ -723,8 +725,8 @@ const ProductPriceForm = ({
         <PayRequestAttachment
           formId={
             isNew //|| workFlowRowSelectResponse.msg === "PayRequestOperationForm" //is not in workflow menu
-              ? 0
-              : selectedProductPrice?.id ?? 0
+              ? -1
+              : selectedProductPrice?.id ?? -1
           }
           setCnt={setCnt}
           prefix={"ProductPrice"}

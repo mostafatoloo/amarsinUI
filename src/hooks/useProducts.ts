@@ -69,7 +69,6 @@ export function useProducts() {
     setSalesPricesSearchResponse,
     setIndentShowProductListResponse,
     setIndentSaveResponse,
-    setIndentDtlHistoryResponse,
     setIndentResponse, // for /api/Indent/list
     setIndentDelResponse, // for delete /api/Indent/6480
     setIndentDoFirstFlowResponse, // for /api/Indent/doFirstFlow?Acc_System=4&Acc_Year=15&WFMS_FlowMapId=403020201&Id=6482&FlowNo=403020200&ChartId=1&Dsc=%D9%84%D8%A7%D9%84%DB%8C%D8%B3%D8%B3%D8%A8%D9%84%D8%A7%D8%A7
@@ -105,20 +104,14 @@ export function useProducts() {
     queryKey: ["dtlHistory", pId, mrsId],
     queryFn: async () => {
       const url: string = `api/Indent/dtlHistory?PId=${pId}&MrsId=${mrsId}`;
-      console.log(url, "url")
+      console.log(url, "url");
       const response = await api.get<IndentDtlHistoryResponse>(url);
       return response.data;
     },
-    enabled: pId!==-1 && mrsId!==-1,
+    enabled: pId !== -1 && mrsId !== -1,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
-
-  useEffect(() => {
-    if (dtlHistoryQuery.data) {
-      setIndentDtlHistoryResponse(dtlHistoryQuery.data);
-    }
-  }, [dtlHistoryQuery.data, setIndentDtlHistoryResponse]);
   //for salesPricesSearch req
   const salesPricesSearchQuery = useQuery<
     SalesPricesSearchResponse,
@@ -134,7 +127,7 @@ export function useProducts() {
     ],
     queryFn: async () => {
       const params: SalesPricesSearchRequest = {
-        salesPricesSearch :salesPricesSearchSearch,
+        salesPricesSearch: salesPricesSearchSearch,
         salesPricesSearchPage,
         lastId: salesPricesSearchLastId ?? 0,
       };
@@ -147,7 +140,7 @@ export function useProducts() {
       );
       return response.data;
     },
-    enabled: salesPricesSearchPage!==-1,
+    enabled: salesPricesSearchPage !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
   } as UseQueryOptions<SalesPricesSearchResponse, Error, SalesPricesSearchResponse, unknown[]>);
@@ -315,7 +308,7 @@ export function useProducts() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: id !== -1 && productSearchAccYear !== -1 && productSearchAccSystem !== -1,
+    enabled: acc_YearIndentRequest !== -1 && acc_YearIndentRequest !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -323,6 +316,11 @@ export function useProducts() {
     },
   } as UseQueryOptions<IndentResponse, Error, IndentResponse, unknown[]>);
 
+  useEffect(() => {
+    if (indentListQuery.data) {
+      setIndentResponse(indentListQuery.data);
+    }
+  }, [indentListQuery.data, setIndentResponse]);
   //for api/Indent/list?Id=6430&OrdrId=-1&MrsId=0&Acc_Year=0&Acc_System=0&State=0&ShowDeletedInentDtl=false
   const indentListDtlQuery = useQuery<
     IndentResponse,
@@ -443,7 +441,7 @@ export function useProducts() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: id !== -1 && productSearchAccYear !== -1 && productSearchAccSystem !== -1,
+    enabled: acc_YearIndentRequest !== -1 && acc_YearIndentRequest !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -517,6 +515,7 @@ export function useProducts() {
     isLoadingAddList: addList.isPending,
     errorAddList: addList.error,
     addProductList: addList.mutateAsync,
+    addProductListResponse: addList.data,
 
     //output for indent/save
     isLoadingSaveList: saveList.isPending,

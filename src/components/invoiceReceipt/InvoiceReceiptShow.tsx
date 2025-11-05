@@ -18,7 +18,7 @@ import {
 } from "../../utilities/general";
 import InvoiceReceiptShowTable from "./InvoiceReceiptShowTable";
 import InvoiceReceipShowHeader from "./InvoiceReceipShowHeader";
-import { DefaultOptionTypeStringId } from "../../types/general";
+import { DefaultOptionTypeStringId, TableColumns } from "../../types/general";
 import ConfirmCard from "../layout/ConfirmCard";
 import Button from "../controls/Button";
 import {
@@ -30,7 +30,6 @@ import { useGeneralContext } from "../../context/GeneralContext";
 import { useProducts } from "../../hooks/useProducts";
 import { IndentDtl, IndentDtlTable } from "../../types/invoiceReceipt";
 import { handleExport } from "../../utilities/ExcelExport";
-import { headCells } from "./InvoiceReceiptShowTable";
 import { useProductStore } from "../../store/productStore";
 import { debounce } from "lodash";
 import { useDefinitionInvironment } from "../../hooks/useDefinitionInvironment";
@@ -64,20 +63,68 @@ const InvoiceReceiptShow = ({
   isNew,
   setIsNew,
   setIsEdit,
-  //setIsOpen,//for close modal
-}: 
+}: //setIsOpen,//for close modal
 Props) => {
   const canEditForm = workFlowRowSelectResponse.workTableForms.canEditForm1;
-  const { setField, mrsId:mrsIdStore } = useInvoiceReceiptStore();
+  const { setField, mrsId: mrsIdStore } = useInvoiceReceiptStore();
   const { yearId, systemId } = useGeneralContext();
-  
+  //for excel data
+  const [excelData, setExcelData] = useState<any[]>([]);
+
+  //for excel head cells
+  const excelHeadCells: TableColumns = [
+    {
+      Header: "شماره",
+      accessor: "index",
+    },
+    {
+      Header: "نام برند",
+      accessor: "bName",
+    },
+    {
+      Header: "کد محصول",
+      accessor: "productCode",
+    },
+    {
+      Header: "نام محصول",
+      accessor: "product",
+    },
+    {
+      Header: "تعداد",
+      accessor: "cnt",
+    },
+    {
+      Header: "آفر",
+      accessor: "offer",
+    },
+    {
+      Header: "قیمت",
+      accessor: "cost",
+    },
+    {
+      Header: "تخفیف",
+      accessor: "dcrmnt",
+    },
+    {
+      Header: "مالیات",
+      accessor: "taxValue",
+    },
+    {
+      Header: "جمع کل",
+      accessor: "total",
+    },
+    {
+      Header: "توضیحات",
+      accessor: "dtlDsc",
+    },
+  ];
   // Set mrsId BEFORE useInvoiceReceipt hook runs to prevent stale queries
   if (mrsIdStore !== workFlowRowSelectResponse.workTableRow.formId)
     setField("mrsId", workFlowRowSelectResponse.workTableRow.formId);
-  
+
   const { indentMrsResponse, isLoading, getIndentMrsResponse } =
     useInvoiceReceipt();
-  
+
   // Reset pId and mrsId in productStore to prevent stale dtlHistory queries
   // These should only be set when handleShowHistory is called
   const { setField: setProductField } = useProductStore();
@@ -88,7 +135,7 @@ Props) => {
       setProductField("mrsId", -1);
     }
   }, []);
-  
+
   const {
     salesPricesSearchResponse,
     addProductList,
@@ -155,7 +202,7 @@ Props) => {
       setRefetchSwitch(false);
     }
   }, [refetchSwitch]);
-///////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////
   useEffect(() => {
     setFields((prev: Fields) => ({
       ...prev,
@@ -202,7 +249,7 @@ Props) => {
   {
     isLoading && <p>در حال بارگذاری...</p>;
   }
-///////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////
   const handleSubmit = async (
     e?: React.MouseEvent<HTMLButtonElement>,
     productId: number = 0
@@ -210,7 +257,7 @@ Props) => {
     if (e) e.preventDefault();
     let request: IndentShowProductListRequest;
     request = {
-      mrsId:workFlowRowSelectResponse.workTableRow.formId,
+      mrsId: workFlowRowSelectResponse.workTableRow.formId,
       productId: productId,
       acc_Year: yearId,
       providers:
@@ -234,7 +281,7 @@ Props) => {
       console.error("Error editing indents:", error);
     }
   };
-///////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////
   const newRow: IndentDtlTable = {
     index: 0,
     id: 0,
@@ -256,6 +303,7 @@ Props) => {
     cost: 0,
     dcrmntPrcnt: 0,
     dcrmnt: 0,
+    tax: 0,
     taxValue: 0,
     total: 0,
     dtlDsc: "",
@@ -280,42 +328,53 @@ Props) => {
     productId: number = 0
   ) => {
     const res = await handleSubmit(e, productId);
-
+ 
+    //console.log(res, "res");
     if (res && res.data.result) {
       // Map through the new products
       res.data.result.forEach((product) => {
-        setAddList((prev) => [
-          ...prev,
-          {
-            //index: rowIndex + 1 + i,
-            id: product.id,
-            ordr: 0,
-            custId: 0,
-            customer: "",
-            pId: product.pId,
-            bName: product.bName,
-            productCode: "",
-            product: product.product,
-            sumCompanyCnt: product.sumCompanyCnt ?? 0,
-            sumStoreCnt: product.sumStoreCnt ?? 0,
-            lbDate: product.lbDate ?? "",
-            companyStock: product.companyStock ?? 0,
-            storeStock: product.storeStock ?? 0,
-            productExp: "",
-            cnt: product.cnt ?? 0,
-            offer: product.offer ?? 0,
-            cost: product.cost ?? 0,
-            dcrmntPrcnt: 0,
-            dcrmnt: 0,
-            taxValue: product.taxValue ?? 0,
-            total: product.total ?? 0,
-            dtlDsc: product.dtlDsc,
-            del: false,
-            recieptId: 0,
-            recieptDsc: "",
-            isDeleted: false,
-          },
-        ]);
+        setAddList((prev) => {
+          // Filter out newRow entries (empty rows) before adding new records
+          // Check by properties since items might be clones of newRow
+          const filteredPrev = prev.filter((item:IndentDtl) => {
+            // Remove items that match newRow pattern (id === 0 and product is empty)
+            return !( item.id === 0 && item.productCode === "" && item.product === "" && item.pId === 0);
+          });
+          //console.log(filteredPrev, "filteredPrev");
+          return [
+            ...filteredPrev,
+            {
+              //index: rowIndex + 1 + i,
+              id: product.id,
+              ordr: 0,
+              custId: 0,
+              customer: "",
+              pId: product.pId,
+              bName: product.bName,
+              productCode: "",
+              product: product.product,
+              sumCompanyCnt: product.sumCompanyCnt ?? 0,
+              sumStoreCnt: product.sumStoreCnt ?? 0,
+              lbDate: product.lbDate ?? "",
+              companyStock: product.companyStock ?? 0,
+              storeStock: product.storeStock ?? 0,
+              productExp: "",
+              cnt: product.cnt ?? 0,
+              offer: product.offer ?? 0,
+              cost: product.cost ?? 0,
+              dcrmntPrcnt: 0,
+              dcrmnt: 0,
+              tax: product.tax ?? 0,
+              taxValue: product.taxValue ?? 0,
+              total: product.total ?? 0,
+              dtlDsc: product.dtlDsc,
+              del: false,
+              recieptId: 0,
+              recieptDsc: "",
+              isDeleted: false,
+            },
+          ];
+        });
       });
       setAddList((prev) => [
         ...prev,
@@ -355,7 +414,10 @@ Props) => {
   useEffect(() => {
     setProductField("productSearchAccSystem", systemId);
     setProductField("productSearchAccYear", yearId);
-    handleDebounceFilterChange("productSearchSearch", convertToFarsiDigits(search));
+    handleDebounceFilterChange(
+      "productSearchSearch",
+      convertToFarsiDigits(search)
+    );
     setProductField("productSearchPage", 1);
   }, [search, systemId, yearId]);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -379,6 +441,26 @@ Props) => {
       setAddList([newRow]);
     }
   }, []);
+  useEffect(() => {
+    const tempData = indentMrsResponse.data.result.indentDtls.map(
+      (dtl, index) => {
+        return {
+          index: index + 1,
+          bName: convertToFarsiDigits(dtl.bName),
+          productCode: convertToFarsiDigits(dtl.productCode),
+          product: convertToFarsiDigits(dtl.product),
+          cnt: dtl.cnt,
+          offer: dtl.offer,
+          cost: dtl.cost,
+          dcrmnt: dtl.dcrmnt,
+          taxValue: dtl.taxValue,
+          total: dtl.total,
+          dtlDsc: dtl.dtlDsc,
+        };
+      }
+    );
+    setExcelData(tempData);
+  }, [indentMrsResponse.data.result.indentDtls]);
   return (
     <div className="w-full flex flex-col">
       <InvoiceReceipShowHeader
@@ -409,10 +491,11 @@ Props) => {
           variant="shadow-lg"
           onClick={() =>
             handleExport({
-              data: indentMrsResponse.data.result.indentDtls,
+              data: excelData,
               setIsModalOpen,
-              headCells,
+              headCells: excelHeadCells,
               fileName,
+              hasPersianTitle: true,
             })
           }
         />

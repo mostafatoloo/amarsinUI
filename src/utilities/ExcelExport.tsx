@@ -13,6 +13,7 @@ type ExportToExcelProps<T> = {
 type HandleExportProps<T> = ExportToExcelProps<T> & {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   fileName: string;
+  hasPersianTitle?: boolean;
 };
 
 export const handleExport = ({
@@ -20,6 +21,7 @@ export const handleExport = ({
   setIsModalOpen,
   headCells,
   fileName,
+  hasPersianTitle,
 }: HandleExportProps<any>) => {
   if (!data || data.length === 0) {
     setIsModalOpen(true);
@@ -28,16 +30,20 @@ export const handleExport = ({
   const exportData = data.map((item: any, rowIndex: number) => {
     const row: Record<string, any> = {};
     headCells.forEach((cell: any) => {
-      //console.log(cell);
+      console.log(cell);
       if (cell.columns) {
         cell.columns.forEach((column: any) => {
           row[column.Header] = (item as any)[column.accessor];
         });
       } else {
         if (cell.accessor === "index") {
-          row[cell.accessor] = rowIndex + 1;
+          hasPersianTitle
+            ? (row[cell.Header] = rowIndex + 1)
+            : (row[cell.accessor] = rowIndex + 1);
         } else {
-          row[cell.accessor] = (item as any)[cell.accessor];
+          hasPersianTitle
+            ? (row[cell.Header] = (item as any)[cell.accessor])
+            : (row[cell.accessor] = (item as any)[cell.accessor]);
         }
       }
     });

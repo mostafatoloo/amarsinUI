@@ -48,7 +48,13 @@ const InvoiceReceipShowHeader = ({
     setCusomerField("systemId", systemId);
     setCusomerField("yearId", yearId);
     setCusomerField("search", cusomerSearchCondition);
-  }, [cusomerSearchCondition, systemId]);
+  }, [cusomerSearchCondition, systemId,yearId]);
+  //for api/Customer/search?search=search&page=1&lastId=0
+  useEffect(() => {
+    setCusomerField("systemId", systemId);
+    setCusomerField("yearId", yearId);
+    setCusomerField("search", cusomerSearch);
+  }, [cusomerSearch, systemId,yearId]);
 
   useEffect(() => {
     setBrandField("accSystem", systemId);

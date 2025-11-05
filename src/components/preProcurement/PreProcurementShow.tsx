@@ -67,6 +67,7 @@ const PreProcurementShow = ({
     console.log("cnt", cnt);
   }, []);
   ////////////////////////////////////////////////////////
+  //for initializing attachment fields for api/Attachment/list
   useEffect(() => {
     //console.log("give attachment fields");
     setAttachmentField("systemId", systemId);

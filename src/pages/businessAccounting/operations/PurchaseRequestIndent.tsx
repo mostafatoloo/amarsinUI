@@ -212,9 +212,10 @@ const PurchaseRequestIndent = () => {
       inputRefs.current[focusedInput]?.focus();
     }
   }, [focusedInput, data]);
-
+//for api/Indent/list?Id=6430&OrdrId=-1&MrsId=0&Acc_Year=0&Acc_System=0&State=0&ShowDeletedInentDtl=false
   useEffect(() => {
     console.log("state", state);
+    console.log("enter useEffect");
     setField("id", 0);
     setField("ordrIdIndentRequest", 0);
     setField("showDeletedInentDtl", false);

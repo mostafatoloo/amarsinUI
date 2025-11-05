@@ -328,8 +328,8 @@ const InvoiceReceiptShowTable = ({
   const handleShowHistory = (row: any) => {
     //console.log("enter handleShowHistory")
     if (row.original.pId !== 0) {
-      setProductField("pId", row.original.pId)
-      setProductField("mrsId", mrsId)
+      setProductField("pId", row.original.pId);
+      setProductField("mrsId", mrsId);
       setShowHistory(true);
     }
   };
@@ -399,14 +399,19 @@ const InvoiceReceiptShowTable = ({
   }, [brandSearch, productSearch, dtlDscSearch, originalData]);
   //////////////////////////////////////////////////////
   useEffect(() => {
-    setOriginalData((old) => [
-      ...old,
-      ...addList.map((item, idx) => ({
-        ...item,
-        index: old.length + idx + 1,
-        isDeleted: false,
-      })),
-    ]);
+    setOriginalData((old) => {
+      const temp = old.filter(
+        (item) => item.id !== 0 && item.product !== "" && item.pId !== 0
+      );
+      return [
+        ...temp,
+        ...addList.map((item, idx) => ({
+          ...item,
+          index: old.length + idx + 1,
+          isDeleted: false,
+        })),
+      ];
+    });
   }, [addList]);
   ////////////////////////////////////////////////////////
   useEffect(() => {
@@ -500,12 +505,26 @@ const InvoiceReceiptShowTable = ({
   };
   /////////////////////////////////////////////////////
   const calculateTotal = useMemo(() => {
-    return (cost: string, cnt: string, taxValue: string, dcrmnt: string) => {
-      return (
+    return (cost: string, cnt: string, dcrmnt: string, tax: number = 0) => {
+      return Math.round(
         currencyStringToNumber(convertToLatinDigits(cost)) *
           Number(convertToLatinDigits(cnt)) +
-        currencyStringToNumber(convertToLatinDigits(taxValue)) -
-        currencyStringToNumber(convertToLatinDigits(dcrmnt))
+          (currencyStringToNumber(convertToLatinDigits(cost)) *
+            Number(convertToLatinDigits(cnt)) *
+            tax) /
+            100 -
+          currencyStringToNumber(convertToLatinDigits(dcrmnt))
+      );
+    };
+  }, []);
+  /////////////////////////////////////////////////////
+  const calculateTaxValue = useMemo(() => {
+    return (cost: string, cnt: string, tax: number = 0) => {
+      return Math.round(
+        (currencyStringToNumber(convertToLatinDigits(cost)) *
+          Number(convertToLatinDigits(cnt)) *
+          tax) /
+          100
       );
     };
   }, []);
@@ -516,21 +535,27 @@ const InvoiceReceiptShowTable = ({
       if (
         columnId === "cost" ||
         columnId === "cnt" ||
-        columnId === "taxValue" ||
+        columnId === "tax" ||
         columnId === "dcrmnt"
       ) {
         setData((old) =>
           old.map((row, index) => {
             if (index === rowIndex) {
+              const taxValue = calculateTaxValue(
+                columnId === "cost" ? value : row.cost.toString(),
+                columnId === "cnt" ? value : row.cnt.toString(),
+                columnId === "tax" ? Number(value) : row.tax ?? 0
+              );
               const total = calculateTotal(
                 columnId === "cost" ? value : row.cost.toString(),
                 columnId === "cnt" ? value : row.cnt.toString(),
-                columnId === "taxValue" ? value : row.taxValue.toString(),
-                columnId === "dcrmnt" ? value : row.dcrmnt.toString()
+                columnId === "dcrmnt" ? value : row.dcrmnt.toString(),
+                columnId === "tax" ? Number(value) : row.tax ?? 0
               );
               return {
                 ...old[rowIndex],
                 [columnId]: value,
+                taxValue,
                 total,
               };
             }
@@ -541,16 +566,22 @@ const InvoiceReceiptShowTable = ({
         setOriginalData((old) =>
           old.map((row) => {
             if (row.id === rowInOriginal.id && row.pId === rowInOriginal.pId) {
+              const taxValue = calculateTaxValue(
+                columnId === "cost" ? value : row.cost.toString(),
+                columnId === "cnt" ? value : row.cnt.toString(),
+                columnId === "tax" ? Number(value) : row.tax ?? 0
+              );
               const total = calculateTotal(
                 columnId === "cost" ? value : row.cost.toString(),
                 columnId === "cnt" ? value : row.cnt.toString(),
-                columnId === "taxValue" ? value : row.taxValue.toString(),
-                columnId === "dcrmnt" ? value : row.dcrmnt.toString()
+                columnId === "dcrmnt" ? value : row.dcrmnt.toString(),
+                columnId === "tax" ? Number(value) : row.tax ?? 0
               );
               return {
                 ...row,
                 [columnId]: value,
                 total,
+                taxValue,
               };
             }
             return row;
@@ -560,7 +591,6 @@ const InvoiceReceiptShowTable = ({
     },
     [calculateTotal, data]
   );
-
   /////////////////////////////////////////////////////
   // Custom cell click handler for Table
   const handleCellColorChange = (row: any): string | null => {
@@ -575,22 +605,28 @@ const InvoiceReceiptShowTable = ({
   ): Promise<UpdateResult | undefined> => {
     if (e) e.preventDefault();
     let request: IndentSaveRequest;
-    const dtls: Detail[] = originalData.map((item) => {
-      const dtl: Detail = {
-        id: item.id,
-        cId: item.custId,
-        pId: item.pId,
-        cnt: convertToLatinDigits(item.cnt.toString()),
-        offer: convertToLatinDigits(item.offer.toString()),
-        cost: convertToLatinDigits(item.cost.toString()),
-        dcrmntPrcnt: item.dcrmntPrcnt.toString(),
-        dcrmnt: convertToLatinDigits(item.dcrmnt.toString()),
-        taxValue: item.taxValue.toString(),
-        dtlDsc: item.dtlDsc,
-        deleted: item.isDeleted,
-      };
-      return dtl;
-    });
+    const dtls: Detail[] = originalData
+      .map((item) => {
+        const dtl: Detail = {
+          id: item.id,
+          cId: item.custId,
+          pId: item.pId,
+          cnt: convertToLatinDigits(item.cnt.toString()),
+          offer: convertToLatinDigits(item.offer.toString()),
+          cost: convertToLatinDigits(item.cost.toString()),
+          dcrmntPrcnt: item.dcrmntPrcnt.toString(),
+          dcrmnt: convertToLatinDigits(item.dcrmnt.toString()),
+          taxValue: item.taxValue.toString(),
+          dtlDsc: item.dtlDsc,
+          deleted: item.isDeleted,
+        };
+        if (item.cnt !== 0) {
+          return dtl;
+        } else {
+          return undefined;
+        }
+      })
+      .filter((item) => item !== undefined);
 
     request = {
       id: 0,
@@ -601,8 +637,8 @@ const InvoiceReceiptShowTable = ({
       acc_System: systemId,
       acc_Year: yearId,
       payDuration: fields.payDuration,
-      dat: convertToLatinDigits(fields.dat),//indentMrsResponse.data.result.indents[0]?.dat ?? "",
-      tim: convertToLatinDigits(fields.tim),//indentMrsResponse.data.result.indents[0]?.tim ?? "",
+      dat: convertToLatinDigits(fields.dat), //indentMrsResponse.data.result.indents[0]?.dat ?? "",
+      tim: convertToLatinDigits(fields.tim), //indentMrsResponse.data.result.indents[0]?.tim ?? "",
       dsc: fields.dsc,
       salesPriceId: Number(fields.price?.id ?? 0),
       saleFDate:
