@@ -111,6 +111,7 @@ export interface ProductPriceDtlHistory {
 
 //http://apitest.dotis.ir/api/ProductPrice/save
 export interface ProductPriceSaveRequest extends SaveRequest {
+  guid: string;
   usrId: number;
   acc_Year: number;
   acc_System: number;

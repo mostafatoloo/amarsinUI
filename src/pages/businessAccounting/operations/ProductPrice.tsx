@@ -398,6 +398,9 @@ const ProductPrice = () => {
 
   const handleDelete = () => {
     productPriceDel(selectedId);
+    setSelectedId(0)
+    setSelectedRowIndex(0)
+    setSelectedProductPrice(null)
     setIsModalDeleteOpen(true);
   };
 

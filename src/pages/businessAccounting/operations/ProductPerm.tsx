@@ -354,6 +354,9 @@ const ProductPerm = () => {
 
   const handleDelete = () => {
     productPermDel(selectedId);
+    setSelectedId(0)
+    setSelectedRowIndex(0)
+    setSelectedProductPerm(null)    
     setIsModalDeleteOpen(true);
   };
 

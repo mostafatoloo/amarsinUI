@@ -27,7 +27,7 @@ export const useAttachmentStore = create<AttachmentState>()((set) => ({
   },
   systemId: -1,
   yearId: -1,
-  formId: -1,
+  formId: 0,
   prefix: "",
   GUID: "",  
   // api/Attachment/delete?id=16&formId=1513&prefix=payrequest

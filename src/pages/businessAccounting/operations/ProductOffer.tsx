@@ -405,6 +405,9 @@ const ProductOffer = () => {
 
   const handleDelete = () => {
     productOfferDel(selectedId);
+    setSelectedId(0)
+    setSelectedRowIndex(0)
+    setSelectedProductOffer(null)    
     setIsModalDeleteOpen(true);
   };
 

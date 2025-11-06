@@ -4,6 +4,7 @@ import { WorkflowRowSelectResponse } from "../../types/workflow";
 import { ProductPrice } from "../../types/productPrice";
 import { useProductPriceStore } from "../../store/productPriceStore";
 import ProductPriceForm from "./ProductPriceForm";
+import { useGeneralContext } from "../../context/GeneralContext";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -21,15 +22,24 @@ const ProductPriceForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
   } = useProductPrice();
 
   const { setField } = useProductPriceStore();
-
+  
   const [selectedProductPrice, setSelectedProductPrice] =
-    useState<ProductPrice | null>(null);
-
+  useState<ProductPrice | null>(null);
+  
+  const {yearId, systemId  }=useGeneralContext()
   useEffect(() => {
+    setField("yearId", yearId);
+    setField("systemId",systemId );
     setField("id", workFlowRowSelectResponse.workTableRow.formId);
-  }, [workFlowRowSelectResponse.workTableRow.formId]);
+  }, [workFlowRowSelectResponse.workTableRow.formId, yearId,systemId]);
 
   useEffect(() => {
+    console.log(productPriceDtlData);
+    console.log(
+      productPriceDtlData?.productPrices?.find(
+        (item) => item.id === workFlowRowSelectResponse.workTableRow.formId
+      ) || null
+    );
     workFlowRowSelectResponse.workTableRow.formId !== 0 &&
       setSelectedProductPrice(
         productPriceDtlData?.productPrices?.find(

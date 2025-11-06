@@ -376,6 +376,9 @@ const ProductGrace = () => {
 
   const handleDelete = () => {
     productGraceDel(selectedId);
+    setSelectedId(0)
+    setSelectedRowIndex(0)
+    setSelectedProductGrace(null)    
     setIsModalDeleteOpen(true);
   };
 

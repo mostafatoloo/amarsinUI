@@ -237,7 +237,7 @@ const PayRequestShow = ({
     setAttachmentField(
       "formId",
       isNew || workFlowRowSelectResponse.msg === "PayRequestOperationForm"
-        ? -1
+        ? 0
         : workFlowRowSelectResponse.workTableRow.formId
     );
     setAttachmentField("prefix", "payrequest");

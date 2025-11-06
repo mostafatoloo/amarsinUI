@@ -4,14 +4,13 @@ import { WorkflowRowSelectResponse } from "../../types/workflow";
 import ProductGraceForm from "./ProductGraceForm";
 import { ProductGrace } from "../../types/productGrace";
 import { useProductGraceStore } from "../../store/productGraceStore";
+import { useGeneralContext } from "../../context/GeneralContext";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
 };
 
-const ProductGraceForWorkFlow = ({
-  workFlowRowSelectResponse,
-}: Props) => {
+const ProductGraceForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
   const {
     productGraceDtl,
     productGraceDtlData,
@@ -27,9 +26,12 @@ const ProductGraceForWorkFlow = ({
   const [selectedProductGrace, setSelectedProductGrace] =
     useState<ProductGrace | null>(null);
 
+  const { yearId, systemId } = useGeneralContext();
   useEffect(() => {
+    setField("yearId", yearId);
+    setField("systemId", systemId);
     setField("id", workFlowRowSelectResponse.workTableRow.formId);
-  }, [workFlowRowSelectResponse.workTableRow.formId]);
+  }, [workFlowRowSelectResponse.workTableRow.formId,yearId,systemId]);
 
   ////////////////////////////////////////////////////////////////////////
   useEffect(() => {

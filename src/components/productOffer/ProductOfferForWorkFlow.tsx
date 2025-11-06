@@ -4,6 +4,7 @@ import ProductOfferForm from "./ProductOfferForm";
 import { useProductOffer } from "../../hooks/useProductOffer";
 import { useProductOfferStore } from "../../store/productOfferStore";
 import { ProductOffer } from "../../types/productOffer";
+import { useGeneralContext } from "../../context/GeneralContext";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -25,9 +26,12 @@ const ProductOfferForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
   const [selectedProductOffer, setSelectedProductOffer] =
     useState<ProductOffer | null>(null);
 
+  const { yearId, systemId } = useGeneralContext();
   useEffect(() => {
+    setField("acc_Year", yearId);
+    setField("acc_System", systemId);
     setField("id", workFlowRowSelectResponse.workTableRow.formId);
-  }, [workFlowRowSelectResponse.workTableRow.formId]);
+  }, [workFlowRowSelectResponse.workTableRow.formId, yearId, systemId]);
 
   useEffect(() => {
     workFlowRowSelectResponse.workTableRow.formId !== 0 &&

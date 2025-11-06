@@ -442,6 +442,9 @@ const PayRequestOperation = () => {
 
   const handleDelete = () => {
     payRequestDel(selectedId);
+    setSelectedId(0)
+    setSelectedRowIndex(0)
+    setSelectedPayRequest(null)    
     setIsModalDeleteOpen(true);
   };
 

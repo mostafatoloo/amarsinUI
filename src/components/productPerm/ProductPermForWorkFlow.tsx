@@ -4,6 +4,7 @@ import ProductPermForm from "./ProductPermForm";
 import { useProductPerm } from "../../hooks/useProductPerm";
 import { useProductPermStore } from "../../store/productPermStore";
 import { ProductPerm } from "../../types/productPerm";
+import { useGeneralContext } from "../../context/GeneralContext";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -25,9 +26,12 @@ const ProductPermForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
   const [selectedProductPerm, setSelectedProductPerm] =
     useState<ProductPerm | null>(null);
 
+  const { yearId, systemId } = useGeneralContext();
   useEffect(() => {
+    setField("yearId", yearId);
+    setField("systemId", systemId);
     setField("id", workFlowRowSelectResponse.workTableRow.formId);
-  }, [workFlowRowSelectResponse.workTableRow.formId]);
+  }, [workFlowRowSelectResponse.workTableRow.formId, yearId, systemId]);
 
   useEffect(() => {
     workFlowRowSelectResponse.workTableRow.formId !== 0 &&

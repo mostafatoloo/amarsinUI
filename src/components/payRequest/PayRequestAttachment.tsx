@@ -101,13 +101,13 @@ const PayRequestAttachment = ({
     setSelectedRowIndex(attachments.data.result.length-1);
   }, [attachments.data.result.length]);
   /////////////////////////////////////////////////////////////////
-  /*useEffect(() => {
+  useEffect(() => {
     setField("systemId", systemId);
     setField("yearId", yearId);
     setField("formId", formId);
     setField("prefix", prefix);
     setField("GUID", guid);
-  }, [formId,systemId,yearId,guid]);*/
+  }, [formId,systemId,yearId,guid]);
 
   useEffect(() => {
     let tempData: AttachmentResult[] = [];

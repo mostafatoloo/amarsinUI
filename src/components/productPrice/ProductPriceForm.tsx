@@ -364,6 +364,7 @@ const ProductPriceForm = ({
   }, []);
   ////////////////////////////////////////////////////////
   useEffect(() => {
+    console.log(isNew,selectedProductPrice, "selectedProductPrice");
     if (
       isNew === false &&
       selectedProductPrice !== null &&
@@ -517,7 +518,7 @@ const ProductPriceForm = ({
   const handleSubmitSave = async (
     e?: React.MouseEvent<HTMLButtonElement>,
     skipWarning: boolean = false
-  ) => {
+  ):Promise<ProductPriceSaveResponse | undefined> => {
     //: Promise<string | undefined>
     if (e) e.preventDefault();
     let request: ProductPriceSaveRequest;
@@ -555,6 +556,7 @@ const ProductPriceForm = ({
       //return "اقلام مشخص نشده!";
     }
     request = {
+      guid: guid,
       usrId: authApiResponse?.data.result.login.usrId ?? 0,
       chartId: chartId,
       id: isNew ? 0 : selectedProductPrice?.id ?? 0, //if isNew is true, id is 0, otherwise id is selectedProductPerm?.id for edit
@@ -569,13 +571,9 @@ const ProductPriceForm = ({
     };
     console.log(request);
     try {
-      await productPriceSave(request);
+      const response = await productPriceSave(request);
       setIsModalRegOpen(true);
-      //return "اطلاعات با موفقیت ثبت شد.";
-      //setIsNew(false);
-      //setIsEdit(false);
-      //return response;
-      //console.log( "request");
+      return response;
     } catch (error) {
       console.error("Error ثبت :", error);
     }
@@ -612,10 +610,10 @@ const ProductPriceForm = ({
   useEffect(() => {
     setAttachmentField("systemId", systemId);
     setAttachmentField("yearId", yearId);
-    setAttachmentField("formId", isNew ? 0 : selectedProductPrice?.id ?? -1);
+    setAttachmentField("formId", isNew ? 0 : selectedProductPrice?.id ?? 0);
     setAttachmentField("prefix", "ProductPrice");
     setAttachmentField("GUID", guid);
-  }, [selectedProductPrice?.productPriceId, systemId, yearId, guid, isNew]);
+  }, [selectedProductPrice?.id, systemId, yearId, guid, isNew]);
   return (
     <div className="flex flex-col gap-2">
       <ProductOfferFormParams
@@ -640,6 +638,7 @@ const ProductPriceForm = ({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
+              console.log(isNew,selectedProductPrice, "selectedProductPrice");
               setShowAttachment(true);
             }}
           />
@@ -725,8 +724,8 @@ const ProductPriceForm = ({
         <PayRequestAttachment
           formId={
             isNew //|| workFlowRowSelectResponse.msg === "PayRequestOperationForm" //is not in workflow menu
-              ? -1
-              : selectedProductPrice?.id ?? -1
+              ? 0
+              : selectedProductPrice?.id ?? 0
           }
           setCnt={setCnt}
           prefix={"ProductPrice"}

@@ -111,6 +111,14 @@ const ProductOfferHeader = ({
               ? "cursor-not-allowed"
               : "cursor-pointer"
           }`}
+          onClick={() => {
+            selectedProductOffer === null || selectedProductOffer.flwId !== 0
+            ? console.log(
+                selectedProductOffer,
+                "selectedProductOffer is null or flwId is not 0"
+              )
+            : handleConfirm()
+          }}
         >
           <img
             src={
@@ -120,14 +128,6 @@ const ProductOfferHeader = ({
             }
             alt="Accept24"
             className="w-6 h-6"
-            onClick={() =>
-              selectedProductOffer === null || selectedProductOffer.flwId !== 0
-                ? console.log(
-                    selectedProductOffer,
-                    "selectedProductOffer is null or flwId is not 0"
-                  )
-                : handleConfirm()
-            }
           />
           <p className="text-xs">تایید</p>
         </div>

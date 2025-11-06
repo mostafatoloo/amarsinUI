@@ -12,6 +12,7 @@ import {
   ProductPriceListItemTable,
   ProductPriceListItemTable2,
   ProductPriceListResponse,
+  ProductPriceSaveResponse,
 } from "../../types/productPrice";
 import { useProductPriceStore } from "../../store/productPriceStore";
 import ProductPriceFormListHistory from "./ProductPriceFormListHistory";
@@ -24,7 +25,7 @@ type Props = {
   setIsNew: (isNew: boolean) => void;
   setIsEdit: (isEdit: boolean) => void;
   isNew: boolean;
-  isEdit: boolean;  
+  isEdit: boolean;
   addList: ProductPriceListItemTable[];
   showDeleted: boolean;
   handleSubmit: (
@@ -35,7 +36,7 @@ type Props = {
   handleSubmitSave: (
     e?: React.MouseEvent<HTMLButtonElement>,
     skipWarning?: boolean
-  ) => void; //Promise<string | undefined>;
+  ) => Promise<ProductPriceSaveResponse | undefined>;
   isDtlHistoryLoading: boolean;
   handleAddRow: (
     index: number,
@@ -52,7 +53,6 @@ type Props = {
   isModalEmptyOpen: boolean;
   setIsModalEmptyOpen: Dispatch<SetStateAction<boolean>>;
   canEditForm1: boolean;
-
 };
 
 const ProductPriceFormList = ({
@@ -276,7 +276,7 @@ const ProductPriceFormList = ({
         clearTimeout(timeoutId);
       }
     };
-  }, [isNew,isEdit]);
+  }, [isNew, isEdit]);
   ////////////////////////////////////////////////////////
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -293,11 +293,22 @@ const ProductPriceFormList = ({
   }, [isModalEmptyOpen]);
   ////////////////////////////////////////////////////////
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in productGraceFormList table
-  const handleSubmitSaveWithSkipWarning = (e?: React.MouseEvent<HTMLButtonElement>) => {
-    handleSubmitSave(e, true);
-    //setIsModalRegOpen(false);
-    setIsNew(false);
-    setIsEdit(false);
+  const handleSubmitSaveWithSkipWarning = async (
+    e?: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    try {
+      const response = await handleSubmitSave(e, true);
+      console.log(response?.meta.errorCode, "response");
+      if (response?.meta.errorCode > 0) {
+        setIsNew(true);
+        setIsEdit(true);
+      } else {
+        setIsNew(false);
+        setIsEdit(false);
+      }
+    } catch (error) {
+      console.error("Error ثبت :", error);
+    }
   };
   return (
     <>

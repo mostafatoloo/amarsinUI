@@ -46,7 +46,7 @@ export function useAttachments() {
       console.log(url, response.data, "url,response.data in attachments");
       return response.data;
     },
-    enabled: formId !== -1 && yearId !== -1 && systemId !== -1,
+    enabled:  yearId !== -1 && systemId !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
