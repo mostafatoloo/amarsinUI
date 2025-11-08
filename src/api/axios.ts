@@ -1,8 +1,14 @@
 import axios from 'axios';
 
+// Use environment variable if available, otherwise default to apitest
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://apitest.dotis.ir';
+
 const api = axios.create({
-  baseURL: 'http://api.dotis.ir',
-  //baseURL: 'http://localhost:5042',
+  baseURL: API_BASE_URL,
+  withCredentials: false,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 api.interceptors.request.use((config) => {
   // Retrieve the customer code from localStorage

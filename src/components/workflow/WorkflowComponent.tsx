@@ -22,6 +22,7 @@ import PreProcurementShow from "../preProcurement/PreProcurementShow";
 import DocumentChangeDate from "../../pages/workflow/DocumentChangeDate";
 import { UseMutateAsyncFunction } from "@tanstack/react-query";
 import { useWorkflowStore } from "../../store/workflowStore";
+import InvoicePaymentShow from "../invoicePayment/InvoicePaymentShow";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -391,6 +392,11 @@ export default function WorkflowComponent({
         />
       );
       break;
+      case "Invoice/_Payment" :
+        componentToRender2 = (
+          <InvoicePaymentShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
+        );
+        break;
       case "Account/_DocumentChangeDate": //تاریخ سند
       componentToRender2 = (
         <DocumentChangeDate

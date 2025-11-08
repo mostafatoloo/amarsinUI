@@ -18,7 +18,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://api.dotis.ir',
+        target: 'http://apitest.dotis.ir',
         changeOrigin: true,
         secure: false,
       },
