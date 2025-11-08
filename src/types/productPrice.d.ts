@@ -73,11 +73,11 @@ type DataProductPriceList = {
 interface ProductPriceListItem extends ProductItem {
   lastBuyPrice: number;
   tax: number;
-  p1O: number;
-  p2O: number;
-  p3O: number;
-  p4O: number;
-  p5O: number;
+  p1: number;
+  p2: number;
+  p3: number;
+  p4: number;
+  p5: number;
 }
 
 export interface ProductPriceListItemTable extends ProductPriceListItem {

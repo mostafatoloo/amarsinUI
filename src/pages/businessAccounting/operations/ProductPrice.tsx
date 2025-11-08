@@ -636,6 +636,8 @@ const ProductPrice = () => {
           setIsEdit={setIsEdit}
           fromWorkFlow={false}
           canEditForm1={true}
+          selectedId={selectedId}
+          setSelectedRowIndex={setSelectedRowIndex}
         />
       </ModalForm>
       <ModalMessage

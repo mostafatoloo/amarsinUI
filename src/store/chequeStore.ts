@@ -113,6 +113,7 @@ export const useChequeStore = create<ChequeState>()((set) => ({
   curId: -1,
   includeBase64: false,
   paymentId: -1, //for Payment/sayadChequeInquiryByPaymentId
+  paymentIdTrigger: 0, //for Payment/sayadChequeInquiryByPaymentId
   sayadChequeInquiryByPaymentIdResponse: {
     //for Payment/sayadChequeInquiryByPaymentId
     meta: { errorCode: 0, message: "", type: "" },

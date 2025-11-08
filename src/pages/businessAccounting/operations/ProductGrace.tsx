@@ -58,7 +58,7 @@ const ProductGrace = () => {
   const [data, setData] = useState<any[]>([]);
   const [dataDtl, setDataDtl] = useState<ProductGraceDtl[]>([]);
   const { yearId, systemId, chartId ,defaultRowsPerPage} = useGeneralContext();
-  const [selectedId, setSelectedId] = useState<number>(589);
+  const [selectedId, setSelectedId] = useState<number>(-1);
   const [isNew, setIsNew] = useState<boolean>(false); //for new
   const [isEdit, setIsEdit] = useState<boolean>(false); //for edit
   //for ProductPermParams params
@@ -140,6 +140,10 @@ const ProductGrace = () => {
     ],
     []
   );
+
+  useEffect(() => {
+    console.log(isNew, "isNew in ProductGrace");
+  }, [isNew]);
   // Refs for maintaining focus on input elements
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
@@ -569,7 +573,7 @@ const ProductGrace = () => {
               selectedRowIndex={selectedRowIndexDtl}
               setSelectedRowIndex={setSelectedRowIndexDtl}
               columns={columnsDtl}
-              data={dataDtl}
+              data={ data.length>0 ? dataDtl : []}
               fontSize="0.75rem"
               changeRowSelectColor={true}
               wordWrap={true}
@@ -611,6 +615,8 @@ const ProductGrace = () => {
           setIsEdit={setIsEdit}
           fromWorkFlow={false} //for not going to editting in product grace form as default
           canEditForm1={true}
+          selectedId={selectedId}
+          setSelectedRowIndex={setSelectedRowIndex}
         />
       </ModalForm>
       <ModalMessage

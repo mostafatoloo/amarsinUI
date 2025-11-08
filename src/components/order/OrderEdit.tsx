@@ -67,7 +67,7 @@ const OrderEdit = ({
         <AutoComplete
           options={products.map((p) => ({
             id: p.pId,
-            title: convertToFarsiDigits(p.n),
+            title: p.n,
           }))}
           value={product}
           handleChange={(_event, newValue) => {

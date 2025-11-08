@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://apitest.dotis.ir',
+  baseURL: 'http://api.dotis.ir',
   //baseURL: 'http://localhost:5042',
 });
 api.interceptors.request.use((config) => {

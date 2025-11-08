@@ -22,7 +22,7 @@ const ProductOfferForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
   } = useProductOffer();
 
   const { setField } = useProductOfferStore();
-
+  const [selectedId, setSelectedId] = useState<number>(0);
   const [selectedProductOffer, setSelectedProductOffer] =
     useState<ProductOffer | null>(null);
 
@@ -34,12 +34,14 @@ const ProductOfferForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
   }, [workFlowRowSelectResponse.workTableRow.formId, yearId, systemId]);
 
   useEffect(() => {
-    workFlowRowSelectResponse.workTableRow.formId !== 0 &&
+    if (workFlowRowSelectResponse.workTableRow.formId !== 0) {
       setSelectedProductOffer(
         productOfferDtlData?.productOffers?.find(
           (item) => item.id === workFlowRowSelectResponse.workTableRow.formId
         ) || null
       );
+      setSelectedId(workFlowRowSelectResponse.workTableRow.formId);
+    }
   }, [
     workFlowRowSelectResponse.workTableRow.formId,
     productOfferDtlData?.productOffers,
@@ -60,6 +62,7 @@ const ProductOfferForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
         setIsNew={() => false}
         setIsEdit={() => true}
         fromWorkFlow={true} //for going to editting in product offer form as default
+        selectedId={selectedId}
       />
     </div>
   );

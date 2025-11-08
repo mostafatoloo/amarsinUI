@@ -173,6 +173,7 @@ export interface ProductGraceRequest extends ProductOperationRequest {
     data: DataProductGraceDel;
   }
   export interface ProductGraceState extends ProductGraceRequest {
+    idTrigger:number; //for productGrace?id=
     pId: number; //for productGrace/dtlHistory
     productGraceDoFirstFlowResponse: ProductGraceDoFirstFlowResponse; //for productGrace/doFirstFlow
     setProductGraceDoFirstFlowResponse: (

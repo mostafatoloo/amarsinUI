@@ -18,7 +18,7 @@ import { Indent } from "../../types/product";
 
 type Props = {
   columns: TableColumns;
-  setIsNew: (isNew: boolean) => void;
+  setIsNew: React.Dispatch<React.SetStateAction<boolean>>
   handleDelete: () => void;
   handleEdit: () => void;
   handleConfirm: () => void;
@@ -51,6 +51,7 @@ const ProductOfferHeader = ({
         <div
           className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1"
           onClick={() => {
+            console.log("new");
             setIsNew(true);
           }} // for new
         >

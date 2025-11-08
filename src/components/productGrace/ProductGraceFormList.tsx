@@ -16,6 +16,8 @@ import {
 import { useProductGraceStore } from "../../store/productGraceStore";
 import ProductGraceFormListHistory from "./ProductGraceFormListHistory";
 import ProductGraceFormListHeader from "./ProductGraceFormListHeader";
+import { useGeneralContext } from "../../context/GeneralContext";
+import { ShowProductListRequest } from "../../types/productOperation";
 
 type Props = {
   setIsNew: (isNew: boolean) => void;
@@ -24,7 +26,7 @@ type Props = {
   showDeleted: boolean;
   handleSubmit: (
     e?: React.MouseEvent<HTMLButtonElement>,
-    productId?: number
+    request?: ShowProductListRequest
   ) => Promise<ProductGraceListResponse | undefined>;
   isLoadingProductOfferSave: boolean;
   handleSubmitSave: () => Promise<string | undefined>;
@@ -44,6 +46,8 @@ type Props = {
   isModalEmptyOpen: boolean;
   setIsModalEmptyOpen: Dispatch<SetStateAction<boolean>>;
   canEditForm1: boolean;
+  selectedId: number;
+  isNew: boolean;
 };
 
 const ProductGraceFormList = ({
@@ -67,6 +71,8 @@ const ProductGraceFormList = ({
   setIsModalRegOpen,
   isModalEmptyOpen,
   setIsModalEmptyOpen,
+  selectedId,
+  isNew,
 }: Props) => {
   const { productGraceSaveResponse } = useProductGraceStore();
   const [brandSearch, setBrandSearch] = useState<string>("");
@@ -77,6 +83,7 @@ const ProductGraceFormList = ({
   );
   const [data, setData] = useState<ProductGraceListItemTable2[]>([]);
 
+  ////////////////////////////////////////////////////////
   const columnsHistory: TableColumns = [
     {
       Header: "ردیف",
@@ -206,7 +213,13 @@ const ProductGraceFormList = ({
   const updateMyRow = async (rowIndex: number, value: DefaultOptionType) => {
     const productId = value?.id ?? 0;
     if (productId === 0) return;
-    const response = await handleSubmit(undefined, productId);
+    const request = {
+      id: 0,
+      productId: productId,
+      acc_Year: yearId,
+      brands: [],
+    };
+    const response = await handleSubmit(undefined, request);
     let productGraceProducts: ProductGraceListItem[] | undefined =
       response?.data.result.productGraceProducts;
     console.log(productGraceProducts, "productGraceProducts");
@@ -284,7 +297,79 @@ const ProductGraceFormList = ({
     };
   }, [isModalEmptyOpen]);
   ////////////////////////////////////////////////////////
+  // on selecting each row, set the id and productId and yearId in productGraceStore for api/productGrace?id=
+  const [selectedDtlId, setSelectedDtlId] = useState<number>(0); // for selected id in productGraceFormList table
+  const { yearId } = useGeneralContext();
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in productGraceFormList table
+  const [res, setRes] = useState<ProductGraceListResponse | undefined>(
+    undefined
+  );
+  useEffect(() => {
+    if (isNew || selectedId === 0 || !canEditForm1) return;
+    const fetchData = async () => {
+      if (data.length > 0) {
+        const found = data.find((item) => item.id === selectedDtlId);
+        const productId = found?.pId ?? 0;
+        console.log(
+          productId,
+          selectedId,
+          canEditForm1,
+          "productId in useEffect"
+        );
+        if (productId === 0) return;
+        const request: ShowProductListRequest = {
+          id: selectedId,
+          productId,
+          acc_Year: yearId,
+          brands: [],
+        };
+        const res = await handleSubmit(undefined, request);
+        setRes(res);
+        console.log(res, "res in useEffect");
+      }
+    };
+    fetchData();
+  }, [selectedDtlId, yearId]);
+  ////////////////////////////////////////////////////////
+  //initialize selectedRowIndex, selectedDtlId, res when selectedId changes
+  useEffect(() => {
+    if (selectedId === 0) return;
+    setSelectedRowIndex(0);
+    setSelectedDtlId(0);
+    setRes(undefined);
+  }, [selectedId]);
+  ////////////////////////////////////////////////////////
+  //update originalData when res (productGraceListResponse) changes
+  useEffect(() => {
+    if (res && res.data.result.productGraceProducts.length > 0) {
+      updateMyRowAfterShowProductList(res);
+    }
+  }, [res]);
+  ////////////////////////////////////////////////////////
+  const updateMyRowAfterShowProductList = (res: ProductGraceListResponse) => {
+    console.log(
+      selectedRowIndex,
+      "selectedRowIndex in updateMyRowAfterShowProductList"
+    );
+    setOriginalData((old) =>
+      old.map((row, index) => {
+        if (
+          index === selectedRowIndex &&
+          res.data.result.productGraceProducts.length > 0
+        ) {
+          return {
+            ...row,
+            gdo: res.data.result.productGraceProducts[0].gdo,
+            sco: res.data.result.productGraceProducts[0].sco,
+            cco: res.data.result.productGraceProducts[0].cco,
+            eco: res.data.result.productGraceProducts[0].eco,
+          };
+        }
+        return row;
+      })
+    );
+  };
+  ////////////////////////////////////////////////////////
   return (
     <>
       <div className="mt-2 w-full bg-white rounded-md">
@@ -303,6 +388,7 @@ const ProductGraceFormList = ({
           />
 
           <TTable
+            setSelectedId={setSelectedDtlId}
             canEditForm={canEditForm1}
             columns={columns}
             data={data}

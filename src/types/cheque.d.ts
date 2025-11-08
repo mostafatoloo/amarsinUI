@@ -217,6 +217,7 @@ export interface ChequeState
   //end PaymentAttachment request parameters
   updateStatus: UpdateStatus;
   paymentId: number; //for Payment/sayadChequeInquiryByPaymentId
+  paymentIdTrigger: number; //for Payment/sayadChequeInquiryByPaymentId
   loadPaymentResponse: LoadPaymentResponse;
   sayadChequeInquiryByPaymentIdResponse: SayadChequeInquiryByPaymentIdResponse;//for Payment/sayadChequeInquiryByPaymentId
   updateFieldsResponse: UpdateFieldsResponse;

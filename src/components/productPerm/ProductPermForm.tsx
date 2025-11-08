@@ -58,6 +58,8 @@ type Props = {
   setIsEdit: (isEdit: boolean) => void;
   fromWorkFlow: boolean;
   canEditForm1: boolean;
+  selectedId: number;
+  setSelectedRowIndex?:(value: SetStateAction<number>) => void
 };
 
 export const headCells = [
@@ -148,6 +150,8 @@ const ProductPermForm = ({
   setIsEdit,
   fromWorkFlow,
   canEditForm1,
+  selectedId,
+  setSelectedRowIndex
 }: Props) => {
   const [addList, setAddList] = useState<ProductPermListItemTable[]>([]);
   const [search, setSearch] = useState<string>("");
@@ -179,7 +183,7 @@ const ProductPermForm = ({
             ? products &&
               products.map((p) => ({
                 id: p.pId,
-                title: convertToFarsiDigits(p.n),
+                title: p.n,
               }))
             : undefined,
         setSearch: item.accessor === "product" ? setSearch : undefined,
@@ -314,7 +318,7 @@ const ProductPermForm = ({
     setProductField("productSearchAccYear", yearId);
     handleDebounceFilterChange(
       "productSearchSearch",
-      convertToFarsiDigits(search)
+      search
     );
     setProductField("productSearchPage", 1);
   }, [search, systemId, yearId]);
@@ -336,17 +340,10 @@ const ProductPermForm = ({
   ////////////////////////////////////////////////////////
   const handleSubmit = async (
     e?: React.MouseEvent<HTMLButtonElement>,
-    productId: number = 0
+    request?: ProductPermListRequest
   ): Promise<ProductPermListResponse | undefined> => {
     if (e) e.preventDefault();
-    let request: ProductPermListRequest;
-    request = {
-      id: 0,
-      productId: productId,
-      yearId: yearId,
-      systemId: systemId,
-      brands: brand?.map((b) => Number(b.id)) ?? [],
-    };
+    if (!request) return;
 
     console.log(request, "request");
     try {
@@ -360,7 +357,14 @@ const ProductPermForm = ({
     e: React.MouseEvent<HTMLButtonElement>,
     productId: number = 0
   ) => {
-    const res = await handleSubmit(e, productId);
+    const request = {
+      id: 0,
+      productId: productId,
+      yearId: yearId,
+      systemId: systemId,
+      brands: brand?.map((b) => Number(b.id)) ?? [],
+    };
+    const res = await handleSubmit(e, request);
     console.log(res?.data.result, "res");
     if (res && res.data.result) {
       // Map through the new products
@@ -454,6 +458,7 @@ const ProductPermForm = ({
     try {
       const response = await productPermSave(request);
       setIsModalRegOpen(true);
+      if (setSelectedRowIndex && isNew) setSelectedRowIndex(0);
       //setIsNew(false);
       //setIsEdit(false);
       return response;
@@ -543,6 +548,8 @@ const ProductPermForm = ({
         setShowHistory={setShowHistory}
         isModalRegOpen={isModalRegOpen}
         setIsModalRegOpen={setIsModalRegOpen}
+        selectedId={selectedId}
+        isNew={isNew}
       />
     </div>
   );

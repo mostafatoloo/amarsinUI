@@ -72,7 +72,7 @@ const ReceiptPurchaseShowTable = ({
   const [permissionPerm, setPermissionPerm] = useState(false);
   const [permissionGrace, setPermissionGrace] = useState(false);
   const [permissionPrice, setPermissionPrice] = useState(false);
-
+  //const [selectedId, setSelectedId] = useState<number>(0);
   useEffect(() => {
     const menu = authApiResponse?.data.result.menu;
     if (menu) {
@@ -445,6 +445,7 @@ const ReceiptPurchaseShowTable = ({
           setIsEdit={() => false}
           fromWorkFlow={false}
           canEditForm1={true}
+          selectedId={0}
         />
       </ModalForm>
       <ModalForm
@@ -468,6 +469,7 @@ const ReceiptPurchaseShowTable = ({
           setIsEdit={() => false}
           fromWorkFlow={false} //for not going to editting in product perm form as default
           canEditForm1={true}
+          selectedId={0}
         />
       </ModalForm>
 
@@ -492,6 +494,7 @@ const ReceiptPurchaseShowTable = ({
           setIsEdit={() => false}
           fromWorkFlow={false} //for not going to editting in product grace form as default
           canEditForm1={true}
+          selectedId={0}
         />
       </ModalForm>
 
@@ -517,6 +520,7 @@ const ReceiptPurchaseShowTable = ({
           setIsEdit={() => false}
           fromWorkFlow={false}
           canEditForm1={true}
+          selectedId={0}
         />
       </ModalForm>
       <ModalMessage

@@ -22,7 +22,7 @@ const ProductPermForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
   } = useProductPerm();
 
   const { setField } = useProductPermStore();
-
+  const [selectedId, setSelectedId] = useState<number>(0);
   const [selectedProductPerm, setSelectedProductPerm] =
     useState<ProductPerm | null>(null);
 
@@ -34,12 +34,14 @@ const ProductPermForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
   }, [workFlowRowSelectResponse.workTableRow.formId, yearId, systemId]);
 
   useEffect(() => {
-    workFlowRowSelectResponse.workTableRow.formId !== 0 &&
+    if (workFlowRowSelectResponse.workTableRow.formId !== 0) {
       setSelectedProductPerm(
         productPermDtlData?.productPerms?.find(
           (item) => item.id === workFlowRowSelectResponse.workTableRow.formId
         ) || null
       );
+      setSelectedId(workFlowRowSelectResponse.workTableRow.formId);
+    }
   }, [
     workFlowRowSelectResponse.workTableRow.formId,
     productPermDtlData?.productPerms,
@@ -60,6 +62,7 @@ const ProductPermForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
         setIsNew={() => false}
         setIsEdit={() => true}
         fromWorkFlow={true} //for going to editting in product grace form as default
+        selectedId={selectedId}
       />
     </div>
   );

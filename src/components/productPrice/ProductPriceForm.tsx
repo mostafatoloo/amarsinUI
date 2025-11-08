@@ -67,6 +67,8 @@ type Props = {
   setIsEdit: (isEdit: boolean) => void;
   fromWorkFlow: boolean;
   canEditForm1: boolean;
+  selectedId: number; 
+  setSelectedRowIndex?:(value: SetStateAction<number>) => void
 };
 
 export const headCells = [
@@ -110,65 +112,65 @@ export const headCells = [
   },
   {
     Header: "پخش",
-    accessor: "p1",
+    accessor: "p1O",
     width: "3%",
     Cell: ({ value }: any) => convertToFarsiDigits(value),
   },
   {
     Header: "داروخانه",
-    accessor: "p2",
+    accessor: "p2O",
     width: "3%",
     Cell: ({ value }: any) => convertToFarsiDigits(value),
   },
   {
     Header: "مصرف کننده",
-    accessor: "p3",
+    accessor: "p3O",
     width: "3%",
     Cell: ({ value }: any) => convertToFarsiDigits(value),
   },
   {
     Header: "مشتری",
-    accessor: "p4",
+    accessor: "p4O",
     width: "3%",
     Cell: ({ value }: any) => convertToFarsiDigits(value),
   },
   {
     Header: "مشتری",
-    accessor: "p5",
+    accessor: "p5O",
     width: "3%",
     Cell: ({ value }: any) => convertToFarsiDigits(value),
   },
   {
     Header: "پخش",
-    accessor: "p1O",
+    accessor: "p1",
     width: "4%",
     type: "inputText",
     Cell: EditableInput,
   },
   {
     Header: "داروخانه",
-    accessor: "p2O",
+    accessor: "p2",
     width: "4%",
     type: "inputText",
     Cell: EditableInput,
   },
   {
     Header: "مصرف کننده",
-    accessor: "p3O",
+    accessor: "p3",
     width: "4%",
     type: "inputText",
     Cell: EditableInput,
   },
   {
     Header: "مشتری",
-    accessor: "p4O",
+    accessor: "p4",
     width: "4%",
     type: "inputText",
     Cell: EditableInput,
   },
   {
     Header: "مشتری",
-    accessor: "p5O",
+    accessor: "p5",
     width: "4%",
     type: "inputText",
     Cell: EditableInput,
@@ -222,6 +224,8 @@ const ProductPriceForm = ({
   setIsNew,
   setIsEdit,
   fromWorkFlow,
+  selectedId,
+  setSelectedRowIndex
 }: Props) => {
   const [addList, setAddList] = useState<ProductPriceListItemTable[]>([]);
   const [search, setSearch] = useState<string>("");
@@ -252,6 +256,7 @@ const ProductPriceForm = ({
   const [guid, setGuid] = useState<string>("");
   const [cnt, setCnt] = useState<number>(0);
 
+  ////////////////////////////////////////////////////////
   const columns: TableColumns = useMemo(() => {
     return headCells.map((item) => {
       return {
@@ -261,7 +266,7 @@ const ProductPriceForm = ({
             ? products &&
               products.map((p) => ({
                 id: p.pId,
-                title: convertToFarsiDigits(p.n),
+                title: p.n,
               }))
             : undefined,
         setSearch: item.accessor === "product" ? setSearch : undefined,
@@ -328,11 +333,11 @@ const ProductPriceForm = ({
     lastDate: "",
     lastBuyPrice: 0,
     tax: 0,
-    p1O: 0,
-    p2O: 0,
-    p3O: 0,
-    p4O: 0,
-    p5O: 0,
+    p1: 0,
+    p2: 0,
+    p3: 0,
+    p4: 0,
+    p5: 0,
     dtlDsc: "",
     deleted: false,
     isDeleted: false,
@@ -364,7 +369,7 @@ const ProductPriceForm = ({
   }, []);
   ////////////////////////////////////////////////////////
   useEffect(() => {
-    console.log(isNew,selectedProductPrice, "selectedProductPrice");
+    console.log(isNew, selectedProductPrice, "selectedProductPrice");
     if (
       isNew === false &&
       selectedProductPrice !== null &&
@@ -383,16 +388,16 @@ const ProductPriceForm = ({
           lastDate: item.lastDate,
           lastBuyPrice: item.lastBuyPrice,
           tax: item.tax,
-          p1O: item.p1,
-          p2O: item.p2,
-          p3O: item.p3,
-          p4O: item.p4,
+          p1O: item.p1O,
+          p2O: item.p2O,
+          p3O: item.p3O,
+          p4O: item.p4O ,
           p5O: item.p5,
-          p1: item.p1O,
-          p2: item.p2O,
-          p3: item.p3O,
-          p4: item.p4O,
-          p5: item.p5O,
+          p1: item.p1,
+          p2: item.p2,
+          p3: item.p3,
+          p4: item.p4,
+          p5: item.p5,
           dtlDsc: item.dtlDsc,
           deleted: item.deleted,
           isDeleted: false,
@@ -409,7 +414,7 @@ const ProductPriceForm = ({
     setProductField("productSearchAccYear", yearId);
     handleDebounceFilterChange(
       "productSearchSearch",
-      convertToFarsiDigits(search)
+      search
     );
     setProductField("productSearchPage", 1);
   }, [search, systemId, yearId]);
@@ -431,18 +436,10 @@ const ProductPriceForm = ({
   ////////////////////////////////////////////////////////
   const handleSubmit = async (
     e?: React.MouseEvent<HTMLButtonElement>,
-    productId: number = 0
+    request?: ShowProductListRequest
   ): Promise<ProductPriceListResponse | undefined> => {
     if (e) e.preventDefault();
-    let request: ShowProductListRequest;
-    request = {
-      id: 0,
-      productId: productId,
-      acc_Year: yearId,
-      brands: brand?.map((b) => Number(b.id)) ?? [],
-    };
-
-    console.log(request, "request");
+    if (!request) return;
     try {
       return await addProductList(request);
     } catch (error) {
@@ -454,7 +451,13 @@ const ProductPriceForm = ({
     e: React.MouseEvent<HTMLButtonElement>,
     productId: number = 0
   ) => {
-    const res = await handleSubmit(e, productId);
+    const request = {
+      id: 0,
+      productId: productId,
+      acc_Year: yearId,
+      brands: brand?.map((b) => Number(b.id)) ?? [],
+    };
+    const res = await handleSubmit(e, request);
     console.log(res?.data.result, "res");
     if (res && res.data.result) {
       // Map through the new products
@@ -481,11 +484,11 @@ const ProductPriceForm = ({
               p3O: 0,
               p4O: 0,
               p5O: 0,
-              p1: product.p1O > 0 ? product.p1O : 0,
-              p2: product.p2O > 0 ? product.p2O : 0,
-              p3: product.p3O > 0 ? product.p3O : 0,
-              p4: product.p4O > 0 ? product.p4O : 0,
-              p5: product.p5O > 0 ? product.p5O : 0,
+              p1: product.p1 > 0 ? product.p1 : 0,
+              p2: product.p2 > 0 ? product.p2 : 0,
+              p3: product.p3 > 0 ? product.p3 : 0,
+              p4: product.p4 > 0 ? product.p4 : 0,
+              p5: product.p5 > 0 ? product.p5 : 0,
               dtlDsc: product.dtlDsc,
               deleted: product.deleted,
               isDeleted: false,
@@ -518,7 +521,7 @@ const ProductPriceForm = ({
   const handleSubmitSave = async (
     e?: React.MouseEvent<HTMLButtonElement>,
     skipWarning: boolean = false
-  ):Promise<ProductPriceSaveResponse | undefined> => {
+  ): Promise<ProductPriceSaveResponse | undefined> => {
     //: Promise<string | undefined>
     if (e) e.preventDefault();
     let request: ProductPriceSaveRequest;
@@ -529,20 +532,20 @@ const ProductPriceForm = ({
           id: item.id,
           pId: item.pId,
           ordr: 0,
-          p1: Number(convertToLatinDigits(item.p1O.toString())),
-          p2: Number(convertToLatinDigits(item.p2O.toString())),
-          p3: Number(convertToLatinDigits(item.p3O.toString())),
-          p4: Number(convertToLatinDigits(item.p4O.toString())),
-          p5: Number(convertToLatinDigits(item.p5O.toString())),
+          p1: Number(convertToLatinDigits(item.p1?.toString())) ?? 0,
+          p2: Number(convertToLatinDigits(item.p2?.toString())) ?? 0,
+          p3: Number(convertToLatinDigits(item.p3?.toString())) ?? 0,
+          p4: Number(convertToLatinDigits(item.p4?.toString())) ?? 0,
+          p5: Number(convertToLatinDigits(item.p5?.toString())) ?? 0,
           dtlDsc: item.dtlDsc,
           deleted: item.isDeleted,
         };
         if (
-          item.p1O !== 0 ||
-          item.p2O !== 0 ||
-          item.p3O !== 0 ||
-          item.p4O !== 0 ||
-          item.p5O !== 0
+          item.p1 !== 0 ||
+          item.p2 !== 0 ||
+          item.p3 !== 0 ||
+          item.p4 !== 0 ||
+          item.p5 !== 0
         ) {
           return dtl;
         } else {
@@ -573,6 +576,7 @@ const ProductPriceForm = ({
     try {
       const response = await productPriceSave(request);
       setIsModalRegOpen(true);
+      if (setSelectedRowIndex && isNew) setSelectedRowIndex(0);
       return response;
     } catch (error) {
       console.error("Error ثبت :", error);
@@ -581,14 +585,17 @@ const ProductPriceForm = ({
   /////////////////////////////////////////////////////////////for defining cnt
   useEffect(() => {
     let tempCnt = 0;
-    console.log(isNew,attachments.data.result.length, "isNew and attachments.data.result.length === 0");
+    console.log(
+      isNew,
+      attachments.data.result.length,
+      "isNew and attachments.data.result.length === 0"
+    );
     if (isNew && attachments.data.result.length === 0) {
       tempCnt = 0;
     } else if (attachments.data.result.length !== 0) {
       tempCnt = attachments.data.result.length ?? 0;
     } else {
-      tempCnt =
-        selectedProductPrice?.attachCount ?? 0;
+      tempCnt = selectedProductPrice?.attachCount ?? 0;
     }
     setCnt(tempCnt);
   }, [
@@ -638,7 +645,7 @@ const ProductPriceForm = ({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              console.log(isNew,selectedProductPrice, "selectedProductPrice");
+              console.log(isNew, selectedProductPrice, "selectedProductPrice");
               setShowAttachment(true);
             }}
           />
@@ -712,6 +719,7 @@ const ProductPriceForm = ({
         setShowHistory={setShowHistory}
         isModalRegOpen={isModalRegOpen}
         setIsModalRegOpen={setIsModalRegOpen}
+        selectedId={selectedId}
       />
       {/* show attachment component */}
       <ModalForm

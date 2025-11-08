@@ -690,11 +690,6 @@ const InvoiceReceiptShowTable = ({
                 fontSize="0.75rem"
                 changeRowSelectColor={true}
                 wordWrap={true}
-                /*options={products.map((p) => ({
-                id: p.pId,
-                title: convertToFarsiDigits(p.n),
-              }))}*/
-                //setSearchText={setSearch}
                 updateMyRow={updateMyRow}
                 CellColorChange={handleCellColorChange}
                 changeRowValues={changeRowValues}

@@ -581,6 +581,8 @@ const ProductPerm = () => {
           setIsEdit={setIsEdit}
           fromWorkFlow={false} //for not going to editting in product perm form as default
           canEditForm1={true}
+          selectedId={selectedId}
+          setSelectedRowIndex={setSelectedRowIndex}
         />
       </ModalForm>
       <ModalMessage

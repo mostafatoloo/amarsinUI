@@ -22,7 +22,7 @@ const ProductGraceForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
   } = useProductGrace();
 
   const { setField } = useProductGraceStore();
-
+  const [selectedId, setSelectedId] = useState<number>(0);
   const [selectedProductGrace, setSelectedProductGrace] =
     useState<ProductGrace | null>(null);
 
@@ -31,16 +31,18 @@ const ProductGraceForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
     setField("yearId", yearId);
     setField("systemId", systemId);
     setField("id", workFlowRowSelectResponse.workTableRow.formId);
-  }, [workFlowRowSelectResponse.workTableRow.formId,yearId,systemId]);
+  }, [workFlowRowSelectResponse.workTableRow.formId, yearId, systemId]);
 
   ////////////////////////////////////////////////////////////////////////
   useEffect(() => {
-    workFlowRowSelectResponse.workTableRow.formId !== 0 &&
+    if (workFlowRowSelectResponse.workTableRow.formId !== 0) {
       setSelectedProductGrace(
         productGraceDtlData?.productGraces?.find(
           (item) => item.id === workFlowRowSelectResponse.workTableRow.formId
         ) || null
       );
+      setSelectedId(workFlowRowSelectResponse.workTableRow.formId);
+    }
   }, [
     workFlowRowSelectResponse.workTableRow.formId,
     productGraceDtlData?.productGraces,
@@ -61,6 +63,7 @@ const ProductGraceForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
         setIsNew={() => false}
         setIsEdit={() => true}
         fromWorkFlow={true} //for going to editting in product grace form as default
+        selectedId={selectedId}
       />
     </div>
   );

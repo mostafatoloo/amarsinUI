@@ -4,6 +4,7 @@ import {
   ProductOfferProduct,
   ProductOfferProductTable,
   ProductOfferProductTable2,
+  ShowProductListRequest,
   ShowProductListResponse,
 } from "../../types/productOffer";
 import ConfirmCard from "../layout/ConfirmCard";
@@ -16,6 +17,7 @@ import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
 import { red } from "@mui/material/colors";
 import ModalMessage from "../layout/ModalMessage";
 import { useProductOfferStore } from "../../store/productOfferStore";
+import { useGeneralContext } from "../../context/GeneralContext";
 
 type Props = {
   setIsNew: (isNew: boolean) => void;
@@ -24,7 +26,7 @@ type Props = {
   showDeleted: boolean;
   handleSubmit: (
     e?: React.MouseEvent<HTMLButtonElement>,
-    productId?: number
+    request?: ShowProductListRequest
   ) => Promise<ShowProductListResponse | undefined>;
   isLoadingProductOfferSave: boolean;
   handleSubmitSave: () => void;
@@ -42,6 +44,8 @@ type Props = {
   isModalRegOpen: boolean;
   setIsModalRegOpen: Dispatch<SetStateAction<boolean>>;
   canEditForm1: boolean;
+  selectedId: number;
+  isNew: boolean;
 };
 
 const ProductOfferFormList = ({
@@ -63,6 +67,8 @@ const ProductOfferFormList = ({
   setShowHistory,
   isModalRegOpen,
   setIsModalRegOpen,
+  selectedId,
+  isNew,
 }: Props) => {
   const { productOfferSaveResponse } = useProductOfferStore();
   const [brandSearch, setBrandSearch] = useState<string>("");
@@ -160,7 +166,13 @@ const ProductOfferFormList = ({
   const updateMyRow = async (rowIndex: number, value: DefaultOptionType) => {
     const productId = value?.id ?? 0;
     if (productId === 0) return;
-    const response = await handleSubmit(undefined, productId);
+    const request = {
+      id: 0,
+      productId: productId,
+      acc_Year: yearId,
+      brands: [],
+    };
+    const response = await handleSubmit(undefined, request);
     let productOfferProducts: ProductOfferProduct[] | undefined =
       response?.data.result;
     setOriginalData((old) =>
@@ -233,7 +245,102 @@ const ProductOfferFormList = ({
       }
     };
   }, [isModalRegOpen]);
-
+  ////////////////////////////////////////////////////////
+  // on selecting each row, set the id and productId and yearId in productGraceStore for api/productGrace?id=
+  const { yearId } = useGeneralContext();
+  const [selectedDtlId, setSelectedDtlId] = useState<number>(0); // for selected id in productOfferFormList table
+  const [res, setRes] = useState<ShowProductListResponse | undefined>(
+    undefined
+  );
+  useEffect(() => {
+    if (isNew || selectedId === 0 || !canEditForm1) return;
+    const fetchData = async () => {
+      if (data.length > 0) {
+        const found = data.find((item) => item.id === selectedDtlId);
+        const productId = found?.pId ?? 0;
+        console.log(
+          productId,
+          selectedId,
+          canEditForm1,
+          "productId in useEffect"
+        );
+        if (productId === 0) return;
+        const request: ShowProductListRequest = {
+          id: selectedId,
+          productId,
+          acc_Year: yearId,
+          brands: [],
+        };
+        const res = await handleSubmit(undefined, request);
+        setRes(res);
+        console.log(res, "res in useEffect");
+      }
+    };
+    fetchData();
+  }, [selectedDtlId, yearId]);
+  ////////////////////////////////////////////////////////
+  //initialize selectedRowIndex, selectedDtlId, res when selectedId changes
+  useEffect(() => {
+    if (selectedId === 0) return;
+    setSelectedRowIndex(0);
+    setSelectedDtlId(0);
+    setRes(undefined);
+  }, [selectedId]);
+  ////////////////////////////////////////////////////////
+  //update originalData when res (productGraceListResponse) changes
+  useEffect(() => {
+    if (res && res.data.result.length > 0) {
+      updateMyRowAfterShowProductList(res);
+    }
+  }, [res]);
+  ////////////////////////////////////////////////////////
+  const updateMyRowAfterShowProductList = (res: ShowProductListResponse) => {
+    console.log(
+      selectedRowIndex,
+      "selectedRowIndex in updateMyRowAfterShowProductList"
+    );
+    setOriginalData((old) =>
+      old.map((row, index) => {
+        if (index === selectedRowIndex && res.data.result.length > 0) {
+          return {
+            ...row,
+            s1O:
+              res.data.result[0].s1DO + res.data.result[0].s1NO > 0
+                ? res.data.result[0].s1DO.toString() +
+                  "+" +
+                  res.data.result[0].s1NO.toString()
+                : "",
+            s2O:
+              res.data.result[0].s2DO + res.data.result[0].s2NO > 0
+                ? res.data.result[0].s2DO.toString() +
+                  "+" +
+                  res.data.result[0].s2NO.toString()
+                : "",
+            s3O:
+              res.data.result[0].s3DO + res.data.result[0].s3NO > 0
+                ? res.data.result[0].s3DO.toString() +
+                  "+" +
+                  res.data.result[0].s3NO.toString()
+                : "",
+            s4O:
+              res.data.result[0].s4DO + res.data.result[0].s4NO > 0
+                ? res.data.result[0].s4DO.toString() +
+                  "+" +
+                  res.data.result[0].s4NO.toString()
+                : "",
+            s5O:
+              res.data.result[0].s5DO + res.data.result[0].s5NO > 0
+                ? res.data.result[0].s5DO.toString() +
+                  "+" +
+                  res.data.result[0].s5NO.toString()
+                : "",
+          };
+        }
+        return row;
+      })
+    );
+  };
+  ////////////////////////////////////////////////////////
   return (
     <>
       <div className="mt-2 w-full bg-white rounded-md">
@@ -252,6 +359,7 @@ const ProductOfferFormList = ({
           />
 
           <TTable
+            setSelectedId={setSelectedDtlId}
             canEditForm={canEditForm1}
             columns={columns}
             selectedRowIndex={selectedRowIndex}

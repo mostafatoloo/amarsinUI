@@ -58,6 +58,8 @@ type Props = {
   setIsEdit: (isEdit: boolean) => void;
   fromWorkFlow: boolean;
   canEditForm1: boolean;
+  selectedId: number;
+  setSelectedRowIndex?:(value: SetStateAction<number>) => void
 };
 
 export const headCells = [
@@ -234,6 +236,8 @@ const ProductOfferForm = ({
   setIsNew,
   setIsEdit,
   fromWorkFlow,
+  selectedId,
+  setSelectedRowIndex
 }: Props) => {
   const [addList, setAddList] = useState<ProductOfferProductTable[]>([]);
   const [search, setSearch] = useState<string>("");
@@ -265,7 +269,7 @@ const ProductOfferForm = ({
             ? products &&
               products.map((p) => ({
                 id: p.pId,
-                title: convertToFarsiDigits(p.n),
+                title: p.n,
               }))
             : undefined,
         setSearch: item.accessor === "product" ? setSearch : undefined,
@@ -430,7 +434,7 @@ const ProductOfferForm = ({
     setProductField("productSearchAccYear", yearId);
     handleDebounceFilterChange(
       "productSearchSearch",
-      convertToFarsiDigits(search)
+      search
     );
     setProductField("productSearchPage", 1);
   }, [search, systemId, yearId]);
@@ -453,17 +457,10 @@ const ProductOfferForm = ({
   ////////////////////////////////////////////////////////
   const handleSubmit = async (
     e?: React.MouseEvent<HTMLButtonElement>,
-    productId: number = 0
+    request?: ShowProductListRequest
   ): Promise<ShowProductListResponse | undefined> => {
     if (e) e.preventDefault();
-    let request: ShowProductListRequest;
-    request = {
-      id: 0,
-      productId: productId,
-      acc_Year: yearId,
-      brands: brand?.map((b) => b.id) ?? [],
-    };
-
+    if (!request) return;
     console.log(request, "request");
     try {
       return await addProductList(request);
@@ -476,7 +473,13 @@ const ProductOfferForm = ({
     e: React.MouseEvent<HTMLButtonElement>,
     productId: number = 0
   ) => {
-    const res = await handleSubmit(e, productId);
+    const request = {
+      id: 0,
+      productId: productId,
+      acc_Year: yearId,
+      brands: brand?.map((b) => b.id) ?? [],
+    };
+    const res = await handleSubmit(e, request);
     console.log(res?.data.result, "res");
     if (res && res.data.result) {
       // Map through the new products
@@ -612,7 +615,7 @@ const ProductOfferForm = ({
       setIsModalRegOpen(true);
       //setIsNew(false);
       //setIsEdit(false);
-
+      if (setSelectedRowIndex && isNew) setSelectedRowIndex(0);
       return response;
       //console.log( "request");
     } catch (error) {
@@ -700,6 +703,8 @@ const ProductOfferForm = ({
         setShowHistory={setShowHistory}
         isModalRegOpen={isModalRegOpen}
         setIsModalRegOpen={setIsModalRegOpen}
+        selectedId={selectedId}
+        isNew={isNew}
       />
     </div>
   );

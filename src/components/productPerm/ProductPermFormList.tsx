@@ -12,12 +12,14 @@ import {
   ProductPermListItem,
   ProductPermListItemTable,
   ProductPermListItemTable2,
+  ProductPermListRequest,
   ProductPermListResponse,
   ProductPermSaveResponse,
 } from "../../types/productPerm";
 import ProductPermFormListHeader from "./ProductPermFormListHeader";
 import ProductPermFormListHistory from "./ProductPermFormListHistory";
 import { useProductPermStore } from "../../store/productPermStore";
+import { useGeneralContext } from "../../context/GeneralContext";
 
 type Props = {
   setIsNew: (isNew: boolean) => void;
@@ -26,7 +28,7 @@ type Props = {
   showDeleted: boolean;
   handleSubmit: (
     e?: React.MouseEvent<HTMLButtonElement>,
-    productId?: number
+    request?: ProductPermListRequest
   ) => Promise<ProductPermListResponse | undefined>;
   isLoadingProductOfferSave: boolean;
   handleSubmitSave: () => Promise<ProductPermSaveResponse | undefined>;
@@ -44,6 +46,8 @@ type Props = {
   isModalRegOpen: boolean;
   setIsModalRegOpen: Dispatch<SetStateAction<boolean>>;
   canEditForm1: boolean;
+  selectedId: number;
+  isNew: boolean;
 };
 
 const ProductPermFormList = ({
@@ -65,6 +69,8 @@ const ProductPermFormList = ({
   setShowHistory,
   isModalRegOpen,
   setIsModalRegOpen,
+  selectedId,
+  isNew,
 }: Props) => {
   const { productPermSaveResponse } = useProductPermStore();
   const [brandSearch, setBrandSearch] = useState<string>("");
@@ -190,7 +196,14 @@ const ProductPermFormList = ({
   const updateMyRow = async (rowIndex: number, value: DefaultOptionType) => {
     const productId = value?.id ?? 0;
     if (productId === 0) return;
-    const response = await handleSubmit(undefined, productId);
+    const request = {
+      id: 0,
+      productId: productId,
+      yearId: yearId,
+      systemId: systemId,
+      brands: [],
+    };
+    const response = await handleSubmit(undefined, request);
     let productOfferProducts: ProductPermListItem[] | undefined =
       response?.data.result;
     setOriginalData((old) =>
@@ -244,7 +257,77 @@ const ProductPermFormList = ({
       }
     };
   }, [isModalRegOpen]);
-
+  ////////////////////////////////////////////////////////
+  // on selecting each row, set the id and productId and yearId in productGraceStore for api/productGrace?id=
+  const [selectedDtlId, setSelectedDtlId] = useState<number>(0); // for selected id in productGraceFormList table
+  const { yearId ,systemId} = useGeneralContext();
+  const [res, setRes] = useState<ProductPermListResponse | undefined>(
+    undefined
+  );
+  useEffect(() => {
+    if (isNew || selectedId === 0 || !canEditForm1) return;
+    const fetchData = async () => {
+      if (data.length > 0) {
+        const found = data.find((item) => item.id === selectedDtlId);
+        const productId = found?.pId ?? 0;
+        console.log(
+          productId,
+          selectedId,
+          canEditForm1,
+          "productId in useEffect"
+        );
+        if (productId === 0) return;
+        const request: ProductPermListRequest = {
+          id: selectedId,
+          productId,
+          yearId: yearId,
+          systemId: systemId,
+          brands: [],
+        };
+        const res = await handleSubmit(undefined, request);
+        setRes(res);
+        console.log(res, "res in useEffect");
+      }
+    };
+    fetchData();
+  }, [selectedDtlId, yearId]);
+  ////////////////////////////////////////////////////////
+  //initialize selectedRowIndex, selectedDtlId, res when selectedId changes
+  useEffect(() => {
+    if (selectedId === 0) return;
+    setSelectedRowIndex(0);
+    setSelectedDtlId(0);
+    setRes(undefined);
+  }, [selectedId]);
+  ////////////////////////////////////////////////////////
+  //update originalData when res (productGraceListResponse) changes
+  useEffect(() => {
+    if (res && res.data.result.length > 0) {
+      updateMyRowAfterShowProductList(res);
+    }
+  }, [res]);
+  ////////////////////////////////////////////////////////
+  const updateMyRowAfterShowProductList = (res: ProductPermListResponse) => {
+    console.log(
+      selectedRowIndex,
+      "selectedRowIndex in updateMyRowAfterShowProductList"
+    );
+    setOriginalData((old) =>
+      old.map((row, index) => {
+        if (
+          index === selectedRowIndex &&
+          res.data.result.length > 0
+        ) {
+          return {
+            ...row,
+            npo: res.data.result[0].npo,
+          };
+        }
+        return row;
+      })
+    );
+  };
+  ////////////////////////////////////////////////////////
   return (
     <>
       <div className="mt-2 w-full bg-white rounded-md">
@@ -263,6 +346,7 @@ const ProductPermFormList = ({
           />
 
           <TTable
+            setSelectedId={setSelectedDtlId}
             canEditForm={canEditForm1}
             columns={columns}
             selectedRowIndex={selectedRowIndex}

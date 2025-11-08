@@ -14,6 +14,7 @@ export const useProductGraceStore = create<ProductGraceState>()((set) => ({
       },
     },
   },
+  idTrigger:0, //for productGrace?id=
   id: -1,
   yearId: -1,
   systemId: -1,

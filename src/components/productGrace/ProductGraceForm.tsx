@@ -56,10 +56,12 @@ type Props = {
   selectedProductGrace: ProductGrace | null;
   productGraceDtls: ProductGraceDtl[] | undefined;
   isNew: boolean;
-  setIsNew: (isNew: boolean) => void;
+  setIsNew: React.Dispatch<React.SetStateAction<boolean>>;
   setIsEdit: (isEdit: boolean) => void;
   fromWorkFlow: boolean; //for check if the form is from work flow
   canEditForm1: boolean;
+  selectedId: number;
+  setSelectedRowIndex?:(value: SetStateAction<number>) => void
 };
 
 export const headCells = [
@@ -91,31 +93,31 @@ export const headCells = [
   },
   {
     Header: "فرجه",
-    accessor: "gd",
+    accessor: "gdo",
     width: "3%",
     Cell: ({ value }: any) => convertToFarsiDigits(value),
   },
   {
     Header: "فروش",
-    accessor: "sc",
+    accessor: "sco",
     width: "3%",
     Cell: ({ value }: any) => convertToFarsiDigits(value),
   },
   {
     Header: "وصول",
-    accessor: "cc",
+    accessor: "cco",
     width: "3%",
     Cell: ({ value }: any) => convertToFarsiDigits(value),
   },
   {
     Header: "مازاد",
-    accessor: "ec",
+    accessor: "eco",
     width: "3%",
     Cell: ({ value }: any) => convertToFarsiDigits(value),
   },
   {
     Header: "فرجه کالا",
-    accessor: "gdo",
+    accessor: "gd",
     width: "4%",
     type: "inputText",
     backgroundColor: colors.indigo50,
@@ -123,7 +125,7 @@ export const headCells = [
   },
   {
     Header: "فروش",
-    accessor: "sco",
+    accessor: "sc",
     width: "4%",
     type: "inputText",
     backgroundColor: colors.indigo50,
@@ -131,7 +133,7 @@ export const headCells = [
   },
   {
     Header: "وصول",
-    accessor: "cco",
+    accessor: "cc",
     width: "4%",
     type: "inputText",
     backgroundColor: colors.indigo50,
@@ -139,7 +141,7 @@ export const headCells = [
   },
   {
     Header: "مازاد",
-    accessor: "eco",
+    accessor: "ec",
     width: "4%",
     type: "inputText",
     backgroundColor: colors.indigo50,
@@ -193,6 +195,8 @@ const ProductGraceForm = ({
   setIsNew,
   setIsEdit,
   canEditForm1,
+  selectedId,
+  setSelectedRowIndex
 }: Props) => {
   const [addList, setAddList] = useState<ProductGraceListItemTable[]>([]);
   const [search, setSearch] = useState<string>("");
@@ -223,34 +227,34 @@ const ProductGraceForm = ({
         options:
           item.accessor === "product"
             ? products &&
-              products.map((p) => ({
-                id: p.pId,
-                title: convertToFarsiDigits(p.n),
-              }))
+            products.map((p) => ({
+              id: p.pId,
+              title: p.n,
+            }))
             : undefined,
         setSearch: item.accessor === "product" ? setSearch : undefined,
         Cell:
           item.accessor === "icons"
             ? ({ row }: any) => {
-                return (
-                  <div className="flex w-full">
-                    {canEditForm1 && (
-                      <img
-                        src={row.original.isDeleted ? RestoreIcon : TrashIcon}
-                        onClick={() => updateToDeleted(row)}
-                        className="cursor-pointer"
-                        alt="TrashIcon"
-                      />
-                    )}
+              return (
+                <div className="flex w-full">
+                  {canEditForm1 && (
                     <img
-                      src={HistoryIcon}
-                      onClick={() => handleShowHistory(row)}
+                      src={row.original.isDeleted ? RestoreIcon : TrashIcon}
+                      onClick={() => updateToDeleted(row)}
                       className="cursor-pointer"
-                      alt="HistoryIcon"
+                      alt="TrashIcon"
                     />
-                  </div>
-                );
-              }
+                  )}
+                  <img
+                    src={HistoryIcon}
+                    onClick={() => handleShowHistory(row)}
+                    className="cursor-pointer"
+                    alt="HistoryIcon"
+                  />
+                </div>
+              );
+            }
             : item.Cell,
       };
     });
@@ -337,26 +341,29 @@ const ProductGraceForm = ({
       //for edit
       console.log(productGraceDtls, "productGraceDtls");
       setAddList(
-        productGraceDtls.map((item) => ({
-          ...item,
-          id: item.id,
-          pId: item.pId,
-          bName: item.bName,
-          product: item.product,
-          lastDate: item.lastDate,
-          gd: item.gd,
-          sc: item.sc,
-          cc: item.cc,
-          ec: item.ec,
-          gdo: item.gd,
-          sco: item.sc,
-          cco: item.cc,
-          eco: item.ec,
-          dtlDsc: item.dtlDsc,
-          deleted: item.deleted,
-          isDeleted: false,
-          index: productGraceDtls.length + 1,
-        }))
+        productGraceDtls.map((item) => {
+          console.log(item, "item");
+          return {
+            ...item,
+            id: item.id,
+            pId: item.pId,
+            bName: item.bName,
+            product: item.product,
+            lastDate: item.lastDate,
+            gd: item.gd,
+            sc: item.sc,
+            cc: item.cc,
+            ec: item.ec,
+            gdo: item.gdo > 0 ? item.gdo : 0,
+            sco: item.sco > 0 ? item.sco : 0,
+            cco: item.cco > 0 ? item.cco : 0,
+            eco: item.eco > 0 ? item.eco : 0,
+            dtlDsc: item.dtlDsc,
+            deleted: item.deleted,
+            isDeleted: false,
+            index: productGraceDtls.length + 1,
+          }
+        })
       );
     }
   }, [selectedProductGrace]);
@@ -368,7 +375,7 @@ const ProductGraceForm = ({
     setProductField("productSearchAccYear", yearId);
     handleDebounceFilterChange(
       "productSearchSearch",
-      convertToFarsiDigits(search)
+      search
     );
     setProductField("productSearchPage", 1);
   }, [search, systemId, yearId]);
@@ -390,17 +397,10 @@ const ProductGraceForm = ({
   ////////////////////////////////////////////////////////
   const handleSubmit = async (
     e?: React.MouseEvent<HTMLButtonElement>,
-    productId: number = 0
+    request?: ShowProductListRequest
   ): Promise<ProductGraceListResponse | undefined> => {
     if (e) e.preventDefault();
-    let request: ShowProductListRequest;
-    request = {
-      id: 0,
-      productId: productId,
-      acc_Year: yearId,
-      brands: brand?.map((b) => Number(b.id)) ?? [],
-    };
-
+    if (!request) return;
     console.log(request, "request");
     try {
       return await addProductList(request);
@@ -413,7 +413,13 @@ const ProductGraceForm = ({
     e: React.MouseEvent<HTMLButtonElement>,
     productId: number = 0
   ) => {
-    const res = await handleSubmit(e, productId);
+    const request = {
+      id: 0,
+      productId: productId,
+      acc_Year: yearId,
+      brands: brand?.map((b) => Number(b.id)) ?? [],
+    };
+    const res = await handleSubmit(e, request);
     if (res && res.data.result) {
       // Map through the new products
       res.data.result.productGraceProducts.forEach(
@@ -437,10 +443,10 @@ const ProductGraceForm = ({
                 sc: product.sco > 0 ? product.sco : 0,
                 cc: product.cco > 0 ? product.cco : 0,
                 ec: product.eco > 0 ? product.eco : 0,
-                gdo: 0,
-                sco: 0,
-                cco: 0,
-                eco: 0,
+                gdo: product.gdo > 0 ? product.gdo : 0,
+                sco: product.sco > 0 ? product.sco : 0,
+                cco: product.cco > 0 ? product.cco : 0,
+                eco: product.eco > 0 ? product.eco : 0,
                 dtlDsc: product.dtlDsc,
                 deleted: product.deleted,
                 isDeleted: false,
@@ -481,14 +487,14 @@ const ProductGraceForm = ({
         const dtl = {
           id: item.id,
           pId: item.pId,
-          gd: Number(convertToLatinDigits(item.gdo.toString())),
-          sc: Number(convertToLatinDigits(item.sco.toString())),
-          cc: Number(convertToLatinDigits(item.cco.toString())),
-          ec: Number(convertToLatinDigits(item.eco.toString())),
+          gd: Number(convertToLatinDigits(item.gd.toString())),
+          sc: Number(convertToLatinDigits(item.sc.toString())),
+          cc: Number(convertToLatinDigits(item.cc.toString())),
+          ec: Number(convertToLatinDigits(item.ec.toString())),
           dtlDsc: item.dtlDsc,
           deleted: item.isDeleted,
         };
-        if (dtl.gd !== 0 || dtl.sc !== 0 || dtl.cc !== 0 || dtl.ec !== 0) {
+        if (dtl.gd !== Number(convertToLatinDigits(item.gdo.toString())) || dtl.sc !== Number(convertToLatinDigits(item.sco.toString())) || dtl.cc !== Number(convertToLatinDigits(item.cco.toString())) || dtl.ec !== Number(convertToLatinDigits(item.eco.toString()))) {
           return dtl;
         } else {
           return undefined;
@@ -518,6 +524,7 @@ const ProductGraceForm = ({
       setIsModalRegOpen(true);
       //setIsNew(false);
       //setIsEdit(false);
+      if (setSelectedRowIndex && isNew) setSelectedRowIndex(0);
       return "اطلاعات با موفقیت ثبت شد.";
       //console.log( "request");
     } catch (error) {
@@ -525,6 +532,10 @@ const ProductGraceForm = ({
     }
   };
   ///////////////////////////////////////////////////////
+  useEffect(() => {
+    console.log(isNew, "isNew in ProductGraceForm");
+  }, [isNew])
+  //////////////////////////////////////////////////////
   return (
     <div className="flex flex-col gap-2">
       <ProductOfferFormParams
@@ -589,6 +600,7 @@ const ProductGraceForm = ({
       <ProductGraceFormList
         canEditForm1={canEditForm1}
         setIsNew={setIsNew}
+        isNew={isNew}
         setIsEdit={setIsEdit}
         columns={columns}
         originalData={originalData}
@@ -607,6 +619,7 @@ const ProductGraceForm = ({
         setIsModalRegOpen={setIsModalRegOpen}
         isModalEmptyOpen={isModalEmptyOpen} //if user not fill the grace, this modal will open
         setIsModalEmptyOpen={setIsModalEmptyOpen} //if user not fill the grace, this modal will open
+        selectedId={selectedId}
       />
     </div>
   );

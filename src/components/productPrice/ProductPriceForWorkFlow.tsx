@@ -22,7 +22,7 @@ const ProductPriceForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
   } = useProductPrice();
 
   const { setField } = useProductPriceStore();
-  
+  const [selectedId, setSelectedId] = useState<number>(0);
   const [selectedProductPrice, setSelectedProductPrice] =
   useState<ProductPrice | null>(null);
   
@@ -40,12 +40,14 @@ const ProductPriceForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
         (item) => item.id === workFlowRowSelectResponse.workTableRow.formId
       ) || null
     );
-    workFlowRowSelectResponse.workTableRow.formId !== 0 &&
+    if (workFlowRowSelectResponse.workTableRow.formId !== 0) {      
       setSelectedProductPrice(
         productPriceDtlData?.productPrices?.find(
           (item) => item.id === workFlowRowSelectResponse.workTableRow.formId
         ) || null
       );
+      setSelectedId(workFlowRowSelectResponse.workTableRow.formId);
+    }
   }, [
     workFlowRowSelectResponse.workTableRow.formId,
     productPriceDtlData?.productPrices,
@@ -67,6 +69,7 @@ const ProductPriceForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
         setIsNew={() => false}
         setIsEdit={() => true}
         fromWorkFlow={true} //for going to editting in product grace form as default
+        selectedId={selectedId}
       />
     </div>
   );

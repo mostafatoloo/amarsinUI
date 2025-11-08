@@ -416,7 +416,7 @@ Props) => {
     setProductField("productSearchAccYear", yearId);
     handleDebounceFilterChange(
       "productSearchSearch",
-      convertToFarsiDigits(search)
+      search
     );
     setProductField("productSearchPage", 1);
   }, [search, systemId, yearId]);
@@ -528,7 +528,7 @@ Props) => {
         newRow={newRow}
         products={products.map((p) => ({
           id: p.pId,
-          title: convertToFarsiDigits(p.n),
+          title: p.n,
         }))}
         saveList={saveList}
         isLoadingSaveList={isLoadingSaveList}
