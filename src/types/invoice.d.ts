@@ -80,6 +80,7 @@ interface InvoicePaymentResponse {
 
 // api/Invoice/paymentSave
 interface InvoicePaymentSaveRequest {
+  customerId: number;
   invoiceId: number;
   paymentId: number;
   systemId: number;

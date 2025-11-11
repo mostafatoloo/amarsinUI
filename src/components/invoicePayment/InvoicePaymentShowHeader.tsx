@@ -302,6 +302,7 @@ const InvoicePaymentShowHeader = ({
     let request: InvoicePaymentSaveRequest;
 
     request = {
+      customerId:customer?.id ?? 0,
       invoiceId,
       paymentId: 0,
       systemId,
