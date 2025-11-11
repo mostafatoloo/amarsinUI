@@ -223,6 +223,7 @@ export function useCheques() {
           sayadiStatus: 0,
           sayadiMessage: "",
           eCheck: false,
+          delayAdvanceDays:0,
         },
       },
     },

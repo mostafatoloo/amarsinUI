@@ -125,6 +125,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
     sanadDate: "",
     sayadiStatus: 0,
     eCheck: false,
+    delayAdvanceDays: "0",
   });
   /////////////////////////////////////////////////////////////////////
   // Validation function
@@ -214,6 +215,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
       cash_PosSystem: {},
       sanadNum: {},
       sanadDate: {},
+      delayAdvanceDays:{}
     });
     setUpdateFieldsResponse({
       meta: { errorCode: 0, message: "", type: "" },
@@ -297,6 +299,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
       ),
       sayadiStatus: loadPaymentResponse.data.result?.sayadiStatus ?? 0,
       eCheck: loadPaymentResponse.data.result?.eCheck ?? false,
+      delayAdvanceDays: convertToFarsiDigits(loadPaymentResponse.data.result?.delayAdvanceDays ?? 0),
     });
     switch (
       loadPaymentResponse.data.result &&
@@ -472,14 +475,14 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
     if (
       !isLoadingUpdateFields &&
       updateStatus[fieldName]?.errorCode !== undefined &&
-      updateStatus[fieldName]?.errorCode === 0
+      updateStatus[fieldName]?.errorCode === -1
     ) {
       return <img src={Ok} alt="ok" title={updateStatus[fieldName]?.message} />;
     }
     if (
       !isLoadingUpdateFields &&
       updateStatus[fieldName]?.errorCode !== undefined &&
-      updateStatus[fieldName]?.errorCode !== 0
+      updateStatus[fieldName]?.errorCode !== -1
     ) {
       return (
         <img src={Err} alt="err" title={updateStatus[fieldName]?.message} />
@@ -948,6 +951,25 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
           </div>
         )}
       </div>
+      <div className="flex justify-between items-center w-full">
+        <Input
+          disabled={payKind === 1 || !canEditForm}
+          name="delayAdvanceDays"
+          label="مدت تاخیر/تعجیل:"
+          value={cheque.delayAdvanceDays}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setChequeFields("delayAdvanceDays", e.target.value)
+          }
+          onBlur={(e: React.ChangeEvent<HTMLInputElement>) =>
+            updateCheque("delayAdvanceDays", e.target.value)
+          }
+          widthDiv="w-full"
+          widthLabel="w-24"
+          widthInput="w-full"
+          variant="outlined"
+        />
+        {showValidationError("delayAdvanceDays")}
+      </div>
 
       <RegRecievedChequeInfoSanad
         sanadNum={cheque.sanadNum}
@@ -963,17 +985,17 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
         <ModalMessage
           isOpen={isModalOpen}
           backgroundColor={
-            updateFieldsResponse.meta.errorCode === 0
+            updateFieldsResponse.meta.errorCode === -1
               ? "bg-green-200"
               : "bg-red-200"
           }
           bgColorButton={
-            updateFieldsResponse.meta.errorCode === 0
+            updateFieldsResponse.meta.errorCode === -1
               ? "bg-green-500"
               : "bg-red-500"
           }
           bgColorButtonHover={
-            updateFieldsResponse.meta.errorCode === 0
+            updateFieldsResponse.meta.errorCode === -1
               ? "bg-green-600"
               : "bg-red-600"
           }

@@ -41,6 +41,7 @@ export const useChequeStore = create<ChequeState>()((set) => ({
         sayadiStatus: 0,
         sayadiMessage: "",
         eCheck: false,
+        delayAdvanceDays : 0
       },
     },
   },
@@ -72,6 +73,7 @@ export const useChequeStore = create<ChequeState>()((set) => ({
     bankId: {},
     sayadiMessage: {},
     cash_PosSystem: {},
+    delayAdvanceDays:{}
   },
   search: "",
   page: 1,
