@@ -74,12 +74,12 @@ const PreProcurementShowTable = ({
           "-".repeat(dtl.product.length) +
           "\n" +
           convertToFarsiDigits(dtl.productExp),
-        cntStr: convertToFarsiDigits(dtl.cnt),
-        cntT: convertToFarsiDigits(dtl.cntT),
-        costStr: convertToFarsiDigits(formatNumberWithCommas(dtl.cost)),
-        taxStr: convertToFarsiDigits(formatNumberWithCommas(dtl.tax)),
-        dcrmntStr: convertToFarsiDigits(formatNumberWithCommas(dtl.dcrmnt)),
-        totalStr: convertToFarsiDigits(formatNumberWithCommas(dtl.total)),
+        cntStr: convertToFarsiDigits(Number(dtl.cnt)),
+        cntT: convertToFarsiDigits(Number(dtl.cntT)),
+        costStr: convertToFarsiDigits(formatNumberWithCommas(Number(dtl.cost))),
+        taxStr: convertToFarsiDigits(formatNumberWithCommas(Number(dtl.tax))),
+        dcrmntStr: convertToFarsiDigits(formatNumberWithCommas(Number(dtl.dcrmnt))),
+        totalStr: convertToFarsiDigits(formatNumberWithCommas(Number(dtl.total))),
         index: index + 1,
       }))
     );

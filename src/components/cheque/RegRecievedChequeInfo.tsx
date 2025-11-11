@@ -19,7 +19,11 @@ import { useChequeStore } from "../../store/chequeStore";
 import { colors } from "../../utilities/color";
 import ModalMessage from "../layout/ModalMessage";
 import Skeleton from "../layout/Skeleton";
-import { LoadPaymentResponse, SayadChequeInquiryByPaymentIdResponse, UpdateFieldsRequest } from "../../types/cheque";
+import {
+  LoadPaymentResponse,
+  SayadChequeInquiryByPaymentIdResponse,
+  UpdateFieldsRequest,
+} from "../../types/cheque";
 import { UseMutateAsyncFunction } from "@tanstack/react-query";
 import RegRecievedChequeInfoSanad from "./RegRecievedChequeInfoSanad";
 import { FaCircle } from "react-icons/fa";
@@ -83,7 +87,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
   } = useChequeStore();
   const [payKind, setPayKind] = useState<number>(-1);
   const hasInitializedPayKind = useRef(false);
-  
+
   useEffect(() => {
     setPayKind(loadPaymentResponse.data.result?.payKind ?? -1);
   }, [loadPaymentResponse.data.result?.payKind]);
@@ -158,6 +162,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
     }, 100);
   };
   ///////////////////////////////////////////////////////////////////
+  //for api/Payment/bankSearch
   useEffect(() => {
     setField("page", 1);
     setField("lastId", 0);
@@ -170,12 +175,12 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
     setChequeField("page", 1);
     setChequeField("lastId", 0);
   }, [cashPosSystemSerch]);
-  
+
   // Initialize systemId and payKind only once per record
   useEffect(() => {
     const newSystemId = initData?.systemId ?? -1;
     const newPayKind = payKind;
-    
+
     // Only set if payKind is valid and we haven't initialized yet for this record
     if (newPayKind !== -1 && !hasInitializedPayKind.current) {
       setChequeField("systemId", newSystemId);
@@ -183,7 +188,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
       hasInitializedPayKind.current = true;
     }
   }, [payKind, initData?.systemId]);
-  
+
   ///////////////////////////////////////////////////////////////////
   useEffect(() => {
     console.log(yearSearch, systemSearch);
@@ -924,22 +929,24 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
           />
           {showValidationError("dsc")}
         </div>
-        {payKind === 2 && (<div className="flex justify-start items-center gap-2">
-          <input
-            type="checkbox"
-            name="eCheck"
-            checked={cheque.eCheck}
-            disabled={!canEditForm}
-            /*onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+        {payKind === 2 && (
+          <div className="flex justify-start items-center gap-2">
+            <input
+              type="checkbox"
+              name="eCheck"
+              checked={cheque.eCheck}
+              disabled={!canEditForm}
+              /*onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setChequeFields("eCheck", e.target.checked)
           }
           onBlur={(e: React.ChangeEvent<HTMLInputElement>) =>
             updateCheque("eCheck", e.target.checked)
           }*/
-          />
-          <label>الکترونیکی</label>
-          {showValidationError("eCheck")}
-        </div>)}
+            />
+            <label>الکترونیکی</label>
+            {showValidationError("eCheck")}
+          </div>
+        )}
       </div>
 
       <RegRecievedChequeInfoSanad

@@ -300,9 +300,11 @@ export function usePayRequest() {
         sortSrName,
         sortAmount,
       };
-      const url = `/api/PayRequest?Id=${params.id}&YearId=${params.yearId}&SystemId=${
-        params.systemId
-      }&State=${params.state}&RegFDate=${encodeURIComponent(
+      const url = `/api/PayRequest?Id=${params.id}&YearId=${
+        params.yearId
+      }&SystemId=${params.systemId}&State=${
+        params.state
+      }&RegFDate=${encodeURIComponent(
         params.regFDate ?? ""
       )}&RegTDate=${encodeURIComponent(
         params.regTDate ?? ""
@@ -435,7 +437,9 @@ export function usePayRequest() {
       console.log(data, "data in chequeBookDtlSearchQuery");
       setChequeBookDtlSearchResponse(data);
     },*/
-    enabled: chequeBookIdChequeBookDtlSearch !== -1,
+    enabled:
+      chequeBookIdChequeBookDtlSearch !== -1 &&
+      chequeBookIdChequeBookDtlSearch !== undefined,
   } as UseQueryOptions<ChequeBookDtlSearchResponse, Error, ChequeBookDtlSearchResponse, unknown[]>);
   //for Payment/chequeBookDtlById
   const chequeBookDtlByIdQuery = useQuery<
@@ -475,7 +479,9 @@ export function usePayRequest() {
         request.chartId
       }&Acc_System=${request.systemId}&Acc_Year=${request.yearId}&Id=${
         request.id
-      }&Dsc=${encodeURIComponent(request.dsc)} &FlowNo=${request.flowNo}&WFMS_FlowMapId=${request.wFMS_FlowMapId}`;
+      }&Dsc=${encodeURIComponent(request.dsc)} &FlowNo=${
+        request.flowNo
+      }&WFMS_FlowMapId=${request.wFMS_FlowMapId}`;
       console.log(request, "request", url, "url");
       const response = await api.post(url);
 
@@ -505,7 +511,7 @@ export function usePayRequest() {
     //output for PayRequest (using fpr PayRequestShow)
     refetch: payRequest.refetch,
     isLoadingPayRequest: payRequest.isLoading,
-    isFetchingPayRequest:payRequest.isFetching,
+    isFetchingPayRequest: payRequest.isFetching,
     errorPayRequest: payRequest.error,
     payRequest: payRequest.data?.data.result.payRequest.payRequests,
     payRequestMeta: payRequest.data?.meta,

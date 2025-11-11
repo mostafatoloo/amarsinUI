@@ -170,7 +170,7 @@ const ProductOfferParams = ({
       </div>
       {/* send status */}
       <div className="w-full flex gap-2">
-      <input
+        <input
           type="radio"
           name="sendStatus"
           id="sendStatus"

@@ -56,7 +56,6 @@ export default function WorkflowComponent({
   switch (workFlowRowSelectResponse.workTableForms.form1ViewPath) {
     case "Invoice/_Show":
     case "InvoiceBuy/_InvoiceBuy":
-    case "Procurement/_Procurement":
       componentToRender1 = (
         <InvoiceShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
@@ -200,6 +199,7 @@ export default function WorkflowComponent({
       );
       break;
     case "PreProcurement/_PreProcurement": //کارشناس تدارکات -> ثبت پیش فاکتور کالا/خدمات
+    case "Procurement/_Procurement": //خزانه دار-ثبت فاکتور خرید
       componentToRender1 = (
         <PreProcurementShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
@@ -240,7 +240,6 @@ export default function WorkflowComponent({
   switch (workFlowRowSelectResponse.workTableForms.form2ViewPath) {
     case "Invoice/_Show":
     case "InvoiceBuy/_InvoiceBuy":
-    case "Procurement/_Procurement":
       componentToRender2 = (
         <InvoiceShow //کارشناس خرید-> دریافت اصل فاکتور*****************
           workFlowRowSelectResponse={workFlowRowSelectResponse}
@@ -384,6 +383,7 @@ export default function WorkflowComponent({
       );
       break;
     case "PreProcurement/_PreProcurement": //کارشناس تدارکات -> ثبت پیش فاکتور کالا/خدمات
+    case "Procurement/_Procurement": //خزانه دار-ثبت فاکتور خرید
       componentToRender2 = (
         <PreProcurementShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}

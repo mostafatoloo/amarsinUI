@@ -1,8 +1,14 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  UseQueryOptions,
+} from "@tanstack/react-query";
 import api from "../api/axios";
 import { useInvoiceStore } from "../store/invoiceStore";
 import {
   InvoicePaymentResponse,
+  InvoicePaymentSaveRequest,
   InvoiceShowIdResponse,
 } from "../types/invoice";
 
@@ -12,7 +18,10 @@ export function useInvoice() {
     setInvoiceShowIdResponse,
     invoiceId,
     setInvoicePaymentResponse,
+    setInvoicePaymentSaveResponse,
   } = useInvoiceStore();
+
+  const queryClient = new QueryClient();
 
   const query = useQuery<
     InvoiceShowIdResponse,
@@ -36,8 +45,8 @@ export function useInvoice() {
       setInvoiceShowIdResponse(data);
     },
   } as UseQueryOptions<InvoiceShowIdResponse, Error, InvoiceShowIdResponse, unknown[]>);
-  // for Invoice/payment
 
+  // for Invoice/payment
   const invoicePaymentQuery = useQuery<
     InvoicePaymentResponse,
     Error,
@@ -60,6 +69,18 @@ export function useInvoice() {
       setInvoicePaymentResponse(data);
     },
   } as UseQueryOptions<InvoicePaymentResponse, Error, InvoicePaymentResponse, unknown[]>);
+
+  // api/Invoice/paymentSave
+  const invoicePaymentSave = useMutation({
+    mutationFn: async (request: InvoicePaymentSaveRequest) => {
+      const response = await api.post(`/api/Invoice/paymentSave`, request);
+      return response.data;
+    },
+    onSuccess: (data: any) => {
+      setInvoicePaymentSaveResponse(data);
+      queryClient.invalidateQueries({ queryKey: ["invoicePayment"] });
+    },
+  });
   return {
     //getInventoryList: () => query.refetch(), // Optional manual trigger
     refetchInvoiceShowId: () => query.refetch(),
@@ -91,6 +112,24 @@ export function useInvoice() {
     isLoadingInvoicePayment: invoicePaymentQuery.isLoading,
     errorInvoicePayment: invoicePaymentQuery.error,
     invoicePaymentResponse: invoicePaymentQuery.data ?? {
+      meta: { errorCode: 0, message: "", type: "" },
+      data: {
+        result: {
+          customerId: 0,
+          srName: "",
+          dat: "",
+          dsc: "",
+          amnt: "",
+          payments: [],
+        },
+      },
+    },
+
+    //output for api/Invoice/paymentSave
+    isLoadingInvoicePaymentSave: invoicePaymentSave.isPending,
+    errorInvoicePaymentSave: invoicePaymentSave.error,
+    invoicePaymentSave: invoicePaymentSave.mutateAsync,
+    invoicePaymentSaveResponse: invoicePaymentSave.data ?? {
       meta: { errorCode: 0, message: "", type: "" },
       data: {
         result: {

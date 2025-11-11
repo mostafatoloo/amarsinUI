@@ -205,7 +205,7 @@ const PayRequestActiveTab2 = ({
     };
   }, [isModalOpen]);
   ////////////////////////////////////////////////////////////////
-  //initializing chequeBookSearch requests
+  //initializing chequeBookSearch requests api/Payment/chequeBookSearch
   useEffect(() => {
     setField("acc_systemChequeBookSearch", systemId);
     setField("searchChequeBookSearch", chequeBookSearch);

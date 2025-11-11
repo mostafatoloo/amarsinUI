@@ -18,7 +18,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://apitest.dotis.ir',
+        target: process.env.VITE_API_BASE_URL || 'http://apitest.dotis.ir',
         changeOrigin: true,
         secure: false,
       },

@@ -77,16 +77,64 @@ interface InvoicePaymentResponse {
     result: ResultInvoicePayment;
   };
 }
+
+// api/Invoice/paymentSave
+interface InvoicePaymentSaveRequest {
+  invoiceId: number;
+  paymentId: number;
+  systemId: number;
+  kind: number;
+  yearId: number;
+  sayadi: string;
+  prsn: string;
+  bankId: number;
+  bankName_Partners: string;
+  fixSerial: string;
+  no: string;
+  transferenceOwner: string;
+  cash_PosSystem: number;
+  accNo: string;
+  acc_DefCheq: number;
+  sarDate: string;
+  amount: string;
+  dsc: string;
+  updateAcepted: boolean;
+  idempotencyKey: string;
+}
+
+interface InvoicePaymentSaveResponse {
+  meta: Meta;
+  data: InvoicePaymentSaveResponseData;
+}
+
+interface InvoicePaymentSaveResponseData {
+  result: InvoicePaymentSaveResponseResult;
+}
+
+interface InvoicePaymentSaveResponseResult {
+  customerId: number;
+  srName: string;
+  dat: string;
+  dsc: string;
+  amnt: string;
+  payments: Payment[];
+}
+
 export interface InvoiceState {
   formId: number;
-  invoiceId: number;// for Invoice/payment
-  invoicePaymentResponse: InvoicePaymentResponse;// for Invoice/payment
-  setInvoicePaymentResponse: ( // for Invoice/payment
+  invoiceId: number; // for Invoice/payment
+  invoicePaymentResponse: InvoicePaymentResponse; // for Invoice/payment
+  invoicePaymentSaveResponse: InvoicePaymentSaveResponse; // api/Invoice/paymentSave
+  setInvoicePaymentResponse: (
+    // for Invoice/payment
     invoicePaymentResponse: InvoicePaymentResponse
-  ) => void; 
+  ) => void;
   invoiceShowIdResponse: InvoiceShowIdResponse;
   setField: (field: string, value: any) => void;
   setInvoiceShowIdResponse: (
     invoiceShowIdResponse: InvoiceShowIdResponse
+  ) => void;
+  setInvoicePaymentSaveResponse: (
+    invoicePaymentSaveResponse: InvoicePaymentSaveResponse // api/Invoice/paymentSave
   ) => void;
 }
