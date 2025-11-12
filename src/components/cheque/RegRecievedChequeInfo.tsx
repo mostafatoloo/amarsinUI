@@ -497,7 +497,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
   const handleSayadiClick = () => {
     console.log("handleSayadiClick");
     setIsSayadiClick(true);
-    setChequeField("paymentId", loadPaymentResponse.data.result?.id ?? 0);
+    setChequeField("sayadiPaymentId", loadPaymentResponse.data.result?.id ?? -1);
     // Increment trigger to force refetch even with same values
     setChequeField("paymentIdTrigger", Date.now());
   };

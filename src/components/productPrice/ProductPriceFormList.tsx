@@ -453,12 +453,12 @@ const ProductPriceFormList = ({
         isOpen={isModalRegOpen}
         onClose={() => setIsModalRegOpen(false)}
         backgroundColor={
-          productPriceSaveResponse?.meta.errorCode !== -1
+          productPriceSaveResponse?.meta.errorCode <= 0
             ? "bg-green-200"
             : "bg-red-200"
         }
         bgColorButton={
-          productPriceSaveResponse?.meta.errorCode !== -1
+          productPriceSaveResponse?.meta.errorCode <= 0
             ? "bg-green-500"
             : "bg-red-500"
         }

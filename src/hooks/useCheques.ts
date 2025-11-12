@@ -30,7 +30,7 @@ export function useCheques() {
     page,
     lastId,
     systemId,
-    paymentId,
+    sayadiPaymentId,
     setCashPosSystemSearchResponse,
     setPaymentAttachmentResponse,
     setSayadChequeInquiryByPaymentIdResponse,
@@ -152,14 +152,14 @@ export function useCheques() {
     SayadChequeInquiryByPaymentIdResponse,
     unknown[]
   >({
-    queryKey: ["sayadChequeInquiryByPaymentId", paymentId, paymentIdTrigger],
+    queryKey: ["sayadChequeInquiryByPaymentId", sayadiPaymentId, paymentIdTrigger],
     queryFn: async () => {
-      const url: string = `/api/Payment/sayadChequeInquiryByPaymentId?PaymentId=${paymentId}`;
+      const url: string = `/api/Payment/sayadChequeInquiryByPaymentId?PaymentId=${sayadiPaymentId}`;
       console.log(url, "url");
       const response = await api.get(url);
       return response.data;
     },
-    //enabled: paymentId !== -1,
+    enabled: sayadiPaymentId !== -1,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     onSuccess: (data: any) => {

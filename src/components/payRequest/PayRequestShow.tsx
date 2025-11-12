@@ -143,7 +143,7 @@ const PayRequestShow = ({
     if (isModalRegOpen) {
       timeoutId = setTimeout(() => {
         setIsModalRegOpen(false);
-        if (payRequestSaveResponseStore?.meta.errorCode === -1) {
+        if (payRequestSaveResponseStore?.meta.errorCode <=0) {
           setIsNew(false);
           setIsEdit(false);
         }
@@ -605,18 +605,18 @@ const PayRequestShow = ({
         isOpen={isModalRegOpen}
         onClose={() => setIsModalRegOpen(false)}
         backgroundColor={
-          payRequestSaveResponseStore?.meta.errorCode === -1
+          payRequestSaveResponseStore?.meta.errorCode <= 0
             ? "bg-green-200"
             : "bg-red-200"
         }
         bgColorButton={
-          payRequestSaveResponseStore?.meta.errorCode === -1
+          payRequestSaveResponseStore?.meta.errorCode <= 0
             ? "bg-green-500"
             : "bg-red-500"
         }
         color="text-white"
         message={
-          payRequestSaveResponseStore?.meta.errorCode !== -1
+          payRequestSaveResponseStore?.meta.errorCode >0
             ? payRequestSaveResponseStore?.meta.message || ""
             : "اطلاعات با موفقیت ثبت شد."
         }

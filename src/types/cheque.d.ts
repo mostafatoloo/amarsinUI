@@ -165,7 +165,7 @@ export interface ChequeState
   includeBase64: boolean;
   //end PaymentAttachment request parameters
   updateStatus: UpdateStatus;
-  paymentId: number; //for Payment/sayadChequeInquiryByPaymentId
+  sayadiPaymentId: number; //for Payment/sayadChequeInquiryByPaymentId
   paymentIdTrigger: number; //for Payment/sayadChequeInquiryByPaymentId
   loadPaymentResponse: LoadPaymentResponse;
   sayadChequeInquiryByPaymentIdResponse: SayadChequeInquiryByPaymentIdResponse;//for Payment/sayadChequeInquiryByPaymentId

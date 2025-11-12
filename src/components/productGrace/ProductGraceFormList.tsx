@@ -438,18 +438,18 @@ const ProductGraceFormList = ({
         isOpen={isModalRegOpen}
         onClose={() => setIsModalRegOpen(false)}
         backgroundColor={
-          productGraceSaveResponse?.meta.errorCode === -1
+          productGraceSaveResponse?.meta.errorCode <= 0
             ? "bg-green-200"
             : "bg-red-200"
         }
         bgColorButton={
-          productGraceSaveResponse?.meta.errorCode === -1
+          productGraceSaveResponse?.meta.errorCode <= 0
             ? "bg-green-500"
             : "bg-red-500"
         }
         color="text-white"
         message={
-          productGraceSaveResponse?.meta.errorCode !== -1
+          productGraceSaveResponse?.meta.errorCode >0
             ? productGraceSaveResponse?.meta.message || ""
             : "اطلاعات با موفقیت ثبت شد."
         }

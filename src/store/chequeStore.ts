@@ -114,7 +114,7 @@ export const useChequeStore = create<ChequeState>()((set) => ({
   actCode: "Last",
   curId: -1,
   includeBase64: false,
-  paymentId: -1, //for Payment/sayadChequeInquiryByPaymentId
+  sayadiPaymentId: -1, //for Payment/sayadChequeInquiryByPaymentId
   paymentIdTrigger: 0, //for Payment/sayadChequeInquiryByPaymentId
   sayadChequeInquiryByPaymentIdResponse: {
     //for Payment/sayadChequeInquiryByPaymentId

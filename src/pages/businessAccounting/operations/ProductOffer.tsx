@@ -619,12 +619,12 @@ const ProductOffer = () => {
         isOpen={isModalConfirmOpen}
         onClose={() => setIsModalConfirmOpen(false)}
         backgroundColor={
-          productOfferDoFirstFlow?.meta.errorCode === -1
+          (productOfferDoFirstFlow?.meta?.errorCode ?? 0) <= 0
             ? "bg-green-200"
             : "bg-red-200"
         }
         bgColorButton={
-          productOfferDoFirstFlow?.meta.errorCode === -1
+          (productOfferDoFirstFlow?.meta?.errorCode ?? 0) <= 0
             ? "bg-green-500"
             : "bg-red-500"
         }
@@ -640,7 +640,7 @@ const ProductOffer = () => {
         bgColorButtonHover="bg-red-600"
         color="text-white"
         message={
-          productOfferDelResponse?.meta.errorCode !== -1
+          productOfferDelResponse?.meta.errorCode >0
             ? productOfferDelResponse?.meta.message || ""
             : "اطلاعات با موفقیت حذف شد."
         }

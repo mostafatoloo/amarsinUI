@@ -175,12 +175,12 @@ const WorkflowRowSelectHeader = ({
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           backgroundColor={
-            workFlowDoFlowResponse?.meta.errorCode === -1
+            workFlowDoFlowResponse?.meta.errorCode <= 0
               ? "bg-green-200"
               : "bg-red-200"
           }
           bgColorButton={
-            workFlowDoFlowResponse?.meta.errorCode === -1
+            workFlowDoFlowResponse?.meta.errorCode <= 0
               ? "bg-green-500"
               : "bg-red-500"
           }

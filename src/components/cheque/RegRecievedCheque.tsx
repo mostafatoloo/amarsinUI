@@ -23,6 +23,7 @@ const RegRecievedCheque = ({
   // Set formId BEFORE useCheques hook runs to prevent stale queries
   if(chequeFormId!==workFlowRowSelectResponse.workTableRow.formId){
     setField("formId", workFlowRowSelectResponse.workTableRow.formId);
+    setField("sayadiPaymentId", -1);
   }
   
   const {

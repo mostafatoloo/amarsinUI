@@ -1,14 +1,15 @@
 import {
-  QueryClient,
   useMutation,
   useQuery,
   UseQueryOptions,
+  useQueryClient,
 } from "@tanstack/react-query";
 import api from "../api/axios";
 import { useInvoiceStore } from "../store/invoiceStore";
 import {
   InvoicePaymentResponse,
   InvoicePaymentSaveRequest,
+  InvoicePaymentSaveResponse,
   InvoiceShowIdResponse,
 } from "../types/invoice";
 
@@ -21,7 +22,7 @@ export function useInvoice() {
     setInvoicePaymentSaveResponse,
   } = useInvoiceStore();
 
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
 
   const query = useQuery<
     InvoiceShowIdResponse,
@@ -76,9 +77,10 @@ export function useInvoice() {
       const response = await api.post(`/api/Invoice/paymentSave`, request);
       return response.data;
     },
-    onSuccess: (data: any) => {
+    onSuccess: (data: InvoicePaymentSaveResponse) => {
       setInvoicePaymentSaveResponse(data);
-      queryClient.invalidateQueries({ queryKey: ["invoicePayment"] });
+      if (data.meta.errorCode <= 0)
+        queryClient.invalidateQueries({ queryKey: ["invoicePayment"] });
     },
   });
   return {

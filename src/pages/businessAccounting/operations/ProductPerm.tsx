@@ -589,12 +589,12 @@ const ProductPerm = () => {
         isOpen={isModalConfirmOpen}
         onClose={() => setIsModalConfirmOpen(false)}
         backgroundColor={
-          productPermDoFirstFlowResponse?.meta.errorCode === -1
+          productPermDoFirstFlowResponse?.meta.errorCode <= 0
             ? "bg-green-200"
             : "bg-red-200"
         }
         bgColorButton={
-          productPermDoFirstFlowResponse?.meta.errorCode === -1
+          productPermDoFirstFlowResponse?.meta.errorCode <= 0
             ? "bg-green-500"
             : "bg-red-500"
         }
@@ -610,7 +610,7 @@ const ProductPerm = () => {
         bgColorButtonHover="bg-red-600"
         color="text-white"
         message={
-          productPermDelResponse?.meta.errorCode !== -1
+          productPermDelResponse?.meta.errorCode >0
             ? productPermDelResponse?.meta.message || ""
             : "اطلاعات با موفقیت حذف شد."
         }

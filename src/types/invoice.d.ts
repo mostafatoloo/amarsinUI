@@ -85,6 +85,7 @@ interface InvoicePaymentSaveRequest {
   paymentId: number;
   systemId: number;
   kind: number;
+  payKind: number;
   yearId: number;
   sayadi: string;
   prsn: string;

@@ -332,12 +332,12 @@ const PreProcurementAttachment = ({
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         backgroundColor={
-          saveResponse?.meta.errorCode === -1
+          saveResponse?.meta.errorCode <= 0
             ? "bg-green-200"
             : "bg-red-200"
         }
         bgColorButton={
-          saveResponse?.meta.errorCode === -1
+          saveResponse?.meta.errorCode <= 0
             ? "bg-green-500"
             : "bg-red-500"
         }

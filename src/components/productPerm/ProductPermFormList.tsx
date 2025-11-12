@@ -387,18 +387,18 @@ const ProductPermFormList = ({
         isOpen={isModalRegOpen}
         onClose={() => setIsModalRegOpen(false)}
         backgroundColor={
-          productPermSaveResponse?.meta.errorCode === -1
+          productPermSaveResponse?.meta.errorCode <= 0
             ? "bg-green-200"
             : "bg-red-200"
         }
         bgColorButton={
-          productPermSaveResponse?.meta.errorCode === -1
+          productPermSaveResponse?.meta.errorCode <= 0
             ? "bg-green-500"
             : "bg-red-500"
         }
         color="text-white"
         message={
-          productPermSaveResponse?.meta.errorCode !== -1
+          productPermSaveResponse?.meta.errorCode >0
             ? productPermSaveResponse?.meta.message || ""
             : "اطلاعات با موفقیت ثبت شد."
         }

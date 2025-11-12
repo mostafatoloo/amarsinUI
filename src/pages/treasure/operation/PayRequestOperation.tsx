@@ -701,12 +701,12 @@ const PayRequestOperation = () => {
         isOpen={isModalConfirmOpen}
         onClose={() => setIsModalConfirmOpen(false)}
         backgroundColor={
-          payRequestDoFirstFlowResponse?.meta.errorCode === -1
+          payRequestDoFirstFlowResponse?.meta.errorCode <= 0
             ? "bg-green-200"
             : "bg-red-200"
         }
         bgColorButton={
-          payRequestDoFirstFlowResponse?.meta.errorCode === -1
+          payRequestDoFirstFlowResponse?.meta.errorCode <= 0
             ? "bg-green-500"
             : "bg-red-500"
         }
@@ -722,7 +722,7 @@ const PayRequestOperation = () => {
         bgColorButtonHover="bg-red-600"
         color="text-white"
         message={
-          payRequestDelResponse?.meta.errorCode !== -1
+          payRequestDelResponse?.meta.errorCode >0
             ? payRequestDelResponse?.meta.message || ""
             : "اطلاعات با موفقیت حذف شد."
         }

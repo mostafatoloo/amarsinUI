@@ -623,12 +623,12 @@ const ProductGrace = () => {
         isOpen={isModalConfirmOpen}
         onClose={() => setIsModalConfirmOpen(false)}
         backgroundColor={
-          productGraceDoFirstFlowResponse?.meta.errorCode === -1
+          productGraceDoFirstFlowResponse?.meta.errorCode <= 0
             ? "bg-green-200"
             : "bg-red-200"
         }
         bgColorButton={
-          productGraceDoFirstFlowResponse?.meta.errorCode === -1
+          productGraceDoFirstFlowResponse?.meta.errorCode <= 0
             ? "bg-green-500"
             : "bg-red-500"
         }
@@ -644,7 +644,7 @@ const ProductGrace = () => {
         bgColorButtonHover="bg-red-600"
         color="text-white"
         message={
-          productGraceDelResponse?.meta.errorCode !== -1
+          productGraceDelResponse?.meta.errorCode >0
             ? productGraceDelResponse?.meta.message || ""
             : "اطلاعات با موفقیت حذف شد."
         }

@@ -7,7 +7,7 @@ import {
   convertToLatinDigits,
   convertToPersianDate,
   currencyStringToNumber,
-  formatNumberWithCommas,
+  handleCurrencyInputChange,
 } from "../../utilities/general";
 import {
   InvoicePaymentResponse,
@@ -125,11 +125,11 @@ const InvoicePaymentShowHeader = ({
   );
 
   const { setField: setPaymentField } = usePaymentStore();
-
+  const [message, setMessage] = useState("");
   const { systemId, yearId } = useGeneralContext();
   // order paymentKinds by id is handled by useMemo above
   useEffect(() => {
-    console.log(customerSearch,posSearch);
+    console.log(customerSearch, posSearch);
   }, []);
 
   useEffect(() => {
@@ -148,11 +148,7 @@ const InvoicePaymentShowHeader = ({
       title: "",
     });
     setPayKind(0);
-    setAmnt(
-      convertToFarsiDigits(
-        formatNumberWithCommas(Number(invoicePaymentResponse.data.result.amnt))
-      )
-    );
+    setAmnt(convertToFarsiDigits(invoicePaymentResponse.data.result.amnt));
     setAcc_DefCheq({
       id: 0,
       title: "",
@@ -176,6 +172,7 @@ const InvoicePaymentShowHeader = ({
     setPrsn("");
     setFishNo("");
     setCash_PosSystem({ id: 0, title: "" });
+    setMessage("");
   }, [paymentKind?.id]);
 
   useEffect(() => {
@@ -210,6 +207,11 @@ const InvoicePaymentShowHeader = ({
   useEffect(() => {
     setDsc((prev) => `${prev} ${bankAccount?.title}`);
   }, [bankAccount]);
+  //برای پیغام
+  useEffect(() => {
+    setMessage(invoicePaymentSaveResponse.meta?.message ?? "");
+  }, [invoicePaymentSaveResponse]);
+
   //برای صندوق
   useEffect(() => {
     setCashPosSystemField("systemId", systemId);
@@ -300,13 +302,21 @@ const InvoicePaymentShowHeader = ({
   ): Promise<any> => {
     if (e) e.preventDefault();
     let request: InvoicePaymentSaveRequest;
-
+    let cash_Pos = 0;
+    if (paymentKind?.id === 0) {
+      cash_Pos = cashPosSystem?.id ?? 0;
+    } else if (paymentKind?.id === 1) {
+      cash_Pos = cash_PosSystem?.id ?? 0;
+    } else if (paymentKind?.id === 9) {
+      cash_Pos = bankAccount?.id ?? 0;
+    }
     request = {
-      customerId:customer?.id ?? 0,
+      customerId: customer?.id ?? 0,
       invoiceId,
       paymentId: 0,
       systemId,
       kind: payKind,
+      payKind: paymentKind?.id ?? 0,
       yearId,
       sayadi: convertToLatinDigits(sayadi),
       prsn,
@@ -315,7 +325,7 @@ const InvoicePaymentShowHeader = ({
       fixSerial: convertToLatinDigits(fixSerial),
       no: convertToLatinDigits(fishNo),
       transferenceOwner: convertToLatinDigits(transferenceOwner),
-      cash_PosSystem: cash_PosSystem?.id ?? 0,
+      cash_PosSystem: cash_Pos,
       accNo: convertToLatinDigits(accNo),
       acc_DefCheq: acc_DefCheq?.id ?? 0,
       sarDate: sarDate !== null ? convertToPersianDate(sarDate) : "",
@@ -735,7 +745,9 @@ const InvoicePaymentShowHeader = ({
           <input
             type="text"
             value={amnt}
-            onChange={(e) => setAmnt(convertToFarsiDigits(e.target.value))}
+            onChange={(e) => {
+              handleCurrencyInputChange(e.target.value, setAmnt);
+            }}
             //disabled={!canEditForm}
             className="text-sm text-gray-600 w-full p-1 border border-gray-300 rounded-md"
           />
@@ -748,10 +760,10 @@ const InvoicePaymentShowHeader = ({
               color:
                 invoicePaymentSaveResponse.meta.errorCode > 0
                   ? colors.red500
-                  : colors.green200,
+                  : colors.green700,
             }}
           >
-            {invoicePaymentSaveResponse.meta?.message ?? ""}
+            {message}
           </label>
           <Button
             text={isLoadingInvoicePaymentSave ? "در حال ثبت اطلاعات..." : "ثبت"}

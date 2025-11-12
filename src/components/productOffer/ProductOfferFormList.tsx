@@ -399,18 +399,18 @@ const ProductOfferFormList = ({
         isOpen={isModalRegOpen}
         onClose={() => setIsModalRegOpen(false)}
         backgroundColor={
-          productOfferSaveResponse?.meta.errorCode === -1
+          productOfferSaveResponse?.meta.errorCode <= 0
             ? "bg-green-200"
             : "bg-red-200"
         }
         bgColorButton={
-          productOfferSaveResponse?.meta.errorCode === -1
+          productOfferSaveResponse?.meta.errorCode <= 0
             ? "bg-green-500"
             : "bg-red-500"
         }
         color="text-white"
         message={
-          productOfferSaveResponse?.meta.errorCode !== -1
+          productOfferSaveResponse?.meta.errorCode >0
             ? productOfferSaveResponse?.meta.message || ""
             : "اطلاعات با موفقیت ثبت شد."
         }

@@ -703,12 +703,12 @@ const PurchaseRequestIndent = () => {
         isOpen={isModalConfirmOpen}
         onClose={() => setIsModalConfirmOpen(false)}
         backgroundColor={
-          indentDoFirstFlowResponse?.meta.errorCode === -1
+          indentDoFirstFlowResponse?.meta.errorCode <= 0
             ? "bg-green-200"
             : "bg-red-200"
         }
         bgColorButton={
-          indentDoFirstFlowResponse?.meta.errorCode === -1
+          indentDoFirstFlowResponse?.meta.errorCode <= 0
             ? "bg-green-500"
             : "bg-red-500"
         }
