@@ -21,17 +21,22 @@ const ProductOfferForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
     isLoadingProductOfferSave,
   } = useProductOffer();
 
-  const { setField } = useProductOfferStore();
+  const { setField,id } = useProductOfferStore();
   const [selectedId, setSelectedId] = useState<number>(0);
   const [selectedProductOffer, setSelectedProductOffer] =
     useState<ProductOffer | null>(null);
 
   const { yearId, systemId } = useGeneralContext();
-  useEffect(() => {
+  if (id!==workFlowRowSelectResponse.workTableRow.formId){
+    setField("yearId", yearId);
+    setField("systemId", systemId);
+    setField("id", workFlowRowSelectResponse.workTableRow.formId);
+  }
+  /*useEffect(() => {
     setField("acc_Year", yearId);
     setField("acc_System", systemId);
     setField("id", workFlowRowSelectResponse.workTableRow.formId);
-  }, [workFlowRowSelectResponse.workTableRow.formId, yearId, systemId]);
+  }, [workFlowRowSelectResponse.workTableRow.formId, yearId, systemId]);*/
 
   useEffect(() => {
     if (workFlowRowSelectResponse.workTableRow.formId !== 0) {

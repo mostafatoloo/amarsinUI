@@ -17,7 +17,8 @@ import { useChequeStore } from "../store/chequeStore";
 export function useCheques() {
   const {
     id,
-    formId,
+    paymentAttachmentFormId,
+    loadPaymentFormId,
     actCode,
     curId,
     payKind,
@@ -100,17 +101,17 @@ export function useCheques() {
 
   //for Payment/attachment
   const paymentAttachment = useQuery({
-    queryKey: ["paymentAttachment", actCode, curId, includeBase64, formId],
+    queryKey: ["paymentAttachment", actCode, curId, includeBase64, paymentAttachmentFormId],
     queryFn: async () => {
       //console.log(formId, "formId in paymentAttachment");
-      const url: string = `/api/Payment/attachment?id=${formId}&actCode=${encodeURIComponent(
+      const url: string = `/api/Payment/attachment?id=${paymentAttachmentFormId}&actCode=${encodeURIComponent(
         actCode
       )}&curId=${curId}&includeBase64=${includeBase64}`;
       console.log(url, "url");
       const response = await api.get(url);
       return response.data;
     },
-    enabled: formId !== -1,
+    enabled: paymentAttachmentFormId !== -1,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
@@ -129,15 +130,15 @@ export function useCheques() {
     LoadPaymentResponse,
     unknown[]
   >({
-    queryKey: ["loadPayment", formId],
+    queryKey: ["loadPayment", loadPaymentFormId],
     queryFn: async () => {
-      const url: string = `/api/Payment/load/${formId}`;
+      const url: string = `/api/Payment/load/${loadPaymentFormId}`;
       console.log(url, "url");
 
       const response = await api.get(url);
       return response.data;
     },
-    enabled: formId !== -1,
+    enabled: loadPaymentFormId !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {

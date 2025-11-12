@@ -14,7 +14,7 @@ import {
 
 export function useWarehouse() {
   const {
-    formId,
+    formIdWarehouseTemporaryReceipt,
     iocId,
     //for api/Warehouse/Search?search=%D8%A7&page=1&pageSize=30&lastId=0&CustomerTypeId=-1
     search,
@@ -48,9 +48,9 @@ export function useWarehouse() {
     WarehouseShowIdResponse,
     unknown[]
   >({
-    queryKey: ["warehouseShowId", formId],
+    queryKey: ["warehouseShowId", formIdWarehouseTemporaryReceipt],
     queryFn: async () => {
-      const url: string = `api/WarehouseTemporaryReceipt/show/${formId}`;
+      const url: string = `api/WarehouseTemporaryReceipt/show/${formIdWarehouseTemporaryReceipt}`;
       console.log(url, "url");
 
       const response = await api.get(url);
@@ -59,7 +59,7 @@ export function useWarehouse() {
     onSuccess: (data: any) => {
       setWarehouseShowIdResponse(data);
     },
-    enabled: formId !== -1, // Only fetch if param is available
+    enabled: formIdWarehouseTemporaryReceipt !== -1, // Only fetch if param is available
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
   } as UseQueryOptions<WarehouseShowIdResponse, Error, WarehouseShowIdResponse, unknown[]>);

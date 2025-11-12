@@ -159,7 +159,8 @@ export interface ChequeState
     ChequeBookSearchRequest {
   id: number;
   //PaymentAttachment request parameters
-  formId: number;
+  paymentAttachmentFormId: number;
+  loadPaymentFormId: number;
   actCode: string;
   curId: number;
   includeBase64: boolean;

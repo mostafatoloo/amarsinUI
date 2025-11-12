@@ -21,7 +21,6 @@ const PaymentInvoiceShow = ({
   refetchSwitch,
   setRefetchSwitch,
 }: Props) => {
-  
   const [dsc, setDsc] = useState("");
   const [rem, setRem] = useState("");
   const [isEqualSum, setIsEqualSum] = useState(false);
@@ -35,9 +34,9 @@ const PaymentInvoiceShow = ({
     settlementAveragesResponse,
   } = usePaymentInvoices();
   const { isLoadingUpdateFields, updateFields } = useCheques();
-  const { updateFieldsResponse } = useChequeStore();
+  const { updateFieldsResponse,setField: setPaymentField } = useChequeStore();
   const { systemId, yearId } = useGeneralContext();
-  const { setField } = usePaymentInvoiceStore();
+  const { setField, paymentId } = usePaymentInvoiceStore();
   const { authApiResponse } = useAuthStore();
   const canEditForm = workFlowRowSelectResponse.workTableForms.canEditForm1;
   const usrId = authApiResponse?.data?.result?.login?.usrId ?? 0;
@@ -50,17 +49,14 @@ const PaymentInvoiceShow = ({
       setRefetchSwitch(false);
     }
   }, [refetchSwitch]);
-////////////////////////////////////////////////////////////////////////////
-  useEffect(() => {
+  ////////////////////////////////////////////////////////////////////////////
+  if (paymentId !== workFlowRowSelectResponse.workTableRow.formId) {
     setField("paymentId", workFlowRowSelectResponse.workTableRow.formId);
+    setPaymentField("loadPaymentFormId", workFlowRowSelectResponse.workTableRow.formId);
+    setPaymentField("payKind",-1);
     setField("systemId", systemId);
     setField("yearId", yearId);
-  }, [
-    workFlowRowSelectResponse.workTableRow.formId,
-    setField,
-    systemId,
-    yearId,
-  ]);
+  }
 
   return (
     <form className="mt-2 p-1 gap-1 bg-gray-200 border border-gray-300 rounded-md w-full text-gray-600 text-sm ">

@@ -21,17 +21,22 @@ const ProductPriceForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
     isLoadingProductPriceSave,
   } = useProductPrice();
 
-  const { setField } = useProductPriceStore();
+  const { setField,id } = useProductPriceStore();
   const [selectedId, setSelectedId] = useState<number>(0);
   const [selectedProductPrice, setSelectedProductPrice] =
   useState<ProductPrice | null>(null);
   
   const {yearId, systemId  }=useGeneralContext()
-  useEffect(() => {
+  if (id!==workFlowRowSelectResponse.workTableRow.formId){
+    setField("yearId", yearId);
+    setField("systemId", systemId);
+    setField("id", workFlowRowSelectResponse.workTableRow.formId);
+  }
+  /*useEffect(() => {
     setField("yearId", yearId);
     setField("systemId",systemId );
     setField("id", workFlowRowSelectResponse.workTableRow.formId);
-  }, [workFlowRowSelectResponse.workTableRow.formId, yearId,systemId]);
+  }, [workFlowRowSelectResponse.workTableRow.formId, yearId,systemId]);*/
 
   useEffect(() => {
     console.log(productPriceDtlData);

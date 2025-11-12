@@ -13,6 +13,7 @@ import { useWarehouse } from "../../hooks/useWarehouse";
 import WarehouseIndentTable from "./WarehouseIndentTable";
 import ShowMessages from "../controls/ShowMessages";
 import { colors } from "../../utilities/color";
+import { useTTacStore } from "../../store/ttacStore";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -28,14 +29,16 @@ const WarehouseShow = ({
   const [isModalOpenReg, setIsModalOpenReg] = useState(false);
   const [statusClicked, setStatusClicked] = useState(false);
   const [confirmHasError, setConfirmHasError] = useState(false);
-  const { selectIndentsResponse, regResponse, formId, setField } =
+  const { selectIndentsResponse, regResponse, formIdWarehouseTemporaryReceipt, setField } =
     useWarehouseStore();
-  
+  //const { setField: setTTacField } = useTTacStore();
+
   // Set formId BEFORE useWarehouse hook runs to prevent stale queries
-  if (formId !== workFlowRowSelectResponse.workTableRow.formId) {
-    setField("formId", workFlowRowSelectResponse.workTableRow.formId);
+  if (formIdWarehouseTemporaryReceipt !== workFlowRowSelectResponse.workTableRow.formId) {
+    setField("formIdWarehouseTemporaryReceipt", workFlowRowSelectResponse.workTableRow.formId);
+    setField("idProductCatalogRequest", -1);
   }
-  
+
   const {
     warehouseShowIdResponse,
     isLoadingWarehouseShowId,

@@ -290,7 +290,7 @@ export interface WarehouseTemporaryReceiptPurchaseRegResponse {
   data: DataWarehouseTemporaryReceiptPurchaseReg;
 };
 export interface WarehouseState extends WarehouseSearchRequest {
-  formId: number;
+  formIdWarehouseTemporaryReceipt: number;
   productId: number;
   iocId: number;
   receiptPurchaseId:number;

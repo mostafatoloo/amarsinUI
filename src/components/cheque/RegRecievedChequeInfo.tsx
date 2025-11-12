@@ -495,7 +495,6 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
   }
 
   const handleSayadiClick = () => {
-    console.log("handleSayadiClick");
     setIsSayadiClick(true);
     setChequeField("sayadiPaymentId", loadPaymentResponse.data.result?.id ?? -1);
     // Increment trigger to force refetch even with same values
@@ -939,6 +938,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
               name="eCheck"
               checked={cheque.eCheck}
               disabled={!canEditForm}
+              onChange={(e)=>console.log(e.target.checked)}
               /*onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setChequeFields("eCheck", e.target.checked)
           }

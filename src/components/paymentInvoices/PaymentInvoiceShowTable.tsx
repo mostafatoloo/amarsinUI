@@ -500,7 +500,7 @@ const PaymentInvoiceShowTable = ({
   /////////////////////////////////////////////////////
   const getAllowedDaysForAverage = () => {
     const monthlyAvg = calculateMonthlyAvg();
-    console.log(monthlyAvg, "monthlyAvg");
+    //console.log(monthlyAvg, "monthlyAvg");
     const allowedDays = settlementAveragesResponse.data.result.find(
       (item) => item.minSum < monthlyAvg && item.maxSum > monthlyAvg
     );
@@ -532,13 +532,7 @@ const PaymentInvoiceShowTable = ({
     const allowedDays = getAllowedDaysForAverage();
     let totalGraceDays = calculateTotalGraceDays();
     //finding last invoice
-    /*const lastDate =
-      data
-        .filter((row) => row.check)
-        .sort(
-          (a, b) => new Date(b.dat).getTime() - new Date(a.dat).getTime()
-        )[0]?.dat ?? "";*/
-    console.log(allowedDays, totalGraceDays, "allowedDays and totalGraceDays");
+    //console.log(allowedDays, totalGraceDays, "allowedDays and totalGraceDays");
     let today = convertToPersianDate(new Date());
     let maxDueDate = addPersianDays(today, allowedDays + totalGraceDays);
     return maxDueDate;

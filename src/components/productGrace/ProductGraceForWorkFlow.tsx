@@ -21,17 +21,24 @@ const ProductGraceForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
     isLoadingProductGraceSave,
   } = useProductGrace();
 
-  const { setField } = useProductGraceStore();
+  const { setField , id } = useProductGraceStore();
   const [selectedId, setSelectedId] = useState<number>(0);
   const [selectedProductGrace, setSelectedProductGrace] =
     useState<ProductGrace | null>(null);
 
   const { yearId, systemId } = useGeneralContext();
-  useEffect(() => {
+
+  if (id!==workFlowRowSelectResponse.workTableRow.formId){
     setField("yearId", yearId);
     setField("systemId", systemId);
     setField("id", workFlowRowSelectResponse.workTableRow.formId);
-  }, [workFlowRowSelectResponse.workTableRow.formId, yearId, systemId]);
+  }
+
+  /*useEffect(() => {
+    setField("yearId", yearId);
+    setField("systemId", systemId);
+    setField("id", workFlowRowSelectResponse.workTableRow.formId);
+  }, [workFlowRowSelectResponse.workTableRow.formId, yearId, systemId]);*/
 
   ////////////////////////////////////////////////////////////////////////
   useEffect(() => {

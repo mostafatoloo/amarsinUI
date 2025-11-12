@@ -339,10 +339,9 @@ const ProductGraceForm = ({
       productGraceDtls !== undefined
     ) {
       //for edit
-      console.log(productGraceDtls, "productGraceDtls");
       setAddList(
         productGraceDtls.map((item) => {
-          console.log(item, "item");
+          //console.log(item, "item");
           return {
             ...item,
             id: item.id,
@@ -531,10 +530,6 @@ const ProductGraceForm = ({
       console.error("Error ثبت :", error);
     }
   };
-  ///////////////////////////////////////////////////////
-  useEffect(() => {
-    console.log(isNew, "isNew in ProductGraceForm");
-  }, [isNew])
   //////////////////////////////////////////////////////
   return (
     <div className="flex flex-col gap-2">

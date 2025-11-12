@@ -5,6 +5,8 @@ import { useDelivery } from "../../hooks/useDelivery";
 import DeliveryShowTable from "./DeliveryShowTable";
 import DeliveryShowHeader from "./DeliveryShowHeader";
 import { useDeliveryStore } from "../../store/deliveryStore";
+import { useTTacStore } from "../../store/ttacStore";
+import { useWarehouseStore } from "../../store/warehouseStore";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -13,7 +15,9 @@ type Props = {
 };
 
 const DeliveryShow = ({ workFlowRowSelectResponse, refetchSwitch, setRefetchSwitch }: Props) => {
-  const { setField } = useDeliveryStore();
+  const { setField, id } = useDeliveryStore();
+  const { setField:setTTacField } = useTTacStore();
+  const {setField:setWarehouseField }=useWarehouseStore();
   const { deliveryShowResponse, isLoadingDeliveryShowQuery, refetchDeliveryShowQuery } = useDelivery();
   const canEditForm = workFlowRowSelectResponse.workTableForms.canEditForm2;
 
@@ -27,9 +31,20 @@ const DeliveryShow = ({ workFlowRowSelectResponse, refetchSwitch, setRefetchSwit
   }, [refetchSwitch]);
   ////////////////////////////////////////////////////////////////////////
   // for Delivery/:id
-  useEffect(() => {
+  if (id !== workFlowRowSelectResponse.workTableRow.formId) {
     setField("id", workFlowRowSelectResponse.workTableRow.formId);
-  }, [workFlowRowSelectResponse.workTableRow.formId]);
+    setWarehouseField("formIdWarehouseTemporaryReceipt",-1)
+    setTTacField("ttacRequestId", -1);
+    setTTacField("systemId", -1);
+    setTTacField("yearId", -1);
+  }
+  /*useEffect(() => {
+    setField("id", workFlowRowSelectResponse.workTableRow.formId);
+    setTTacField("ttacRequestId", -1);
+    setTTacField("systemId", -1);
+    setTTacField("yearId", -1);
+
+  }, [workFlowRowSelectResponse.workTableRow.formId]);*/
 
   return (
     <div>

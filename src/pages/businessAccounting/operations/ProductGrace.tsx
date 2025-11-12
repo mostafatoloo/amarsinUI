@@ -141,9 +141,6 @@ const ProductGrace = () => {
     []
   );
 
-  useEffect(() => {
-    console.log(isNew, "isNew in ProductGrace");
-  }, [isNew]);
   // Refs for maintaining focus on input elements
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
@@ -280,6 +277,7 @@ const ProductGrace = () => {
       }
     };
   }, []);
+
 
   useEffect(() => {
     //console.log("selectedId", selectedId);

@@ -122,7 +122,7 @@ const ProductCatalogue = ({ dtl, visible, uid, setUid }: Props) => {
   useEffect(() => {
     console.log(dtl,uid, "dtl in ProductCatalogue")
     if (uid !== undefined) {
-      setField("idProductCatalogRequest", 0);
+      setField("idProductCatalogRequest", 0);// for estelam id value is 0
       setField("uIDProductCatalogRequest", uid!);
     } else {
       setField("idProductCatalogRequest", dtl.cId);

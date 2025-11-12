@@ -58,6 +58,10 @@ export const WorkflowChild = ({
     dsc,
     workTableId,
   } = useWorkflowStore();
+  
+  useEffect(()=>{
+    setField("workTableId", -1);
+  },[])
 
   useEffect(() => {
     setField("chartId", chartId);

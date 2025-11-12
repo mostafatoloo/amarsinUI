@@ -21,17 +21,22 @@ const ProductPermForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
     isLoadingProductPermSave,
   } = useProductPerm();
 
-  const { setField } = useProductPermStore();
+  const { setField,id } = useProductPermStore();
   const [selectedId, setSelectedId] = useState<number>(0);
   const [selectedProductPerm, setSelectedProductPerm] =
     useState<ProductPerm | null>(null);
 
   const { yearId, systemId } = useGeneralContext();
-  useEffect(() => {
+  if (id!==workFlowRowSelectResponse.workTableRow.formId){
     setField("yearId", yearId);
     setField("systemId", systemId);
     setField("id", workFlowRowSelectResponse.workTableRow.formId);
-  }, [workFlowRowSelectResponse.workTableRow.formId, yearId, systemId]);
+  }
+  /*useEffect(() => {
+    setField("yearId", yearId);
+    setField("systemId", systemId);
+    setField("id", workFlowRowSelectResponse.workTableRow.formId);
+  }, [workFlowRowSelectResponse.workTableRow.formId, yearId, systemId]);*/
 
   useEffect(() => {
     if (workFlowRowSelectResponse.workTableRow.formId !== 0) {

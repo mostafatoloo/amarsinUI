@@ -18,11 +18,12 @@ const RegRecievedCheque = ({
   refetchSwitch,
   setRefetchSwitch,
 }: Props) => {
-  const {setField,formId:chequeFormId}=useChequeStore()
+  const {setField,loadPaymentFormId}=useChequeStore()
   
   // Set formId BEFORE useCheques hook runs to prevent stale queries
-  if(chequeFormId!==workFlowRowSelectResponse.workTableRow.formId){
-    setField("formId", workFlowRowSelectResponse.workTableRow.formId);
+  if(loadPaymentFormId!==workFlowRowSelectResponse.workTableRow.formId){
+    setField("loadPaymentFormId", workFlowRowSelectResponse.workTableRow.formId);
+    setField("payKind", -1);
     setField("sayadiPaymentId", -1);
   }
   

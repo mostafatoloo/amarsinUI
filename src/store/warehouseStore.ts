@@ -47,7 +47,7 @@ export const useWarehouseStore = create<WarehouseState>()((set) => ({
       result: { err: 0, msg: "", indents: [] },
     },
   },
-  formId: -1,
+  formIdWarehouseTemporaryReceipt: -1,
   productId: -1,
   iocId: -1,
   selectIndentsRequest: {
