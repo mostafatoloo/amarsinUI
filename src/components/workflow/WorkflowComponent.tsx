@@ -23,6 +23,7 @@ import DocumentChangeDate from "../../pages/workflow/DocumentChangeDate";
 import { UseMutateAsyncFunction } from "@tanstack/react-query";
 import { useWorkflowStore } from "../../store/workflowStore";
 import InvoicePaymentShow from "../invoicePayment/InvoicePaymentShow";
+import InvoiceReturnRequestShow from "../invoiceReturnRequest/InvoiceReturnRequestShow";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -32,9 +33,9 @@ type Props = {
   isLoadingdoFlow: boolean;
   refetchWorkTable: () => void;
   refetchWorkTableRowSelect: () => void;
-  dsc?:string // for  هامش  
-  flowMapId?:number
-  setIsDocumentChangeDateOpen?: React.Dispatch<React.SetStateAction<boolean>>
+  dsc?: string; // for  هامش
+  flowMapId?: number;
+  setIsDocumentChangeDateOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function WorkflowComponent({
@@ -47,7 +48,7 @@ export default function WorkflowComponent({
   refetchWorkTableRowSelect,
   dsc,
   flowMapId,
-  setIsDocumentChangeDateOpen
+  setIsDocumentChangeDateOpen,
 }: Props) {
   let componentToRender1: React.ReactNode | null = null;
   let componentToRender2: React.ReactNode | null = null;
@@ -208,6 +209,24 @@ export default function WorkflowComponent({
         />
       );
       break;
+    case "Invoice/_Payment":
+      componentToRender1 = (
+        <InvoicePaymentShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
+        />
+      );
+      break;
+    case "InvoiceReturnRequest/_InvoiceReturnRequest": //کارشناس بازرگانی-> ثبت درخواست مرجوعی
+      componentToRender1 = (
+        <InvoiceReturnRequestShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
+        />
+      );
+      break;
     case "Account/_DocumentChangeDate": //تاریخ سند
       componentToRender1 = (
         <DocumentChangeDate
@@ -218,8 +237,10 @@ export default function WorkflowComponent({
           workFlowDoFlowResponse={workFlowDoFlowResponse}
           refetchWorkTable={refetchWorkTable}
           refetchWorkTableRowSelect={refetchWorkTableRowSelect}
-          dsc={dsc ?? ""} // for  هامش  
-          setIsDocumentChangeDateOpen={setIsDocumentChangeDateOpen ?? (() => {})}
+          dsc={dsc ?? ""} // for  هامش
+          setIsDocumentChangeDateOpen={
+            setIsDocumentChangeDateOpen ?? (() => {})
+          }
         />
       );
       break;
@@ -392,12 +413,25 @@ export default function WorkflowComponent({
         />
       );
       break;
-      case "Invoice/_Payment" :
-        componentToRender2 = (
-          <InvoicePaymentShow workFlowRowSelectResponse={workFlowRowSelectResponse} />
-        );
-        break;
-      case "Account/_DocumentChangeDate": //تاریخ سند
+    case "Invoice/_Payment":
+      componentToRender2 = (
+        <InvoicePaymentShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
+        />
+      );
+      break;
+    case "InvoiceReturnRequest/_InvoiceReturnRequest": //کارشناس بازرگانی-> ثبت درخواست مرجوعی
+      componentToRender2 = (
+        <InvoiceReturnRequestShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
+        />
+      );
+      break;
+    case "Account/_DocumentChangeDate": //تاریخ سند
       componentToRender2 = (
         <DocumentChangeDate
           flowMapId={flowMapId ?? -1}
@@ -407,8 +441,10 @@ export default function WorkflowComponent({
           workFlowDoFlowResponse={workFlowDoFlowResponse}
           refetchWorkTable={refetchWorkTable}
           refetchWorkTableRowSelect={refetchWorkTableRowSelect}
-          dsc={dsc ?? ""} // for  هامش  
-          setIsDocumentChangeDateOpen={setIsDocumentChangeDateOpen ?? (() => {})}
+          dsc={dsc ?? ""} // for  هامش
+          setIsDocumentChangeDateOpen={
+            setIsDocumentChangeDateOpen ?? (() => {})
+          }
         />
       );
       break;

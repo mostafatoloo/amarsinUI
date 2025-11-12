@@ -4,20 +4,37 @@ import InvoicePaymentShowHeader from "./InvoicePaymentShowHeader";
 import { useInvoice } from "../../hooks/useInvoice";
 import { useInvoiceStore } from "../../store/invoiceStore";
 import InvoicePaymentShowTable from "./InvoicePaymentShowTable";
+import { useEffect } from "react";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  refetchSwitch: boolean;
+  setRefetchSwitch: (refetchSwitch: boolean) => void;
 };
 
-const InvoicePaymentShow = ({ workFlowRowSelectResponse }: Props) => {
+const InvoicePaymentShow = ({
+  workFlowRowSelectResponse,
+  refetchSwitch,
+  setRefetchSwitch,
+}: Props) => {
   const {
     invoicePaymentResponse,
     isLoadingInvoicePayment,
     invoicePaymentSave,
     isLoadingInvoicePaymentSave,
-    invoicePaymentSaveResponse
+    invoicePaymentSaveResponse,
+    refetchInvoicePayment
   } = useInvoice();
   const { setField: setInvoicePaymentField, invoiceId } = useInvoiceStore();
+  ////////////////////////////////////////////////////////////////////////
+  // for refetchInvoicePayment if refetchSwitch is true
+  useEffect(() => {
+    if (!refetchSwitch) return;
+    if (refetchSwitch) {
+      refetchInvoicePayment();
+      setRefetchSwitch(false);
+    }
+  }, [refetchSwitch]);
   ////////////////////////////////////////////////////////////////////////
   if (invoiceId !== workFlowRowSelectResponse?.workTableRow.formId) {
     setInvoicePaymentField(
