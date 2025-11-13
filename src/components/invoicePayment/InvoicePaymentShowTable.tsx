@@ -102,7 +102,7 @@ const InvoicePaymentShowTable = ({
       <Paper className="p-2 mt-2 w-full">
         {isLoading ? (
           <div className="text-center">{<Skeleton />}</div>
-        ) : invoicePaymentResponse.meta.errorCode !== -1 ? (
+        ) : invoicePaymentResponse.meta.errorCode > 0 ? (
           <p className="p-6 text-red-400 text-sm md:text-base font-bold">
             {invoicePaymentResponse.meta.message}
           </p>

@@ -545,7 +545,7 @@ const PaymentInvoiceShowTable = ({
     <>
       {isLoading ? (
         <div className="text-center">{<Skeleton />}</div>
-      ) : invoiceOutStandingResponse.meta.errorCode !== -1 ? (
+      ) : invoiceOutStandingResponse.meta.errorCode > 0 ? (
         <p className="p-6 text-red-400 text-sm md:text-base font-bold">
           {invoiceOutStandingResponse.meta.message}
         </p>

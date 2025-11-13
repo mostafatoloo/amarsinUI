@@ -320,7 +320,7 @@ const WarehouseShowTable = ({
       <Paper className="p-2 mt-2 w-full">
         {isLoadingWarehouseShowId ? (
           <div className="text-center">{<Skeleton />}</div>
-        ) : warehouseShowIdResponse.meta.errorCode !== -1 ? (
+        ) : warehouseShowIdResponse.meta.errorCode > 0 ? (
           <p className="p-6 text-red-400 text-sm md:text-base font-bold">
             {warehouseShowIdResponse.meta.message}
           </p>

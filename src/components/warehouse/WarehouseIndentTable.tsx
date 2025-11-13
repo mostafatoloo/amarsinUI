@@ -172,7 +172,7 @@ const WarehouseIndentTable = ({
       handleWarehouseIndentListClose();
 
       // Now we can check the response directly
-      if (response.meta.errorCode !== -1) {
+      if (response.meta.errorCode >0 ) {
         setIsModalOpen(true);
         console.log(skipPageReset)
       }
@@ -199,7 +199,7 @@ const WarehouseIndentTable = ({
     <>
       {isLoadingWarehouseIndentList ? (
         <div className="text-center">{<Skeleton />}</div>
-      ) : warehouseIndentList.meta.errorCode !== -1 ? (
+      ) : warehouseIndentList.meta.errorCode >0 ? (
         <p className="p-6 text-red-400 text-sm md:text-base font-bold">
           {warehouseIndentList.meta.message}
         </p>

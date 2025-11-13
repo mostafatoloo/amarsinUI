@@ -26,9 +26,9 @@ import PurchaseRequestIndent from "./pages/businessAccounting/operations/Purchas
 import CupboardsReport from "./pages/warehouse/reports/CupboardsReport";
 import GetInventoryBalance from "./pages/businessAccounting/reports/GetInventoryBalance";
 import Workflow from "./pages/workflow/Workflow";
+import { useDefinitionInvironment } from "./hooks/useDefinitionInvironment";
 
 const queryClient = new QueryClient();
-
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -47,25 +47,157 @@ function App() {
 }
 
 function AppContent() {
+  const { definitionInvironment, definitionDateTime } = useDefinitionInvironment();
+
   return (
-    <Layout>
+    <Layout definitionInvironment={definitionInvironment}>
       <Routes>
         <Route path="/login" element={<Login isHomePage={true} />} />
-        <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-        <Route path="/Admin/ProductOffer" element={<PrivateRoute><ProductOffer /></PrivateRoute>} />
-        <Route path="/Admin/Indent" element={<PrivateRoute><PurchaseRequestIndent /></PrivateRoute>} />
-        <Route path="/admin/ProductPerm" element={<PrivateRoute><ProductPerm /></PrivateRoute>} />
-        <Route path="/admin/ProductGrace" element={<PrivateRoute><ProductGrace /></PrivateRoute>} />
-        <Route path="/admin/ProductPrice" element={<PrivateRoute><ProductPrice /></PrivateRoute>} />
-        <Route path="/admin/PayRequest" element={<PrivateRoute><PayRequestOperation /></PrivateRoute>} />
-        <Route path="/admin/WFMS/index" element={<PrivateRoute><Workflow /></PrivateRoute>} />
-        <Route path="/admin/user/index" element={<PrivateRoute><User /></PrivateRoute>} />
-        <Route path="/admin/RpProviders/Inventory" element={<PrivateRoute><InventoryGoodList /></PrivateRoute>} />
-        <Route path="/admin/RpProviders" element={<PrivateRoute><ProviderList /></PrivateRoute>} />
-        <Route path="/admin/RpProducers" element={<PrivateRoute><ProducerList /></PrivateRoute>} />
-        <Route path="/Admin/ClearBook/index" element={<PrivateRoute><ClearBook /></PrivateRoute>} />
-        <Route path="/Admin/CupboardsReport" element={<PrivateRoute><CupboardsReport /></PrivateRoute>} />
-        <Route path="/Admin/ttac/InventoryBalance" element={<PrivateRoute><GetInventoryBalance /></PrivateRoute>} />
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard definitionInvironment={definitionInvironment} />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/Admin/ProductOffer"
+          element={
+            <PrivateRoute>
+              <ProductOffer
+                definitionDateTime={definitionDateTime}
+                definitionInvironment={definitionInvironment}
+              />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/Admin/Indent"
+          element={
+            <PrivateRoute>
+              <PurchaseRequestIndent
+                definitionDateTime={definitionDateTime}
+                definitionInvironment={definitionInvironment}
+              />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/ProductPerm"
+          element={
+            <PrivateRoute>
+              <ProductPerm
+                definitionDateTime={definitionDateTime}
+                definitionInvironment={definitionInvironment}
+              />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/ProductGrace"
+          element={
+            <PrivateRoute>
+              <ProductGrace
+                definitionDateTime={definitionDateTime}
+                definitionInvironment={definitionInvironment}
+              />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/ProductPrice"
+          element={
+            <PrivateRoute>
+              <ProductPrice
+                definitionDateTime={definitionDateTime}
+                definitionInvironment={definitionInvironment}
+              />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/PayRequest"
+          element={
+            <PrivateRoute>
+              <PayRequestOperation
+                definitionInvironment={definitionInvironment}
+                definitionDateTime={definitionDateTime}
+              />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/WFMS/index"
+          element={
+            <PrivateRoute>
+              <Workflow
+                definitionInvironment={definitionInvironment}
+                definitionDateTime={definitionDateTime}
+              />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/user/index"
+          element={
+            <PrivateRoute>
+              <User definitionInvironment={definitionInvironment} />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/RpProviders/Inventory"
+          element={
+            <PrivateRoute>
+              <InventoryGoodList
+                definitionInvironment={definitionInvironment}
+              />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/RpProviders"
+          element={
+            <PrivateRoute>
+              <ProviderList definitionInvironment={definitionInvironment} />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/RpProducers"
+          element={
+            <PrivateRoute>
+              <ProducerList definitionInvironment={definitionInvironment} />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/Admin/ClearBook/index"
+          element={
+            <PrivateRoute>
+              <ClearBook definitionInvironment={definitionInvironment} />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/Admin/CupboardsReport"
+          element={
+            <PrivateRoute>
+              <CupboardsReport definitionInvironment={definitionInvironment} />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/Admin/ttac/InventoryBalance"
+          element={
+            <PrivateRoute>
+              <GetInventoryBalance
+                definitionInvironment={definitionInvironment}
+              />
+            </PrivateRoute>
+          }
+        />
         <Route path="/" element={<Navigate to="/admin/WFMS/index" />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

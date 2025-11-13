@@ -15,6 +15,7 @@ import { ProductPerm } from "../../types/productPerm";
 import { ProductGrace } from "../../types/productGrace";
 import { ProductPrice } from "../../types/productPrice";
 import { Indent } from "../../types/product";
+import { DefinitionInvironment } from "../../types/definitionInvironment";
 
 type Props = {
   columns: TableColumns;
@@ -30,6 +31,7 @@ type Props = {
     |Indent |null;
   data: any[];
   refetch: () => void;
+  definitionInvironment: DefinitionInvironment;
   //setIsOpen?: (isOpen: boolean) => void; //if it comes from menu it will be set to true else it will be set to false
 };
 
@@ -42,11 +44,12 @@ const ProductOfferHeader = ({
   selectedProductOffer,
   data,
   refetch,
+  definitionInvironment,
   //setIsOpen,
 }: Props) => {
   return (
     <header className="flex flex-col gap-2 md:flex-row items-center justify-between border-gray-300 border-b pb-2">
-      <PageTitle />
+      <PageTitle definitionInvironment={definitionInvironment} />
       <div className="flex px-4 items-center gap-4">
         <div
           className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1"

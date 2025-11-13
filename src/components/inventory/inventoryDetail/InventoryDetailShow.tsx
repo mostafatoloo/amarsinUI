@@ -78,17 +78,17 @@ const InventoryDetailShow = ({
         <ModalMessage
           isOpen={isModalOpenIssue}
           backgroundColor={
-            inventoryUpdateIssueResponse.meta.errorCode === -1
+            inventoryUpdateIssueResponse.meta.errorCode <= 0
               ? "bg-green-200"
               : "bg-red-200"
           }
           bgColorButton={
-            inventoryUpdateIssueResponse.meta.errorCode === -1
+            inventoryUpdateIssueResponse.meta.errorCode <= 0
               ? "bg-green-500"
               : "bg-red-500"
           }
           bgColorButtonHover={
-            inventoryUpdateIssueResponse.meta.errorCode === -1
+            inventoryUpdateIssueResponse.meta.errorCode <= 0
               ? "bg-green-600"
               : "bg-red-600"
           }
@@ -102,17 +102,17 @@ const InventoryDetailShow = ({
         <ModalMessage
           isOpen={isModalOpenCost}
           backgroundColor={
-            inventoryUpdateCostResponse.meta.errorCode === -1
+            inventoryUpdateCostResponse.meta.errorCode <= 0
               ? "bg-green-200"
               : "bg-red-200"
           }
           bgColorButton={
-            inventoryUpdateCostResponse.meta.errorCode === -1
+            inventoryUpdateCostResponse.meta.errorCode <= 0
               ? "bg-green-500"
               : "bg-red-500"
           }
           bgColorButtonHover={
-            inventoryUpdateCostResponse.meta.errorCode === -1
+            inventoryUpdateCostResponse.meta.errorCode <= 0
               ? "bg-green-600"
               : "bg-red-600"
           }

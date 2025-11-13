@@ -9,18 +9,21 @@ import {
   convertToFarsiDigits,
   formatPersianDate,
 } from "../../utilities/general";
-import { useDefinitionInvironment } from "../../hooks/useDefinitionInvironment";
 import { colors } from "../../utilities/color";
 import { useLocation } from "react-router-dom";
 import { DefaultOptionType } from "../../types/general";
+import { DefinitionInvironment } from "../../types/definitionInvironment";
 
-const SideMenu = () => {
+type Props = {
+  definitionInvironment: DefinitionInvironment;
+}
+const SideMenu = ({ definitionInvironment }: Props) => {
   const {
     isMenuOpened,
     setChartId,
     //  , chartId
   } = useGeneralContext();
-  const { definitionInvironment } = useDefinitionInvironment();
+  //const { definitionInvironment } = useDefinitionInvironment();
   const { authApiResponse } = useAuthStore();
 
   const userInfo = authApiResponse?.data.result.login;

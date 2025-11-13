@@ -40,6 +40,7 @@ import {
 } from "../../types/productPerm";
 import ProductPermFormList from "./ProductPermFormList";
 import { useProductPermStore } from "../../store/productPermStore";
+import { DefinitionDateTime } from "../../types/definitionInvironment";
 
 type Props = {
   addProductList: (
@@ -59,7 +60,8 @@ type Props = {
   fromWorkFlow: boolean;
   canEditForm1: boolean;
   selectedId: number;
-  setSelectedRowIndex?:(value: SetStateAction<number>) => void
+  setSelectedRowIndex?:(value: SetStateAction<number>) => void,
+  definitionDateTime:DefinitionDateTime;
 };
 
 export const headCells = [
@@ -151,7 +153,8 @@ const ProductPermForm = ({
   fromWorkFlow,
   canEditForm1,
   selectedId,
-  setSelectedRowIndex
+  setSelectedRowIndex,  
+  definitionDateTime
 }: Props) => {
   const [addList, setAddList] = useState<ProductPermListItemTable[]>([]);
   const [search, setSearch] = useState<string>("");
@@ -483,6 +486,7 @@ const ProductPermForm = ({
         setBrand={setBrand}
         setBrandSearch={setBrandSearch}
         canEditForm1={canEditForm1}
+        definitionDateTime={definitionDateTime}
       />
       <ConfirmCard
         variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end"

@@ -210,7 +210,7 @@ const OrderCupboardList = ({
     <>
       {isLoadingOrderCupList ? (
         <div className="text-center">{<Skeleton />}</div>
-      ) : orderCupListResponse.meta.errorCode !== -1 ? (
+      ) : orderCupListResponse.meta.errorCode >0 ? (
         <p className="p-6 text-red-400 text-sm md:text-base font-bold">
           {orderCupListResponse.meta.message}
         </p>

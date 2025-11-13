@@ -32,7 +32,7 @@ import { IndentDtl, IndentDtlTable } from "../../types/invoiceReceipt";
 import { handleExport } from "../../utilities/ExcelExport";
 import { useProductStore } from "../../store/productStore";
 import { debounce } from "lodash";
-import { useDefinitionInvironment } from "../../hooks/useDefinitionInvironment";
+import { DefinitionDateTime } from "../../types/definitionInvironment";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -41,6 +41,7 @@ type Props = {
   isNew: boolean;
   setIsNew: (isNew: boolean) => void;
   setIsEdit: (isEdit: boolean) => void;
+  definitionDateTime: DefinitionDateTime;
 };
 
 export type Fields = {
@@ -63,6 +64,7 @@ const InvoiceReceiptShow = ({
   isNew,
   setIsNew,
   setIsEdit,
+  definitionDateTime,
 }: //setIsOpen,//for close modal
 Props) => {
   const canEditForm = workFlowRowSelectResponse.workTableForms.canEditForm1;
@@ -145,7 +147,7 @@ Props) => {
     isDtHistoryLoading,
   } = useProducts();
 
-  const { definitionDateTime } = useDefinitionInvironment();
+  //const { definitionDateTime } = useDefinitionInvironment();
   if (mrsIdStore !== workFlowRowSelectResponse.workTableRow.formId)
     setField("mrsId", workFlowRowSelectResponse.workTableRow.formId);
   /*useEffect(() => {

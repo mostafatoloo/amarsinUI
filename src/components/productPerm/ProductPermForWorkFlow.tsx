@@ -5,12 +5,14 @@ import { useProductPerm } from "../../hooks/useProductPerm";
 import { useProductPermStore } from "../../store/productPermStore";
 import { ProductPerm } from "../../types/productPerm";
 import { useGeneralContext } from "../../context/GeneralContext";
+import { DefinitionDateTime } from "../../types/definitionInvironment";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  definitionDateTime: DefinitionDateTime;
 };
 
-const ProductPermForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
+const ProductPermForWorkFlow = ({ workFlowRowSelectResponse, definitionDateTime}: Props) => {
   const {
     productPermDtl,
     productPermDtlData,
@@ -68,6 +70,7 @@ const ProductPermForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
         setIsEdit={() => true}
         fromWorkFlow={true} //for going to editting in product grace form as default
         selectedId={selectedId}
+        definitionDateTime={definitionDateTime}
       />
     </div>
   );

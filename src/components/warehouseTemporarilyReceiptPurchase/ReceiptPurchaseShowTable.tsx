@@ -33,6 +33,7 @@ import {
 } from "../../utilities/general";
 import { useAuthStore } from "../../store/authStore";
 import { MenuItem } from "../../types/menu";
+import { DefinitionDateTime } from "../../types/definitionInvironment";
 
 type Props = {
   warehouseTemporaryReceiptPurchaseShowResponse: WarehouseTemporaryReceiptPurchaseShowResponse;
@@ -41,6 +42,7 @@ type Props = {
   warehouseTemporaryReceiptSalesPricesResponse: WarehouseTemporaryReceiptSalesPricesResponse;
   isLoadingWarehouseTemporaryReceiptPurchaseReg: boolean;
   warehouseTemporaryReceiptPurchaseRegResponse: WarehouseTemporaryReceiptPurchaseRegResponse;
+  definitionDateTime: DefinitionDateTime;
 };
 
 const ReceiptPurchaseShowTable = ({
@@ -50,6 +52,7 @@ const ReceiptPurchaseShowTable = ({
   warehouseTemporaryReceiptSalesPricesResponse,
   isLoadingWarehouseTemporaryReceiptPurchaseReg,
   warehouseTemporaryReceiptPurchaseRegResponse,
+  definitionDateTime
 }: Props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   //for offer history show in ReceiptPurchaseShowTableHeader.tsx
@@ -446,6 +449,7 @@ const ReceiptPurchaseShowTable = ({
           fromWorkFlow={false}
           canEditForm1={true}
           selectedId={0}
+          definitionDateTime={definitionDateTime}
         />
       </ModalForm>
       <ModalForm
@@ -470,6 +474,7 @@ const ReceiptPurchaseShowTable = ({
           fromWorkFlow={false} //for not going to editting in product perm form as default
           canEditForm1={true}
           selectedId={0}
+          definitionDateTime={definitionDateTime}
         />
       </ModalForm>
 
@@ -495,6 +500,7 @@ const ReceiptPurchaseShowTable = ({
           fromWorkFlow={false} //for not going to editting in product grace form as default
           canEditForm1={true}
           selectedId={0}
+          definitionDateTime={definitionDateTime}
         />
       </ModalForm>
 
@@ -521,6 +527,7 @@ const ReceiptPurchaseShowTable = ({
           fromWorkFlow={false}
           canEditForm1={true}
           selectedId={0}
+          definitionDateTime={definitionDateTime}
         />
       </ModalForm>
       <ModalMessage

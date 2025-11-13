@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import AutoComplete from "../controls/AutoComplete";
-import { DefaultOptionType } from "../../types/general";
+import { DefaultOptionType, SearchItem } from "../../types/general";
 import { useCustomers } from "../../hooks/useCustomers";
 import {
   convertToFarsiDigits,
@@ -26,7 +26,6 @@ import Input from "../controls/Input";
 import { usePayRequest } from "../../hooks/usePayRequest";
 import { usePayRequestStore } from "../../store/payRequestStore";
 import PersianDatePicker from "../controls/PersianDatePicker";
-import { useBanks } from "../../hooks/useBanks";
 import { useBankStore } from "../../store/bankStore";
 import ConfirmCard from "../layout/ConfirmCard";
 import Button from "../controls/Button";
@@ -46,6 +45,7 @@ type Props = {
   >;
   isLoadingInvoicePaymentSave: boolean;
   invoicePaymentSaveResponse: InvoicePaymentSaveResponse;
+  banks: SearchItem[];
 };
 
 const InvoicePaymentShowHeader = ({
@@ -54,6 +54,7 @@ const InvoicePaymentShowHeader = ({
   invoicePaymentSave,
   isLoadingInvoicePaymentSave,
   invoicePaymentSaveResponse,
+  banks
 }: Props) => {
   //برای نقدی
   const [fishNo, setFishNo] = useState("");
@@ -92,7 +93,7 @@ const InvoicePaymentShowHeader = ({
   const [cheqNos, setCheqNos] = useState<DefaultOptionType[]>([]);
   const [sarDate, setSarDate] = useState<Date | null>(null); //  سررسید   convertToPersianDate(sarDate)
   const [isCheckChequeBook, setIsCheckChequeBook] = useState(false);
-  const { banks } = useBanks();
+  //const { banks } = useBanks();
   const { setField: setBankField } = useBankStore();
   //برای واریز به حساب
   const [bankAccount, setBankAccount] = useState<DefaultOptionType | null>(

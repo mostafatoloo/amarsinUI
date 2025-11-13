@@ -5,8 +5,12 @@ import { useBrandStore } from "../../store/brandStore";
 import { useEffect } from "react";
 import { useGeneralContext } from "../../context/GeneralContext";
 import { useInventory } from "../../hooks/useInventory";
+import { DefinitionInvironment } from "../../types/definitionInvironment";
 
-export default function InventoryGoodList() {
+type Props = {
+  definitionInvironment: DefinitionInvironment;
+};
+export default function InventoryGoodList({ definitionInvironment }: Props) {
 
   const {inventoryList} = useInventory()
   const {setField}=useBrandStore()
@@ -21,7 +25,7 @@ export default function InventoryGoodList() {
     <div className="sm:h-[calc(100vh-72px)] w-full flex flex-col bg-gray-200 pt-2">
       {/* Top header */}
       <header className="flex items-center justify-between border-gray-300">
-        <PageTitle />
+        <PageTitle definitionInvironment={definitionInvironment} />
         <ExcelExport data={inventoryList.rpProviderInventories} headCells={columns}  />
       </header>
       {/* Sub-header */}

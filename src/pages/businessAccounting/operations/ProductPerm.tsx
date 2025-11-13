@@ -25,8 +25,13 @@ import ProductOfferParams from "../../../components/productOffer/ProductOfferPar
 import ModalMessage from "../../../components/layout/ModalMessage";
 import ModalForm from "../../../components/layout/ModalForm";
 import ProductPermForm from "../../../components/productPerm/ProductPermForm";
+import { DefinitionDateTime, DefinitionInvironment } from "../../../types/definitionInvironment";
 
-const ProductPerm = () => {
+type Props = {
+  definitionDateTime: DefinitionDateTime;
+  definitionInvironment: DefinitionInvironment;
+};
+const ProductPerm = ({ definitionDateTime, definitionInvironment }: Props) => {
   const {
     setField,
     id: prevId,
@@ -398,6 +403,7 @@ const ProductPerm = () => {
         selectedProductOffer={selectedProductPerm || ({} as ProductPermType)}
         data={data}
         refetch={refetch}
+        definitionInvironment={definitionInvironment}
       />
       <div className="flex flex-col md:flex-row gap-2 px-2 h-1/2">
         <div className="flex flex-col w-full md:w-3/4 h-full">
@@ -583,6 +589,7 @@ const ProductPerm = () => {
           canEditForm1={true}
           selectedId={selectedId}
           setSelectedRowIndex={setSelectedRowIndex}
+          definitionDateTime={definitionDateTime}
         />
       </ModalForm>
       <ModalMessage

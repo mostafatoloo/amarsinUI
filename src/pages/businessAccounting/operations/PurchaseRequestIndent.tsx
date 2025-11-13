@@ -26,8 +26,13 @@ import InvoiceReceiptShowTableSummery from "../../../components/invoiceReceipt/I
 import Card from "../../../components/controls/Card";
 import { colors } from "../../../utilities/color";
 import useCalculateTableHeight from "../../../hooks/useCalculateTableHeight";
+import { DefinitionDateTime, DefinitionInvironment } from "../../../types/definitionInvironment";
 
-const PurchaseRequestIndent = () => {
+type Props = {
+  definitionDateTime: DefinitionDateTime;
+  definitionInvironment: DefinitionInvironment;
+};
+const PurchaseRequestIndent = ({ definitionDateTime, definitionInvironment }: Props) => {
   const {
     setField,
     id: prevId,
@@ -503,6 +508,7 @@ const PurchaseRequestIndent = () => {
         selectedProductOffer={selectedIndent || null}
         data={data}
         refetch={refetchIndentList}
+        definitionInvironment={definitionInvironment}
       />
       <div className="flex flex-col md:flex-row gap-2 px-2 h-1/2">
         <div className="flex flex-col w-full md:w-3/4 h-full">
@@ -693,6 +699,7 @@ const PurchaseRequestIndent = () => {
           isNew={isNew}
           setIsNew={setIsNew}
           setIsEdit={setIsEdit}
+          definitionDateTime={definitionDateTime}
           //setIsOpen={setIsOpen}//for open/close modal
           //setIsNew={setIsNew}
           //setIsEdit={setIsEdit}
@@ -725,7 +732,7 @@ const PurchaseRequestIndent = () => {
         bgColorButtonHover="bg-red-600"
         color="text-white"
         message={
-          indentDelResponse?.meta.errorCode !== -1
+          indentDelResponse?.meta.errorCode >0
             ? indentDelResponse?.meta.message || ""
             : "اطلاعات با موفقیت حذف شد."
         }

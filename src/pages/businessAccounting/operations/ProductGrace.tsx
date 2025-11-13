@@ -28,8 +28,13 @@ import ProductGraceForm from "../../../components/productGrace/ProductGraceForm"
 import ProductGraceDtlHeader from "../../../components/productGrace/ProductGraceDtlHeader";
 import { colors } from "../../../utilities/color";
 import useCalculateTableHeight from "../../../hooks/useCalculateTableHeight";
+import { DefinitionDateTime, DefinitionInvironment } from "../../../types/definitionInvironment";
 
-const ProductGrace = () => {
+type Props = {
+  definitionDateTime: DefinitionDateTime;
+  definitionInvironment: DefinitionInvironment;
+};
+const ProductGrace = ({ definitionDateTime, definitionInvironment }: Props) => {
   const {
     setField,
     id: prevId,
@@ -425,6 +430,7 @@ const ProductGrace = () => {
         selectedProductOffer={selectedProductGrace || null}
         data={data}
         refetch={refetch}
+        definitionInvironment={definitionInvironment}
       />
       <div className="flex flex-col md:flex-row gap-2 px-2 h-1/2">
         <div className="flex flex-col w-full md:w-3/4 h-full">
@@ -615,6 +621,7 @@ const ProductGrace = () => {
           canEditForm1={true}
           selectedId={selectedId}
           setSelectedRowIndex={setSelectedRowIndex}
+          definitionDateTime={definitionDateTime}
         />
       </ModalForm>
       <ModalMessage

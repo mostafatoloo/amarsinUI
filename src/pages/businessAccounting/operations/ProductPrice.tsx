@@ -27,8 +27,13 @@ import { useProductPriceStore } from "../../../store/productPriceStore";
 import { useProductPrice } from "../../../hooks/useProductPrice";
 import ProductPriceForm from "../../../components/productPrice/ProductPriceForm";
 import ErrorPage from "../../../components/common/ErrorPage";
+import { DefinitionDateTime, DefinitionInvironment } from "../../../types/definitionInvironment";
 
-const ProductPrice = () => {
+type Props = {
+  definitionDateTime: DefinitionDateTime;
+  definitionInvironment: DefinitionInvironment;
+};
+const ProductPrice = ({ definitionDateTime, definitionInvironment }: Props) => {
   const {
     setField,
     id: prevId,
@@ -442,6 +447,7 @@ const ProductPrice = () => {
         selectedProductOffer={selectedProductPrice || null}
         data={data}
         refetch={refetch}
+        definitionInvironment={definitionInvironment}
       />
       <div className="flex flex-col md:flex-row gap-2 px-2 h-1/2">
       <div className="flex flex-col w-full md:w-3/4 h-full">
@@ -638,6 +644,7 @@ const ProductPrice = () => {
           canEditForm1={true}
           selectedId={selectedId}
           setSelectedRowIndex={setSelectedRowIndex}
+          definitionDateTime={definitionDateTime}
         />
       </ModalForm>
       <ModalMessage

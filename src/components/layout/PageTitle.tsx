@@ -3,16 +3,18 @@ import { useAuthStore } from "../../store/authStore";
 import { convertToFarsiDigits } from "../../utilities/general";
 import AutoComplete from "../controls/AutoComplete";
 import { useGeneralContext } from "../../context/GeneralContext";
-import { useDefinitionInvironment } from "../../hooks/useDefinitionInvironment";
 import { DefaultOptionType } from "../../types/general";
+import { DefinitionInvironment } from "../../types/definitionInvironment";
 
 
-
-const PageTitle = () => {
+type Props = {
+  definitionInvironment: DefinitionInvironment;
+}
+const PageTitle = ({definitionInvironment}: Props) => {
   const { setSystemId, setYearId } = useGeneralContext();
   const { authApiResponse } = useAuthStore();
   const initData = authApiResponse?.data.result.initData;
-  const { definitionInvironment } = useDefinitionInvironment();
+  //const { definitionInvironment } = useDefinitionInvironment();
 
   const [search, setSearch] = useState<string>("");
   const [system, setSystem] = useState<{ id: number; title: string } | null>({

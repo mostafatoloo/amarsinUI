@@ -26,8 +26,13 @@ import {
 } from "../../../types/payRequest";
 import PayRequestOperationForm from "../../../components/payRequestPaybox/PayRequestOperationForm";
 import ConfirmCard from "../../../components/layout/ConfirmCard";
+import { DefinitionDateTime, DefinitionInvironment } from "../../../types/definitionInvironment";
 
-const PayRequestOperation = () => {
+type Props = {
+  definitionInvironment: DefinitionInvironment;
+  definitionDateTime: DefinitionDateTime;
+};
+const PayRequestOperation = ({ definitionInvironment, definitionDateTime }: Props) => {
   const {
     setField,
     id: prevId,
@@ -486,6 +491,7 @@ const PayRequestOperation = () => {
         selectedProductOffer={selectedPayRequest || null}
         data={data}
         refetch={refetch}
+        definitionInvironment={definitionInvironment}
       />
       <div className="flex flex-col md:flex-row gap-2 px-2 h-1/2">
         <div className="flex flex-col w-full md:w-3/4 h-full">
@@ -695,6 +701,8 @@ const PayRequestOperation = () => {
           isNew={isNew}
           setIsNew={setIsNew}
           setIsEdit={setIsEdit}
+          definitionDateTime={definitionDateTime}
+          definitionInvironment={definitionInvironment}
         />
       </ModalForm>
       <ModalMessage

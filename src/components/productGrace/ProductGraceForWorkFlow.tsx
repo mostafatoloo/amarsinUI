@@ -5,12 +5,14 @@ import ProductGraceForm from "./ProductGraceForm";
 import { ProductGrace } from "../../types/productGrace";
 import { useProductGraceStore } from "../../store/productGraceStore";
 import { useGeneralContext } from "../../context/GeneralContext";
+import { DefinitionDateTime } from "../../types/definitionInvironment";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  definitionDateTime: DefinitionDateTime;
 };
 
-const ProductGraceForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
+const ProductGraceForWorkFlow = ({ workFlowRowSelectResponse, definitionDateTime }: Props) => {
   const {
     productGraceDtl,
     productGraceDtlData,
@@ -71,6 +73,7 @@ const ProductGraceForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
         setIsEdit={() => true}
         fromWorkFlow={true} //for going to editting in product grace form as default
         selectedId={selectedId}
+        definitionDateTime={definitionDateTime}
       />
     </div>
   );

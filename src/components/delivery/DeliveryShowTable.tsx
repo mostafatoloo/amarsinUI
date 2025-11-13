@@ -98,7 +98,7 @@ const DeliveryShowTable = ({
       <Paper className="p-2 mt-2 w-full">
         {isLoading ? (
           <div className="text-center">{<Skeleton />}</div>
-        ) : deliveryShowResponse.meta.errorCode !== -1 ? (
+        ) : deliveryShowResponse.meta.errorCode >0 ? (
           <p className="p-6 text-red-400 text-sm md:text-base font-bold">
             {deliveryShowResponse.meta.message}
           </p>

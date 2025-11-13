@@ -13,7 +13,6 @@ import { useWarehouse } from "../../hooks/useWarehouse";
 import WarehouseIndentTable from "./WarehouseIndentTable";
 import ShowMessages from "../controls/ShowMessages";
 import { colors } from "../../utilities/color";
-import { useTTacStore } from "../../store/ttacStore";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;

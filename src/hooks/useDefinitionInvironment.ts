@@ -1,4 +1,5 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import { useLocation } from "react-router-dom";
 import api from "../api/axios";
 import { useDefinitionInvironmentStore } from "../store/definitionInvironmentStore";
 import {
@@ -9,6 +10,14 @@ import {
 export function useDefinitionInvironment() {
   const { setDefinitionInvironment, setDefinitionDateTime } =
     useDefinitionInvironmentStore();
+  
+  const location = useLocation();
+  
+  // Check if user is authenticated by checking token in localStorage
+  const isAuthenticated = !!localStorage.getItem('token');
+  
+  // Check if we're on the login page to prevent any API calls
+  const isLoginPage = location.pathname === '/login';
 
   const query = useQuery<
     DefinitionInvironment,
@@ -21,6 +30,7 @@ export function useDefinitionInvironment() {
       const response = await api.get(`/api/Definition/Environment`);
       return response.data;
     },
+    enabled: isAuthenticated && !isLoginPage, // Only run query if authenticated AND not on login page
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: DefinitionInvironment) => {
@@ -40,6 +50,7 @@ export function useDefinitionInvironment() {
       const response = await api.get(`/api/Definition/DateTime`);
       return response.data;
     },
+    enabled: isAuthenticated && !isLoginPage, // Only run query if authenticated AND not on login page
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: DefinitionDateTime) => {

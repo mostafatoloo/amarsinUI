@@ -39,12 +39,15 @@ import { v4 as uuidv4 } from "uuid";
 import { useAttachments } from "../../hooks/useAttachments";
 import { useAttachmentStore } from "../../store/attachmentStore";
 import AttachmentShowTableTabs from "../attachment/AttachmentShowTableTabs";
+import { DefinitionDateTime, DefinitionInvironment } from "../../types/definitionInvironment";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   isNew: boolean;
   setIsNew: (isNew: boolean) => void;
   setIsEdit: (isEdit: boolean) => void;
+  definitionDateTime:DefinitionDateTime
+  definitionInvironment:DefinitionInvironment
 };
 
 const PayRequestShow = ({
@@ -52,6 +55,9 @@ const PayRequestShow = ({
   isNew,
   setIsNew,
   setIsEdit,
+  definitionDateTime,
+  definitionInvironment
+  
 }: Props) => {
   const [customer, setCustomer] = useState<DefaultOptionType | null>(null);
   const {
@@ -492,6 +498,8 @@ const PayRequestShow = ({
         setSettleAmnt={setSettleAmnt}
         providerAmnt={providerAmnt}
         setProviderAmnt={setProviderAmnt}
+        definitionDateTime={definitionDateTime}
+        definitionInvironment={definitionInvironment}
         //authApiResponse={authApiResponse as AuthApiResponse}
       />
       <AttachmentShowTableTabs

@@ -6,8 +6,12 @@ import { useGeneralContext } from "../../../context/GeneralContext";
 import { useClearBookStore } from "../../../store/clearBookStore";
 import { useClearBook } from "../../../hooks/useClearBook";
 import ClearBookShow from "../../../components/clearbook/ClearBookShow";
+import { DefinitionInvironment } from "../../../types/definitionInvironment";
 
-export default function InventoryGoodList() {
+type Props = {
+  definitionInvironment: DefinitionInvironment;
+};
+export default function InventoryGoodList({ definitionInvironment }: Props) {
   const {
     clearBookProducts,
     error,
@@ -28,7 +32,7 @@ export default function InventoryGoodList() {
     <div className="sm:h-[calc(100vh-72px)] w-full flex flex-col bg-gray-200 pt-2">
       {/* Top header */}
       <header className="flex items-center justify-between px-2 border-gray-300">
-        <PageTitle />
+        <PageTitle definitionInvironment={definitionInvironment} />
         <div
           className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1"
           onClick={() => refetch()}

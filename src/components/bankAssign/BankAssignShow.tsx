@@ -122,17 +122,17 @@ const BankAssignShow = ({ workFlowRowSelectResponse, refetchSwitch, setRefetchSw
         <ModalMessage
           isOpen={isModalOpen}
           backgroundColor={
-            chequeAssignBankAccountResponse.meta.errorCode === -1
+            chequeAssignBankAccountResponse.meta.errorCode <= 0
               ? "bg-green-200"
               : "bg-red-200"
           }
           bgColorButton={
-            chequeAssignBankAccountResponse.meta.errorCode === -1
+            chequeAssignBankAccountResponse.meta.errorCode <= 0
               ? "bg-green-500"
               : "bg-red-500"
           }
           bgColorButtonHover={
-            chequeAssignBankAccountResponse.meta.errorCode === -1
+            chequeAssignBankAccountResponse.meta.errorCode <= 0
               ? "bg-green-600"
               : "bg-red-600"
           }

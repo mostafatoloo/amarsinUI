@@ -12,8 +12,12 @@ import { useTtac } from "../../../hooks/useTtac";
 import GetInventoryBalanceShow from "../../../components/ttac/GetInventoryBalanceShow";
 import ModalForm from "../../../components/layout/ModalForm";
 import FlowProductsSendAll from "../../../components/ttac/FlowProductsSendAll";
+import { DefinitionInvironment } from "../../../types/definitionInvironment";
 
-const GetInventoryBalance = () => {
+type Props = {
+  definitionInvironment: DefinitionInvironment;
+};
+const GetInventoryBalance = ({ definitionInvironment }: Props) => {
   const {
     getInventoryBalanceResponse,
     isLoadingGetInventoryBalance,
@@ -129,7 +133,7 @@ const GetInventoryBalance = () => {
   return (
     <div className="flex flex-col bg-gray-200 pt-2">
       <header className="flex flex-col gap-2 md:flex-row items-center justify-between border-gray-300 border-b pb-2">
-        <PageTitle />
+        <PageTitle definitionInvironment={definitionInvironment} />
         <div className="flex px-4 items-center gap-4">
           <div
             className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1"

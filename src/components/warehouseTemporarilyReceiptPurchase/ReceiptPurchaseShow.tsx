@@ -6,17 +6,25 @@ import ReceiptPurchaseShowHeader from "./ReceiptPurchaseShowHeader";
 import ReceiptPurchaseShowTable from "./ReceiptPurchaseShowTable";
 import { useWarehouse } from "../../hooks/useWarehouse";
 import { useWarehouseStore } from "../../store/warehouseStore";
+import { DefinitionDateTime } from "../../types/definitionInvironment";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   refetchSwitch: boolean;
   setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
+  definitionDateTime: DefinitionDateTime;
 };
 
-const ReceiptPurchaseShow = ({ workFlowRowSelectResponse, refetchSwitch, setRefetchSwitch }: Props) => {
+const ReceiptPurchaseShow = ({
+  workFlowRowSelectResponse,
+  refetchSwitch,
+  setRefetchSwitch,
+  definitionDateTime,
+}: Props) => {
   const canEditForm1Mst2 =
     workFlowRowSelectResponse.workTableForms.canEditForm1Mst2;
-  const { setField: setWarehouseField,receiptPurchaseId } = useWarehouseStore();
+  const { setField: setWarehouseField, receiptPurchaseId } =
+    useWarehouseStore();
   const {
     warehouseTemporaryReceiptPurchaseShowResponse,
     isLoadingWarehouseTemporaryReceiptPurchaseShow,
@@ -36,12 +44,11 @@ const ReceiptPurchaseShow = ({ workFlowRowSelectResponse, refetchSwitch, setRefe
     }
   }, [refetchSwitch]);
   ////////////////////////////////////////////////////////////////////////
-  if (receiptPurchaseId!==workFlowRowSelectResponse?.workTableRow.formId)
-  {
+  if (receiptPurchaseId !== workFlowRowSelectResponse?.workTableRow.formId) {
     setWarehouseField(
       "receiptPurchaseId",
       workFlowRowSelectResponse?.workTableRow.formId
-    ); 
+    );
   }
   /*useEffect(() => {
     console.log(workFlowRowSelectResponse?.workTableRow.formId);
@@ -82,6 +89,7 @@ const ReceiptPurchaseShow = ({ workFlowRowSelectResponse, refetchSwitch, setRefe
         warehouseTemporaryReceiptPurchaseRegResponse={
           warehouseTemporaryReceiptPurchaseRegResponse
         }
+        definitionDateTime={definitionDateTime}
       />
     </div>
   );

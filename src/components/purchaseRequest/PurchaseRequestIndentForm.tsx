@@ -2,18 +2,21 @@
 import InvoiceReceiptShow from "../invoiceReceipt/InvoiceReceiptShow";
 import { useState } from "react";
 import { Indent } from "../../types/product";
+import { DefinitionDateTime } from "../../types/definitionInvironment";
 
 type Props = {
   selectedIndent: Indent | null;
   isNew: boolean;
   setIsNew: (isNew: boolean) => void;
   setIsEdit: (isEdit: boolean) => void;
+  definitionDateTime:DefinitionDateTime
 };
 const PurchaseRequestIndentForm = ({
   selectedIndent,
   isNew,
   setIsNew,
   setIsEdit,
+  definitionDateTime
 }: Props) => {
   ///////////////////////////////////////////////////////
   const [refetchSwitch, setRefetchSwitch] = useState(false);
@@ -75,6 +78,7 @@ const PurchaseRequestIndentForm = ({
         isNew={isNew}
         setIsNew={setIsNew}
         setIsEdit={setIsEdit}
+        definitionDateTime={definitionDateTime}
       />
     </div>
   );

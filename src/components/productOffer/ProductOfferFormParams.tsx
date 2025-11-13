@@ -2,7 +2,6 @@ import { useBrand } from "../../hooks/useBrands";
 import AutoComplete from "../controls/AutoComplete";
 import Input from "../controls/Input";
 import { DefaultOptionTypeStringId } from "../../types/general";
-import { useDefinitionInvironment } from "../../hooks/useDefinitionInvironment";
 import {
   convertToFarsiDigits,
   convertToPersianDate,
@@ -11,6 +10,7 @@ import { useEffect } from "react";
 import { ProductOffer } from "../../types/productOffer";
 import { ProductPerm } from "../../types/productPerm";
 import { ProductGrace } from "../../types/productGrace";
+import { DefinitionDateTime } from "../../types/definitionInvironment";
 
 type Props = {
   isNew: boolean; //for check if isNew new else edit
@@ -26,6 +26,7 @@ type Props = {
   setDsc: React.Dispatch<React.SetStateAction<string>>;
   canEditForm1: boolean;
   childButton?: React.ReactNode;
+  definitionDateTime: DefinitionDateTime;
 };
 
 const ProductOfferFormParams = ({
@@ -42,9 +43,10 @@ const ProductOfferFormParams = ({
   setDsc,
   canEditForm1,
   childButton,
+  definitionDateTime
 }: Props) => {
   const { brands } = useBrand();
-  const { definitionDateTime } = useDefinitionInvironment();
+  //const { definitionDateTime } = useDefinitionInvironment();
   useEffect(() => {
     setDat(
       isNew

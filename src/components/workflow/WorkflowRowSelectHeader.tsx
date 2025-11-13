@@ -13,6 +13,8 @@ import { v4 as uuidv4 } from "uuid";
 import ModalMessage from "../layout/ModalMessage";
 import ModalForm from "../layout/ModalForm";
 import WorkflowComponent from "./WorkflowComponent";
+import { DefinitionDateTime, DefinitionInvironment } from "../../types/definitionInvironment";
+import { SearchItem } from "../../types/general";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -23,6 +25,10 @@ type Props = {
   refetchWorkTableRowSelect: () => void;
   selectedId: number;
   setSelectedId: React.Dispatch<React.SetStateAction<number>>;
+  definitionInvironment:DefinitionInvironment;
+  definitionDateTime:DefinitionDateTime;
+  isLoadingBanks:boolean;
+  banks: SearchItem[]
 };
 
 const WorkflowRowSelectHeader = ({
@@ -34,6 +40,10 @@ const WorkflowRowSelectHeader = ({
   refetchWorkTableRowSelect,
   selectedId,
   setSelectedId,
+  definitionInvironment,
+  definitionDateTime,
+  isLoadingBanks,
+  banks
 }: Props) => {
   const flowButtons = workFlowRowSelectResponse.flowButtons;
   const flowDescriptions = workFlowRowSelectResponse.flowDescriptions;
@@ -55,7 +65,7 @@ const WorkflowRowSelectHeader = ({
       timeoutId = setTimeout(() => {
         setIsModalOpen(false);
         //setSelectedId(selectedId);
-        if (workFlowDoFlowResponse.meta.errorCode === -1) {
+        if (workFlowDoFlowResponse.meta.errorCode <= 0) {
           let tempId = selectedId;
           refetchWorkTableRowSelect();
           refetchWorkTable();
@@ -212,6 +222,10 @@ const WorkflowRowSelectHeader = ({
                 dsc={dsc}
                 flowMapId={flowMapId}
                 setIsDocumentChangeDateOpen={setIsDocumentChangeDateOpen}
+                definitionInvironment={definitionInvironment}
+                definitionDateTime={definitionDateTime}
+                isLoadingBanks={isLoadingBanks}
+                banks={banks}
               />
             }
             title="تاریخ سند"

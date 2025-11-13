@@ -8,6 +8,8 @@ import {
   WorkflowRowSelectResponse,
 } from "../../types/workflow";
 import { QueryObserverResult, RefetchOptions, UseMutateAsyncFunction } from "@tanstack/react-query";
+import { DefinitionDateTime, DefinitionInvironment } from "../../types/definitionInvironment";
+import { useBanks } from "../../hooks/useBanks";
 
 type Props = {
   workFlowResponse: WorkflowResponse;
@@ -25,6 +27,8 @@ type Props = {
   isRefetchingWorkTableRowSelect: boolean;
   refetchSwitch: boolean;
   setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>
+  definitionInvironment:DefinitionInvironment;
+  definitionDateTime: DefinitionDateTime ;
 };
 
 const WorkflowForm = ({
@@ -42,10 +46,12 @@ const WorkflowForm = ({
   isRefetchingWorkTable,
   isRefetchingWorkTableRowSelect,
   refetchSwitch,
-  setRefetchSwitch
+  setRefetchSwitch,
+  definitionInvironment,
+  definitionDateTime
 }: Props) => {
   const [selectedId, setSelectedId] = useState<number>(-1);
-
+  const { banks, isLoading: isLoadingBanks } = useBanks();
   const handleSelectedIdChange = (id: number) => {
     //console.log(id, "id in WorkflowForm");
     setSelectedId(id);
@@ -78,6 +84,10 @@ const WorkflowForm = ({
         refetchWorkTableRowSelect={refetchWorkTableRowSelect}
         refetchSwitch={refetchSwitch}
         setRefetchSwitch={setRefetchSwitch}
+        definitionInvironment={definitionInvironment}
+        definitionDateTime ={definitionDateTime}
+        isLoadingBanks={isLoadingBanks}
+        banks={banks}
       />
     </div>
   );

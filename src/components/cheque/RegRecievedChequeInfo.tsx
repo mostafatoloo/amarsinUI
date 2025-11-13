@@ -2,10 +2,9 @@ import { useEffect, useState, useRef } from "react";
 import Input from "../controls/Input";
 import Ok from "../../assets/images/GrayThem/ok16.png";
 import Err from "../../assets/images/GrayThem/err16.png";
-import { useBanks } from "../../hooks/useBanks";
 import { useBankStore } from "../../store/bankStore";
 import AutoComplete from "../controls/AutoComplete";
-import { DefaultOptionType } from "../../types/general";
+import { DefaultOptionType, SearchItem } from "../../types/general";
 import Spinner from "../controls/Spinner";
 import {
   convertToFarsiDigits,
@@ -13,7 +12,6 @@ import {
   formatNumberWithCommas,
 } from "../../utilities/general";
 import { useAuthStore } from "../../store/authStore";
-import { useDefinitionInvironment } from "../../hooks/useDefinitionInvironment";
 import { WorkflowRowSelectResponse } from "../../types/workflow";
 import { useChequeStore } from "../../store/chequeStore";
 import { colors } from "../../utilities/color";
@@ -27,6 +25,7 @@ import {
 import { UseMutateAsyncFunction } from "@tanstack/react-query";
 import RegRecievedChequeInfoSanad from "./RegRecievedChequeInfoSanad";
 import { FaCircle } from "react-icons/fa";
+import { DefinitionInvironment } from "../../types/definitionInvironment";
 
 type Props = {
   canEditForm: boolean;
@@ -42,6 +41,9 @@ type Props = {
   isLoadingUpdateFields: boolean;
   cashPosSystemSearch: any;
   sayadChequeInquiryByPaymentIdResponse: SayadChequeInquiryByPaymentIdResponse;
+  definitionInvironment:DefinitionInvironment;
+  banks: SearchItem[];
+  isLoadingBanks: boolean;
 };
 
 const RegRecievedChequeInfo: React.FC<Props> = ({
@@ -53,13 +55,15 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
   isLoadingUpdateFields,
   cashPosSystemSearch,
   sayadChequeInquiryByPaymentIdResponse,
+  definitionInvironment,
+  banks,
+  isLoadingBanks,
 }: Props) => {
   const [bankSearch, setBankSearch] = useState("");
-  const { banks, isLoading: isLoadingBanks } = useBanks();
+  //const { banks, isLoading: isLoadingBanks } = useBanks();
   const { setField } = useBankStore();
-  const { definitionInvironment, isLoading: isLoadingDefinition } =
-    useDefinitionInvironment();
-
+  //const { definitionInvironment, isLoading: isLoadingDefinition } =
+  //  useDefinitionInvironment();
   const [systemSearch, setSystemSearch] = useState<string>("");
   const [yearSearch, setYearSearch] = useState<string>("");
   const [cashPosSystemSerch, setCashPosSystemSerch] = useState<string>("");
@@ -457,7 +461,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
   //////////////////////////////////////////////////////////////////
   const showValidationError = (fieldName: string) => {
     if (
-      !isLoadingDefinition &&
+      //!isLoadingDefinition &&
       !isLoadingBanks &&
       updateStatus[fieldName]?.validationError !== undefined &&
       updateStatus[fieldName]?.validationError === true
@@ -985,17 +989,17 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
         <ModalMessage
           isOpen={isModalOpen}
           backgroundColor={
-            updateFieldsResponse.meta.errorCode === -1
+            updateFieldsResponse.meta.errorCode <=0
               ? "bg-green-200"
               : "bg-red-200"
           }
           bgColorButton={
-            updateFieldsResponse.meta.errorCode === -1
+            updateFieldsResponse.meta.errorCode <=0
               ? "bg-green-500"
               : "bg-red-500"
           }
           bgColorButtonHover={
-            updateFieldsResponse.meta.errorCode === -1
+            updateFieldsResponse.meta.errorCode <=0
               ? "bg-green-600"
               : "bg-red-600"
           }

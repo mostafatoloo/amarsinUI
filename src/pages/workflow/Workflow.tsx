@@ -6,9 +6,15 @@ import Refresh32 from "../../assets/images/GrayThem/rfrsh32.png";
 //import { useWorkflow } from "../hooks/useWorkflow";
 import WorkflowForm from "../../components/workflow/WorkflowForm";
 import { useWorkflow } from "../../hooks/useWorkflow";
-import {  useState } from "react";
+import { useState } from "react";
+import { DefinitionDateTime, DefinitionInvironment } from "../../types/definitionInvironment";
 
-export default function Workflow() {
+type Props = {
+  definitionInvironment: DefinitionInvironment;
+  definitionDateTime: DefinitionDateTime ;
+}
+
+export default function Workflow({ definitionInvironment, definitionDateTime }: Props) {
   const {
     workFlowResponse,
     error,
@@ -28,6 +34,7 @@ export default function Workflow() {
   //const { systemId } = useGeneralContext();
 
   const [refetchSwitch, setRefetchSwitch] = useState(false);
+  //const { definitionInvironment } = useDefinitionInvironment();
 
   const refetchWorkTables = () => {
     refetchWorkTable();
@@ -38,7 +45,7 @@ export default function Workflow() {
     <div className="h-[calc(100vh-72px)] overflow-y-scroll flex flex-col bg-gray-200 pt-2">
       {/* Top blue header */}
       <header className="flex flex-col md:flex-row items-center justify-between gap-2">
-        <PageTitle />
+        <PageTitle definitionInvironment={definitionInvironment} />
         <div className="flex px-4 items-center gap-2">
           <div className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1">
             <img src={Add32} alt="Add32" className="w-6 h-6" />
@@ -82,6 +89,8 @@ export default function Workflow() {
           refetchSwitch={refetchSwitch}
           setRefetchSwitch={setRefetchSwitch}
           workFlowDoFlowResponse={workFlowDoFlowResponse}
+          definitionInvironment={definitionInvironment}
+          definitionDateTime={definitionDateTime}
         />
       </main>
 

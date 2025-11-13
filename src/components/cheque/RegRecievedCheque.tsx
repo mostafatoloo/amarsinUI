@@ -5,18 +5,26 @@ import { useChequeStore } from "../../store/chequeStore";
 import { WorkflowRowSelectResponse } from "../../types/workflow";
 import RegRecievedChequeImg from "./RegRecievedChequeImg";
 import RegRecievedChequeInfo from "./RegRecievedChequeInfo";
+import { DefinitionInvironment } from "../../types/definitionInvironment";
+import { SearchItem } from "../../types/general";
 //import RegRecievedChequeInfoSanad from "./RegRecievedChequeInfoSanad";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   refetchSwitch: boolean;
   setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
+  definitionInvironment:DefinitionInvironment;
+  banks: SearchItem[];
+  isLoadingBanks: boolean;
 };
 
 const RegRecievedCheque = ({
   workFlowRowSelectResponse,
   refetchSwitch,
   setRefetchSwitch,
+  definitionInvironment,
+  banks,
+  isLoadingBanks,
 }: Props) => {
   const {setField,loadPaymentFormId}=useChequeStore()
   
@@ -25,6 +33,7 @@ const RegRecievedCheque = ({
     setField("loadPaymentFormId", workFlowRowSelectResponse.workTableRow.formId);
     setField("payKind", -1);
     setField("sayadiPaymentId", -1);
+    setField("paymentAttachmentFormId",workFlowRowSelectResponse.workTableRow.formId ?? -1);
   }
   
   const {
@@ -65,6 +74,9 @@ const RegRecievedCheque = ({
         isLoadingUpdateFields={isLoadingUpdateFields}
         cashPosSystemSearch={cashPosSystemSearch}
         sayadChequeInquiryByPaymentIdResponse={sayadChequeInquiryByPaymentIdResponse}
+        definitionInvironment={definitionInvironment}
+        banks={banks}
+        isLoadingBanks={isLoadingBanks}
       />
       <RegRecievedChequeImg
         paymentAttachmentResponse={paymentAttachmentResponse}

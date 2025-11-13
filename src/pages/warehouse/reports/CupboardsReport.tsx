@@ -12,8 +12,11 @@ import { convertToFarsiDigits } from "../../../utilities/general";
 import { FaCheck } from "react-icons/fa";
 import Flow16 from "../../../assets/images/GrayThem/flow16.png";
 import EditIcon from "../../../assets/images/GrayThem/edit_gray16.png";
-
-const CupboardsReport = () => {
+import { DefinitionInvironment } from "../../../types/definitionInvironment";
+type Props = {
+  definitionInvironment: DefinitionInvironment;
+}
+const CupboardsReport = ({ definitionInvironment }: Props) => {
   const {
     cupboardsReportResponse,
     isLoadingCupboardsReport,
@@ -268,7 +271,7 @@ const CupboardsReport = () => {
   return (
     <div className="flex flex-col bg-gray-200 pt-2">
       <header className="flex flex-col gap-2 md:flex-row items-center justify-between border-gray-300 border-b pb-2">
-        <PageTitle />
+        <PageTitle definitionInvironment={definitionInvironment} />
         <div className="flex px-4 items-center gap-4">
           <div
             className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1"

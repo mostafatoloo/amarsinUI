@@ -1,17 +1,22 @@
 import PayRequestShow from "../payRequest/PayRequestShow";
 import { PayRequest } from "../../types/payRequest";
+import { DefinitionDateTime, DefinitionInvironment } from "../../types/definitionInvironment";
 
 type Props = {
   selectedPayRequest: PayRequest | null;
   isNew: boolean;
   setIsNew: (isNew: boolean) => void;
   setIsEdit: (isEdit: boolean) => void;
+  definitionDateTime: DefinitionDateTime;
+  definitionInvironment: DefinitionInvironment;
 };
 const PayRequestOperationForm = ({
   selectedPayRequest,
   isNew,
   setIsNew,
   setIsEdit,
+  definitionDateTime,
+  definitionInvironment,
 }: Props) => {
   ///////////////////////////////////////////////////////
   const workFlowRowSelectResponse = {
@@ -69,6 +74,8 @@ const PayRequestOperationForm = ({
         isNew={isNew}
         setIsNew={setIsNew}
         setIsEdit={setIsEdit}
+        definitionDateTime={definitionDateTime}
+        definitionInvironment={definitionInvironment}
       />
     </div>
   );

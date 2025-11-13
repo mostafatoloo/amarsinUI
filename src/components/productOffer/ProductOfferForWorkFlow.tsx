@@ -5,12 +5,14 @@ import { useProductOffer } from "../../hooks/useProductOffer";
 import { useProductOfferStore } from "../../store/productOfferStore";
 import { ProductOffer } from "../../types/productOffer";
 import { useGeneralContext } from "../../context/GeneralContext";
+import { DefinitionDateTime } from "../../types/definitionInvironment";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  definitionDateTime: DefinitionDateTime;
 };
 
-const ProductOfferForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
+const ProductOfferForWorkFlow = ({ workFlowRowSelectResponse, definitionDateTime }: Props) => {
   const {
     productOfferDtl,
     productOfferDtlData,
@@ -68,6 +70,7 @@ const ProductOfferForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
         setIsEdit={() => true}
         fromWorkFlow={true} //for going to editting in product offer form as default
         selectedId={selectedId}
+        definitionDateTime={definitionDateTime}
       />
     </div>
   );

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useDefinitionInvironment } from "../../hooks/useDefinitionInvironment";
 import { DefaultOptionType } from "../../types/general";
 import {
   convertToFarsiDigits,
@@ -20,6 +19,7 @@ import { useCustomerStore } from "../../store/customerStore";
 import { useGeneralContext } from "../../context/GeneralContext";
 import PersianDatePicker from "../controls/PersianDatePicker";
 import { InputElement } from "../controls/InputElement";
+import { DefinitionDateTime, DefinitionInvironment } from "../../types/definitionInvironment";
 
 type Props = {
   cnt: number; //attachment count
@@ -50,6 +50,8 @@ type Props = {
   setSettleAmnt: (settleAmnt: string) => void;
   providerAmnt: string;
   setProviderAmnt: (providerAmnt: string) => void;
+  definitionDateTime: DefinitionDateTime;
+  definitionInvironment: DefinitionInvironment;
 };
 
 const PayRequestShowHeader = ({
@@ -81,12 +83,14 @@ const PayRequestShowHeader = ({
   setSettleAmnt,
   providerAmnt,
   setProviderAmnt,
+  definitionDateTime,
+  definitionInvironment,
 }: Props) => {
   const canEditForm1Mst1 =
     workFlowRowSelectResponse.workTableForms.canEditForm1Mst1;
   const canEditForm1Mst2 =
     workFlowRowSelectResponse.workTableForms.canEditForm1Mst2;
-  const { definitionInvironment } = useDefinitionInvironment();
+  //const { definitionInvironment } = useDefinitionInvironment();
   //const initData = authApiResponse?.data.result.initData;
   const { customers } = useCustomers();
   const { setField: setCustomerField } = useCustomerStore();
@@ -95,7 +99,6 @@ const PayRequestShowHeader = ({
   const [systemSearch, setSystemSearch] = useState<string>("");
   const [yearSearch, setYearSearch] = useState<string>("");
 
-  const { definitionDateTime } = useDefinitionInvironment();
   useEffect(() => {
     setCustomerField("systemId", systemId);
     setCustomerField("yearId", yearId);

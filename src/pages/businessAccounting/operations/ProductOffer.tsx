@@ -24,8 +24,13 @@ import { TablePaginationActions } from "../../../components/controls/TablePagina
 import ProductOfferTblHeader from "../../../components/productOffer/ProductOfferTblHeader";
 import ProductOfferHeader from "../../../components/productOffer/ProductOfferHeader";
 import { columns } from "../../../components/productOffer/ProductOfferGeneral";
+import { DefinitionDateTime, DefinitionInvironment } from "../../../types/definitionInvironment";
 
-const ProductOffer = () => {
+type Props = {
+  definitionDateTime: DefinitionDateTime;
+  definitionInvironment: DefinitionInvironment;
+};
+const ProductOffer = ({ definitionDateTime, definitionInvironment }: Props) => {
   const columnsDtl = React.useMemo(
     () => [
       {
@@ -451,6 +456,7 @@ const ProductOffer = () => {
         selectedProductOffer={selectedProductOffer as ProductOfferType}
         data={data}
         refetch={refetch}
+        definitionInvironment={definitionInvironment}
       />
       <div className="flex flex-col md:flex-row gap-2 px-2 h-1/2">
         <div className="flex flex-col w-full md:w-3/4 h-full">
@@ -613,6 +619,7 @@ const ProductOffer = () => {
           canEditForm1={true}
           selectedId={selectedId}
           setSelectedRowIndex={setSelectedRowIndex}
+          definitionDateTime={definitionDateTime}
         />
       </ModalForm>
       <ModalMessage

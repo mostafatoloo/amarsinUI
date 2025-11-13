@@ -111,7 +111,7 @@ export function useCheques() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: paymentAttachmentFormId !== -1,
+    //enabled: paymentAttachmentFormId !== -1,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });

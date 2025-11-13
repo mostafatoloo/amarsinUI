@@ -5,17 +5,20 @@ import { useInvoice } from "../../hooks/useInvoice";
 import { useInvoiceStore } from "../../store/invoiceStore";
 import InvoicePaymentShowTable from "./InvoicePaymentShowTable";
 import { useEffect } from "react";
+import { SearchItem } from "../../types/general";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   refetchSwitch: boolean;
   setRefetchSwitch: (refetchSwitch: boolean) => void;
+  banks: SearchItem[];
 };
 
 const InvoicePaymentShow = ({
   workFlowRowSelectResponse,
   refetchSwitch,
   setRefetchSwitch,
+  banks,
 }: Props) => {
   const {
     invoicePaymentResponse,
@@ -59,6 +62,7 @@ const InvoicePaymentShow = ({
         invoicePaymentSave={invoicePaymentSave}
         isLoadingInvoicePaymentSave={isLoadingInvoicePaymentSave}
         invoicePaymentSaveResponse={invoicePaymentSaveResponse}
+        banks={banks}
       />
       <div className="flex items-center w-full justify-between gap-2 py-1">
         <p className="px-2 text-sm w-16">لیست</p>

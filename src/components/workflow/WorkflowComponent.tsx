@@ -24,6 +24,8 @@ import { UseMutateAsyncFunction } from "@tanstack/react-query";
 import { useWorkflowStore } from "../../store/workflowStore";
 import InvoicePaymentShow from "../invoicePayment/InvoicePaymentShow";
 import InvoiceReturnRequestShow from "../invoiceReturnRequest/InvoiceReturnRequestShow";
+import { DefinitionDateTime, DefinitionInvironment } from "../../types/definitionInvironment";
+import { SearchItem } from "../../types/general";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -36,6 +38,10 @@ type Props = {
   dsc?: string; // for  هامش
   flowMapId?: number;
   setIsDocumentChangeDateOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+  definitionInvironment:DefinitionInvironment;
+  definitionDateTime:DefinitionDateTime
+  isLoadingBanks:boolean;
+  banks: SearchItem[]
 };
 
 export default function WorkflowComponent({
@@ -49,6 +55,10 @@ export default function WorkflowComponent({
   dsc,
   flowMapId,
   setIsDocumentChangeDateOpen,
+  definitionInvironment,
+  definitionDateTime,
+  isLoadingBanks,
+  banks
 }: Props) {
   let componentToRender1: React.ReactNode | null = null;
   let componentToRender2: React.ReactNode | null = null;
@@ -94,6 +104,7 @@ export default function WorkflowComponent({
           isNew={false}
           setIsNew={() => {}}
           setIsEdit={() => {}}
+          definitionDateTime={definitionDateTime}
         />
       );
       break;
@@ -103,6 +114,9 @@ export default function WorkflowComponent({
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           refetchSwitch={refetchSwitch}
           setRefetchSwitch={setRefetchSwitch}
+          definitionInvironment={definitionInvironment}
+          banks={banks}
+          isLoadingBanks={isLoadingBanks}
         />
       );
       break;
@@ -130,6 +144,7 @@ export default function WorkflowComponent({
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           refetchSwitch={refetchSwitch}
           setRefetchSwitch={setRefetchSwitch}
+          definitionDateTime={definitionDateTime}
         />
       );
       break;
@@ -137,6 +152,7 @@ export default function WorkflowComponent({
       componentToRender1 = (
         <ProductGraceForWorkFlow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          definitionDateTime={definitionDateTime}
         />
       );
       break;
@@ -145,6 +161,7 @@ export default function WorkflowComponent({
       componentToRender1 = (
         <ProductOfferForWorkFlow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          definitionDateTime={definitionDateTime}
         />
       );
       break;
@@ -152,6 +169,7 @@ export default function WorkflowComponent({
       componentToRender1 = (
         <ProductPriceForWorkFlow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          definitionDateTime={definitionDateTime}
         />
       );
       break;
@@ -159,6 +177,7 @@ export default function WorkflowComponent({
       componentToRender1 = (
         <ProductPermForWorkFlow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          definitionDateTime={definitionDateTime}
         />
       );
       break;
@@ -182,6 +201,7 @@ export default function WorkflowComponent({
       break;
     case "Delivery/_Delivery": //تیتک -> ارسال به تیتک
     case "WarehouseTemporaryReceipt/_WarehouseTemporaryReceipt":
+    case "DeliveryReturn/_DeliveryReturn": //بازرگانی -> ثبت حواله مرجوعی
       componentToRender1 = (
         <DeliveryShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
@@ -215,6 +235,7 @@ export default function WorkflowComponent({
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           refetchSwitch={refetchSwitch}
           setRefetchSwitch={setRefetchSwitch}
+          banks={banks}
         />
       );
       break;
@@ -251,6 +272,8 @@ export default function WorkflowComponent({
           isNew={false}
           setIsNew={() => {}}
           setIsEdit={() => {}}
+          definitionDateTime={definitionDateTime}
+          definitionInvironment={definitionInvironment}
         />
       );
       break;
@@ -298,6 +321,7 @@ export default function WorkflowComponent({
           isNew={false}
           setIsNew={() => {}}
           setIsEdit={() => {}}
+          definitionDateTime={definitionDateTime}
         />
       );
       break;
@@ -307,6 +331,9 @@ export default function WorkflowComponent({
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           refetchSwitch={refetchSwitch}
           setRefetchSwitch={setRefetchSwitch}
+          definitionInvironment={definitionInvironment}
+          banks={banks}
+          isLoadingBanks={isLoadingBanks}          
         />
       );
       break;
@@ -334,6 +361,7 @@ export default function WorkflowComponent({
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           refetchSwitch={refetchSwitch}
           setRefetchSwitch={setRefetchSwitch}
+          definitionDateTime={definitionDateTime}
         />
       );
       break;
@@ -341,6 +369,7 @@ export default function WorkflowComponent({
       componentToRender2 = (
         <ProductGraceForWorkFlow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          definitionDateTime={definitionDateTime}
         />
       );
       break;
@@ -349,6 +378,7 @@ export default function WorkflowComponent({
       componentToRender2 = (
         <ProductOfferForWorkFlow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          definitionDateTime={definitionDateTime}
         />
       );
       break;
@@ -356,6 +386,7 @@ export default function WorkflowComponent({
       componentToRender2 = (
         <ProductPriceForWorkFlow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          definitionDateTime={definitionDateTime}
         />
       );
       break;
@@ -363,6 +394,7 @@ export default function WorkflowComponent({
       componentToRender2 = (
         <ProductPermForWorkFlow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          definitionDateTime={definitionDateTime}
         />
       );
       break;
@@ -385,6 +417,7 @@ export default function WorkflowComponent({
       );
       break;
     case "Delivery/_Delivery": //تیتک -> ارسال به تیتک
+    case "DeliveryReturn/_DeliveryReturn": //بازرگانی -> ثبت حواله مرجوعی
     case "WarehouseTemporaryReceipt/_WarehouseTemporaryReceipt":
       componentToRender2 = (
         <DeliveryShow
@@ -417,6 +450,7 @@ export default function WorkflowComponent({
       componentToRender2 = (
         <InvoicePaymentShow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
+          banks={banks}
           refetchSwitch={refetchSwitch}
           setRefetchSwitch={setRefetchSwitch}
         />
@@ -455,6 +489,8 @@ export default function WorkflowComponent({
           isNew={false}
           setIsNew={() => {}}
           setIsEdit={() => {}}
+          definitionDateTime={definitionDateTime}
+          definitionInvironment={definitionInvironment}
         />
       );
       break;

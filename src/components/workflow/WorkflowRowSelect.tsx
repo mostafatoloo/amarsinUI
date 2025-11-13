@@ -6,6 +6,8 @@ import {
   WorkflowRowSelectResponse,
 } from "../../types/workflow";
 import { UseMutateAsyncFunction } from "@tanstack/react-query";
+import { SearchItem } from "../../types/general";
+import { DefinitionDateTime, DefinitionInvironment } from "../../types/definitionInvironment";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -18,6 +20,10 @@ type Props = {
   refetchWorkTableRowSelect:() => void;
   selectedId: number;
   setSelectedId: React.Dispatch<React.SetStateAction<number>>
+  definitionInvironment:DefinitionInvironment;
+  definitionDateTime: DefinitionDateTime ;
+  isLoadingBanks:boolean;
+  banks: SearchItem[]
 };
 
 const WorkflowRowSelect = ({
@@ -31,6 +37,10 @@ const WorkflowRowSelect = ({
   refetchWorkTableRowSelect,
   selectedId,
   setSelectedId,
+  definitionInvironment,
+  definitionDateTime,
+  isLoadingBanks,
+  banks
 }: Props) => {
   if (error) return <div>Error: {error.message} </div>;
   return (
@@ -52,6 +62,10 @@ const WorkflowRowSelect = ({
             refetchWorkTableRowSelect={refetchWorkTableRowSelect}
             selectedId={selectedId}
             setSelectedId={setSelectedId}
+            definitionInvironment={definitionInvironment}
+            definitionDateTime={definitionDateTime}
+            isLoadingBanks={isLoadingBanks}
+            banks={banks}
           />
         </div>
       )}

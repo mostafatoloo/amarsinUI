@@ -48,6 +48,7 @@ import ModalForm from "../layout/ModalForm";
 import PayRequestAttachment from "../payRequest/PayRequestAttachment";
 import { useAttachmentStore } from "../../store/attachmentStore";
 import { useAttachments } from "../../hooks/useAttachments";
+import { DefinitionDateTime } from "../../types/definitionInvironment";
 
 type Props = {
   addProductList: (
@@ -68,7 +69,8 @@ type Props = {
   fromWorkFlow: boolean;
   canEditForm1: boolean;
   selectedId: number; 
-  setSelectedRowIndex?:(value: SetStateAction<number>) => void
+  setSelectedRowIndex?:(value: SetStateAction<number>) => void,
+  definitionDateTime:DefinitionDateTime;
 };
 
 export const headCells = [
@@ -225,7 +227,8 @@ const ProductPriceForm = ({
   setIsEdit,
   fromWorkFlow,
   selectedId,
-  setSelectedRowIndex
+  setSelectedRowIndex,
+  definitionDateTime
 }: Props) => {
   const [addList, setAddList] = useState<ProductPriceListItemTable[]>([]);
   const [search, setSearch] = useState<string>("");
@@ -636,6 +639,7 @@ const ProductPriceForm = ({
         setBrand={setBrand}
         setBrandSearch={setBrandSearch}
         canEditForm1={canEditForm1}
+        definitionDateTime={definitionDateTime}
         childButton={
           <Button
             text={`ضمائم ${`(${convertToFarsiDigits(cnt)})`}`}

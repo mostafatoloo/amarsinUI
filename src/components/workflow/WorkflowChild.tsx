@@ -10,6 +10,8 @@ import {
   WorkflowRowSelectResponse,
 } from "../../types/workflow";
 import { UseMutateAsyncFunction } from "@tanstack/react-query";
+import { DefinitionDateTime, DefinitionInvironment } from "../../types/definitionInvironment";
+import { SearchItem } from "../../types/general";
 
 type Props = {
   isLoading: boolean;
@@ -26,6 +28,10 @@ type Props = {
   refetchWorkTableRowSelect: () => void;
   refetchSwitch: boolean;
   setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
+  definitionInvironment:DefinitionInvironment;
+  definitionDateTime: DefinitionDateTime ;
+  isLoadingBanks:boolean;
+  banks: SearchItem[]
 };
 
 export const WorkflowChild = ({
@@ -43,6 +49,10 @@ export const WorkflowChild = ({
   refetchWorkTableRowSelect,
   refetchSwitch,
   setRefetchSwitch,
+  definitionInvironment,
+  definitionDateTime,
+  isLoadingBanks,
+  banks
 }: Props) => {
   //const [currentSelectedId, setCurrentSelectedId] = useState(selectedId);
   const { chartId, systemId } = useGeneralContext();
@@ -119,6 +129,10 @@ export const WorkflowChild = ({
           refetchWorkTableRowSelect={refetchWorkTableRowSelect}
           selectedId={selectedId}
           setSelectedId={setSelectedId}
+          definitionInvironment={definitionInvironment}
+          definitionDateTime ={definitionDateTime}         
+          isLoadingBanks={isLoadingBanks}
+          banks={banks}
         />
       )}
       <WorkflowComponent
@@ -129,6 +143,10 @@ export const WorkflowChild = ({
         setRefetchSwitch={setRefetchSwitch}
         refetchWorkTable={refetchWorkTable}
         refetchWorkTableRowSelect={refetchWorkTableRowSelect}
+        definitionInvironment={definitionInvironment}
+        definitionDateTime ={definitionDateTime}
+        isLoadingBanks={isLoadingBanks}
+        banks={banks}
       />
     </>
   );

@@ -42,6 +42,7 @@ import { useProductGraceStore } from "../../store/productGraceStore";
 import ProductGraceFormList from "./ProductGraceFormList";
 import { colors } from "../../utilities/color";
 import { ShowProductListRequest } from "../../types/productOperation";
+import { DefinitionDateTime } from "../../types/definitionInvironment";
 
 type Props = {
   addProductList: (
@@ -62,6 +63,7 @@ type Props = {
   canEditForm1: boolean;
   selectedId: number;
   setSelectedRowIndex?:(value: SetStateAction<number>) => void
+  definitionDateTime:DefinitionDateTime;
 };
 
 export const headCells = [
@@ -196,7 +198,8 @@ const ProductGraceForm = ({
   setIsEdit,
   canEditForm1,
   selectedId,
-  setSelectedRowIndex
+  setSelectedRowIndex,
+  definitionDateTime
 }: Props) => {
   const [addList, setAddList] = useState<ProductGraceListItemTable[]>([]);
   const [search, setSearch] = useState<string>("");
@@ -546,6 +549,7 @@ const ProductGraceForm = ({
         setBrand={setBrand}
         setBrandSearch={setBrandSearch}
         canEditForm1={canEditForm1}
+        definitionDateTime={definitionDateTime}
       />
       <ConfirmCard
         variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end"

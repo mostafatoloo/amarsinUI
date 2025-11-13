@@ -40,6 +40,7 @@ import { ProductSearchRequest } from "../../types/product";
 import { useBrandStore } from "../../store/brandStore";
 import { EditableInput } from "../controls/TTable";
 import { useProductOfferStore } from "../../store/productOfferStore";
+import { DefinitionDateTime } from "../../types/definitionInvironment";
 
 type Props = {
   addProductList: (
@@ -60,6 +61,7 @@ type Props = {
   canEditForm1: boolean;
   selectedId: number;
   setSelectedRowIndex?:(value: SetStateAction<number>) => void
+  definitionDateTime:DefinitionDateTime;
 };
 
 export const headCells = [
@@ -237,7 +239,8 @@ const ProductOfferForm = ({
   setIsEdit,
   fromWorkFlow,
   selectedId,
-  setSelectedRowIndex
+  setSelectedRowIndex,
+  definitionDateTime
 }: Props) => {
   const [addList, setAddList] = useState<ProductOfferProductTable[]>([]);
   const [search, setSearch] = useState<string>("");
@@ -638,6 +641,7 @@ const ProductOfferForm = ({
         setBrand={setBrand}
         setBrandSearch={setBrandSearch}
         canEditForm1={canEditForm1}
+        definitionDateTime={definitionDateTime}
       />
       <ConfirmCard
         variant="flex-row gap-2 rounded-bl-md rounded-br-md justify-end"

@@ -5,12 +5,14 @@ import { ProductPrice } from "../../types/productPrice";
 import { useProductPriceStore } from "../../store/productPriceStore";
 import ProductPriceForm from "./ProductPriceForm";
 import { useGeneralContext } from "../../context/GeneralContext";
+import { DefinitionDateTime } from "../../types/definitionInvironment";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  definitionDateTime: DefinitionDateTime;
 };
 
-const ProductPriceForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
+const ProductPriceForWorkFlow = ({ workFlowRowSelectResponse,definitionDateTime }: Props) => {
   const {
     productPriceDtl,
     productPriceDtlData,
@@ -75,6 +77,7 @@ const ProductPriceForWorkFlow = ({ workFlowRowSelectResponse }: Props) => {
         setIsEdit={() => true}
         fromWorkFlow={true} //for going to editting in product grace form as default
         selectedId={selectedId}
+        definitionDateTime={definitionDateTime}
       />
     </div>
   );

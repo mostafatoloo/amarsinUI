@@ -34,10 +34,17 @@ interface InvoiceReturnRequestDtl {
   regedOffer: string;
 }
 
+
+interface Diagnosis{
+  id:number;
+  err:number;
+  msg:string;
+}
+
 interface ResultInvoiceReturnRequestShow {
   invoiceReturnRequest: InvoiceReturnRequest;
   invoiceReturnRequestDtls: InvoiceReturnRequestDtl[];
-  diagnosises: any[]; // Replace 'any' with a specific type if diagnoses have a structure
+  diagnosises: Diagnosis[]; // Replace 'any' with a specific type if diagnoses have a structure
 }
 
 interface DataInvoiceReturnRequestShow {
