@@ -10,6 +10,7 @@ import InvoiceReturnRequestShowTable from "./InvoiceReturnRequestShowTable";
 import InvoiceReturnRequestInvoiceList from "./InvoiceReturnRequestInvoiceList";
 import InvoiceReturnRequestAttachments from "./InvoiceReturnRequestAttachments";
 import { v4 as uuidv4 } from "uuid";
+import { convertToFarsiDigits } from "../../utilities/general";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -62,10 +63,18 @@ const InvoiceReturnRequestShow = ({
   ////////////////////////////////////////////////////////for defining guid
   useEffect(() => {
     setGuid(uuidv4());
-    console.log("cnt", cnt);
   }, []);
-
-  ////////////////////////////////////////////////////////////////////////  ////////////////////////////////////////////////////////////////////////
+  //for defining cnt
+  useEffect(() => {
+    setCnt(
+      invoiceReturnRequestShowResponse.data.result.invoiceReturnRequest
+        .attachCount
+    );
+  }, [
+    invoiceReturnRequestShowResponse.data.result.invoiceReturnRequest
+      .attachCount,
+  ]);
+  ////////////////////////////////////////////////////////////////////////
   const handleEditClickClose = () => {
     setEditClicked(false);
     // setOtId(0);
@@ -78,6 +87,7 @@ const InvoiceReturnRequestShow = ({
         dsc={dsc}
         setDsc={setDsc}
         setShowAttachment={setShowAttachment}
+        cnt={convertToFarsiDigits(cnt)}
       />
       <div className="flex items-center w-full justify-between gap-2 py-1">
         <p className="px-2 text-sm">اقلام</p>
@@ -113,8 +123,12 @@ const InvoiceReturnRequestShow = ({
         width="1/2"
       >
         <InvoiceReturnRequestInvoiceList
-          invoiceReturnRequestInvoiceListResponse={invoiceReturnRequestInvoiceListResponse}
-          isLoadingInvoiceReturnRequestInvoiceList={isLoadingInvoiceReturnRequestInvoiceList}
+          invoiceReturnRequestInvoiceListResponse={
+            invoiceReturnRequestInvoiceListResponse
+          }
+          isLoadingInvoiceReturnRequestInvoiceList={
+            isLoadingInvoiceReturnRequestInvoiceList
+          }
           invoiceReturnRequestRegisterDtl={invoiceReturnRequestRegisterDtl}
           handleEditClickClose={handleEditClickClose}
         />

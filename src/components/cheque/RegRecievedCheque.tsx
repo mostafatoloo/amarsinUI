@@ -90,6 +90,7 @@ const RegRecievedCheque = ({
   ////////////////////////////////////////////////////////for defining guid
   useEffect(() => {
     setGuid(uuidv4());
+    console.log(cnt)
   }, []);
 
   return (

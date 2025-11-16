@@ -13,6 +13,7 @@ type Props = {
   setShowAttachment: React.Dispatch<React.SetStateAction<boolean>>;
   dsc: string;
   setDsc: React.Dispatch<React.SetStateAction<string>>;
+  cnt:string
 };
 
 const InvoiceReturnRequestShowHeader = ({
@@ -21,6 +22,7 @@ const InvoiceReturnRequestShowHeader = ({
   setShowAttachment,
   dsc,
   setDsc,
+  cnt,
 }: Props) => {
   const { customers } = useCustomers();
   const [customer, setCustomer] = useState<DefaultOptionType | null>(null);
@@ -90,10 +92,7 @@ const InvoiceReturnRequestShowHeader = ({
           />
         </div>
         <Button
-          text={`ضمائم ${`(${convertToFarsiDigits(
-            invoiceReturnRequestShowResponse.data.result.invoiceReturnRequest
-              .attachCount
-          )})`}`}
+          text={`ضمائم (${cnt})`}
           backgroundColor={colors.blue_400}
           backgroundColorHover={colors.blue_500}
           variant="w-32"
