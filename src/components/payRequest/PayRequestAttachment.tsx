@@ -202,7 +202,7 @@ const PayRequestAttachment = ({
         console.log("Preview URL:", event.target?.result);
       };
       reader.readAsDataURL(file);
-
+      console.log(file,"image file")
       // Upload logic
       const formData = new FormData();
       formData.append("img", file); // Keep file in FormData

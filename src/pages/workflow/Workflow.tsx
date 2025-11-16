@@ -7,14 +7,23 @@ import Refresh32 from "../../assets/images/GrayThem/rfrsh32.png";
 import WorkflowForm from "../../components/workflow/WorkflowForm";
 import { useWorkflow } from "../../hooks/useWorkflow";
 import { useState } from "react";
-import { DefinitionDateTime, DefinitionInvironment } from "../../types/definitionInvironment";
+import {
+  DefinitionDateTime,
+  DefinitionInvironment,
+} from "../../types/definitionInvironment";
+import ModalForm from "../../components/layout/ModalForm";
+import WorkFlowFlows from "../../components/workflow/WorkFlowFlows";
+import { useWorkflowStore } from "../../store/workflowStore";
 
 type Props = {
   definitionInvironment: DefinitionInvironment;
-  definitionDateTime: DefinitionDateTime ;
-}
+  definitionDateTime: DefinitionDateTime;
+};
 
-export default function Workflow({ definitionInvironment, definitionDateTime }: Props) {
+export default function Workflow({
+  definitionInvironment,
+  definitionDateTime,
+}: Props) {
   const {
     workFlowResponse,
     error,
@@ -29,17 +38,28 @@ export default function Workflow({ definitionInvironment, definitionDateTime }: 
     refetchWorkTableRowSelect,
     isRefetchingWorkTable,
     isRefetchingWorkTableRowSelect,
+    workFlowFlowsResponse,
+    isLoadingWorkFlowFlows,
+    refetchWorkFlowFlows,
+    isRefetchingWorkFlowFlows,
   } = useWorkflow();
-  //const { setField: setWorkFlowStoreField, workTableId } = useWorkflowStore();
+  const { setField: setWorkTableField , workTableId} = useWorkflowStore();
   //const { systemId } = useGeneralContext();
 
   const [refetchSwitch, setRefetchSwitch] = useState(false);
+  const [flowClicked, setFlowClicked] = useState(false);
   //const { definitionInvironment } = useDefinitionInvironment();
 
   const refetchWorkTables = () => {
     refetchWorkTable();
     refetchWorkTableRowSelect();
     setRefetchSwitch(true);
+  };
+
+  const handleFlowClick = () => {
+    //for api/WFMS/flows?WorkTableId=
+    setWorkTableField("workTableIdFlows", workTableId);
+    setFlowClicked(true);
   };
   return (
     <div className="h-[calc(100vh-72px)] overflow-y-scroll flex flex-col bg-gray-200 pt-2">
@@ -55,7 +75,10 @@ export default function Workflow({ definitionInvironment, definitionDateTime }: 
             <img src={SentForm24} alt="SentForm24" className="w-6 h-6" />
             <p className="text-xs">ارسال شده ها</p>
           </div>
-          <div className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1">
+          <div
+            className="flex flex-col items-center cursor-pointer hover:font-bold hover:bg-gray-300 rounded-md p-1"
+            onClick={handleFlowClick}
+          >
             <img src={FormFlow24} alt="FormFlow24" className="w-6 h-6" />
             <p className="text-xs">گردش</p>
           </div>
@@ -92,6 +115,19 @@ export default function Workflow({ definitionInvironment, definitionDateTime }: 
           definitionInvironment={definitionInvironment}
           definitionDateTime={definitionDateTime}
         />
+        {/*open WorkFlowFlows if flowClicked is true*/}
+        <ModalForm
+          isOpen={flowClicked}
+          onClose={() => setFlowClicked(false)}
+          title="گردش"
+          width="1"
+        >
+          <WorkFlowFlows
+            workFlowFlowsResponse={workFlowFlowsResponse}
+            isLoadingWorkFlowFlows={isLoadingWorkFlowFlows || isRefetchingWorkFlowFlows}
+            refetchWorkFlowFlows={refetchWorkFlowFlows}
+          />
+        </ModalForm>
       </main>
 
       {/* Footer */}

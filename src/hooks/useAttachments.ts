@@ -90,11 +90,13 @@ export function useAttachments() {
     }) => {
       const response = await api.post(
         `/api/Attachment/save?${payload.params.toString()}`,
-        payload.formData
+        payload.formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
-      //queryClient.refetchQueries({
-      //  queryKey: ["attachments", { formId, prefix, GUID }],
-      //});
       return response.data;
     },
     onSuccess: (data: any) => {

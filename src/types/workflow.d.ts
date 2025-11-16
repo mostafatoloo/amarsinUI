@@ -1,5 +1,5 @@
-import { Data, Meta } from './general';
-import { WorkTable } from './workflow.d';
+import { Data, Meta } from "./general";
+import { WorkTable } from "./workflow.d";
 export type FlowMapTitle = {
   id: number;
   name: string;
@@ -59,19 +59,6 @@ export interface WorkFlowRequest {
   cost?: string;
   name?: string;
   dsc?: string;
-}
-
-export interface WorkFlowState extends WorkFlowRequest, WorkFlowRowSelectRequest{
-  workFlowResponse: WorkflowResponse;
-  setField: (field: string | number | symbol, value: any) => void;
-  setWorkFlowResponse: (workFlowResponse: WorkflowResponse) => void;
-  workFlowRowSelectResponse: WorkflowRowSelectResponse;
-  workFlowDoFlowResponse:WorkFlowDoFlowResponse; // for doFlow
-  setWorkFlowRowSelectResponse: (
-    workFlowRowSelectResponse: WorkflowRowSelectResponse
-  ) => void;
-  setWorkFlowDoFlowResponse:(workFlowDoFlowResponse:WorkFlowDoFlowResponse)=>void //for doFlow  
-
 }
 
 export interface FlowButton {
@@ -137,12 +124,66 @@ interface WorkFlowDoFlowResponse {
   data: Data;
 }
 
-export interface WorkFlowRowSelectState extends WorkFlowRowSelectRequest{
+///api/WFMS/flows?WorkTableId=994047&FormId=0&FlowNo=0&page=1
+export interface WorkFlowFlowsRequest {
+  workTableIdFlows: number;
+  formIdFlows: number;
+  flowNoFlows: number;
+  searchFlows: string;
+  pageFlows: number;
+}
+
+interface FlowResult {
+  id: number;
+  dateTim: string;
+  usrName: string;
+  fChartName: string;
+  flowMapName: string;
+  tChartName: string;
+  dsc: string;
+}
+
+interface WorkFlowFlowsData {
+  result: FlowResult[];
+  total_count: number;
+}
+
+export interface WorkFlowFlowsResponse {
+  meta: Meta;
+  data: WorkFlowFlowsData;
+}
+
+export interface WorkFlowState
+  extends WorkFlowRequest,
+    WorkFlowRowSelectRequest, WorkFlowFlowsRequest {
+  workFlowResponse: WorkflowResponse;
+  setField: (field: string | number | symbol, value: any) => void;
+  setWorkFlowResponse: (workFlowResponse: WorkflowResponse) => void;
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
-  workFlowDoFlowResponse:WorkFlowDoFlowResponse; // for doFlow
+  workFlowDoFlowResponse: WorkFlowDoFlowResponse; // for doFlow
+  workFlowFlowsResponse: WorkFlowFlowsResponse; //api/WFMS/flows?WorkTableId=
+  setWorkFlowRowSelectResponse: (
+    workFlowRowSelectResponse: WorkflowRowSelectResponse
+  ) => void;
+  setWorkFlowDoFlowResponse: (
+    workFlowDoFlowResponse: WorkFlowDoFlowResponse
+  ) => void; //for doFlow
+  setWorkFlowFlowsResponse: (
+    workFlowFlowsResponse: WorkFlowFlowsResponse
+  ) => void; //api/WFMS/flows?WorkTableId=
+}
+
+
+export interface WorkFlowRowSelectState
+  extends WorkFlowRowSelectRequest
+    {
+  workFlowRowSelectResponse: WorkflowRowSelectResponse;
+  workFlowDoFlowResponse: WorkFlowDoFlowResponse; // for doFlow
   setField: (field: string | number | symbol, value: any) => void;
   setWorkFlowRowSelectResponse: (
     workFlowRowSelectResponse: WorkflowRowSelectResponse
   ) => void;
-  setWorkFlowDoFlowResponse:(workFlowDoFlowResponse:WorkFlowDoFlowResponse)=>void //for doFlow
+  setWorkFlowDoFlowResponse: (
+    workFlowDoFlowResponse: WorkFlowDoFlowResponse
+  ) => void; //for doFlow
 }

@@ -105,7 +105,7 @@ const InvoiceReturnRequestShow = ({
           guid={guid}
         />
       </ModalForm>
-      {/*open order cup list if editIcon is clicked*/}
+      {/*open InvoiceReturnRequestInvoiceList list if editIcon is clicked*/}
       <ModalForm
         isOpen={editClicked}
         onClose={handleEditClickClose}

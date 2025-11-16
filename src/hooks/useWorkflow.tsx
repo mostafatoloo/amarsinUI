@@ -8,6 +8,8 @@ import api from "../api/axios";
 import { useWorkflowStore } from "../store/workflowStore";
 import {
   WorkFlowDoFlowRequest,
+  WorkFlowFlowsRequest,
+  WorkFlowFlowsResponse,
   WorkFlowRequest,
   WorkflowResponse,
   WorkFlowRowSelectRequest,
@@ -31,6 +33,13 @@ export function useWorkflow() {
     workTableId,
     setWorkFlowRowSelectResponse,
     setWorkFlowDoFlowResponse,
+    //for api/WFMS/flows?WorkTableId=
+    workTableIdFlows,
+    formIdFlows,
+    flowNoFlows,
+    searchFlows,
+    pageFlows,
+    setWorkFlowFlowsResponse,
   } = useWorkflowStore();
 
   //const queryClient = new QueryClient();
@@ -85,7 +94,7 @@ export function useWorkflow() {
       const response = await api.get(url, { signal });
       return response.data;
     },
-    enabled: systemId !== -1, 
+    enabled: systemId !== -1,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     /*staleTime: 30000, // Consider data fresh for 30 seconds
@@ -123,11 +132,50 @@ export function useWorkflow() {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     onSuccess: (data: any) => {
-      console.log(data,"data in useWorkflow queryRowSelect");
+      console.log(data, "data in useWorkflow queryRowSelect");
       setWorkFlowRowSelectResponse(data);
     },
   } as UseQueryOptions<WorkflowRowSelectResponse, Error, WorkflowRowSelectResponse, unknown[]>);
-
+  //for api/WFMS/flows?WorkTableId=
+  const workFlowFlowsQuery = useQuery<
+    WorkFlowFlowsResponse,
+    Error,
+    WorkFlowFlowsResponse,
+    unknown[]
+  >({
+    queryKey: [
+      "workFlowFlows",
+      workTableIdFlows,
+      formIdFlows,
+      flowNoFlows,
+      searchFlows,
+      pageFlows,
+    ],
+    queryFn: async () => {
+      const params: WorkFlowFlowsRequest = {
+        workTableIdFlows,
+        formIdFlows,
+        flowNoFlows,
+        searchFlows,
+        pageFlows,
+      };
+      const url: string = `api/WFMS/flows?WorkTableId=${
+        params.workTableIdFlows
+      }&FormId=${params.formIdFlows}&FlowNo=${
+        params.flowNoFlows
+      }&search=${encodeURIComponent(params.searchFlows)}&page=${
+        params.pageFlows
+      }`;
+      const response = await api.get(url);
+      return response.data;
+    },
+    enabled: workTableIdFlows !== -1,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    onSuccess: (data: any) => {
+      setWorkFlowFlowsResponse(data);
+    },
+  } as UseQueryOptions<WorkFlowFlowsResponse, Error, WorkFlowFlowsResponse, unknown[]>);
   //for doFlow
   const doFlow = useMutation({
     mutationFn: async (request: WorkFlowDoFlowRequest) => {
@@ -201,6 +249,18 @@ export function useWorkflow() {
         canEditForm2: false,
       },
       flowDescriptions: [],
+    },
+    // for api/WFMS/flows?WorkTableId=
+    refetchWorkFlowFlows: workFlowFlowsQuery.refetch,
+    isRefetchingWorkFlowFlows: workFlowFlowsQuery.isRefetching,
+    isLoadingWorkFlowFlows: workFlowFlowsQuery.isLoading,
+    errorWorkFlowFlows: workFlowFlowsQuery.error,
+    workFlowFlowsResponse: workFlowFlowsQuery.data ?? {
+      meta: { errorCode: 0, message: "", type: "" },
+      data: {
+        result: [],
+        total_count: 0,
+      },
     },
     // for doFlow
     isLoadingdoFlow: doFlow.isPending,
