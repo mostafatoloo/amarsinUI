@@ -42,6 +42,10 @@ const WarehouseShow = ({
     warehouseShowIdResponse,
     isLoadingWarehouseShowId,
     refetchWarehouseShowId,
+    reg,
+    isLoadingWarehouseIndentList,
+    warehouseIndentList,
+    editIndents,
   } = useWarehouse();
 
   const [editClicked, setEditClicked] = useState(false);
@@ -125,6 +129,7 @@ const WarehouseShow = ({
         workFlowRowSelectResponse={workFlowRowSelectResponse}
         warehouseShowIdResponse={warehouseShowIdResponse}
         isLoadingWarehouseShowId={isLoadingWarehouseShowId}
+        reg={reg}
       />
       {/*open product catalog if status is clicked*/}
       <ModalForm
@@ -132,6 +137,7 @@ const WarehouseShow = ({
         onClose={handleProductCatalogueClose}
         title="کاتالوگ محصول"
         width="1/2"
+        isCloseable={true}
       >
         {selectedProduct && (
           <ProductCatalogue dtl={selectedProduct} visible={true} />
@@ -147,6 +153,9 @@ const WarehouseShow = ({
         <WarehouseIndentTable
           iocId={iocId}
           handleWarehouseIndentListClose={handleWarehouseIndentListClose}
+          isLoadingWarehouseIndentList={isLoadingWarehouseIndentList}
+          warehouseIndentList={warehouseIndentList}
+          editIndents={editIndents}
         />
       </ModalForm>
 
@@ -156,6 +165,7 @@ const WarehouseShow = ({
         onClose={handleWarehouseMessagesClose}
         title="پیام ها"
         width="2/3"
+        isCloseable={true}
       >
         <ShowMessages
           dtlErrMsgs={regResponse.data.result.dtlErrMsgs}

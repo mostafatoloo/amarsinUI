@@ -25,7 +25,7 @@ export function useAttachments() {
   } = useAttachmentStore();
 
   const queryClient = useQueryClient();
-
+  // for api/Attachment/list
   const query = useQuery<
     AttachmentListResponse,
     Error,

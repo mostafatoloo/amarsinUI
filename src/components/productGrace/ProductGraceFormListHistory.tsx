@@ -27,6 +27,7 @@ const ProductGraceFormListHistory = ({
       onClose={() => setShowHistory(false)}
       title="سوابق فرجه-پورسانت"
       width="1/2"
+      isCloseable={true}
     >
       {isDtlHistoryLoading ? (
         <div className="text-center">{<Skeleton />}</div>

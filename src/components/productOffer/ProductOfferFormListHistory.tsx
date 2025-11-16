@@ -77,6 +77,7 @@ const ProductOfferFormListHistory = ({
       onClose={() => setShowHistory(false)}
       title="سوابق آفر"
       width="1/2"
+      isCloseable={true}
     >
       {isDtlHistoryLoading ? (
         <div className="text-center">{<Skeleton />}</div>

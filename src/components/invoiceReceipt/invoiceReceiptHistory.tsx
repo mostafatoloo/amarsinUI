@@ -30,6 +30,7 @@ const invoiceReceiptHistory = ({
       onClose={() => setShowHistory(false)}
       title="سوابق درخواست خرید"
       width="2/3"
+      isCloseable={true}
     >
       {isDtHistoryLoading ? (
         <div className="text-center">{<Skeleton />}</div>

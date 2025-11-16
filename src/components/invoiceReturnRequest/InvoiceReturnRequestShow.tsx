@@ -6,8 +6,10 @@ import { useInvoiceReturnRequestStore } from "../../store/invoiceReturnRequestSt
 //import { useAttachmentStore } from "../../store/attachmentStore";
 import InvoiceReturnRequestShowHeader from "./InvoiceReturnRequestShowHeader";
 import ModalForm from "../layout/ModalForm";
-import PreProcurementAttachment from "../preProcurement/PreProcurementAttachment";
 import InvoiceReturnRequestShowTable from "./InvoiceReturnRequestShowTable";
+import InvoiceReturnRequestInvoiceList from "./InvoiceReturnRequestInvoiceList";
+import InvoiceReturnRequestAttachments from "./InvoiceReturnRequestAttachments";
+import { v4 as uuidv4 } from "uuid";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -24,6 +26,9 @@ const InvoiceReturnRequestShow = ({
     refetchInvoiceReturnRequestShow,
     invoiceReturnRequestShowResponse,
     isLoadingInvoiceReturnRequestShow,
+    invoiceReturnRequestInvoiceListResponse,
+    isLoadingInvoiceReturnRequestInvoiceList,
+    invoiceReturnRequestRegisterDtl,
   } = useInvoiceReturnRequest();
   const { setField, invoiceReturnRequestId } = useInvoiceReturnRequestStore();
   //const { setField: setAttachmentField } = useAttachmentStore();
@@ -32,8 +37,10 @@ const InvoiceReturnRequestShow = ({
   const [cnt, setCnt] = useState(0);
   const [guid, setGuid] = useState<string>("");
   const [activeTab, setActiveTab] = useState(0);
-  const [prefix, setPrefix] = useState("Procurement");
+  const [prefix, setPrefix] = useState("InvoiceReturnRequest");
   const [dsc, setDsc] = useState("");
+
+  const [editClicked, setEditClicked] = useState(false);
 
   if (
     invoiceReturnRequestId !== workFlowRowSelectResponse.workTableRow.formId
@@ -54,8 +61,15 @@ const InvoiceReturnRequestShow = ({
   }, [refetchSwitch]);
   ////////////////////////////////////////////////////////for defining guid
   useEffect(() => {
-    console.log(cnt ,setGuid);
+    setGuid(uuidv4());
+    console.log("cnt", cnt);
   }, []);
+
+  ////////////////////////////////////////////////////////////////////////  ////////////////////////////////////////////////////////////////////////
+  const handleEditClickClose = () => {
+    setEditClicked(false);
+    // setOtId(0);
+  };
   return (
     <div>
       <InvoiceReturnRequestShowHeader
@@ -72,15 +86,16 @@ const InvoiceReturnRequestShow = ({
       <InvoiceReturnRequestShowTable
         invoiceReturnRequestShowResponse={invoiceReturnRequestShowResponse}
         isLoadingInvoiceReturnRequestShow={isLoadingInvoiceReturnRequestShow}
+        setEditClicked={setEditClicked}
       />
       <ModalForm
         isOpen={showAttachment}
         onClose={() => setShowAttachment(false)}
-        title="ضمائم فرآیند خرید کالا/خدمت"
+        title="ضمائم مرجوعی"
         width="1/2"
         height="90vh"
       >
-        <PreProcurementAttachment
+        <InvoiceReturnRequestAttachments
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           formId={workFlowRowSelectResponse.workTableRow.formId} //PreProcurementId
@@ -88,6 +103,20 @@ const InvoiceReturnRequestShow = ({
           setPrefix={setPrefix}
           setCnt={setCnt}
           guid={guid}
+        />
+      </ModalForm>
+      {/*open order cup list if editIcon is clicked*/}
+      <ModalForm
+        isOpen={editClicked}
+        onClose={handleEditClickClose}
+        title="لیست اقلام مرتبط"
+        width="1/2"
+      >
+        <InvoiceReturnRequestInvoiceList
+          invoiceReturnRequestInvoiceListResponse={invoiceReturnRequestInvoiceListResponse}
+          isLoadingInvoiceReturnRequestInvoiceList={isLoadingInvoiceReturnRequestInvoiceList}
+          invoiceReturnRequestRegisterDtl={invoiceReturnRequestRegisterDtl}
+          handleEditClickClose={handleEditClickClose}
         />
       </ModalForm>
     </div>

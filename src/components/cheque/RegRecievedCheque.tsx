@@ -13,7 +13,7 @@ type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   refetchSwitch: boolean;
   setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
-  definitionInvironment:DefinitionInvironment;
+  definitionInvironment: DefinitionInvironment;
   banks: SearchItem[];
   isLoadingBanks: boolean;
 };
@@ -26,16 +26,23 @@ const RegRecievedCheque = ({
   banks,
   isLoadingBanks,
 }: Props) => {
-  const {setField,loadPaymentFormId}=useChequeStore()
-  
+  const { setField, loadPaymentFormId } = useChequeStore();
+
   // Set formId BEFORE useCheques hook runs to prevent stale queries
-  if(loadPaymentFormId!==workFlowRowSelectResponse.workTableRow.formId){
-    setField("loadPaymentFormId", workFlowRowSelectResponse.workTableRow.formId);
+  if (loadPaymentFormId !== workFlowRowSelectResponse.workTableRow.formId) {
+    setField(
+      "loadPaymentFormId",
+      workFlowRowSelectResponse.workTableRow.formId
+    );
     setField("payKind", -1);
     setField("sayadiPaymentId", -1);
-    setField("paymentAttachmentFormId",workFlowRowSelectResponse.workTableRow.formId ?? -1);
+    //form cheque image attachment
+    setField(
+      "paymentAttachmentFormId",
+      workFlowRowSelectResponse.workTableRow.formId ?? -1
+    );
   }
-  
+
   const {
     loadPaymentResponse,
     isLoading: isLoadingLoadPayment,
@@ -73,7 +80,9 @@ const RegRecievedCheque = ({
         updateFields={updateFields}
         isLoadingUpdateFields={isLoadingUpdateFields}
         cashPosSystemSearch={cashPosSystemSearch}
-        sayadChequeInquiryByPaymentIdResponse={sayadChequeInquiryByPaymentIdResponse}
+        sayadChequeInquiryByPaymentIdResponse={
+          sayadChequeInquiryByPaymentIdResponse
+        }
         definitionInvironment={definitionInvironment}
         banks={banks}
         isLoadingBanks={isLoadingBanks}

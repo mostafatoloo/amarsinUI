@@ -100,7 +100,6 @@ const InvoiceReturnRequestShowHeader = ({
           onClick={() => {
             setShowAttachment(true);
           }}
-          disabled={true}
         />
       </div>
     </div>

@@ -9,6 +9,7 @@ type ModalProps = {
   showCloseButton?: boolean;
   width?: string;
   height?: string;
+  isCloseable?: boolean;
 };
 
 const ModalForm: React.FC<ModalProps> = ({
@@ -19,6 +20,7 @@ const ModalForm: React.FC<ModalProps> = ({
   showCloseButton = true,
   width,
   height,
+  isCloseable = false,
 }) => {
   if (!isOpen) return null;
 
@@ -51,7 +53,7 @@ const ModalForm: React.FC<ModalProps> = ({
       className={`fixed mt-4 w-full inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 transition-opacity duration-300 opacity-100 h-screen`}
       onClick={() => {
         // just close the modal if width is 1/2 || 1/3
-        if (width === "1/2" || width === "1/3") {
+        if (isCloseable) {
           onClose();
         }
       }}

@@ -506,14 +506,17 @@ const OrderRegShow = ({
     useOrderStore();
   const { salesPricesSearchResponse } = useProducts();
   const { warehouseSearchResponse } = useWarehouse();
+  // for /api/Product/salesPricesSearch?
   useEffect(() => {
+    console.log(convertToLatinDigits(salesPriceSearch),"salesPriceSearch");
     setSalesPriceField("salesPricesSearch", salesPriceSearch);
     setSalesPriceField("salesPricesSearchPage", 1);
     setSalesPriceField("lastId", 0);
   }, [salesPriceSearch]);
 
+  // for api/Warehouse/Search?search=%D8%A7&page=1&pageSize=30&lastId=0&CustomerTypeId=-1
   useEffect(() => {
-    //console.log(convertToLatinDigits(warehouseSearch),"warehouseSearch");
+    console.log(convertToLatinDigits(warehouseSearch),"warehouseSearch");
     setWarehouseField(
       "search",
       convertToLatinDigits(warehouseSearch) ? null : "ا"
@@ -616,6 +619,7 @@ const OrderRegShow = ({
           onClose={() => setIsModalOpen(false)}
           title="پیام ها"
           width="1/2"
+          isCloseable={true}
         >
           <ShowMessages
             dtlErrMsgs={orderRegResponse.data.result.dtlErrMsgs}
@@ -646,6 +650,7 @@ const OrderRegShow = ({
         onClose={handleEditClickClose2}
         title="لیست قفسه ها"
         width="1/2"
+        isCloseable={true}
       >
         <OrderCupboardList
           orderCupListResponse={orderCupListResponse}

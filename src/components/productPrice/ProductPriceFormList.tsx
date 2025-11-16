@@ -484,6 +484,7 @@ const ProductPriceFormList = ({
           onClose={() => setIsModalRegOpen(false)}
           title="پیام ها"
           width="1/2"
+          isCloseable={true}
         >
           <ShowMessages
             dtlErrMsgs={productPriceSaveResponse.data.result.dtlErrMsgs || []}

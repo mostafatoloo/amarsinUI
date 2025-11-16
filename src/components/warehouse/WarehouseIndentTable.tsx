@@ -1,7 +1,7 @@
-import { useWarehouse } from "../../hooks/useWarehouse";
 import {
   IndentRequest,
   SelectIndentsRequest,
+  WarehouseIndentListResponse,
   WarehouseTemporaryReceiptIndentTbl,
 } from "../../types/warehouse";
 import React, { useEffect, useState } from "react";
@@ -19,14 +19,20 @@ import Skeleton from "../layout/Skeleton";
 type Props = {
   iocId: number;
   handleWarehouseIndentListClose: () => void;
+  isLoadingWarehouseIndentList: boolean;
+  warehouseIndentList: WarehouseIndentListResponse;
+  editIndents: (request: SelectIndentsRequest) => Promise<any>;
 };
 const WarehouseIndentTable = ({
   iocId,
   handleWarehouseIndentListClose,
+  isLoadingWarehouseIndentList,
+  warehouseIndentList,
+  editIndents,
 }: Props) => {
   const { setIsModalOpen } = useGeneralContext();
-  const { isLoadingWarehouseIndentList, warehouseIndentList, editIndents } =
-    useWarehouse();
+  //const { isLoadingWarehouseIndentList, warehouseIndentList, editIndents } =
+  //  useWarehouse();
 
   const columns = React.useMemo(
     () => [

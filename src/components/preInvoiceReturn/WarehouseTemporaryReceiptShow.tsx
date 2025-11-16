@@ -110,6 +110,7 @@ const WarehouseTemporaryReceiptShow = ({
         onClose={handleProductCatalogueClose}
         title="کاتالوگ محصول"
         width="1/2"
+        isCloseable={true}
       >
         {selectedProduct && <ProductCatalogue dtl={selectedProduct} visible={false} />}
       </ModalForm>      

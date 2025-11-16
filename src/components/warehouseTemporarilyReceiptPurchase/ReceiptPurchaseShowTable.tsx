@@ -551,6 +551,7 @@ const ReceiptPurchaseShowTable = ({
           onClose={() => setIsModalOpen(false)}
           title="پیام ها"
           width="1/2"
+          isCloseable={true}
         >
           <ShowMessages
             dtlErrMsgs={

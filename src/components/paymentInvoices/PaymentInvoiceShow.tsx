@@ -52,10 +52,13 @@ const PaymentInvoiceShow = ({
   ////////////////////////////////////////////////////////////////////////////
   if (paymentId !== workFlowRowSelectResponse.workTableRow.formId) {
     setField("paymentId", workFlowRowSelectResponse.workTableRow.formId);
-    setPaymentField("loadPaymentFormId", workFlowRowSelectResponse.workTableRow.formId);
-    setPaymentField("payKind",-1);
     setField("systemId", systemId);
     setField("yearId", yearId);
+    //form cheque image attachment
+    setPaymentField("loadPaymentFormId", workFlowRowSelectResponse.workTableRow.formId);
+    setPaymentField("sayadiPaymentId", -1);
+    setPaymentField("paymentAttachmentFormId",workFlowRowSelectResponse.workTableRow.formId ?? -1);
+    setPaymentField("payKind",-1);
   }
 
   return (

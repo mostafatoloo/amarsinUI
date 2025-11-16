@@ -6,18 +6,23 @@ import { Paper } from "@mui/material";
 import TTable from "../controls/TTable";
 import { colors } from "../../utilities/color";
 import HistoryIcon from "../../assets/images/GrayThem/history_gray_16.png";
+import EditIcon from "../../assets/images/GrayThem/edit_gray16.png";
 import { FaCheck } from "react-icons/fa";
+import { useInvoiceReturnRequestStore } from "../../store/invoiceReturnRequestStore";
 
 type Props = {
   invoiceReturnRequestShowResponse: InvoiceReturnRequestShowResponse;
   isLoadingInvoiceReturnRequestShow: boolean;
+  setEditClicked: (editClicked: boolean) => void;
 };
 
 const InvoiceReturnRequestShowTable = ({
   invoiceReturnRequestShowResponse,
   isLoadingInvoiceReturnRequestShow,
+  setEditClicked,
 }: Props) => {
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in warehouseShowTable table
+  const { setField } = useInvoiceReturnRequestStore();
   const [data, setData] = useState<any[]>([]);
   const columns = React.useMemo(
     () => [
@@ -70,19 +75,19 @@ const InvoiceReturnRequestShowTable = ({
       {
         Header: "کنترل",
         width: "24%",
-        backgroundColor: colors.green50,
+        backgroundColor: colors.orang100,
         columns: [
           {
             Header: "تشخیص",
             accessor: "determination",
             width: "22%",
-            backgroundColor: colors.green50,
+            backgroundColor: colors.orang100,
           },
           {
             Header: "...",
-            accessor: "editIcon",
+            accessor: "historyIcon",
             width: "2%",
-            backgroundColor: colors.green50,
+            backgroundColor: colors.orang100,
             Cell: ({ row }: any) => (
               <img
                 src={HistoryIcon}
@@ -119,13 +124,13 @@ const InvoiceReturnRequestShowTable = ({
           },
           {
             Header: "...",
-            accessor: "historyIcon",
+            accessor: "editIcon",
             width: "2%",
             backgroundColor: colors.indigo50,
-            Cell: ({ value }: any) => (
+            Cell: ({ row }: any) => (
               <img
-                src={HistoryIcon}
-                onClick={() => console.log(value)}
+                src={EditIcon}
+                onClick={() => handleEditClick(row)}
                 className="cursor-pointer"
                 alt="report"
               />
@@ -136,6 +141,14 @@ const InvoiceReturnRequestShowTable = ({
     ],
     []
   );
+
+  ////////////////////////////////////////////////////////////////////////  
+  //set id(invoiceDtlId) in store to use in api/InvoiceReturnRequest/invoiceEdit?Id=3712
+  const handleEditClick = (row: any) => {
+    setEditClicked(true);
+    console.log(row.original.id, "row");
+    setField("invoiceListId", row.original.id);
+  };
 
   useEffect(() => {
     const tempData: any[] =
@@ -171,8 +184,8 @@ const InvoiceReturnRequestShowTable = ({
                   ))
                 : null,
             factorNo: convertToFarsiDigits(item.factorNo),
-            regedCnt: convertToFarsiDigits(item.regedCnt),
-            regedOffer: convertToFarsiDigits(item.regedOffer),
+            regedCnt: convertToFarsiDigits(Number(item.regedCnt)),
+            regedOffer: convertToFarsiDigits(Number(item.regedOffer)),
           };
         }
       );
@@ -194,6 +207,9 @@ const InvoiceReturnRequestShowTable = ({
             data={data}
             selectedRowIndex={selectedRowIndex}
             setSelectedRowIndex={setSelectedRowIndex}
+            changeRowSelectColor={true}
+            wordWrap={true}
+            showToolTip={true}
             //updateMyData={updateMyData}
             fontSize="0.75rem"
           />

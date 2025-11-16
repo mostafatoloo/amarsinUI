@@ -1,11 +1,24 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, UseQueryOptions } from "@tanstack/react-query";
 import api from "../api/axios";
 import { useInvoiceReturnRequestStore } from "../store/invoiceReturnRequestStore";
-import { InvoiceReturnRequestShowResponse } from "../types/invoiceReturnRequest";
+import {
+  InvoiceReturnRequestInvoiceListResponse,
+  InvoiceReturnRequestRegisterDtlRequest,
+  InvoiceReturnRequestRegisterDtlResponse,
+  InvoiceReturnRequestShowResponse,
+} from "../types/invoiceReturnRequest";
 
 export function useInvoiceReturnRequest() {
-  const { invoiceReturnRequestId, setInvoiceReturnRequestShowResponse } =
-    useInvoiceReturnRequestStore();
+  const {
+    invoiceReturnRequestId, //api/InvoiceReturnRequest/show?Id=2778
+    invoiceListId, //api/InvoiceReturnRequest/invoiceList?Id=3712
+    invoiceReturnRequestDtlId, //api/InvoiceReturnRequest/registerDtl?InvoiceReturnRequestDtlId=3712
+    setInvoiceReturnRequestShowResponse,
+    setInvoiceReturnRequestInvoiceListResponse,
+    setInvoiceReturnRequestRegisterDtlResponse,
+  } = useInvoiceReturnRequestStore();
+
+  const queryClient = useQueryClient();
   //api/InvoiceReturnRequest/show?Id=2778
   const invoiceReturnRequestShowQuery = useQuery<
     InvoiceReturnRequestShowResponse,
@@ -30,6 +43,43 @@ export function useInvoiceReturnRequest() {
     },
   } as UseQueryOptions<InvoiceReturnRequestShowResponse, Error, InvoiceReturnRequestShowResponse, unknown[]>);
 
+  //api/InvoiceReturnRequest/invoiceList?Id=3712
+  const invoiceReturnRequestInvoiceListQuery = useQuery<
+    InvoiceReturnRequestInvoiceListResponse,
+    Error,
+    InvoiceReturnRequestInvoiceListResponse,
+    unknown[]
+  >({
+    queryKey: ["invoiceReturnRequestInvoiceList", invoiceListId],
+    queryFn: async () => {
+      const url: string = `/api/InvoiceReturnRequest/invoiceList?Id=${invoiceListId}`;
+
+      console.log(url, "url");
+
+      const response = await api.get(url);
+      return response.data;
+    },
+    enabled: invoiceListId !== -1, // Only fetch if param is available
+    refetchOnWindowFocus: false, // Refetch data when the window is focused
+    refetchOnReconnect: false, // Refetch data when the network reconnects
+    onSuccess: (data: any) => {
+      setInvoiceReturnRequestInvoiceListResponse(data);
+    },
+  } as UseQueryOptions<InvoiceReturnRequestInvoiceListResponse, Error, InvoiceReturnRequestInvoiceListResponse, unknown[]>);
+  // for api/InvoiceReturnRequest/registerDtl?InvoiceReturnRequestDtlId=3712
+  //for Order/orderReg
+  const invoiceReturnRequestRegisterDtlfn = useMutation({
+    mutationFn: async (request: InvoiceReturnRequestRegisterDtlRequest[]) => {
+      const url: string = `/api/InvoiceReturnRequest/registerDtl?InvoiceReturnRequestDtlId=${invoiceReturnRequestDtlId}`;
+      const response = await api.post(url, request);
+      return response.data;
+    },
+    onSuccess: (data: InvoiceReturnRequestRegisterDtlResponse) => {
+      console.log(data, "data in invoice return request register dtl");
+      setInvoiceReturnRequestRegisterDtlResponse(data);
+      queryClient.invalidateQueries({ queryKey: ["invoiceReturnRequestShow"] });
+    },
+  });
   return {
     //api/InvoiceReturnRequest/show?Id=
     refetchInvoiceReturnRequestShow: () =>
@@ -62,5 +112,50 @@ export function useInvoiceReturnRequest() {
         },
       },
     },
+    //api/InvoiceReturnRequest/invoiceList?Id=3712
+    refetchInvoiceReturnRequestInvoiceList: () =>
+      invoiceReturnRequestInvoiceListQuery.refetch(), // Optional manual trigger
+    isLoadingInvoiceReturnRequestInvoiceList:
+      invoiceReturnRequestInvoiceListQuery.isLoading,
+    errorInvoiceReturnRequestInvoiceList:
+      invoiceReturnRequestInvoiceListQuery.error,
+    invoiceReturnRequestInvoiceListResponse:
+      invoiceReturnRequestInvoiceListQuery.data ?? {
+        meta: {
+          errorCode: 0,
+          message: "",
+          type: "",
+        },
+        data: {
+          result: {
+            invoiceReturnRequestInvoiceDtls: [],
+            invoiceReturnRequestInvoiceDtlCups: [],
+          },
+        },
+      },
+    //output for api/InvoiceReturnRequest/registerDtl?InvoiceReturnRequestDtlId=3712
+    isLoadingInvoiceReturnRequestRegisterDtl:
+      invoiceReturnRequestRegisterDtlfn.isPending,
+    errorInvoiceReturnRequestRegisterDtl:
+      invoiceReturnRequestRegisterDtlfn.error,
+    invoiceReturnRequestRegisterDtl:
+      invoiceReturnRequestRegisterDtlfn.mutateAsync,
+    invoiceReturnRequestRegisterDtlResponse:
+      invoiceReturnRequestRegisterDtlfn.data ?? {
+        meta: {
+          errorCode: 0,
+          message: "",
+          type: "",
+        },
+        data: {
+          result: {
+            id: 0,
+            factorNo: "",
+            cnt: 0,
+            offer: 0,
+            diagnosis: [],
+          },
+        },
+      },
   };
 }

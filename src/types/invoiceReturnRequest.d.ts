@@ -55,12 +55,77 @@ interface InvoiceReturnRequestShowResponse {
   meta: Meta;
   data: DataInvoiceReturnRequestShow;
 }
+//http://apitest.dotis.ir/api/InvoiceReturnRequest/invoiceList?Id=3712
+interface InvoiceReturnRequestInvoiceDtl {
+  invoiceDtlId: number;
+  factorNo: string;
+  cnt: number;
+  offer: number;
+  rCnt: number;
+  rOffer: number;
+}
 
+interface InvoiceReturnRequestInvoiceDtlCup {
+  invoiceDtlId: number;
+  iocId: number;
+  cupCode: string;
+  cnt: number;
+  cost: number;
+  rCnt: number;
+}
+
+interface InvoiceReturnRequestInvoiceListResult {
+  invoiceReturnRequestInvoiceDtls: InvoiceReturnRequestInvoiceDtl[];
+  invoiceReturnRequestInvoiceDtlCups: InvoiceReturnRequestInvoiceDtlCup[];
+}
+
+interface InvoiceReturnRequestInvoiceListData {
+  result: InvoiceReturnRequestInvoiceListResult;
+}
+
+interface InvoiceReturnRequestInvoiceListResponse {
+  meta: Meta;
+  data: InvoiceReturnRequestInvoiceListData;
+}
+//http://apitest.dotis.ir/api/InvoiceReturnRequest/registerDtl?InvoiceReturnRequestDtlId=3712
+export interface InvoiceReturnRequestRegisterDtlRequest {
+  invoiceDtlId: number;
+  iocId: number;
+  cnt: number;
+  offer: number;
+}
+interface InvoiceReturnRequestRegisterDtlResult {
+  id: number;
+  factorNo: string;
+  cnt: number;
+  offer: number;
+  diagnosis: Diagnosis[]; 
+}
+
+interface InvoiceReturnRequestRegisterDtlData {
+  result: InvoiceReturnRequestRegisterDtlResult;
+}
+
+interface InvoiceReturnRequestRegisterDtlResponse {
+  meta: Meta;
+  data: InvoiceReturnRequestRegisterDtlData;
+}
+///////////////////////////////////////////////////////////////
 export interface InvoiceReturnRequestState {
-  invoiceReturnRequestId: number;
+  invoiceListId: number;
+  invoiceReturnRequestId: number;//api/InvoiceReturnRequest/show?Id=2778
+  invoiceReturnRequestDtlId: number;//api/InvoiceReturnRequest/registerDtl?InvoiceReturnRequestDtlId=3712
   invoiceReturnRequestShowResponse: InvoiceReturnRequestShowResponse;
+  invoiceReturnRequestInvoiceListResponse: InvoiceReturnRequestInvoiceListResponse;// api/InvoiceReturnRequest/invoiceList?Id=3712
+  invoiceReturnRequestRegisterDtlResponse: InvoiceReturnRequestRegisterDtlResponse;// api/InvoiceReturnRequest/registerDtl?InvoiceReturnRequestDtlId=3712
   setInvoiceReturnRequestShowResponse: (
     invoiceReturnRequestShowResponse: InvoiceReturnRequestShowResponse
+  ) => void;
+  setInvoiceReturnRequestInvoiceListResponse: (
+    invoiceReturnRequestInvoiceListResponse: InvoiceReturnRequestInvoiceListResponse
+  ) => void;
+  setInvoiceReturnRequestRegisterDtlResponse: (
+    invoiceReturnRequestRegisterDtlResponse: InvoiceReturnRequestRegisterDtlResponse
   ) => void;
   setField: (field: string, value: any) => void;
 }

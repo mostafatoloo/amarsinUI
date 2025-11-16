@@ -27,6 +27,7 @@ const ProductPriceFormListHistory = ({
       onClose={() => setShowHistory(false)}
       title="سوابق قیمت"
       width="1/2"
+      isCloseable={true}
     >
       {isDtlHistoryLoading ? (
         <div className="text-center">{<Skeleton />}</div>

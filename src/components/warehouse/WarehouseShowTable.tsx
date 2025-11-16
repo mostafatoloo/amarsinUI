@@ -15,7 +15,6 @@ import ConfirmCard from "../layout/ConfirmCard";
 import Button from "../controls/Button";
 import { useAuthStore } from "../../store/authStore";
 import { WorkflowRowSelectResponse } from "../../types/workflow";
-import { useWarehouse } from "../../hooks/useWarehouse";
 import React, { useState } from "react";
 import TTable from "../controls/TTable";
 import { colors } from "../../utilities/color";
@@ -31,6 +30,7 @@ type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   warehouseShowIdResponse: WarehouseShowIdResponse;
   isLoadingWarehouseShowId: boolean;
+  reg: (request: RegRequest) => Promise<any>;
 };
 
 const WarehouseShowTable = ({
@@ -44,8 +44,9 @@ const WarehouseShowTable = ({
   workFlowRowSelectResponse,
   warehouseShowIdResponse,
   isLoadingWarehouseShowId,
+  reg,
 }: Props) => {
-  const { reg } = useWarehouse();
+  //const { reg } = useWarehouse();
   const { authApiResponse } = useAuthStore();
   const { setField } = useWarehouseStore();
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in warehouseShowTable table

@@ -348,6 +348,7 @@ const CupboardsReportShowTable = ({
         onClose={handleProductCatalogueClose}
         title="کاتالوگ محصول"
         width="1/2"
+        isCloseable={true}
       >
         {checkSeekingInfo
           ? selectedProduct && (
