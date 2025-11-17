@@ -4,6 +4,8 @@ import { ProductItem, ProductOperation, ProductOperationRequest, SaveRequest } f
 export interface ProductGraceRequest extends ProductOperationRequest {
     yearId: number;
     systemId: number;
+    systemIdDtl: number;
+    yearIdDtl: number;
     srchAccepted:number;
     sortAccepted:number;
   }

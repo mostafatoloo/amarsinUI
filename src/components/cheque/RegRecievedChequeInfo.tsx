@@ -187,7 +187,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
     const newPayKind = payKind;
 
     // Only set if payKind is valid and we haven't initialized yet for this record
-    if (newPayKind !== -1 && !hasInitializedPayKind.current) {
+    if (newPayKind !== -1 && !hasInitializedPayKind.current && canEditForm) {
       setChequeField("systemId", newSystemId);
       setChequeField("payKind", newPayKind);
       hasInitializedPayKind.current = true;

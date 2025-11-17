@@ -636,6 +636,7 @@ const OrderRegShow = ({
         width="1/2"
       >
         <OrderEdit
+          canEditForm={canEditForm1Mst1}
           product={product}
           setProduct={setProduct}
           cnt={cnt}

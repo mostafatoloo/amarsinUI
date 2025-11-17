@@ -18,6 +18,8 @@ export const useProductGraceStore = create<ProductGraceState>()((set) => ({
   id: -1,
   yearId: -1,
   systemId: -1,
+  yearIdDtl: -1,
+  systemIdDtl: -1,
   state: -1,
   regFDate: "",
   regTDate: "",

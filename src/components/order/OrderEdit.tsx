@@ -10,6 +10,7 @@ import { ProductSearchRequest } from "../../types/product";
 import { debounce } from "lodash";
 
 type Props = {
+  canEditForm: boolean;
   product: DefaultOptionType | null;
   setProduct: (product: DefaultOptionType | null) => void;
   cnt: number;
@@ -19,6 +20,7 @@ type Props = {
 };
 
 const OrderEdit = ({
+  canEditForm,
   product,
   setProduct,
   cnt,
@@ -35,10 +37,14 @@ const OrderEdit = ({
   const abortControllerRef = useRef<AbortController | null>(null);
   //send params to /api/Product/search?accSystem=4&accYear=15&page=1&searchTerm=%D8%B3%D9%81
   useEffect(() => {
+    if (canEditForm) {
     setProductField("productSearchAccSystem", systemId);
-    setProductField("productSearchAccYear", yearId);
-    handleDebounceFilterChange("productSearchSearch", productSearch);
-    setProductField("productSearchPage", 1);
+      setProductField("productSearchAccYear", yearId);
+      handleDebounceFilterChange("productSearchSearch", productSearch);
+      setProductField("productSearchPage", 1);
+    }
+    // to not allow calling salesPricesSearch when productSearch is called
+    setProductField("salesPricesSearchPage", -1);
   }, [productSearch, systemId, yearId]);
 
   ///////////////////////////////////////////////////////

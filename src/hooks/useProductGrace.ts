@@ -24,6 +24,8 @@ import { ShowProductListRequest } from "../types/productOperation";
       idTrigger,
       yearId,
       systemId,
+      yearIdDtl,
+      systemIdDtl,
       state,
       regFDate,
       regTDate,
@@ -172,8 +174,8 @@ import { ShowProductListRequest } from "../types/productOperation";
         "productGraceDtl",
         id,
         idTrigger,
-        yearId,
-        systemId,
+        yearIdDtl,
+        systemIdDtl,
         state,
         regFDate,
         regTDate,
@@ -196,10 +198,10 @@ import { ShowProductListRequest } from "../types/productOperation";
         sortStep,
       ],
       queryFn: async () => {
-        const params: ProductGraceRequest = {
+        const params = {
           id,
-          yearId,
-          systemId,
+          yearIdDtl,
+          systemIdDtl,
           state,
           regFDate,
           regTDate,
@@ -222,8 +224,8 @@ import { ShowProductListRequest } from "../types/productOperation";
           sortStep,
         };
         const url = `/api/ProductGrace?Id=${params.id}&YearId=${
-          params.yearId
-        }&SystemId=${params.systemId}&State=${
+          params.yearIdDtl
+        }&SystemId=${params.systemIdDtl}&State=${
           params.state
         }&RegFDate=${encodeURIComponent(
           params.regFDate ?? ""
@@ -260,7 +262,7 @@ import { ShowProductListRequest } from "../types/productOperation";
         const response = await api.get(url);
         return response.data;
       },
-      enabled: systemId!==-1 && yearId!==-1 && id!==-1,
+      enabled: systemIdDtl!==-1 && yearIdDtl!==-1 && id!==-1,
       refetchOnWindowFocus: false, // Refetch data when the window is focused
       refetchOnReconnect: false, // Refetch data when the network reconnects
       onSuccess: (data: any) => {

@@ -62,8 +62,8 @@ type Props = {
   fromWorkFlow: boolean; //for check if the form is from work flow
   canEditForm1: boolean;
   selectedId: number;
-  setSelectedRowIndex?:(value: SetStateAction<number>) => void
-  definitionDateTime:DefinitionDateTime;
+  setSelectedRowIndex?: (value: SetStateAction<number>) => void;
+  definitionDateTime: DefinitionDateTime;
 };
 
 export const headCells = [
@@ -199,7 +199,7 @@ const ProductGraceForm = ({
   canEditForm1,
   selectedId,
   setSelectedRowIndex,
-  definitionDateTime
+  definitionDateTime,
 }: Props) => {
   const [addList, setAddList] = useState<ProductGraceListItemTable[]>([]);
   const [search, setSearch] = useState<string>("");
@@ -230,34 +230,34 @@ const ProductGraceForm = ({
         options:
           item.accessor === "product"
             ? products &&
-            products.map((p) => ({
-              id: p.pId,
-              title: p.n,
-            }))
+              products.map((p) => ({
+                id: p.pId,
+                title: p.n,
+              }))
             : undefined,
         setSearch: item.accessor === "product" ? setSearch : undefined,
         Cell:
           item.accessor === "icons"
             ? ({ row }: any) => {
-              return (
-                <div className="flex w-full">
-                  {canEditForm1 && (
+                return (
+                  <div className="flex w-full">
+                    {canEditForm1 && (
+                      <img
+                        src={row.original.isDeleted ? RestoreIcon : TrashIcon}
+                        onClick={() => updateToDeleted(row)}
+                        className="cursor-pointer"
+                        alt="TrashIcon"
+                      />
+                    )}
                     <img
-                      src={row.original.isDeleted ? RestoreIcon : TrashIcon}
-                      onClick={() => updateToDeleted(row)}
+                      src={HistoryIcon}
+                      onClick={() => handleShowHistory(row)}
                       className="cursor-pointer"
-                      alt="TrashIcon"
+                      alt="HistoryIcon"
                     />
-                  )}
-                  <img
-                    src={HistoryIcon}
-                    onClick={() => handleShowHistory(row)}
-                    className="cursor-pointer"
-                    alt="HistoryIcon"
-                  />
-                </div>
-              );
-            }
+                  </div>
+                );
+              }
             : item.Cell,
       };
     });
@@ -364,7 +364,7 @@ const ProductGraceForm = ({
             deleted: item.deleted,
             isDeleted: false,
             index: productGraceDtls.length + 1,
-          }
+          };
         })
       );
     }
@@ -373,13 +373,14 @@ const ProductGraceForm = ({
 
   //send params to /api/Product/search?accSystem=4&accYear=15&page=1&searchTerm=%D8%B3%D9%81
   useEffect(() => {
-    setProductField("productSearchAccSystem", systemId);
-    setProductField("productSearchAccYear", yearId);
-    handleDebounceFilterChange(
-      "productSearchSearch",
-      search
-    );
-    setProductField("productSearchPage", 1);
+    if (canEditForm1) {
+      setProductField("productSearchAccSystem", systemId);
+      setProductField("productSearchAccYear", yearId);
+      handleDebounceFilterChange("productSearchSearch", search);
+      setProductField("productSearchPage", 1);
+    }
+    // to not allow calling salesPricesSearch when productSearch is called
+    setProductField("salesPricesSearchPage", -1);
   }, [search, systemId, yearId]);
   ///////////////////////////////////////////////////////
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -496,7 +497,12 @@ const ProductGraceForm = ({
           dtlDsc: item.dtlDsc,
           deleted: item.isDeleted,
         };
-        if (dtl.gd !== Number(convertToLatinDigits(item.gdo.toString())) || dtl.sc !== Number(convertToLatinDigits(item.sco.toString())) || dtl.cc !== Number(convertToLatinDigits(item.cco.toString())) || dtl.ec !== Number(convertToLatinDigits(item.eco.toString()))) {
+        if (
+          dtl.gd !== Number(convertToLatinDigits(item.gdo.toString())) ||
+          dtl.sc !== Number(convertToLatinDigits(item.sco.toString())) ||
+          dtl.cc !== Number(convertToLatinDigits(item.cco.toString())) ||
+          dtl.ec !== Number(convertToLatinDigits(item.eco.toString()))
+        ) {
           return dtl;
         } else {
           return undefined;

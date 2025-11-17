@@ -330,7 +330,7 @@ Props) => {
     productId: number = 0
   ) => {
     const res = await handleSubmit(e, productId);
- 
+
     //console.log(res, "res");
     if (res && res.data.result) {
       // Map through the new products
@@ -338,9 +338,14 @@ Props) => {
         setAddList((prev) => {
           // Filter out newRow entries (empty rows) before adding new records
           // Check by properties since items might be clones of newRow
-          const filteredPrev = prev.filter((item:IndentDtl) => {
+          const filteredPrev = prev.filter((item: IndentDtl) => {
             // Remove items that match newRow pattern (id === 0 and product is empty)
-            return !( item.id === 0 && item.productCode === "" && item.product === "" && item.pId === 0);
+            return !(
+              item.id === 0 &&
+              item.productCode === "" &&
+              item.product === "" &&
+              item.pId === 0
+            );
           });
           //console.log(filteredPrev, "filteredPrev");
           return [
@@ -414,13 +419,14 @@ Props) => {
   const [search, setSearch] = useState<string>("");
   //send params to /api/Product/search?accSystem=4&accYear=15&page=1&searchTerm=%D8%B3%D9%81
   useEffect(() => {
-    setProductField("productSearchAccSystem", systemId);
-    setProductField("productSearchAccYear", yearId);
-    handleDebounceFilterChange(
-      "productSearchSearch",
-      search
-    );
-    setProductField("productSearchPage", 1);
+    if (canEditForm) {
+      setProductField("productSearchAccSystem", systemId);
+      setProductField("productSearchAccYear", yearId);
+      handleDebounceFilterChange("productSearchSearch", search);
+      setProductField("productSearchPage", 1);
+    }
+    // to not allow calling salesPricesSearch when productSearch is called
+    setProductField("salesPricesSearchPage", -1);
   }, [search, systemId, yearId]);
   const abortControllerRef = useRef<AbortController | null>(null);
   ///////////////////////////////////////////////////////

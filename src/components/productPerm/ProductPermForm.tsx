@@ -60,8 +60,8 @@ type Props = {
   fromWorkFlow: boolean;
   canEditForm1: boolean;
   selectedId: number;
-  setSelectedRowIndex?:(value: SetStateAction<number>) => void,
-  definitionDateTime:DefinitionDateTime;
+  setSelectedRowIndex?: (value: SetStateAction<number>) => void;
+  definitionDateTime: DefinitionDateTime;
 };
 
 export const headCells = [
@@ -153,8 +153,8 @@ const ProductPermForm = ({
   fromWorkFlow,
   canEditForm1,
   selectedId,
-  setSelectedRowIndex,  
-  definitionDateTime
+  setSelectedRowIndex,
+  definitionDateTime,
 }: Props) => {
   const [addList, setAddList] = useState<ProductPermListItemTable[]>([]);
   const [search, setSearch] = useState<string>("");
@@ -317,13 +317,14 @@ const ProductPermForm = ({
 
   //send params to /api/Product/search?accSystem=4&accYear=15&page=1&searchTerm=%D8%B3%D9%81
   useEffect(() => {
-    setProductField("productSearchAccSystem", systemId);
-    setProductField("productSearchAccYear", yearId);
-    handleDebounceFilterChange(
-      "productSearchSearch",
-      search
-    );
-    setProductField("productSearchPage", 1);
+    if (canEditForm1) {
+      setProductField("productSearchAccSystem", systemId);
+      setProductField("productSearchAccYear", yearId);
+      handleDebounceFilterChange("productSearchSearch", search);
+      setProductField("productSearchPage", 1);
+    }
+    // to not allow calling salesPricesSearch when productSearch is called
+    setProductField("salesPricesSearchPage", -1);
   }, [search, systemId, yearId]);
   ///////////////////////////////////////////////////////
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -435,15 +436,13 @@ const ProductPermForm = ({
           dtlDsc: item.dtlDsc,
           deleted: item.isDeleted,
         };
-        if (
-          item.np !== undefined ||
-          item.dtlDsc !== ""
-        ) {
+        if (item.np !== undefined || item.dtlDsc !== "") {
           return dtl;
         } else {
           return undefined;
         }
-      }).filter((item) => item !== undefined);
+      })
+      .filter((item) => item !== undefined);
     console.log(dtls, "dtls");
 
     request = {

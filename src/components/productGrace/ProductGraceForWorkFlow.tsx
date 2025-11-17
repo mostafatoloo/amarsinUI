@@ -31,8 +31,8 @@ const ProductGraceForWorkFlow = ({ workFlowRowSelectResponse, definitionDateTime
   const { yearId, systemId } = useGeneralContext();
 
   if (id!==workFlowRowSelectResponse.workTableRow.formId){
-    setField("yearId", yearId);
-    setField("systemId", systemId);
+    setField("yearIdDtl", yearId);
+    setField("systemIdDtl", systemId);
     setField("id", workFlowRowSelectResponse.workTableRow.formId);
   }
 

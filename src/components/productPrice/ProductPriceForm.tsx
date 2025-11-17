@@ -68,9 +68,9 @@ type Props = {
   setIsEdit: (isEdit: boolean) => void;
   fromWorkFlow: boolean;
   canEditForm1: boolean;
-  selectedId: number; 
-  setSelectedRowIndex?:(value: SetStateAction<number>) => void,
-  definitionDateTime:DefinitionDateTime;
+  selectedId: number;
+  setSelectedRowIndex?: (value: SetStateAction<number>) => void;
+  definitionDateTime: DefinitionDateTime;
 };
 
 export const headCells = [
@@ -228,7 +228,7 @@ const ProductPriceForm = ({
   fromWorkFlow,
   selectedId,
   setSelectedRowIndex,
-  definitionDateTime
+  definitionDateTime,
 }: Props) => {
   const [addList, setAddList] = useState<ProductPriceListItemTable[]>([]);
   const [search, setSearch] = useState<string>("");
@@ -394,7 +394,7 @@ const ProductPriceForm = ({
           p1O: item.p1O,
           p2O: item.p2O,
           p3O: item.p3O,
-          p4O: item.p4O ,
+          p4O: item.p4O,
           p5O: item.p5,
           p1: item.p1,
           p2: item.p2,
@@ -413,13 +413,14 @@ const ProductPriceForm = ({
 
   //send params to /api/Product/search?accSystem=4&accYear=15&page=1&searchTerm=%D8%B3%D9%81
   useEffect(() => {
-    setProductField("productSearchAccSystem", systemId);
-    setProductField("productSearchAccYear", yearId);
-    handleDebounceFilterChange(
-      "productSearchSearch",
-      search
-    );
-    setProductField("productSearchPage", 1);
+    if (canEditForm1) {
+      setProductField("productSearchAccSystem", systemId);
+      setProductField("productSearchAccYear", yearId);
+      handleDebounceFilterChange("productSearchSearch", search);
+      setProductField("productSearchPage", 1);
+    }
+    // to not allow calling salesPricesSearch when productSearch is called
+    setProductField("salesPricesSearchPage", -1);
   }, [search, systemId, yearId]);
   ///////////////////////////////////////////////////////
   const abortControllerRef = useRef<AbortController | null>(null);

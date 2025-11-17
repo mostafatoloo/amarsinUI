@@ -60,8 +60,8 @@ type Props = {
   fromWorkFlow: boolean;
   canEditForm1: boolean;
   selectedId: number;
-  setSelectedRowIndex?:(value: SetStateAction<number>) => void
-  definitionDateTime:DefinitionDateTime;
+  setSelectedRowIndex?: (value: SetStateAction<number>) => void;
+  definitionDateTime: DefinitionDateTime;
 };
 
 export const headCells = [
@@ -240,7 +240,7 @@ const ProductOfferForm = ({
   fromWorkFlow,
   selectedId,
   setSelectedRowIndex,
-  definitionDateTime
+  definitionDateTime,
 }: Props) => {
   const [addList, setAddList] = useState<ProductOfferProductTable[]>([]);
   const [search, setSearch] = useState<string>("");
@@ -433,13 +433,14 @@ const ProductOfferForm = ({
 
   //send params to /api/Product/search?accSystem=4&accYear=15&page=1&searchTerm=%D8%B3%D9%81
   useEffect(() => {
-    setProductField("productSearchAccSystem", systemId);
-    setProductField("productSearchAccYear", yearId);
-    handleDebounceFilterChange(
-      "productSearchSearch",
-      search
-    );
-    setProductField("productSearchPage", 1);
+    if (canEditForm1) {
+      setProductField("productSearchAccSystem", systemId);
+      setProductField("productSearchAccYear", yearId);
+      handleDebounceFilterChange("productSearchSearch", search);
+      setProductField("productSearchPage", 1);
+    }
+    // to not allow calling salesPricesSearch when productSearch is called
+    setProductField("salesPricesSearchPage", -1);
   }, [search, systemId, yearId]);
   ///////////////////////////////////////////////////////
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -599,7 +600,8 @@ const ProductOfferForm = ({
         } else {
           return undefined;
         }
-      }).filter((item) => item !== undefined);
+      })
+      .filter((item) => item !== undefined);
 
     request = {
       chartId: chartId,
