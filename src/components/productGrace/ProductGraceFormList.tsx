@@ -241,10 +241,10 @@ const ProductGraceFormList = ({
               productGraceProducts[0].cco > 0 ? productGraceProducts[0].cco : 0,
             ec:
               productGraceProducts[0].eco > 0 ? productGraceProducts[0].eco : 0,
-            gdo: 0,
-            sco: 0,
-            cco: 0,
-            eco: 0,
+            gdo: productGraceProducts[0].gdo > 0 ? productGraceProducts[0].gdo : 0,
+            sco: productGraceProducts[0].sco > 0 ? productGraceProducts[0].sco : 0,
+            cco: productGraceProducts[0].cco > 0 ? productGraceProducts[0].cco : 0,
+            eco: productGraceProducts[0].eco > 0 ? productGraceProducts[0].eco : 0,
             dtlDsc: productGraceProducts[0].dtlDsc,
             isDeleted: false,
           };
