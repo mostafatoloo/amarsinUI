@@ -62,6 +62,7 @@ const RegRecievedCheque = ({
     cashPosSystemSearch,
     paymentAttachmentResponse,
     isLoadingPaymentAttachment,
+    getPaymentAttachment,
     getPayment,
     sayadChequeInquiryByPaymentIdResponse,
   } = useCheques();
@@ -77,6 +78,7 @@ const RegRecievedCheque = ({
       setField("sayadiPaymentId", -1);
       setField("payKind", -1);
       getPayment();
+      getPaymentAttachment();
       setRefetchSwitch(false);
     }
   }, [refetchSwitch]);
@@ -90,9 +92,13 @@ const RegRecievedCheque = ({
   ////////////////////////////////////////////////////////for defining guid
   useEffect(() => {
     setGuid(uuidv4());
-    console.log(cnt)
+    console.log(cnt);
   }, []);
-
+  //handle close attachment
+  const handleCloseAttachment = () => {
+    setShowAttachment(false);
+    getPaymentAttachment();
+  };
   return (
     <div className="flex flex-col md:flex-row w-full text-sm gap-2 text-gray-600">
       <RegRecievedChequeInfo
@@ -118,7 +124,7 @@ const RegRecievedCheque = ({
       />
       <ModalForm
         isOpen={showAttachment}
-        onClose={() => setShowAttachment(false)}
+        onClose={handleCloseAttachment}
         title="تصویر چک"
         width="1/2"
       >

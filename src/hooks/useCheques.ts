@@ -170,6 +170,7 @@ export function useCheques() {
 
   return {
     //Payment/attachment
+    getPaymentAttachment: () => paymentAttachment.refetch(),
     paymentAttachmentResponse: paymentAttachment.data,
     isLoadingPaymentAttachment: paymentAttachment.isLoading,
     errorPaymentAttachment: paymentAttachment.error,
