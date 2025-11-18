@@ -5,15 +5,15 @@ import { useCustomers } from "../../hooks/useCustomers";
 import { convertToFarsiDigits } from "../../utilities/general";
 import { colors } from "../../utilities/color";
 import Button from "../controls/Button";
-import { InvoiceReturnRequestShowResponse } from "../../types/invoiceReturnRequest";
 
 type Props = {
-  invoiceReturnRequestShowResponse: InvoiceReturnRequestShowResponse;
+  invoiceReturnRequestShowResponse: any; //InvoiceReturnRequestShowResponse;
   canEditForm: boolean;
   setShowAttachment: React.Dispatch<React.SetStateAction<boolean>>;
   dsc: string;
   setDsc: React.Dispatch<React.SetStateAction<string>>;
-  cnt:string
+  cnt: string;
+  formKind: "isRequest" | "isPreInvoice";
 };
 
 const InvoiceReturnRequestShowHeader = ({
@@ -23,6 +23,7 @@ const InvoiceReturnRequestShowHeader = ({
   dsc,
   setDsc,
   cnt,
+  formKind,
 }: Props) => {
   const { customers } = useCustomers();
   const [customer, setCustomer] = useState<DefaultOptionType | null>(null);
@@ -33,15 +34,23 @@ const InvoiceReturnRequestShowHeader = ({
   }, []);
   useEffect(() => {
     setCustomer({
-      id: invoiceReturnRequestShowResponse.data.result.invoiceReturnRequest.cId,
+      id:
+        formKind === "isRequest"
+          ? invoiceReturnRequestShowResponse.data.result.invoiceReturnRequest
+              .cId
+          : invoiceReturnRequestShowResponse.data.result.preInvoiceReturn.cId,
       title:
-        invoiceReturnRequestShowResponse.data.result.invoiceReturnRequest
-          .srName,
+        formKind === "isRequest"
+          ? invoiceReturnRequestShowResponse.data.result.invoiceReturnRequest
+              .srName
+          : invoiceReturnRequestShowResponse.data.result.preInvoiceReturn.srName,
     });
     setDsc(
-      invoiceReturnRequestShowResponse.data.result.invoiceReturnRequest.dsc
+      formKind === "isRequest"
+        ? invoiceReturnRequestShowResponse.data.result.invoiceReturnRequest.dsc
+        : invoiceReturnRequestShowResponse.data.result.preInvoiceReturn.dsc
     );
-  }, [invoiceReturnRequestShowResponse]);
+  }, [invoiceReturnRequestShowResponse, formKind]);
 
   return (
     <div className="mt-2 text-sm w-full flex flex-col gap-2 border border-gray-400 rounded-md p-2">
@@ -72,7 +81,10 @@ const InvoiceReturnRequestShowHeader = ({
           <input
             type="text"
             value={convertToFarsiDigits(
-              invoiceReturnRequestShowResponse.data.result.invoiceReturnRequest
+              formKind === "isRequest"
+                ? invoiceReturnRequestShowResponse.data.result.invoiceReturnRequest
+                .dat
+                : invoiceReturnRequestShowResponse.data.result.preInvoiceReturn.dat
                 .dat
             )}
             disabled={!canEditForm}
@@ -91,15 +103,17 @@ const InvoiceReturnRequestShowHeader = ({
             className="text-sm text-gray-400 w-full p-1 border border-gray-300 rounded-md"
           />
         </div>
-        <Button
-          text={`ضمائم (${cnt})`}
-          backgroundColor={colors.blue_400}
-          backgroundColorHover={colors.blue_500}
-          variant="w-32"
-          onClick={() => {
-            setShowAttachment(true);
-          }}
-        />
+        {formKind === "isRequest" && (
+          <Button
+            text={`ضمائم (${cnt})`}
+            backgroundColor={colors.blue_400}
+            backgroundColorHover={colors.blue_500}
+            variant="w-32"
+            onClick={() => {
+              setShowAttachment(true);
+            }}
+          />
+        )}
       </div>
     </div>
   );

@@ -245,6 +245,17 @@ export default function WorkflowComponent({
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           refetchSwitch={refetchSwitch}
           setRefetchSwitch={setRefetchSwitch}
+          formKind="isRequest"  //for showing or hiding the "اطلاعات ثبت" column
+        />
+      );
+      break;
+    case "PreInvoiceReturn/_PreInvoiceReturn": //کارشناس بازرگانی -> ثبت پیش فاکتور مرجوعی
+      componentToRender1 = (
+        <InvoiceReturnRequestShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
+          formKind="isPreInvoice"  //for showing or hiding the "اطلاعات ثبت" column
         />
       );
       break;
@@ -462,6 +473,17 @@ export default function WorkflowComponent({
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           refetchSwitch={refetchSwitch}
           setRefetchSwitch={setRefetchSwitch}
+          formKind="isRequest"  //for showing or hiding the "اطلاعات ثبت" column
+        />
+      );
+      break;
+    case "PreInvoiceReturn/_PreInvoiceReturn": //کارشناس بازرگانی -> ثبت پیش فاکتور مرجوعی
+      componentToRender2 = (
+        <InvoiceReturnRequestShow
+          workFlowRowSelectResponse={workFlowRowSelectResponse}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
+          formKind="isPreInvoice"  //for showing or hiding the "اطلاعات ثبت" column
         />
       );
       break;

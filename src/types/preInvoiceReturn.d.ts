@@ -36,7 +36,6 @@ interface PreInvoiceReturnDtl {
   statusCode: number;
 }
 
-
 export interface PreInvoiceReturnDtlTable extends PreInvoiceReturnDtl {
   index: string;
   appearanceImage: JSX.Element | null;
@@ -76,9 +75,9 @@ interface ResponsePreInvoiceDtlSearch {
   data: DataPreInvoiceDtlSearch;
 }
 ///api/PreInvoiceReturn/warehouseTemporaryReceiptSave
-interface WarehouseTemporaryReceiptSaveRequest{
-  WarehouseTemporaryReceiptSaveRequestId:number;
-  warehouseTemporaryReceiptDtlId:number
+interface WarehouseTemporaryReceiptSaveRequest {
+  WarehouseTemporaryReceiptSaveRequestId: number;
+  warehouseTemporaryReceiptDtlId: number;
 }
 
 interface ResultWarehouseTemporaryReceiptSave {
@@ -97,14 +96,69 @@ interface WarehouseTemporaryReceiptSaveResponse {
   meta: Meta;
   data: DataWarehouseTemporaryReceiptSave;
 }
-export interface PreInvoiceReturnState extends WarehouseTemporaryReceiptSaveRequest {
+///api/PreInvoiceReturn/show?Id=925177
+interface PreInvoiceReturnShow {
+  id: number;
+  ordr: number;
+  dat: string;
+  cId: number;
+  srName: string;
+  exp: string;
+  usrName: string;
+  flwId: number;
+  flowMapName: string;
+  canEdit: number;
+}
+
+interface PreInvoiceReturnShowDtls {
+  id: number;
+  pId: number;
+  product: string;
+  cupCode: string;
+  uid: string;
+  pDateFormat: number;
+  prodYear: string;
+  prodMonth: string;
+  prodDay: string;
+  expireYear: string;
+  expireMonth: string;
+  expireDay: string;
+  cnt: number;
+  appearance: boolean;
+  factorNo: string;
+  dtlDsc: string;
+  regedCnt: string;
+  regedOffer: string;
+}
+
+interface ResultPreInvoiceReturnShow {
+  err: number;
+  msg: string;
+  preInvoiceReturn: PreInvoiceReturnShow;
+  preInvoiceReturnDtls: PreInvoiceReturnShowDtls[];
+  diagnosises: any[]; // Replace `any` with a specific type if needed
+}
+
+interface DataPreInvoiceReturnShow {
+  result: ResultPreInvoiceReturnShow;
+}
+
+interface PreInvoiceReturnShowResponse {
+  meta: Meta;
+  data: DataPreInvoiceReturnShow;
+}
+
+export interface PreInvoiceReturnState
+  extends WarehouseTemporaryReceiptSaveRequest {
   searchPreInvoiceDtlSearch: string;
   pagePreInvoiceDtlSearch: number;
   preInvoiceDtlId: number;
   temporaryReceiptShowId: number;
+  preInvoiceReturnShowId: number; //api/PreInvoiceReturn/show?Id=925177
   responsePreInvoiceDtlSearch: ResponsePreInvoiceDtlSearch;
   responseWarehouseTemporaryReceiptShow: ResponseWarehouseTemporaryReceiptShow;
-  warehouseTemporaryReceiptSaveResponse:WarehouseTemporaryReceiptSaveResponse;//api/PreInvoiceReturn/warehouseTemporaryReceiptSave
+  warehouseTemporaryReceiptSaveResponse: WarehouseTemporaryReceiptSaveResponse; //api/PreInvoiceReturn/warehouseTemporaryReceiptSave
+  preInvoiceReturnShowResponse: PreInvoiceReturnShowResponse; // api/PreInvoiceReturn/show?Id=925177
   setField: (field: string | number | symbol, value: any) => void;
   setResponsePreInvoiceDtlSearch: (
     ResponsePreInvoiceDtlSearch: ResponsePreInvoiceDtlSearch
@@ -115,4 +169,7 @@ export interface PreInvoiceReturnState extends WarehouseTemporaryReceiptSaveRequ
   setWarehouseTemporaryReceiptSaveResponse: (
     WarehouseTemporaryReceiptSaveResponse: WarehouseTemporaryReceiptSaveResponse
   ) => void;
+  setPreInvoiceReturnShowResponse: (
+    preInvoiceReturnShowResponse: PreInvoiceReturnShowResponse
+  ) => void; // api/PreInvoiceReturn/show?Id=925177
 }

@@ -41,6 +41,31 @@ export const usePreInvoiceReturnStore = create<PreInvoiceReturnState>()(
         result: { id: 0, err: 0, msg: "", cupboardId: 0, statusCode: 0 },
       },
     },
+    //api/PreInvoiceReturn/show?Id=925177
+    preInvoiceReturnShowId: -1,
+    preInvoiceReturnShowResponse: {
+      meta: { errorCode: 0, message: null, type: "" },
+      data: {
+        result: {
+          err: 0,
+          msg: "",
+          preInvoiceReturn: {
+            id: 0,
+            ordr: 0,
+            dat: "",
+            cId: 0,
+            srName: "",
+            exp: "",
+            usrName: "",
+            flwId: 0,
+            flowMapName: "",
+            canEdit: 0,
+          },
+          preInvoiceReturnDtls: [],
+          diagnosises: [],
+        },
+      },
+    },
     setField: (field: string | number | symbol, value: any) =>
       set((state) => ({ ...state, [field]: value })),
     setResponseWarehouseTemporaryReceiptShow: (
@@ -51,5 +76,7 @@ export const usePreInvoiceReturnStore = create<PreInvoiceReturnState>()(
     setWarehouseTemporaryReceiptSaveResponse: (
       warehouseTemporaryReceiptSaveResponse
     ) => set({ warehouseTemporaryReceiptSaveResponse }),
+    setPreInvoiceReturnShowResponse: (preInvoiceReturnShowResponse) =>
+      set({ preInvoiceReturnShowResponse }), // api/PreInvoiceReturn/show?Id=925177
   })
 );

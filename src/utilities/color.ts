@@ -35,6 +35,7 @@ export const colors = {
     orang100:"#FCD8CD",
     orange200:"#fde68a",
     yellow100:"#fefce8",
+    yellow700:"#a16207",
     slate100:"#f1f5f9",
     slate200:"#e2e8f0",
 }

@@ -2,6 +2,7 @@ import {
   //QueryClient,
   useMutation,
   useQuery,
+  useQueryClient,
   UseQueryOptions,
 } from "@tanstack/react-query";
 import api from "../api/axios";
@@ -43,7 +44,7 @@ export function useWorkflow() {
   } = useWorkflowStore();
 
   //const queryClient = new QueryClient();
-
+  const queryClient = useQueryClient();
   const query = useQuery<WorkflowResponse, Error, WorkflowResponse, unknown[]>({
     queryKey: [
       "workflow",
@@ -103,7 +104,7 @@ export function useWorkflow() {
     refetchIntervalInBackground: true, // Continue refetching even when tab is not active*/
     onSuccess: (data: any) => {
       setWorkFlowResponse(data);
-      //queryClient.invalidateQueries({ queryKey: ["workflowRowSelect"] });
+      queryClient.invalidateQueries({ queryKey: ["workflowRowSelect"] });
     },
   } as UseQueryOptions<WorkflowResponse, Error, WorkflowResponse, unknown[]>);
 

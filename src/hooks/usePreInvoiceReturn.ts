@@ -2,6 +2,7 @@ import { useMutation, useQuery, UseQueryOptions } from "@tanstack/react-query";
 import api from "../api/axios";
 import { usePreInvoiceReturnStore } from "../store/preInvoiceReturnStore";
 import {
+  PreInvoiceReturnShowResponse,
   ResponsePreInvoiceDtlSearch,
   ResponseWarehouseTemporaryReceiptShow,
   WarehouseTemporaryReceiptSaveRequest,
@@ -16,6 +17,8 @@ export function usePreInvoiceReturn() {
     searchPreInvoiceDtlSearch,
     preInvoiceDtlId,
     pagePreInvoiceDtlSearch,
+    preInvoiceReturnShowId, //api/PreInvoiceReturn/show?Id=925177
+    setPreInvoiceReturnShowResponse, //api/PreInvoiceReturn/show?Id=925177
   } = usePreInvoiceReturnStore();
 
   const query = useQuery<
@@ -33,7 +36,7 @@ export function usePreInvoiceReturn() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: temporaryReceiptShowId!==-1,
+    enabled: temporaryReceiptShowId !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -63,7 +66,7 @@ export function usePreInvoiceReturn() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: preInvoiceDtlId!==-1,
+    enabled: preInvoiceDtlId !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -84,9 +87,33 @@ export function usePreInvoiceReturn() {
       setWarehouseTemporaryReceiptSaveResponse(data);
     },
   });
+  //api/PreInvoiceReturn/show?Id=925177
+  const preInvoiceReturnShowQuery = useQuery<
+    PreInvoiceReturnShowResponse,
+    Error,
+    PreInvoiceReturnShowResponse,
+    unknown[]
+  >({
+    queryKey: ["preInvoiceReturnShow", preInvoiceReturnShowId],
+    queryFn: async () => {
+      const params = {
+        preInvoiceReturnShowId,
+      };
+      const url = `/api/PreInvoiceReturn/show?Id=${params.preInvoiceReturnShowId}`;
+      const response = await api.get(url);
+      return response.data;
+    },
+    enabled: preInvoiceReturnShowId !== -1,
+    refetchOnWindowFocus: false, // Refetch data when the window is focused
+    refetchOnReconnect: false, // Refetch data when the network reconnects
+    onSuccess: (data: any) => {
+      setPreInvoiceReturnShowResponse(data);
+    },
+  } as UseQueryOptions<PreInvoiceReturnShowResponse, Error, PreInvoiceReturnShowResponse, unknown[]>);
+
   return {
     //for responseWarehouseTemporaryReceiptShow
-    refetchWarehouseTemporaryReceiptShow:() => query.refetch(),
+    refetchWarehouseTemporaryReceiptShow: () => query.refetch(),
     isLoading: query.isLoading,
     error: query.error,
     warehouseTemporaryReceiptShowResponse: query.data?.data.result ?? {
@@ -109,6 +136,33 @@ export function usePreInvoiceReturn() {
     preInvoiceDtlSearchResponse: queryPreInvoiceDtlSearch.data ?? {
       meta: { errorCode: 0, message: "", type: "" },
       data: { result: { total_count: 0, results: [] } },
+    },
+    //for preInvoiceReturnShow
+    refetchPreInvoiceReturnShow: () => preInvoiceReturnShowQuery.refetch(),
+    isLoadingPreInvoiceReturnShow: preInvoiceReturnShowQuery.isLoading,
+    errorPreInvoiceReturnShow: preInvoiceReturnShowQuery.error,
+    preInvoiceReturnShowResponse: preInvoiceReturnShowQuery.data ?? {
+      meta: { errorCode: 0, message: "", type: "" },
+      data: {
+        result: {
+          err: 0,
+          msg: "",
+          preInvoiceReturn: {
+            id: 0,
+            ordr: 0,
+            dat: "",
+            cId: 0,
+            srName: "",
+            exp: "",
+            usrName: "",
+            flwId: 0,
+            flowMapName: "",
+            canEdit: 0,
+          },
+          preInvoiceReturnDtls: [],
+          diagnosises: [],
+        },
+      },
     },
     //for warehouseTemporaryReceiptSave
     warehouseTemporaryReceiptSave: warehouseTemporaryReceiptSave.mutateAsync,

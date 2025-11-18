@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { InvoiceReturnRequestShowResponse } from "../../types/invoiceReturnRequest";
 import { convertToFarsiDigits } from "../../utilities/general";
 import Skeleton from "../layout/Skeleton";
 import { Paper } from "@mui/material";
@@ -11,24 +10,26 @@ import { FaCheck } from "react-icons/fa";
 import { useInvoiceReturnRequestStore } from "../../store/invoiceReturnRequestStore";
 
 type Props = {
-  invoiceReturnRequestShowResponse: InvoiceReturnRequestShowResponse;
+  invoiceReturnRequestShowResponse: any; //InvoiceReturnRequestShowResponse;
   isLoadingInvoiceReturnRequestShow: boolean;
   setEditClicked: (editClicked: boolean) => void;
+  formKind: "isRequest" | "isPreInvoice";
 };
 
 const InvoiceReturnRequestShowTable = ({
   invoiceReturnRequestShowResponse,
   isLoadingInvoiceReturnRequestShow,
   setEditClicked,
+  formKind,
 }: Props) => {
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0); //for selected row index in warehouseShowTable table
   const { setField } = useInvoiceReturnRequestStore();
   const [data, setData] = useState<any[]>([]);
-  const columns = React.useMemo(
-    () => [
+  const columns = React.useMemo(() => {
+    const baseColumns = [
       {
         Header: "اطلاعات درخواست",
-        width: "56%",
+        width: formKind === "isRequest" ? "56%" : "76%",
         columns: [
           {
             Header: "ردیف",
@@ -38,7 +39,7 @@ const InvoiceReturnRequestShowTable = ({
           {
             Header: "کالا",
             accessor: "product",
-            width: "15%",
+            width: formKind === "isRequest" ? "15%" : "25%",
           },
           {
             Header: "قفسه",
@@ -64,6 +65,11 @@ const InvoiceReturnRequestShowTable = ({
             Header: "سالم",
             accessor: "appearanceImage",
             width: "3%",
+          },
+          {
+            Header: "فاکتور",
+            accessor: "factor",
+            width: "10%",
           },
           {
             Header: "شرح",
@@ -138,11 +144,37 @@ const InvoiceReturnRequestShowTable = ({
           },
         ],
       },
-    ],
-    []
-  );
+    ];
 
-  ////////////////////////////////////////////////////////////////////////  
+    // Process columns based on formKind
+    let processedColumns = [...baseColumns];
+
+    // If formKind is "isPreInvoice", exclude the "اطلاعات ثبت" column
+    if (formKind === "isPreInvoice") {
+      processedColumns = processedColumns.filter(
+        (col) => col.Header !== "اطلاعات ثبت"
+      );
+    }
+
+    // If formKind is "isRequest", exclude the "فاکتور" column (with accessor "factor") from "اطلاعات درخواست"
+    if (formKind === "isRequest") {
+      processedColumns = processedColumns.map((col: any) => {
+        if (col.Header === "اطلاعات درخواست") {
+          return {
+            ...col,
+            columns: col.columns.filter(
+              (subCol: any) => subCol.accessor !== "factor"
+            ),
+          };
+        }
+        return col;
+      }) as any;
+    }
+
+    return processedColumns;
+  }, [formKind]);
+
+  ////////////////////////////////////////////////////////////////////////
   //set id(invoiceDtlId) in store to use in api/InvoiceReturnRequest/invoiceEdit?Id=3712
   const handleEditClick = (row: any) => {
     setEditClicked(true);
@@ -151,47 +183,93 @@ const InvoiceReturnRequestShowTable = ({
   };
 
   useEffect(() => {
-    const tempData: any[] =
-      invoiceReturnRequestShowResponse.data.result.invoiceReturnRequestDtls.map(
-        (item, index) => {
-          const diagnosises =
-            invoiceReturnRequestShowResponse.data.result.diagnosises
-              .filter((diagnosis) => diagnosis.id === item.id)
-              .map((diagnosis) => diagnosis.msg);
-          return {
-            ...item,
-            index: convertToFarsiDigits(index + 1),
-            product: convertToFarsiDigits(item.product),
-            cupCode: convertToFarsiDigits(item.cupCode),
-            uid: convertToFarsiDigits(item.uid),
-            expDate: convertToFarsiDigits(
-              item.expireYear + "/" + item.expireMonth + "/" + item.expireDay
-            ),
-            cnt: convertToFarsiDigits(item.cnt),
-            appearanceImage: item.appearance ? (
-              <div className="w-full flex items-center justify-center">
-                <FaCheck color="green" />
-              </div>
-            ) : null,
-            dtlDsc: convertToFarsiDigits(item.dtlDsc),
-            determination:
-              diagnosises.length > 0
-                ? diagnosises.map((diagnosis) => (
-                    <div className="flex items-center justify-left">
-                      <span className="text-2xl px-2">•</span>
-                      <p>{convertToFarsiDigits(diagnosis)}</p>
-                    </div>
-                  ))
-                : null,
-            factorNo: convertToFarsiDigits(item.factorNo),
-            regedCnt: convertToFarsiDigits(Number(item.regedCnt)),
-            regedOffer: convertToFarsiDigits(Number(item.regedOffer)),
-          };
-        }
-      );
-    setData(tempData);
+    if (formKind === "isRequest") {
+      const tempData: any[] =
+        invoiceReturnRequestShowResponse.data.result.invoiceReturnRequestDtls.map(
+          (item: any, index: number) => {
+            const diagnosises =
+              invoiceReturnRequestShowResponse.data.result.diagnosises
+                .filter((diagnosis: any) => diagnosis.id === item.id)
+                .map((diagnosis: any) => diagnosis.msg);
+            return {
+              ...item,
+              index: convertToFarsiDigits(index + 1),
+              product: convertToFarsiDigits(item.product),
+              cupCode: convertToFarsiDigits(item.cupCode),
+              uid: convertToFarsiDigits(item.uid),
+              expDate: convertToFarsiDigits(
+                item.expireYear + "/" + item.expireMonth + "/" + item.expireDay
+              ),
+              cnt: convertToFarsiDigits(item.cnt),
+              appearanceImage: item.appearance ? (
+                <div className="w-full flex items-center justify-center">
+                  <FaCheck color="green" />
+                </div>
+              ) : null,
+              dtlDsc: convertToFarsiDigits(item.dtlDsc),
+              determination:
+                diagnosises.length > 0
+                  ? diagnosises.map((diagnosis: any) => (
+                      <div className="flex items-center justify-left">
+                        <span className="text-2xl px-2">•</span>
+                        <p>{convertToFarsiDigits(diagnosis)}</p>
+                      </div>
+                    ))
+                  : null,
+              factorNo: convertToFarsiDigits(item.factorNo),
+              regedCnt: convertToFarsiDigits(Number(item.regedCnt)),
+              regedOffer: convertToFarsiDigits(Number(item.regedOffer)),
+            };
+          }
+        );
+      setData(tempData);
+    }
   }, [invoiceReturnRequestShowResponse.data.result.invoiceReturnRequestDtls]);
 
+  useEffect(() => {
+    if (formKind === "isPreInvoice") {
+      // preInvoiceReturnShowResponse is mapped to invoiceReturnRequestShowResponse
+      const tempData: any[] =
+        invoiceReturnRequestShowResponse.data.result.preInvoiceReturnDtls.map(
+          (item: any, index: number) => {
+            const diagnosises =
+            invoiceReturnRequestShowResponse.data.result.diagnosises
+              .filter((diagnosis: any) => diagnosis.id === item.id)
+              .map((diagnosis: any) => diagnosis.msg);
+            return {
+              ...item,
+              index: convertToFarsiDigits(index + 1),
+              product: convertToFarsiDigits(item.product),
+              cupCode: convertToFarsiDigits(item.cupCode),
+              uid: convertToFarsiDigits(item.uid),
+              expDate: convertToFarsiDigits(
+                item.expireYear + "/" + item.expireMonth + "/" + item.expireDay
+              ),
+              cnt: convertToFarsiDigits(item.cnt),
+              appearanceImage: item.appearance ? (
+                <div className="w-full flex items-center justify-center">
+                  <FaCheck color="green" />
+                </div>
+              ) : null,
+              dtlDsc: convertToFarsiDigits(item.dtlDsc),
+              determination:
+                diagnosises.length > 0
+                  ? diagnosises.map((diagnosis: any) => (
+                      <div className="flex items-center justify-left">
+                        <span className="text-2xl px-2">•</span>
+                        <p>{convertToFarsiDigits(diagnosis)}</p>
+                      </div>
+                    ))
+                  : null,
+              factor: convertToFarsiDigits(item.factorNo),
+              regedCnt: convertToFarsiDigits(Number(item.regedCnt)),
+              regedOffer: convertToFarsiDigits(Number(item.regedOffer)),
+            };
+          }
+        );
+      setData(tempData);
+    }
+  }, [invoiceReturnRequestShowResponse.data.result.preInvoiceReturnDtls]);
   return (
     <Paper className="p-2 mt-2 w-full">
       {isLoadingInvoiceReturnRequestShow ? (

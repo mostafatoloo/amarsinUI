@@ -2,9 +2,7 @@
 import {
   Dispatch,
   SetStateAction,
-  useCallback,
   useEffect,
-  useRef,
   useState,
 } from "react";
 import { useInvoiceReceipt } from "../../hooks/useInvoiceReceipt";
@@ -24,14 +22,12 @@ import Button from "../controls/Button";
 import {
   IndentShowProductListRequest,
   IndentShowProductListResponse,
-  ProductSearchRequest,
 } from "../../types/product";
 import { useGeneralContext } from "../../context/GeneralContext";
 import { useProducts } from "../../hooks/useProducts";
 import { IndentDtl, IndentDtlTable } from "../../types/invoiceReceipt";
 import { handleExport } from "../../utilities/ExcelExport";
 import { useProductStore } from "../../store/productStore";
-import { debounce } from "lodash";
 import { DefinitionDateTime } from "../../types/definitionInvironment";
 
 type Props = {
@@ -69,7 +65,7 @@ const InvoiceReceiptShow = ({
 Props) => {
   const canEditForm = workFlowRowSelectResponse.workTableForms.canEditForm1;
   const { setField, mrsId: mrsIdStore } = useInvoiceReceiptStore();
-  const { yearId, systemId } = useGeneralContext();
+  const { yearId } = useGeneralContext();
   //for excel data
   const [excelData, setExcelData] = useState<any[]>([]);
 
@@ -141,7 +137,7 @@ Props) => {
   const {
     salesPricesSearchResponse,
     addProductList,
-    products,
+    //products,
     saveList,
     isLoadingSaveList,
     isDtHistoryLoading,
@@ -416,7 +412,7 @@ Props) => {
     };
   }, [isModalOpen]);
 
-  const [search, setSearch] = useState<string>("");
+/*  const [search, setSearch] = useState<string>("");
   //send params to /api/Product/search?accSystem=4&accYear=15&page=1&searchTerm=%D8%B3%D9%81
   useEffect(() => {
     if (canEditForm) {
@@ -442,7 +438,7 @@ Props) => {
       setProductField(field as keyof ProductSearchRequest, value);
     }, 500),
     [setProductField]
-  );
+  );*/
   ////////////////////////////////////////////////////////
   useEffect(() => {
     if (isNew && addList.length === 0) {
@@ -523,7 +519,7 @@ Props) => {
 
       <InvoiceReceiptShowTable
         isNew={isNew}
-        setProductSearchinTable={setSearch}
+        //setProductSearchinTable={setSearch}
         canEditForm={canEditForm}
         indentMrsResponse={indentMrsResponse}
         isLoading={isLoading}
@@ -534,10 +530,10 @@ Props) => {
         mrsId={workFlowRowSelectResponse.workTableRow.formId}
         fields={fields}
         newRow={newRow}
-        products={products.map((p) => ({
+        /*products={products.map((p) => ({
           id: p.pId,
           title: p.n,
-        }))}
+        }))}*/
         saveList={saveList}
         isLoadingSaveList={isLoadingSaveList}
         isDtHistoryLoading={isDtHistoryLoading}

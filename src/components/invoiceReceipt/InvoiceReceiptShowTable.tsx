@@ -14,6 +14,7 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import {
@@ -35,6 +36,7 @@ import {
   Detail,
   IndentSaveRequest,
   IndentShowProductListResponse,
+  ProductSearchRequest,
 } from "../../types/product";
 import { red } from "@mui/material/colors";
 import ConfirmCard from "../layout/ConfirmCard";
@@ -44,6 +46,8 @@ import InvoiceReceiptHistory from "./invoiceReceiptHistory";
 import InvoiceReceiptShowTableHeader from "./InvoiceReceiptShowTableHeader";
 import InvoiceReceiptShowTableSummery from "./InvoiceReceiptShowTableSummery";
 import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
+import { debounce } from "lodash";
+import { useProducts } from "../../hooks/useProducts";
 
 type Props = {
   isNew?: boolean;
@@ -63,12 +67,12 @@ type Props = {
   mrsId: number;
   fields: Fields;
   newRow: IndentDtlTable;
-  products: DefaultOptionType[];
+  //products: DefaultOptionType[];
   saveList: (request: IndentSaveRequest) => Promise<UpdateResult>;
   isLoadingSaveList: boolean;
   isDtHistoryLoading: boolean;
   getIndentMrsResponse: () => void;
-  setProductSearchinTable: React.Dispatch<React.SetStateAction<string>>;
+  //setProductSearchinTable: React.Dispatch<React.SetStateAction<string>>;
   setIsNew: (isNew: boolean) => void;
   setIsEdit: (isEdit: boolean) => void;
 };
@@ -204,7 +208,7 @@ export const headCells = [
 
 const InvoiceReceiptShowTable = ({
   isNew,
-  setProductSearchinTable,
+  //setProductSearchinTable,
   canEditForm,
   addList,
   indentMrsResponse,
@@ -215,7 +219,7 @@ const InvoiceReceiptShowTable = ({
   mrsId,
   fields,
   newRow,
-  products,
+  //products,
   saveList,
   isLoadingSaveList,
   isDtHistoryLoading,
@@ -233,13 +237,48 @@ const InvoiceReceiptShowTable = ({
   const { setField: setProductField, indentDtlHistoryResponse } =
     useProductStore();
 
+  const [search, setSearch] = useState<string>("");
+  const { products } = useProducts();
+  //send params to /api/Product/search?accSystem=4&accYear=15&page=1&searchTerm=%D8%B3%D9%81
+  useEffect(() => {
+    if (canEditForm) {
+      setProductField("productSearchAccSystem", systemId);
+      setProductField("productSearchAccYear", yearId);
+      handleDebounceFilterChange("productSearchSearch", search);
+      setProductField("productSearchPage", 1);
+    }
+    // to not allow calling salesPricesSearch when productSearch is called
+    setProductField("salesPricesSearchPage", 1);
+  }, [search, systemId, yearId]);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  ///////////////////////////////////////////////////////
+  const handleDebounceFilterChange = useCallback(
+    debounce((field: string, value: string | number) => {
+      // Cancel any existing request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      // Create a new AbortController for this request
+      abortControllerRef.current = new AbortController();
+
+      setProductField(field as keyof ProductSearchRequest, value);
+    }, 500),
+    [setProductField]
+  );
+  ///////////////////////////////////////////////////////
+
   const columns: TableColumns = useMemo(() => {
     return headCells.map((item) => {
       return {
         ...item,
-        options: item.accessor === "product" ? products : undefined,
-        setSearch:
-          item.accessor === "product" ? setProductSearchinTable : undefined,
+        options:
+          item.accessor === "product"
+            ? products.map((p) => ({
+                id: p.pId,
+                title: p.n,
+              }))
+            : undefined,
+        setSearch: item.accessor === "product" ? setSearch : undefined,
         Cell:
           item.accessor === "icons"
             ? ({ row }: any) => {
@@ -265,7 +304,7 @@ const InvoiceReceiptShowTable = ({
             : item.Cell,
       };
     });
-  }, [canEditForm, products, setProductSearchinTable]);
+  }, [canEditForm, products]);
 
   const columnsHistory: TableColumns = [
     {

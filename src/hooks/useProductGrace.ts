@@ -10,7 +10,6 @@ import {
   import {
     ProductGraceDoFirstFlowRequest,
     ProductGraceDtlHistoryResponse,
-    ProductGraceRequest,
     ProductGraceSaveRequest,
     ProductGraceResponse,
   } from "../types/productGrace";

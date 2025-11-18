@@ -305,24 +305,28 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
       eCheck: loadPaymentResponse.data.result?.eCheck ?? false,
       delayAdvanceDays: convertToFarsiDigits(loadPaymentResponse.data.result?.delayAdvanceDays ?? 0),
     });
+  }, [loadPaymentResponse]);
+  ///////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    console.log(loadPaymentResponse.data.result?.sayadiStatus)
     switch (
       loadPaymentResponse.data.result &&
       loadPaymentResponse.data.result?.sayadiStatus
     ) {
       case 1:
-        setSayadiTextColor("text-green-700");
+        setSayadiTextColor(colors.green700);
         break;
       case -1:
-        setSayadiTextColor("text-yellow-500");
+        setSayadiTextColor(colors.yellow700);
         break;
       case -2:
-        setSayadiTextColor("text-red-700");
+        setSayadiTextColor(colors.red500);
         break;
       default:
-        setSayadiTextColor("text-gray-500");
+        setSayadiTextColor(colors.gray_500);
         break;
     }
-  }, [loadPaymentResponse]);
+  }, [loadPaymentResponse.data.result?.sayadiStatus]);
   ///////////////////////////////////////////////////////////////////
   useEffect(() => {
     switch (
@@ -330,19 +334,19 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
       sayadChequeInquiryByPaymentIdResponse.data.result?.sayadiStatus
     ) {
       case 1:
-        setSayadiTextColor("text-green-700");
+        setSayadiTextColor(colors.green700);
         break;
       case -1:
-        setSayadiTextColor("text-yellow-500");
+        setSayadiTextColor(colors.yellow700);
         break;
       case -2:
-        setSayadiTextColor("text-red-700");
+        setSayadiTextColor(colors.red500);
         break;
       default:
-        setSayadiTextColor("text-gray-500");
+        setSayadiTextColor(colors.gray_500);
         break;
     }
-  }, [sayadChequeInquiryByPaymentIdResponse]);
+  }, [sayadChequeInquiryByPaymentIdResponse.data.result?.sayadiStatus]);
   ///////////////////////////////////////////////////////////////////
   // Enhanced setChequeFields with validation
   const setChequeFields = (
@@ -533,7 +537,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
             صیادی:
           </label>
           <div>
-            <FaCircle className={sayadiTextColor} size={10} />
+            <FaCircle style={{color:sayadiTextColor}} size={10} />
           </div>
           <input
             name="sayadiMessage"
@@ -542,7 +546,8 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
                 ? sayadChequeInquiryByPaymentIdResponse.data.result.msg
                 : cheque.sayadiMessage
             }
-            className={`border-2 border-gray-300 rounded-md p-1 w-full ${sayadiTextColor}`}
+            className={`border-2 border-gray-300 rounded-md p-1 w-full`}
+            style={{color:sayadiTextColor}}
             disabled
           />
         </div>

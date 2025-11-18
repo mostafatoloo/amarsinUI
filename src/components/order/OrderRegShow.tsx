@@ -486,7 +486,7 @@ const OrderRegShow = ({
       dsc,
       dtls,
       inOuts,
-      autoRegistered: true,
+      autoRegistered: false,
     };
 
     try {
