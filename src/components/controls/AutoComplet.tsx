@@ -1,0 +1,481 @@
+import React, { forwardRef, useEffect, useRef, useState } from "react";
+import { normalizeInputForSearch, convertToLatinDigits } from "../../utilities/general";
+
+type Props<T extends { id: string | number; title: string }> = {
+  options: T[];
+  label?: string;
+  value: T | T[] | null;
+  handleChange: (event: any, newValue: T | T[] | null) => void;
+  setSearch?: React.Dispatch<React.SetStateAction<string>>;
+  inputValue?: string;
+  onInputChange?: (event: any, newInputValue: string) => void;
+  className?: string;
+  mobilefontsize?: string;
+  desktopfontsize?: string;
+  showLabel?: boolean;
+  showBorder?: boolean;
+  showBorderFocused?: boolean;
+  showClearIcon?: boolean;
+  showPopupIcon?: boolean;
+  outlinedInputPadding?: string;
+  inputPadding?: string;
+  textAlign?: string;
+  showBold?: boolean;
+  placeholder?: string;
+  multiple?: boolean;
+  changeColorOnFocus?: boolean;
+  textColor?: string;
+  backgroundColor?: string;
+  required?: boolean;
+  handleBlur?: () => void;
+  disabled?: boolean;
+  isLoading?: boolean;
+};
+
+const AutoComplet = forwardRef(
+  <T extends { id: string | number; title: string }>(
+    {
+      options,
+      label,
+      value,
+      handleChange,
+      setSearch,
+      inputValue: controlledInputValue,
+      onInputChange,
+      mobilefontsize = "0.7rem",
+      desktopfontsize = "0.875rem",
+      showLabel = true,
+      showBorder = true,
+      showBorderFocused = false,
+      showClearIcon = true,
+      showPopupIcon = true,
+      outlinedInputPadding = "10px",
+      textAlign="right",
+      inputPadding="0",
+      showBold = false,
+      placeholder = "",
+      multiple = false,
+      changeColorOnFocus,
+      textColor,
+      backgroundColor,
+      required = false,
+      handleBlur,
+      disabled,
+      isLoading,
+      className,
+    }: Props<T>,
+    ref: React.Ref<any>
+  ) => {
+    const [isFocused, setIsFocused] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const [internalInputValue, setInternalInputValue] = useState("");
+    const [highlightedIndex, setHighlightedIndex] = useState(-1);
+    const [isEditing, setIsEditing] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const listRef = useRef<HTMLUListElement>(null);
+
+    // Use controlled inputValue if provided, otherwise use internal state
+    // When focused/editing, prioritize internal state for immediate feedback
+    const inputValue = (isFocused || isEditing) && controlledInputValue === undefined
+      ? internalInputValue
+      : (controlledInputValue !== undefined ? controlledInputValue : internalInputValue);
+
+    // Get display value
+    const getDisplayValue = () => {
+      // When focused or editing, always show inputValue to allow typing
+      if (isFocused || isEditing) {
+        return inputValue || "";
+      }
+      // When not focused and a value is selected, show the selected value
+      if (value) {
+        if (multiple && Array.isArray(value)) {
+          return value.map(v => v.title).join(", ");
+        }
+        return (value as T).title;
+      }
+      // Otherwise show inputValue (for when user typed but hasn't selected)
+      return inputValue || "";
+    };
+
+    // Filter options based on input value
+    const filteredOptions = React.useMemo(() => {
+      // If no input value, show all options
+      if (!inputValue) return options;
+      
+      // Normalize input: convert Persian to Latin digits and normalize text
+      const normalizedInput = normalizeInputForSearch(convertToLatinDigits(inputValue).toLowerCase());
+      
+      // Filter options - try multiple matching strategies for better compatibility
+      return options.filter(option => {
+        const title = option.title || "";
+        
+        // Try 1: Normalize both (Persian to Latin conversion + text normalization)
+        const normalizedTitle = normalizeInputForSearch(convertToLatinDigits(title).toLowerCase());
+        if (normalizedTitle.includes(normalizedInput)) return true;
+        
+        // Try 2: Direct match (in case titles are already in the same format)
+        const directMatch = normalizeInputForSearch(title.toLowerCase());
+        if (directMatch.includes(normalizedInput)) return true;
+        
+        // Try 3: Match with original input (no conversion)
+        const originalInput = normalizeInputForSearch(inputValue.toLowerCase());
+        const originalTitle = normalizeInputForSearch(title.toLowerCase());
+        if (originalTitle.includes(originalInput)) return true;
+        
+        return false;
+      });
+    }, [options, inputValue]);
+
+    // Check if option is selected
+    const isOptionSelected = (option: T): boolean => {
+      if (multiple && Array.isArray(value)) {
+        return value.some(v => v.id === option.id);
+      }
+      return value !== null && value !== undefined && (value as T).id === option.id;
+    };
+
+    // Handle input change
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = e.target.value;
+      
+      // User is actively editing
+      setIsEditing(true);
+      
+      // If user starts typing and a value is selected, clear the selection
+      if (value && !multiple) {
+        handleChange(null, null);
+      }
+      
+      // Always update internal state immediately for responsive UI
+      // This ensures the input shows what the user is typing right away
+      setInternalInputValue(newValue);
+      
+      // Also notify parent if callbacks are provided
+      if (onInputChange) {
+        onInputChange(e, newValue);
+      } else if (setSearch) {
+        setSearch(newValue);
+      }
+
+      setIsOpen(true);
+      setHighlightedIndex(-1);
+    };
+
+    // Handle option selection
+    const handleOptionSelect = (option: T) => {
+      if (multiple) {
+        const currentValue = Array.isArray(value) ? value : [];
+        const isSelected = currentValue.some(v => v.id === option.id);
+        const newValue = isSelected
+          ? currentValue.filter(v => v.id !== option.id)
+          : [...currentValue, option];
+        handleChange(null, newValue as T[]);
+      } else {
+        handleChange(null, option);
+        setIsOpen(false);
+        setIsEditing(false);
+        if (onInputChange) {
+          onInputChange(null, "");
+        } else if (setSearch) {
+          setSearch("");
+        } else {
+          setInternalInputValue("");
+        }
+      }
+    };
+
+    // Handle clear
+    const handleClear = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setIsEditing(false);
+      if (onInputChange) {
+        onInputChange(null, "");
+      } else if (setSearch) {
+        setSearch("");
+      } else {
+        setInternalInputValue("");
+      }
+      handleChange(null, null);
+      inputRef.current?.focus();
+    };
+
+    // Handle keyboard navigation
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (disabled) return;
+
+      switch (e.key) {
+        case "ArrowDown":
+          e.preventDefault();
+          setIsOpen(true);
+          setHighlightedIndex(prev => 
+            prev < filteredOptions.length - 1 ? prev + 1 : prev
+          );
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          setIsOpen(true);
+          setHighlightedIndex(prev => (prev > 0 ? prev - 1 : -1));
+          break;
+        case "Enter":
+          e.preventDefault();
+          if (highlightedIndex >= 0 && filteredOptions[highlightedIndex]) {
+            handleOptionSelect(filteredOptions[highlightedIndex]);
+          }
+          break;
+        case "Escape":
+          setIsOpen(false);
+          setHighlightedIndex(-1);
+          break;
+        case "Tab":
+          setIsOpen(false);
+          break;
+      }
+    };
+
+    // Handle focus
+    const handleFocus = () => {
+      setIsFocused(true);
+      setIsOpen(true);
+      setIsEditing(true); // Always allow editing when focused
+      
+      // If a value is selected but inputValue is empty, initialize with selected value
+      // This allows user to see and edit the selected value
+      // Only do this if inputValue is truly empty (not just whitespace)
+      if (value && !multiple && !inputValue?.trim()) {
+        const selectedTitle = (value as T).title;
+        if (controlledInputValue === undefined) {
+          // Uncontrolled mode - update internal state
+          setInternalInputValue(selectedTitle);
+        }
+        // Also notify parent if callbacks are provided
+        if (onInputChange) {
+          onInputChange(null, selectedTitle);
+        } else if (setSearch) {
+          setSearch(selectedTitle);
+        }
+      }
+    };
+
+    // Handle blur
+    const handleBlurEvent = () => {
+      // Delay to allow option click to register
+      setTimeout(() => {
+        if (!containerRef.current?.contains(document.activeElement)) {
+          setIsFocused(false);
+          setIsOpen(false);
+          setHighlightedIndex(-1);
+          // Only exit editing mode if no value is selected and input is empty
+          // Otherwise keep editing mode so selected value is shown
+          if (!value && !inputValue) {
+            setIsEditing(false);
+          }
+          handleBlur?.();
+        }
+      }, 200);
+    };
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+          setIsOpen(false);
+          setHighlightedIndex(-1);
+        }
+      };
+
+      if (isOpen) {
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+      }
+    }, [isOpen]);
+
+    // Scroll highlighted option into view
+    useEffect(() => {
+      if (highlightedIndex >= 0 && listRef.current) {
+        const highlightedElement = listRef.current.children[highlightedIndex] as HTMLElement;
+        if (highlightedElement) {
+          highlightedElement.scrollIntoView({ block: "nearest" });
+        }
+      }
+    }, [highlightedIndex]);
+
+    // Update input value when controlled value changes
+    useEffect(() => {
+      if (controlledInputValue !== undefined) {
+        // Controlled mode - don't update internal state
+      } else if (!value) {
+        // If value is cleared, clear input
+        setInternalInputValue("");
+        setIsEditing(false);
+      }
+    }, [controlledInputValue, value]);
+
+    // Expose ref to parent
+    React.useImperativeHandle(ref, () => inputRef.current);
+
+    const displayValue = getDisplayValue();
+    const hasValue = value !== null && value !== undefined && (multiple ? (Array.isArray(value) && value.length > 0) : true);
+    const showClear = showClearIcon && hasValue && !disabled;
+    const showDropdown = isOpen && !disabled;
+
+    // Dynamic styles that can't be easily converted to Tailwind
+    const dynamicInputStyle: React.CSSProperties = {
+      fontSize: window.innerWidth < 768 ? mobilefontsize : desktopfontsize,
+      color: textColor || undefined,
+      padding: inputPadding || "0",
+      paddingRight: "8px",
+    };
+
+    const dynamicLabelStyle: React.CSSProperties = {
+      fontSize: window.innerWidth < 768 ? mobilefontsize : desktopfontsize,
+    };
+
+    const dynamicOptionStyle: React.CSSProperties = {
+      fontSize: window.innerWidth < 768 ? mobilefontsize : desktopfontsize,
+    };
+
+    const dynamicWrapperStyle: React.CSSProperties = {
+      paddingTop: "1px",
+      paddingBottom: "1px",
+      paddingLeft: textAlign === "center" ? "0" : outlinedInputPadding,
+      paddingRight: textAlign === "center" ? "0" : outlinedInputPadding,
+    };
+
+    // Container classes
+    const containerClasses = `relative w-full ${
+      isFocused && changeColorOnFocus
+        ? "bg-gray-50"
+        : backgroundColor
+        ? ""
+        : "bg-inherit"
+    }`;
+
+    // Input wrapper classes
+    const inputWrapperClasses = `flex items-center rounded ${
+      showBorder || (showBorderFocused && isFocused)
+        ? "border border-gray-300"
+        : "border-none"
+    } ${disabled ? "bg-gray-100" : "bg-transparent"}`;
+
+    // Input classes
+    const inputClasses = `w-full border-none outline-none bg-transparent whitespace-normal break-words ${
+      showBold ? "font-bold" : "font-normal"
+    } ${
+      textAlign === "center"
+        ? "text-center"
+        : textAlign === "right"
+        ? "text-right"
+        : "text-left"
+    }`;
+
+    // List classes
+    const listClasses = "absolute top-full left-0 right-0 z-[1000] max-h-[300px] overflow-y-auto bg-white border border-t-0 border-gray-300 rounded-b-md m-0 p-0 list-none shadow-lg";
+
+    return (
+      <div 
+        ref={containerRef} 
+        className={`${containerClasses} ${className || ""}`}
+        style={backgroundColor && !(isFocused && changeColorOnFocus) ? { backgroundColor } : undefined}
+      >
+        {showLabel && label && (
+          <label
+            className={`block mb-1 ${showBold ? "font-bold" : "font-normal"}`}
+            style={dynamicLabelStyle}
+          >
+            {label}
+            {required && <span className="text-red-500"> *</span>}
+          </label>
+        )}
+        <div className={inputWrapperClasses} style={dynamicWrapperStyle}>
+          <input
+            ref={inputRef}
+            type="text"
+            value={displayValue}
+            onChange={handleInputChange}
+            onFocus={handleFocus}
+            onBlur={handleBlurEvent}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
+            disabled={disabled}
+            required={required}
+            className={inputClasses}
+            style={dynamicInputStyle}
+            autoComplete="off"
+          />
+          {showClear && (
+            <button
+              type="button"
+              onClick={handleClear}
+              className="bg-transparent border-none cursor-pointer p-1 flex items-center ml-1"
+              tabIndex={-1}
+            >
+              <span className="text-base text-gray-600">×</span>
+            </button>
+          )}
+          {showPopupIcon && (
+            <button
+              type="button"
+              onClick={() => !disabled && setIsOpen(!isOpen)}
+              className={`bg-transparent border-none ${
+                disabled ? "cursor-not-allowed" : "cursor-pointer"
+              } p-1 flex items-center ml-1 transition-all duration-300 ease-in-out ${
+                isOpen ? "rotate-180" : "rotate-0"
+              }`}
+              tabIndex={-1}
+            >
+              <span className="text-base text-gray-600 transition-transform duration-300 ease-in-out">▼</span>
+            </button>
+          )}
+        </div>
+        {showDropdown && (
+          <ul ref={listRef} className={listClasses}>
+            {isLoading ? (
+              <li className="p-3 text-center text-gray-600">
+                در حال بارگذاری...
+              </li>
+            ) : filteredOptions.length === 0 ? (
+              <li className="p-3 text-center text-gray-600">
+                نتیجه ای یافت نشد
+              </li>
+            ) : (
+              filteredOptions.map((option, index) => {
+                const isHighlighted = highlightedIndex === index;
+                const isSelected = isOptionSelected(option);
+                return (
+                  <li
+                    key={option.id}
+                    className={`py-2 px-3 cursor-pointer ${
+                      isHighlighted || isSelected
+                        ? "bg-blue-50"
+                        : "bg-transparent"
+                    } ${
+                      index < filteredOptions.length - 1
+                        ? "border-b border-gray-200"
+                        : ""
+                    } ${
+                      textAlign === "center"
+                        ? "text-center"
+                        : textAlign === "right"
+                        ? "text-right"
+                        : "text-left"
+                    }`}
+                    style={dynamicOptionStyle}
+                    onMouseEnter={() => setHighlightedIndex(index)}
+                    onClick={() => handleOptionSelect(option)}
+                  >
+                    {option.title}
+                  </li>
+                );
+              })
+            )}
+          </ul>
+        )}
+      </div>
+    );
+  }
+);
+
+AutoComplet.displayName = "AutoComplet";
+
+export default AutoComplet;

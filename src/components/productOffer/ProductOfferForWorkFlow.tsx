@@ -10,9 +10,16 @@ import { DefinitionDateTime } from "../../types/definitionInvironment";
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   definitionDateTime: DefinitionDateTime;
+  refetchSwitch: boolean;
+  setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const ProductOfferForWorkFlow = ({ workFlowRowSelectResponse, definitionDateTime }: Props) => {
+const ProductOfferForWorkFlow = ({
+  workFlowRowSelectResponse,
+  definitionDateTime,
+  refetchSwitch,
+  setRefetchSwitch,
+}: Props) => {
   const {
     productOfferDtl,
     productOfferDtlData,
@@ -21,17 +28,23 @@ const ProductOfferForWorkFlow = ({ workFlowRowSelectResponse, definitionDateTime
     isLoadingProductOfferDtlHistory,
     productOfferSave,
     isLoadingProductOfferSave,
+    refetchProductOfferDtl,
   } = useProductOffer();
 
-  const { setField,id } = useProductOfferStore();
+  const { setField, id } = useProductOfferStore();
   const [selectedId, setSelectedId] = useState<number>(0);
   const [selectedProductOffer, setSelectedProductOffer] =
     useState<ProductOffer | null>(null);
 
   const { yearId, systemId } = useGeneralContext();
-  if (id!==workFlowRowSelectResponse.workTableRow.formId){
-    setField("yearId", yearId);
-    setField("systemId", systemId);
+  if (id !== workFlowRowSelectResponse.workTableRow.formId) {
+    console.log(
+      id,
+      workFlowRowSelectResponse.workTableRow.formId,
+      "workFlowRowSelectResponse.workTableRow.formId"
+    );
+    setField("acc_YearDtl", yearId);
+    setField("acc_SystemDtl", systemId);
     setField("id", workFlowRowSelectResponse.workTableRow.formId);
   }
   /*useEffect(() => {
@@ -39,7 +52,16 @@ const ProductOfferForWorkFlow = ({ workFlowRowSelectResponse, definitionDateTime
     setField("acc_System", systemId);
     setField("id", workFlowRowSelectResponse.workTableRow.formId);
   }, [workFlowRowSelectResponse.workTableRow.formId, yearId, systemId]);*/
-
+  ////////////////////////////////////////////////////////////////////////
+  //refetch refetchProductGraceDtl if refetchSwitch is true
+  useEffect(() => {
+    if (!refetchSwitch) return;
+    if (refetchSwitch) {
+      refetchProductOfferDtl();
+      setRefetchSwitch(false);
+    }
+  }, [refetchSwitch]);
+  ////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     if (workFlowRowSelectResponse.workTableRow.formId !== 0) {
       setSelectedProductOffer(

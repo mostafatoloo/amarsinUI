@@ -153,6 +153,9 @@ export default function WorkflowComponent({
         <ProductGraceForWorkFlow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           definitionDateTime={definitionDateTime}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
+          
         />
       );
       break;
@@ -162,6 +165,8 @@ export default function WorkflowComponent({
         <ProductOfferForWorkFlow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           definitionDateTime={definitionDateTime}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
         />
       );
       break;
@@ -170,6 +175,8 @@ export default function WorkflowComponent({
         <ProductPriceForWorkFlow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           definitionDateTime={definitionDateTime}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
         />
       );
       break;
@@ -178,6 +185,8 @@ export default function WorkflowComponent({
         <ProductPermForWorkFlow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           definitionDateTime={definitionDateTime}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
         />
       );
       break;
@@ -381,6 +390,8 @@ export default function WorkflowComponent({
         <ProductGraceForWorkFlow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           definitionDateTime={definitionDateTime}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
         />
       );
       break;
@@ -390,6 +401,8 @@ export default function WorkflowComponent({
         <ProductOfferForWorkFlow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           definitionDateTime={definitionDateTime}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
         />
       );
       break;
@@ -398,6 +411,8 @@ export default function WorkflowComponent({
         <ProductPriceForWorkFlow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           definitionDateTime={definitionDateTime}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
         />
       );
       break;
@@ -406,6 +421,8 @@ export default function WorkflowComponent({
         <ProductPermForWorkFlow
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           definitionDateTime={definitionDateTime}
+          refetchSwitch={refetchSwitch}
+          setRefetchSwitch={setRefetchSwitch}
         />
       );
       break;

@@ -9,7 +9,6 @@ import { useProductOfferStore } from "../store/productOfferStore";
 import {
   ProductOfferDoFirstFlowResponse,
   ProductOfferDtlHistoryResponse,
-  ProductOfferRequest,
   ProductOfferResponse,
   ProductOfferSaveRequest,
   ShowProductListRequest,
@@ -22,6 +21,8 @@ export function useProductOffer() {
     id,
     acc_Year,
     acc_System,
+    acc_YearDtl,
+    acc_SystemDtl,
     state,
     regFDate,
     regTDate,
@@ -169,8 +170,8 @@ export function useProductOffer() {
     queryKey: [
       "productOfferDtl",
       id,
-      acc_Year,
-      acc_System,
+      acc_YearDtl,
+      acc_SystemDtl,
       state,
       regFDate,
       regTDate,
@@ -193,10 +194,10 @@ export function useProductOffer() {
       sortStep,
     ],
     queryFn: async () => {
-      const params: ProductOfferRequest = {
+      const params = {
         id,
-        acc_Year,
-        acc_System,
+        acc_YearDtl,
+        acc_SystemDtl,
         state,
         regFDate,
         regTDate,
@@ -219,8 +220,8 @@ export function useProductOffer() {
         sortStep,
       };
       const url = `/api/ProductOffer/ProductOffer?Id=${params.id}&Acc_Year=${
-        params.acc_Year
-      }&Acc_System=${params.acc_System}&State=${
+        params.acc_YearDtl
+      }&Acc_System=${params.acc_SystemDtl}&State=${
         params.state
       }&RegFDate=${encodeURIComponent(
         params.regFDate ?? ""
@@ -257,7 +258,7 @@ export function useProductOffer() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: acc_Year !== -1 && acc_System !== -1,
+    enabled:  acc_YearDtl !== -1 && acc_SystemDtl !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {
@@ -366,6 +367,7 @@ export function useProductOffer() {
     productOfferMeta: query.data?.meta,
     productOfferTotalCount: query.data?.data.result.total_count,
     // for productOfferDtl
+    refetchProductOfferDtl: queryDtl.refetch,
     isLoadingDtl: queryDtl.isLoading,
     errorDtl: queryDtl.error,
     productOfferDtl: queryDtl.data?.data.result.productOfferDtls,

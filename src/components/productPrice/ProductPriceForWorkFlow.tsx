@@ -10,9 +10,11 @@ import { DefinitionDateTime } from "../../types/definitionInvironment";
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   definitionDateTime: DefinitionDateTime;
+  refetchSwitch: boolean;
+  setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const ProductPriceForWorkFlow = ({ workFlowRowSelectResponse,definitionDateTime }: Props) => {
+const ProductPriceForWorkFlow = ({ workFlowRowSelectResponse,definitionDateTime, refetchSwitch, setRefetchSwitch }: Props) => {
   const {
     productPriceDtl,
     productPriceDtlData,
@@ -21,6 +23,7 @@ const ProductPriceForWorkFlow = ({ workFlowRowSelectResponse,definitionDateTime 
     isLoadingDtlHistory,
     productPriceSave,
     isLoadingProductPriceSave,
+    refetchProductPriceDtl,
   } = useProductPrice();
 
   const { setField,id } = useProductPriceStore();
@@ -40,6 +43,16 @@ const ProductPriceForWorkFlow = ({ workFlowRowSelectResponse,definitionDateTime 
     setField("id", workFlowRowSelectResponse.workTableRow.formId);
   }, [workFlowRowSelectResponse.workTableRow.formId, yearId,systemId]);*/
 
+  ////////////////////////////////////////////////////////////////////////
+  //refetch refetchProductPriceDtl if refetchSwitch is true
+  useEffect(() => {
+    if (!refetchSwitch) return;
+    if (refetchSwitch) {
+      refetchProductPriceDtl();
+      setRefetchSwitch(false);
+    }
+  }, [refetchSwitch]);
+  ////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     console.log(productPriceDtlData);
     console.log(

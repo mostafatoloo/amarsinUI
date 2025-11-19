@@ -238,7 +238,7 @@ const InvoiceReceiptShowTable = ({
     useProductStore();
 
   const [search, setSearch] = useState<string>("");
-  const { products } = useProducts();
+  const { products, isProductSearchLoading } = useProducts();
   //send params to /api/Product/search?accSystem=4&accYear=15&page=1&searchTerm=%D8%B3%D9%81
   useEffect(() => {
     if (canEditForm) {
@@ -279,6 +279,7 @@ const InvoiceReceiptShowTable = ({
               }))
             : undefined,
         setSearch: item.accessor === "product" ? setSearch : undefined,
+        isLoading: item.accessor === "product" ? isProductSearchLoading : false,
         Cell:
           item.accessor === "icons"
             ? ({ row }: any) => {

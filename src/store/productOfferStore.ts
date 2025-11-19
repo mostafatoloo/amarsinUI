@@ -11,6 +11,8 @@ export const useProductOfferStore = create<ProductOfferState>()((set) => ({
   id: 0,
   acc_Year: -1,
   acc_System: -1,
+  acc_YearDtl: -1,
+  acc_SystemDtl: -1,
   state: -1,
   regFDate: "",
   regTDate: "",

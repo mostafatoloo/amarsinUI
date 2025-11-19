@@ -166,6 +166,8 @@ const ProductOffer = ({ definitionDateTime, definitionInvironment }: Props) => {
   useEffect(() => {
     setField("acc_Year", yearId);
     setField("acc_System", systemId);
+    setField("acc_YearDtl", yearId);
+    setField("acc_SystemDtl", systemId);
     setField("state", state);
 
     setField(
@@ -289,7 +291,7 @@ const ProductOffer = ({ definitionDateTime, definitionInvironment }: Props) => {
       setSelectedProductOffer(
         productOffer?.find((item) => item.id === selectedId) || null
       );
-  }, [selectedId]);
+  }, [selectedId, selectedRowIndex]);
 
   useEffect(() => {
     const tempData = productOffer?.map((item, index) => {

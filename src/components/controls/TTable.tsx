@@ -7,8 +7,9 @@ import {
   formatNumberWithCommas,
 } from "../../utilities/general";
 import { colors } from "../../utilities/color";
-import AutoComplete from "./AutoComplete";
+//import AutoComplete from "./AutoComplete";
 import useCalculateTableHeight from "../../hooks/useCalculateTableHeight";
+import AutoComplet from "./AutoComplet";
 
 type TableProps<T extends object> = {
   canEditForm?: boolean;
@@ -78,6 +79,7 @@ export function EditableInput<T extends object>({
     options: autoOptions,
     setSearch,
     align,
+    isLoading,
     //search,
   } = column as any;
   const [value, setValue] = React.useState<string | boolean>(initialValue);
@@ -113,6 +115,7 @@ export function EditableInput<T extends object>({
     setValue((newValue as DefaultOptionType)?.title ?? "");
     if (updateMyRow) {
       updateMyRow(index, newValue as DefaultOptionType, id);
+      setSearch?.("");
     }
     if (newValue) {
       updateMyData(index, id, (newValue as DefaultOptionType)?.title ?? "");
@@ -129,7 +132,7 @@ export function EditableInput<T extends object>({
 
   if (type === "autoComplete") {
     return (
-      <AutoComplete
+      <AutoComplet
         disabled={!canEditForm}
         options={autoOptions || []}
         //value={options?.find((opt) => opt.title === value) || null}
@@ -149,6 +152,7 @@ export function EditableInput<T extends object>({
         textColor={colors.gray_600}
         backgroundColor={!canEditForm ? "inherit" : "white"}
         textAlign={align}
+        isLoading={isLoading}
         //onInputChange={handleInputChange}
         //inputValue={search}
       />

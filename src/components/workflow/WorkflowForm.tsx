@@ -53,7 +53,7 @@ const WorkflowForm = ({
   const [selectedId, setSelectedId] = useState<number>(-1);
   const { banks, isLoading: isLoadingBanks } = useBanks();
   const handleSelectedIdChange = (id: number) => {
-    //console.log(id, "id in WorkflowForm");
+    console.log(id, "id in WorkflowForm");
     setSelectedId(id);
   };
 

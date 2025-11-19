@@ -10,6 +10,8 @@ import {
 export interface ProductOfferRequest extends ProductOperationRequest {
   acc_Year: number;
   acc_System: number;
+  acc_YearDtl:number;
+  acc_SystemDtl:number;
   srchAccepted:number;
   sortAccepted:number;
 }

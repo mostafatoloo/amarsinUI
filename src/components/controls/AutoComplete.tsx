@@ -31,6 +31,7 @@ type Props<T extends { id: string | number; title: string }> = {
   required?: boolean;
   handleBlur?: () => void;
   disabled?: boolean;
+  isLoading?: boolean;
 };
 
 const AutoComplete = forwardRef(
@@ -62,6 +63,7 @@ const AutoComplete = forwardRef(
       required = false,
       handleBlur,
       disabled,
+      isLoading,
     }: Props<T>,
     ref: React.Ref<any>
   ) => {
@@ -182,7 +184,7 @@ const AutoComplete = forwardRef(
         onChange={handleChange}
         getOptionLabel={(option) => normalizeInputForSearch(option.title) || ""}
         isOptionEqualToValue={(option, value) => option.id === value.id}
-        noOptionsText="پیدا نشد"
+        noOptionsText={isLoading ? "در حال بارگذاری..." : options.length === 0 ? "نتیجه ای یافت نشد" : ""}
         size="small"
         multiple={multiple}
         className="w-full"

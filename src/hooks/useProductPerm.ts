@@ -356,6 +356,7 @@ export function useProductPerm() {
     productPermMeta: query.data?.meta,
     productPermTotalCount: query.data?.data.result.total_count,
     //for productPermDtl
+    refetchProductPermDtl: queryDtl.refetch,
     isLoadingDtl: queryDtl.isLoading,
     errorDtl: queryDtl.error,
     productPermDtl: queryDtl.data?.data.result.productPermDtls,

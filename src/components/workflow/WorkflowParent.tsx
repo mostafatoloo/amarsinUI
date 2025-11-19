@@ -205,13 +205,16 @@ export default function WorkflowParent({
   useEffect(() => {
     // Only set first record as selected if there's no current selection
     // This prevents losing selection when data is refetched
-    //console.log(selectedId);
+    console.log(selectedId,selectedRowIndex);
     if (workFlowResponse.workTables.length > 0) {
       // Only reset if selectedId doesn't exist in current data
       const selectedExists = workFlowResponse.workTables.some(table => table.id === selectedId);
+      console.log(selectedExists,"selectedExists")
       if (!selectedExists) {
         setSelectedId(workFlowResponse.workTables[0].id);
         setSelectedRowIndex(0);
+      }else{
+        setSelectedRowIndex(workFlowResponse.workTables.findIndex(table => table.id === selectedId) ?? 0);
       }
       // If selectedId exists, don't reset selectedRowIndex - preserve user's selection
     } else {

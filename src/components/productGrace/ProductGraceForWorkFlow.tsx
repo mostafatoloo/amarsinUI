@@ -10,10 +10,13 @@ import { DefinitionDateTime } from "../../types/definitionInvironment";
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   definitionDateTime: DefinitionDateTime;
+  refetchSwitch: boolean;
+  setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const ProductGraceForWorkFlow = ({ workFlowRowSelectResponse, definitionDateTime }: Props) => {
+const ProductGraceForWorkFlow = ({ workFlowRowSelectResponse, definitionDateTime, refetchSwitch, setRefetchSwitch }: Props) => {
   const {
+    refetchProductGraceDtl,
     productGraceDtl,
     productGraceDtlData,
     addProductList,
@@ -42,6 +45,16 @@ const ProductGraceForWorkFlow = ({ workFlowRowSelectResponse, definitionDateTime
     setField("id", workFlowRowSelectResponse.workTableRow.formId);
   }, [workFlowRowSelectResponse.workTableRow.formId, yearId, systemId]);*/
 
+  ////////////////////////////////////////////////////////////////////////
+  //refetch refetchProductGraceDtl if refetchSwitch is true
+  useEffect(() => {
+    if (!refetchSwitch) return;
+    if (refetchSwitch) {
+      refetchProductGraceDtl();
+      setRefetchSwitch(false);
+    }
+  }, [refetchSwitch]);
+  
   ////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     if (workFlowRowSelectResponse.workTableRow.formId !== 0) {

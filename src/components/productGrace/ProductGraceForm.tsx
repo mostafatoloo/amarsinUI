@@ -209,7 +209,7 @@ const ProductGraceForm = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalEmptyOpen, setIsModalEmptyOpen] = useState(false);
   const fileName = "data_export.xlsx";
-  const { products } = useProducts();
+  const { products, isProductSearchLoading } = useProducts();
   const { setField: setProductField } = useProductStore();
   const { yearId, systemId, chartId } = useGeneralContext();
   const { setField: setBrandField } = useBrandStore();
@@ -222,7 +222,6 @@ const ProductGraceForm = ({
   const [tim, setTim] = useState<string>("");
   const [dsc, setDsc] = useState<string>("");
   const [isModalRegOpen, setIsModalRegOpen] = useState(false);
-
   const columns: TableColumns = useMemo(() => {
     return headCells.map((item) => {
       return {
@@ -236,6 +235,7 @@ const ProductGraceForm = ({
               }))
             : undefined,
         setSearch: item.accessor === "product" ? setSearch : undefined,
+        isLoading: item.accessor === "product" ? isProductSearchLoading : false,
         Cell:
           item.accessor === "icons"
             ? ({ row }: any) => {
@@ -368,7 +368,7 @@ const ProductGraceForm = ({
         })
       );
     }
-  }, [selectedProductGrace]);
+  }, [selectedProductGrace, productGraceDtls]);
   ////////////////////////////////////////////////////////
 
   //send params to /api/Product/search?accSystem=4&accYear=15&page=1&searchTerm=%D8%B3%D9%81

@@ -355,6 +355,7 @@ import { ShowProductListRequest } from "../types/productOperation";
       productPriceMeta: query.data?.meta,
       productPriceTotalCount: query.data?.data.result.total_count,
       //for productPriceDtl
+      refetchProductPriceDtl: queryDtl.refetch,
       isLoadingDtl: queryDtl.isLoading,
       errorDtl: queryDtl.error,
       productPriceDtl: queryDtl.data?.data.result.productPriceDtls,

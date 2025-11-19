@@ -34,6 +34,7 @@ export type Column = {
   noLeftBorder?:boolean;
   align?:string;
   except?:boolean; // if false, the column will not be colored used just in OrderRegShowTable.tsx
+  isLoading?: boolean;
 };
 export type ColumnGroup = {
   Header: string;

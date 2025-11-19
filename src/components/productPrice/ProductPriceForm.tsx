@@ -237,7 +237,7 @@ const ProductPriceForm = ({
   const [brandSearch, setBrandSearch] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const fileName = "data_export.xlsx";
-  const { products } = useProducts();
+  const { products, isProductSearchLoading } = useProducts();
   const { setField: setProductField } = useProductStore();
   const { yearId, systemId, chartId } = useGeneralContext();
   const { setField: setBrandField } = useBrandStore();
@@ -273,6 +273,7 @@ const ProductPriceForm = ({
               }))
             : undefined,
         setSearch: item.accessor === "product" ? setSearch : undefined,
+        isLoading: item.accessor === "product" ? isProductSearchLoading : false,
         Cell:
           item.accessor === "icons"
             ? ({ row }: any) => {
@@ -408,7 +409,7 @@ const ProductPriceForm = ({
         }))
       );
     }
-  }, [selectedProductPrice]);
+  }, [selectedProductPrice, productPriceDtls]);
   ////////////////////////////////////////////////////////
 
   //send params to /api/Product/search?accSystem=4&accYear=15&page=1&searchTerm=%D8%B3%D9%81

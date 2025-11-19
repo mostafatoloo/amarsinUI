@@ -10,9 +10,11 @@ import { DefinitionDateTime } from "../../types/definitionInvironment";
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   definitionDateTime: DefinitionDateTime;
+  refetchSwitch: boolean;
+  setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const ProductPermForWorkFlow = ({ workFlowRowSelectResponse, definitionDateTime}: Props) => {
+const ProductPermForWorkFlow = ({ workFlowRowSelectResponse, definitionDateTime, refetchSwitch, setRefetchSwitch }: Props) => {
   const {
     productPermDtl,
     productPermDtlData,
@@ -21,6 +23,7 @@ const ProductPermForWorkFlow = ({ workFlowRowSelectResponse, definitionDateTime}
     isLoadingDtlHistory,
     productPermSave,
     isLoadingProductPermSave,
+    refetchProductPermDtl,
   } = useProductPerm();
 
   const { setField,id } = useProductPermStore();
@@ -40,6 +43,16 @@ const ProductPermForWorkFlow = ({ workFlowRowSelectResponse, definitionDateTime}
     setField("id", workFlowRowSelectResponse.workTableRow.formId);
   }, [workFlowRowSelectResponse.workTableRow.formId, yearId, systemId]);*/
 
+  ////////////////////////////////////////////////////////////////////////
+  //refetch refetchProductPermDtl if refetchSwitch is true
+  useEffect(() => {
+    if (!refetchSwitch) return;
+    if (refetchSwitch) {
+      refetchProductPermDtl();
+      setRefetchSwitch(false);
+    }
+  }, [refetchSwitch]);
+  ////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     if (workFlowRowSelectResponse.workTableRow.formId !== 0) {
       setSelectedProductPerm(
