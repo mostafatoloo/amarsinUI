@@ -67,8 +67,8 @@ const WorkflowRowSelectHeader = ({
         //setSelectedId(selectedId);
         if (workFlowDoFlowResponse.meta.errorCode <= 0) {
           let tempId = selectedId;
-          refetchWorkTableRowSelect();
           refetchWorkTable();
+          //refetchWorkTableRowSelect();
           setSelectedId(tempId);
         }
       }, 3000);
@@ -85,6 +85,7 @@ const WorkflowRowSelectHeader = ({
     flowMapId: number
   ) => {
     e.preventDefault();
+    console.log("handleDoFlow", flowMapId);
     setIsDoFlowClicked(true);
     setFlowMapId(flowMapId);
     const request: WorkFlowDoFlowRequest = {

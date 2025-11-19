@@ -44,10 +44,6 @@ const RegRecievedCheque = ({
     setField("payKind", -1);
     setField("sayadiPaymentId", -1);
     //form cheque image attachment
-    console.log(
-      workFlowRowSelectResponse.workTableRow.formId,
-      "workFlowRowSelectResponse.workTableRow.formId"
-    );
     setField(
       "paymentAttachmentFormId",
       workFlowRowSelectResponse.workTableRow.formId ?? -1

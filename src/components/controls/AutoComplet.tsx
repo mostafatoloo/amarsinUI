@@ -1,5 +1,4 @@
 import React, { forwardRef, useEffect, useRef, useState } from "react";
-import { normalizeInputForSearch, convertToLatinDigits } from "../../utilities/general";
 
 type Props<T extends { id: string | number; title: string }> = {
   options: T[];
@@ -98,34 +97,10 @@ const AutoComplet = forwardRef(
       return inputValue || "";
     };
 
-    // Filter options based on input value
+    // Show all options - no client-side filtering (filtering handled by server/API)
     const filteredOptions = React.useMemo(() => {
-      // If no input value, show all options
-      if (!inputValue) return options;
-      
-      // Normalize input: convert Persian to Latin digits and normalize text
-      const normalizedInput = normalizeInputForSearch(convertToLatinDigits(inputValue).toLowerCase());
-      
-      // Filter options - try multiple matching strategies for better compatibility
-      return options.filter(option => {
-        const title = option.title || "";
-        
-        // Try 1: Normalize both (Persian to Latin conversion + text normalization)
-        const normalizedTitle = normalizeInputForSearch(convertToLatinDigits(title).toLowerCase());
-        if (normalizedTitle.includes(normalizedInput)) return true;
-        
-        // Try 2: Direct match (in case titles are already in the same format)
-        const directMatch = normalizeInputForSearch(title.toLowerCase());
-        if (directMatch.includes(normalizedInput)) return true;
-        
-        // Try 3: Match with original input (no conversion)
-        const originalInput = normalizeInputForSearch(inputValue.toLowerCase());
-        const originalTitle = normalizeInputForSearch(title.toLowerCase());
-        if (originalTitle.includes(originalInput)) return true;
-        
-        return false;
-      });
-    }, [options, inputValue]);
+      return options;
+    }, [options]);
 
     // Check if option is selected
     const isOptionSelected = (option: T): boolean => {
@@ -424,7 +399,7 @@ const AutoComplet = forwardRef(
               }`}
               tabIndex={-1}
             >
-              <span className="text-base text-gray-600 transition-transform duration-300 ease-in-out">▼</span>
+              <span className="text-xs text-gray-500 transition-transform duration-300 ease-in-out">▼</span>
             </button>
           )}
         </div>

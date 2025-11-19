@@ -88,17 +88,18 @@ export const WorkflowChild = ({
       "selectedId in child"
     );*/
     if (selectedId === workTableId) {
+      console.log("enter 0","workTableId", selectedId);
       return;
     }
     if (selectedId !== 0) {
       setField("workTableId", selectedId);
-      //console.log("enter 1");
+      console.log("enter 1","workTableId", selectedId);
     } else if (workFlowResponse.workTables.length > 0) {
       setField("workTableId", workFlowResponse.workTables[0].id);
-      //console.log("enter 2");
+      console.log("enter 2","workTableId", workFlowResponse.workTables[0].id);
     } else if (workFlowResponse.workTables.length === 0) {
       setField("workTableId", -1);
-      //console.log("enter 3");
+      console.log("enter 3","workTableId", -1);
     }
   }, [
     selectedId,
@@ -112,7 +113,7 @@ export const WorkflowChild = ({
     flowMapId,
     name,
     dsc,
-    isLoading,
+    //isLoading,
   ]);
 
   return (
