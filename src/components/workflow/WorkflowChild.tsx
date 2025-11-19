@@ -71,6 +71,7 @@ export const WorkflowChild = ({
   
   useEffect(()=>{
     setField("workTableId", -1);
+    console.log(isLoading,"isLoading in child");
   },[])
 
   useEffect(() => {
