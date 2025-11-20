@@ -1,4 +1,5 @@
 import React, { forwardRef, useEffect, useRef, useState } from "react";
+import { useInView } from 'react-intersection-observer';
 
 type Props<T extends { id: string | number; title: string }> = {
   options: T[];
@@ -29,6 +30,9 @@ type Props<T extends { id: string | number; title: string }> = {
   handleBlur?: () => void;
   disabled?: boolean;
   isLoading?: boolean;
+  fetchNextPage?: () => void;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
 };
 
 const AutoComplet = forwardRef(
@@ -62,6 +66,9 @@ const AutoComplet = forwardRef(
       disabled,
       isLoading,
       className,
+      fetchNextPage,
+      hasNextPage,
+      isFetchingNextPage,
     }: Props<T>,
     ref: React.Ref<any>
   ) => {
@@ -73,7 +80,16 @@ const AutoComplet = forwardRef(
     const containerRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const listRef = useRef<HTMLUListElement>(null);
+    const { ref: intersectionRef, inView } = useInView({
+      threshold: 0,
+      rootMargin: '20px',
+    });
 
+    useEffect(() => {
+      if (inView && hasNextPage && fetchNextPage) {
+        fetchNextPage();
+      }
+    }, [inView, hasNextPage, fetchNextPage]);
     // Use controlled inputValue if provided, otherwise use internal state
     // When focused/editing, prioritize internal state for immediate feedback
     const inputValue = (isFocused || isEditing) && controlledInputValue === undefined
@@ -414,35 +430,44 @@ const AutoComplet = forwardRef(
                 نتیجه ای یافت نشد
               </li>
             ) : (
-              filteredOptions.map((option, index) => {
-                const isHighlighted = highlightedIndex === index;
-                const isSelected = isOptionSelected(option);
-                return (
-                  <li
-                    key={option.id}
-                    className={`py-2 px-3 cursor-pointer ${
-                      isHighlighted || isSelected
-                        ? "bg-blue-50"
-                        : "bg-transparent"
-                    } ${
-                      index < filteredOptions.length - 1
-                        ? "border-b border-gray-200"
-                        : ""
-                    } ${
-                      textAlign === "center"
-                        ? "text-center"
-                        : textAlign === "right"
-                        ? "text-right"
-                        : "text-left"
-                    }`}
-                    style={dynamicOptionStyle}
-                    onMouseEnter={() => setHighlightedIndex(index)}
-                    onClick={() => handleOptionSelect(option)}
-                  >
-                    {option.title}
+              <>
+                {filteredOptions.map((option, index) => {
+                  const isHighlighted = highlightedIndex === index;
+                  const isSelected = isOptionSelected(option);
+                  const isLastItem = index === filteredOptions.length - 1;
+                  return (
+                    <li
+                      key={option.id}
+                      ref={isLastItem && hasNextPage ? intersectionRef : null}
+                      className={`py-2 px-3 cursor-pointer ${
+                        isHighlighted || isSelected
+                          ? "bg-blue-50"
+                          : "bg-transparent"
+                      } ${
+                        index < filteredOptions.length - 1
+                          ? "border-b border-gray-200"
+                          : ""
+                      } ${
+                        textAlign === "center"
+                          ? "text-center"
+                          : textAlign === "right"
+                          ? "text-right"
+                          : "text-left"
+                      }`}
+                      style={dynamicOptionStyle}
+                      onMouseEnter={() => setHighlightedIndex(index)}
+                      onClick={() => handleOptionSelect(option)}
+                    >
+                      {option.title}
+                    </li>
+                  );
+                })}
+                {isFetchingNextPage && (
+                  <li className="p-3 text-center text-gray-600">
+                    در حال بارگذاری نتایج بیشتر...
                   </li>
-                );
-              })
+                )}
+              </>
             )}
           </ul>
         )}

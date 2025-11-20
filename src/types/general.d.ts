@@ -35,6 +35,9 @@ export type Column = {
   align?:string;
   except?:boolean; // if false, the column will not be colored used just in OrderRegShowTable.tsx
   isLoading?: boolean;
+  fetchNextPage?: () => void;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
 };
 export type ColumnGroup = {
   Header: string;

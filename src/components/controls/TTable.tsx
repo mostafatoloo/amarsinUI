@@ -80,6 +80,9 @@ export function EditableInput<T extends object>({
     setSearch,
     align,
     isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     //search,
   } = column as any;
   const [value, setValue] = React.useState<string | boolean>(initialValue);
@@ -153,6 +156,9 @@ export function EditableInput<T extends object>({
         backgroundColor={!canEditForm ? "inherit" : "white"}
         textAlign={align}
         isLoading={isLoading}
+        fetchNextPage={fetchNextPage}
+        hasNextPage={hasNextPage}
+        isFetchingNextPage={isFetchingNextPage}
         //onInputChange={handleInputChange}
         //inputValue={search}
       />

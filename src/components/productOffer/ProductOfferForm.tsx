@@ -249,7 +249,13 @@ const ProductOfferForm = ({
   const [brandSearch, setBrandSearch] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const fileName = "data_export.xlsx";
-  const { products, isProductSearchLoading } = useProducts();
+  const {
+    products,
+    isProductSearchLoading,
+    productSearchFetchNextPage,
+    productSearchHasNextPage,
+    isProductSearchFetchingNextPage,
+  } = useProducts();
   const { setField: setProductField } = useProductStore();
   const { yearId, systemId, chartId } = useGeneralContext();
   const { setField: setBrandField } = useBrandStore();
@@ -275,6 +281,12 @@ const ProductOfferForm = ({
                 title: p.n,
               }))
             : undefined,
+        fetchNextPage:
+          item.accessor === "product" ? productSearchFetchNextPage : undefined,
+        hasNextPage:
+          item.accessor === "product" ? productSearchHasNextPage : undefined,
+        isFetchingNextPage:
+          item.accessor === "product" ? isProductSearchFetchingNextPage : false,
         setSearch: item.accessor === "product" ? setSearch : undefined,
         isLoading: item.accessor === "product" ? isProductSearchLoading : false,
         Cell:
@@ -438,7 +450,8 @@ const ProductOfferForm = ({
       setProductField("productSearchAccSystem", systemId);
       setProductField("productSearchAccYear", yearId);
       handleDebounceFilterChange("productSearchSearch", search);
-      setProductField("productSearchPage", 1);
+      // Note: productSearchPage is no longer needed with infinite query
+      // The query automatically resets when search term changes (it's in the queryKey)
     }
     // to not allow calling salesPricesSearch when productSearch is called
     setProductField("salesPricesSearchPage", -1);

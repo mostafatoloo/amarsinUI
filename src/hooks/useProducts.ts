@@ -1,8 +1,10 @@
 import {
   useMutation,
   useQuery,
+  useInfiniteQuery,
   useQueryClient,
   UseQueryOptions,
+  InfiniteData,
 } from "@tanstack/react-query";
 import { useEffect } from "react";
 import api from "../api/axios";
@@ -26,7 +28,6 @@ export function useProducts() {
     productSearchAccYear,
     productSearchAccSystem,
     productSearchSearch,
-    productSearchPage,
     setProductSearchResponse,
     salesPricesSearchSearch,
     salesPricesSearchPage,
@@ -152,7 +153,7 @@ export function useProducts() {
   }, [salesPricesSearchQuery.data, setSalesPricesSearchResponse]);
 
   //for productSearch req
-  const productSearchQuery = useQuery<
+  const productSearchQuery = useInfiniteQuery<
     ProductSearchResponse,
     Error,
     ProductSearchResponse,
@@ -163,14 +164,13 @@ export function useProducts() {
       productSearchAccYear,
       productSearchAccSystem,
       productSearchSearch,
-      productSearchPage,
     ],
-    queryFn: async () => {
+    queryFn: async ({ pageParam = 1 }) => {
       const params: ProductSearchRequest = {
         accYear: productSearchAccYear,
         accSystem: productSearchAccSystem,
         search: productSearchSearch,
-        page: productSearchPage,
+        page: pageParam as number,
       };
       const url = `/api/Product/search?accYear=${params.accYear}&accSystem=${
         params.accSystem
@@ -183,14 +183,45 @@ export function useProducts() {
       const response = await api.get(url);
       return response.data;
     },
+    getNextPageParam: (lastPage, allPages) => {
+      const currentTotal = allPages.reduce(
+        (acc, page) => acc + (page.data.result.searchResults?.length ?? 0),
+        0
+      );
+      const totalCount = lastPage.data.result.total_count ?? 0;
+      // If we've loaded all items, return undefined to stop fetching
+      if (currentTotal >= totalCount) {
+        return undefined;
+      }
+      // Otherwise, return the next page number
+      return allPages.length + 1;
+    },
+    initialPageParam: 1,
     enabled: productSearchAccYear !== -1 && productSearchAccSystem !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
-    onSuccess: (data: any) => {
-      console.log(data, "response.data in useProducts");
-      setProductSearchResponse(data);
-    },
-  } as UseQueryOptions<ProductSearchResponse, Error, ProductSearchResponse, unknown[]>);
+  });
+
+  // Update store with combined data from all pages for backward compatibility
+  useEffect(() => {
+    const infiniteData = productSearchQuery.data as InfiniteData<ProductSearchResponse> | undefined;
+    if (infiniteData?.pages && infiniteData.pages.length > 0) {
+      const lastPage = infiniteData.pages[infiniteData.pages.length - 1];
+      const allProducts = infiniteData.pages.flatMap((page: ProductSearchResponse) => page.data.result.searchResults);
+      // Update store with combined response
+      setProductSearchResponse({
+        ...lastPage,
+        data: {
+          ...lastPage.data,
+          result: {
+            ...lastPage.data.result,
+            searchResults: allProducts,
+            total_count: lastPage.data.result.total_count,
+          },
+        },
+      });
+    }
+  }, [productSearchQuery.data, setProductSearchResponse]);
 
   // for /api/Indent/list?Id=6430&OrdrId=-1&MrsId=0&Acc_Year=0&Acc_System=0&State=0&ShowDeletedInentDtl=false
   const indentListQuery = useQuery<
@@ -527,8 +558,12 @@ export function useProducts() {
     salesPricesSearchResponse: salesPricesSearchQuery.data?.searchResults ?? [],
     //for productSearch req: /api/Product/search?accSystem=4&accYear=15&page=1&searchTerm=%D8%B3%D9%81
     isProductSearchLoading: productSearchQuery.isLoading,
+    isProductSearchFetchingNextPage: productSearchQuery.isFetchingNextPage,
     productSearchError: productSearchQuery.error,
-    products: productSearchQuery.data?.data.result.searchResults ?? [],
+    products: (productSearchQuery.data as InfiniteData<ProductSearchResponse> | undefined)?.pages.flatMap((page: ProductSearchResponse) => page.data.result.searchResults) ?? [],
+    productSearchFetchNextPage: productSearchQuery.fetchNextPage,
+    productSearchHasNextPage: productSearchQuery.hasNextPage,
+    productSearchIsFetching: productSearchQuery.isFetching,
 
     isDtHistoryLoading: dtlHistoryQuery.isLoading,
     dtlHistoryError: dtlHistoryQuery.error,
