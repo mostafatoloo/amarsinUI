@@ -152,16 +152,66 @@ export interface WorkFlowFlowsResponse {
   meta: Meta;
   data: WorkFlowFlowsData;
 }
+//api/WFMS/flowNosSearch?systemId=4&page=1&lastId=0
+export interface WorkFlowFlowNosSearchRequest {
+  systemIdFlowNosSearch: number;
+  pageFlowNosSearch: number;
+  lastIdFlowNosSearch: number;
+  searchFlowNosSearch: string;
+}
+
+interface DataFlowNosSearch {
+  result: SearchItem[];
+  total_count: number;
+}
+
+export interface WorkFlowFlowNosSearchResponse {
+  meta: Meta;
+  data: DataFlowNosSearch;
+}
+
+//api/WFMS/flowMaps?FlowNoId=4030207&SystemId=4
+export interface WorkFlowFlowMapsRequest {
+  flowNoIdFlowMaps: number;
+  systemIdFlowMaps: number;
+}
+
+interface WorkFlowFlowMapsResponse {
+  meta: Meta;
+  data: WorkFlowFlowMapsData;
+}
+
+interface WorkFlowFlowMapsData {
+  result: FlowMapResult[];
+}
+
+interface FlowMapResult {
+  ifId: number;
+  id: number;
+  name: string;
+  fChart: number;
+  fChartName: string;
+  tChart: number;
+  tChartName: string;
+  f1Title: string;
+  f2Title: string;
+  sbTitle: string;
+  sTitle: string;
+  waTitle: string;
+  svTitle: string;
+}
 
 export interface WorkFlowState
   extends WorkFlowRequest,
-    WorkFlowRowSelectRequest, WorkFlowFlowsRequest {
+    WorkFlowRowSelectRequest, WorkFlowFlowsRequest , WorkFlowFlowNosSearchRequest, WorkFlowFlowMapsRequest {
   workFlowResponse: WorkflowResponse;
   setField: (field: string | number | symbol, value: any) => void;
   setWorkFlowResponse: (workFlowResponse: WorkflowResponse) => void;
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   workFlowDoFlowResponse: WorkFlowDoFlowResponse; // for doFlow
   workFlowFlowsResponse: WorkFlowFlowsResponse; //api/WFMS/flows?WorkTableId=
+  workFlowFlowNosSearchResponse: WorkFlowFlowNosSearchResponse; //api/WFMS/flowNosSearch?systemId=4&page=1&lastId=0
+  workFlowFlowMapsResponse: WorkFlowFlowMapsResponse; //api/WFMS/flowMaps?FlowNoId=4030207&SystemId=4
   setWorkFlowRowSelectResponse: (
     workFlowRowSelectResponse: WorkflowRowSelectResponse
   ) => void;
@@ -171,8 +221,13 @@ export interface WorkFlowState
   setWorkFlowFlowsResponse: (
     workFlowFlowsResponse: WorkFlowFlowsResponse
   ) => void; //api/WFMS/flows?WorkTableId=
+  setWorkFlowFlowNosSearchResponse: (
+    workFlowFlowNosSearchResponse: WorkFlowFlowNosSearchResponse
+  ) => void; //api/WFMS/flowNosSearch?systemId=4&page=1&lastId=0
+  setWorkFlowFlowMapsResponse: (
+    workFlowFlowMapsResponse: WorkFlowFlowMapsResponse
+  ) => void; //api/WFMS/flowMaps?FlowNoId=4030207&SystemId=4
 }
-
 
 export interface WorkFlowRowSelectState
   extends WorkFlowRowSelectRequest

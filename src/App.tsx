@@ -27,6 +27,7 @@ import CupboardsReport from "./pages/warehouse/reports/CupboardsReport";
 import GetInventoryBalance from "./pages/businessAccounting/reports/GetInventoryBalance";
 import Workflow from "./pages/workflow/Workflow";
 import { useDefinitionInvironment } from "./hooks/useDefinitionInvironment";
+import WorkflowMaps from "./pages/workflow/WorkflowMaps";
 
 const queryClient = new QueryClient();
 
@@ -195,6 +196,14 @@ function AppContent() {
               <GetInventoryBalance
                 definitionInvironment={definitionInvironment}
               />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/WFMS_FlowMap/Index"
+          element={
+            <PrivateRoute>
+              <WorkflowMaps definitionInvironment={definitionInvironment} />
             </PrivateRoute>
           }
         />

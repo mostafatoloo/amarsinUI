@@ -9,6 +9,9 @@ import api from "../api/axios";
 import { useWorkflowStore } from "../store/workflowStore";
 import {
   WorkFlowDoFlowRequest,
+  WorkFlowFlowMapsResponse,
+  WorkFlowFlowNosSearchRequest,
+  WorkFlowFlowNosSearchResponse,
   WorkFlowFlowsRequest,
   WorkFlowFlowsResponse,
   WorkFlowRequest,
@@ -41,6 +44,16 @@ export function useWorkflow() {
     searchFlows,
     pageFlows,
     setWorkFlowFlowsResponse,
+    //for api/WFMS/flowNosSearch?systemId=4&page=1&lastId=0
+    systemIdFlowNosSearch,
+    pageFlowNosSearch,
+    lastIdFlowNosSearch,
+    searchFlowNosSearch,
+    setWorkFlowFlowNosSearchResponse,
+    //for api/WFMS/flowMaps?FlowNoId=4030207&SystemId=4
+    flowNoIdFlowMaps,
+    systemIdFlowMaps,
+    setWorkFlowFlowMapsResponse,
   } = useWorkflowStore();
 
   //const queryClient = new QueryClient();
@@ -177,6 +190,68 @@ export function useWorkflow() {
       setWorkFlowFlowsResponse(data);
     },
   } as UseQueryOptions<WorkFlowFlowsResponse, Error, WorkFlowFlowsResponse, unknown[]>);
+  //for api/WFMS/flowNosSearch?systemId=4&page=1&lastId=0
+  const workFlowFlowNosSearchQuery = useQuery<
+    WorkFlowFlowNosSearchResponse,
+    Error,
+    WorkFlowFlowNosSearchResponse,
+    unknown[]
+  >({
+    queryKey: [
+      "workFlowFlowNosSearch",
+      systemIdFlowNosSearch,
+      pageFlowNosSearch,
+      lastIdFlowNosSearch,
+      searchFlowNosSearch,
+    ],
+    queryFn: async () => {
+      const params: WorkFlowFlowNosSearchRequest = {
+        systemIdFlowNosSearch,
+        pageFlowNosSearch,
+        lastIdFlowNosSearch,
+        searchFlowNosSearch,
+      };
+      const url: string = `api/WFMS/flowNosSearch?systemId=${
+        params.systemIdFlowNosSearch
+      }&page=${params.pageFlowNosSearch}&lastId=${
+        params.lastIdFlowNosSearch
+      }&search=${encodeURIComponent(params.searchFlowNosSearch)}`;
+      console.log(url, "url");
+      const response = await api.get(url);
+      return response.data;
+    },
+    enabled: systemIdFlowNosSearch !== -1,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    onSuccess: (data: any) => {
+      setWorkFlowFlowNosSearchResponse(data);
+    },
+  } as UseQueryOptions<WorkFlowFlowNosSearchResponse, Error, WorkFlowFlowNosSearchResponse, unknown[]>);
+  //for api/WFMS/flowMaps?FlowNoId=4030207&SystemId=4
+  const workFlowFlowMapsQuery = useQuery<
+    WorkFlowFlowMapsResponse,
+    Error,
+    WorkFlowFlowMapsResponse,
+    unknown[]
+  >({
+    queryKey: [
+      "workFlowFlowMaps",
+      systemIdFlowMaps,
+      flowNoIdFlowMaps,
+    ],
+    queryFn: async () => {
+      const url: string = `api/WFMS/flowMaps?FlowNoId=${flowNoIdFlowMaps}&SystemId=${systemIdFlowMaps}`;
+      console.log(url, "url");
+      const response = await api.get(url);
+      return response.data;
+    },
+    enabled: flowNoIdFlowMaps !== -1 && systemIdFlowMaps !== -1,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    onSuccess: (data: any) => {
+      setWorkFlowFlowMapsResponse(data);
+    },
+  } as UseQueryOptions<WorkFlowFlowMapsResponse, Error, WorkFlowFlowMapsResponse, unknown[]>);
   //for doFlow
   const doFlow = useMutation({
     mutationFn: async (request: WorkFlowDoFlowRequest) => {
@@ -281,6 +356,24 @@ export function useWorkflow() {
           },
         },
       },
+    },
+    //for api/WFMS/flowNosSearch?systemId=4&page=1&lastId=0
+    refetchWorkFlowFlowNosSearch: workFlowFlowNosSearchQuery.refetch,
+    isRefetchingWorkFlowFlowNosSearch: workFlowFlowNosSearchQuery.isRefetching,
+    isLoadingWorkFlowFlowNosSearch: workFlowFlowNosSearchQuery.isLoading,
+    errorWorkFlowFlowNosSearch: workFlowFlowNosSearchQuery.error,
+    workFlowFlowNosSearchResponse: workFlowFlowNosSearchQuery.data ?? {
+      meta: { errorCode: 0, message: "", type: "" },
+      data: { result: [], total_count: 0 },
+    },
+    //for api/WFMS/flowMaps?FlowNoId=4030207&SystemId=4
+    refetchWorkFlowFlowMaps: workFlowFlowMapsQuery.refetch,
+    isRefetchingWorkFlowFlowMaps: workFlowFlowMapsQuery.isRefetching,
+    isLoadingWorkFlowFlowMaps: workFlowFlowMapsQuery.isLoading,
+    errorWorkFlowFlowMaps: workFlowFlowMapsQuery.error,
+    workFlowFlowMapsResponse: workFlowFlowMapsQuery.data ?? {
+      meta: { errorCode: 0, message: "", type: "" },
+      data: { result: []},
     },
   };
 }

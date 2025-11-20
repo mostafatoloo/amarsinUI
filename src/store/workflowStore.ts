@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import {
   WorkFlowDoFlowResponse,
+  WorkFlowFlowMapsResponse,
+  WorkFlowFlowNosSearchResponse,
   WorkFlowFlowsResponse,
   WorkFlowState,
 } from "../types/workflow";
@@ -82,6 +84,22 @@ export const useWorkflowStore = create<WorkFlowState>()((set) => ({
       total_count: 0,
     },
   },
+  //api/WFMS/flowNosSearch?systemId=4&page=1&lastId=0
+  systemIdFlowNosSearch: -1,
+  pageFlowNosSearch: 1,
+  lastIdFlowNosSearch: 0,
+  searchFlowNosSearch: "",
+  workFlowFlowNosSearchResponse: {
+    meta: { errorCode: 0, message: null, type: "" },
+    data: { result: [], total_count: 0 },
+  },
+  //api/WFMS/flowMaps?FlowNoId=4030207&SystemId=4
+  flowNoIdFlowMaps: -1,
+  systemIdFlowMaps: -1,
+  workFlowFlowMapsResponse: {
+    meta: { errorCode: 0, message: null, type: "" },
+    data: { result: []},
+  },
   setField: (field: string | number | symbol, value: any) =>
     set((state) => ({
       ...state,
@@ -94,4 +112,9 @@ export const useWorkflowStore = create<WorkFlowState>()((set) => ({
   setWorkFlowResponse: (workFlowResponse) => set({ workFlowResponse }),
   setWorkFlowFlowsResponse: (workFlowFlowsResponse: WorkFlowFlowsResponse) =>
     set({ workFlowFlowsResponse }),
+  setWorkFlowFlowNosSearchResponse: ( //api/WFMS/flowNosSearch?systemId=4&page=1&lastId=0
+    workFlowFlowNosSearchResponse: WorkFlowFlowNosSearchResponse
+  ) => set({ workFlowFlowNosSearchResponse }),
+  setWorkFlowFlowMapsResponse: (workFlowFlowMapsResponse: WorkFlowFlowMapsResponse) =>
+    set({ workFlowFlowMapsResponse }), //api/WFMS/flowMaps?FlowNoId=4030207&SystemId=4
 }));

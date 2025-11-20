@@ -334,7 +334,7 @@ const AutoComplet = forwardRef(
     };
 
     // Container classes
-    const containerClasses = `relative w-full ${
+    const containerClasses = `relative w-full rounded-md ${
       isFocused && changeColorOnFocus
         ? "bg-gray-50"
         : backgroundColor
