@@ -60,7 +60,7 @@ export default function WorkflowComponent({
   definitionDateTime,
   isLoadingBanks,
   banks,
-  cashPosSystemSearch
+  cashPosSystemSearch,
 }: Props) {
   let componentToRender1: React.ReactNode | null = null;
   let componentToRender2: React.ReactNode | null = null;

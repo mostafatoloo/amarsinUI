@@ -33,8 +33,8 @@ const ProductPermForWorkFlow = ({ workFlowRowSelectResponse, definitionDateTime,
 
   const { yearId, systemId } = useGeneralContext();
   if (id!==workFlowRowSelectResponse.workTableRow.formId){
-    setField("yearId", yearId);
-    setField("systemId", systemId);
+    setField("systemIdDtl", systemId);
+    setField("yearIdDtl", yearId);
     setField("id", workFlowRowSelectResponse.workTableRow.formId);
   }
   /*useEffect(() => {

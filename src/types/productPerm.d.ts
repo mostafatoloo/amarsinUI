@@ -10,6 +10,8 @@ import {
 export interface ProductPermRequest extends ProductOperationRequest {
   yearId: number;
   systemId: number;
+  systemIdDtl: number;
+  yearIdDtl: number;
   srchAccepted:number;
   sortAccepted:number;  
 }

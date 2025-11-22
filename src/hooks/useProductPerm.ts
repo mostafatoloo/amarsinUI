@@ -11,7 +11,6 @@ import {
   ProductPermDoFirstFlowRequest,
   ProductPermDtlHistoryResponse,
   ProductPermListRequest,
-  ProductPermRequest,
   ProductPermResponse,
   ProductPermSaveRequest,
 } from "../types/productPerm";
@@ -23,6 +22,8 @@ export function useProductPerm() {
     id,
     yearId,
     systemId,
+    systemIdDtl,
+    yearIdDtl,
     state,
     regFDate,
     regTDate,
@@ -170,8 +171,8 @@ export function useProductPerm() {
     queryKey: [
       "productPermDtl",
       id,
-      yearId,
-      systemId,
+      systemIdDtl,
+      yearIdDtl,
       state,
       regFDate,
       regTDate,
@@ -194,10 +195,10 @@ export function useProductPerm() {
       sortStep,
     ],
     queryFn: async () => {
-      const params: ProductPermRequest = {
+      const params = {
         id,
-        yearId,
-        systemId,
+        systemIdDtl,
+        yearIdDtl,
         state,
         regFDate,
         regTDate,
@@ -220,8 +221,8 @@ export function useProductPerm() {
         sortStep,
       };
       const url = `/api/ProductPerm/ProductPerm?Id=${params.id}&Acc_Year=${
-        params.yearId
-      }&Acc_System=${params.systemId}&State=${
+        params.yearIdDtl
+      }&Acc_System=${params.systemIdDtl}&State=${
         params.state
       }&RegFDate=${encodeURIComponent(
         params.regFDate ?? ""
@@ -258,7 +259,7 @@ export function useProductPerm() {
       const response = await api.get(url);
       return response.data;
     },
-    enabled: systemId!==-1 && yearId!== -1,
+    enabled: systemIdDtl!==-1 && yearIdDtl!== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {

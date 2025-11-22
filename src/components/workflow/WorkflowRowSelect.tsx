@@ -8,6 +8,7 @@ import {
 import { UseMutateAsyncFunction } from "@tanstack/react-query";
 import { SearchItem } from "../../types/general";
 import { DefinitionDateTime, DefinitionInvironment } from "../../types/definitionInvironment";
+import { useState } from "react";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
@@ -18,8 +19,8 @@ type Props = {
   error: Error | null;
   //refetchWorkTable: () => void;
   //refetchWorkTableRowSelect:() => void;
-  selectedId: number;
-  setSelectedId: React.Dispatch<React.SetStateAction<number>>
+  //selectedId: number;
+  //setSelectedId: React.Dispatch<React.SetStateAction<number>>
   definitionInvironment:DefinitionInvironment;
   definitionDateTime: DefinitionDateTime ;
   isLoadingBanks:boolean;
@@ -37,14 +38,15 @@ const WorkflowRowSelect = ({
   error,
   //refetchWorkTable,
   //refetchWorkTableRowSelect,
-  selectedId,
-  setSelectedId,
+  //selectedId,
+  //setSelectedId,
   definitionInvironment,
   definitionDateTime,
   isLoadingBanks,
   banks,
   cashPosSystemSearch
 }: Props) => {
+  const [showPathMessage, setShowPathMessage] = useState(false);
   if (error) return <div>Error: {error.message} </div>;
   return (
     <div className="w-full">
@@ -63,13 +65,15 @@ const WorkflowRowSelect = ({
             isLoadingdoFlow={isLoadingdoFlow}
             //refetchWorkTable={refetchWorkTable}
             //refetchWorkTableRowSelect={refetchWorkTableRowSelect}
-            selectedId={selectedId}
-            setSelectedId={setSelectedId}
+            //selectedId={selectedId}
+            //setSelectedId={setSelectedId}
             definitionInvironment={definitionInvironment}
             definitionDateTime={definitionDateTime}
             isLoadingBanks={isLoadingBanks}
             banks={banks}
             cashPosSystemSearch={cashPosSystemSearch}
+            showPathMessage={showPathMessage}
+            setShowPathMessage={setShowPathMessage}
           />
         </div>
       )}

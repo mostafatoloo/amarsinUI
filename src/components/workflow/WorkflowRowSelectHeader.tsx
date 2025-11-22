@@ -3,6 +3,7 @@ import OkForm from "../../assets/images/GrayThem/img24_3.png";
 import CancelForm from "../../assets/images/GrayThem/img24_4.png";
 import {
   FlowButton,
+  FlowDescription,
   WorkFlowDoFlowRequest,
   WorkFlowDoFlowResponse,
   WorkflowRowSelectResponse,
@@ -28,13 +29,15 @@ type Props = {
   isLoadingdoFlow: boolean;
   //refetchWorkTable: () => void;
   //refetchWorkTableRowSelect: () => void;
-  selectedId: number;
-  setSelectedId: React.Dispatch<React.SetStateAction<number>>;
+  //selectedId: number;
+  //setSelectedId: React.Dispatch<React.SetStateAction<number>>;
   definitionInvironment: DefinitionInvironment;
   definitionDateTime: DefinitionDateTime;
   isLoadingBanks: boolean;
   banks: SearchItem[];
   cashPosSystemSearch: SearchItem[];
+  showPathMessage: boolean;
+  setShowPathMessage: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const WorkflowRowSelectHeader = ({
@@ -44,45 +47,54 @@ const WorkflowRowSelectHeader = ({
   isLoadingdoFlow,
   //refetchWorkTable,
   //refetchWorkTableRowSelect,
-  selectedId,
-  setSelectedId,
+  //selectedId,
+  //setSelectedId,
   definitionInvironment,
   definitionDateTime,
   isLoadingBanks,
   banks,
   cashPosSystemSearch,
+  showPathMessage,
+  setShowPathMessage,
 }: Props) => {
   const {
     title,
-    page : pageNumber,
+    page: pageNumber,
     dateTime,
     code,
     cost,
-    flowMapId : flowMapIdStore,
+    flowMapId: flowMapIdStore,
     name,
-    dsc : dscStore,
+    dsc: dscStore,
   } = useWorkflowStore();
-  const flowButtons = workFlowRowSelectResponse.flowButtons;
-  const flowDescriptions = workFlowRowSelectResponse.flowDescriptions;
+  /*const {
+    setUpdatedWorkFlowRowSelectResponse,
+  } = useWorkflowStore();*/
+
+  const { setField:setWorkFlowField } = useWorkflowStore();
+  const [flowButtons, setFlowButtons] = useState<FlowButton[]>([]);
+
+  const [flowDescriptions, setFlowDescriptions] = useState<FlowDescription[]>(
+    []
+  );
+
   const { chartId, systemId, yearId } = useGeneralContext();
   const [dsc, setDsc] = useState("");
   //for open/close DocumentChangeDate form
-  const [isDoFlowClicked, setIsDoFlowClicked] = useState(false);
+  //const [isDoFlowClicked, setIsDoFlowClicked] = useState(false);
+  //const [showPathMessage, setShowPathMessage] = useState(false);
   const [isFormAfterClickOpen, setIsFormAfterClickOpen] = useState(false);
   //for DocumentChangeDate param
   const [flowMapId, setFlowMapId] = useState(-1); // for DocumentChangeDate param
   const [newWorkFlowRowSelectResponse, setNewWorkFlowRowSelectResponse] =
     useState(workFlowRowSelectResponse);
 
-  useEffect(() => {
-    console.log(selectedId, setSelectedId);
-  }, []);
-
+  // Actual timeout for showPathMessage
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
-    if (isDoFlowClicked) {
+    if (showPathMessage) {
       timeoutId = setTimeout(() => {
-        setIsDoFlowClicked(false);
+        setShowPathMessage(false);
       }, 3000);
     }
     return () => {
@@ -90,7 +102,13 @@ const WorkflowRowSelectHeader = ({
         clearTimeout(timeoutId);
       }
     };
-  }, [isDoFlowClicked]);
+  }, [showPathMessage]);
+
+  //for update flowbuttons and flowDescriptions
+  useEffect(() => {
+    setFlowButtons(workFlowRowSelectResponse?.flowButtons);
+    setFlowDescriptions(workFlowRowSelectResponse?.flowDescriptions);
+  }, [workFlowRowSelectResponse]);
 
   const handleDoFlow = async (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -115,7 +133,7 @@ const WorkflowRowSelectHeader = ({
       return;
     }
     //if not formAfterClick, do flow
-    setIsDoFlowClicked(true);
+    setShowPathMessage(true);
     const request: WorkFlowDoFlowRequest = {
       chartId,
       systemId,
@@ -144,42 +162,14 @@ const WorkflowRowSelectHeader = ({
     console.log(request, "request");
     try {
       await doFlow(request);
+      setWorkFlowField("workTableIdTrigger", Date.now());
+      //await refetchWorkTable();
+      //await refetchWorkTableRowSelect();
     } catch (error) {}
-  };
-
-  /*useEffect(() => {
-    if (isDoFlowClicked && !isLoadingdoFlow) {
-      if (
-        workFlowDoFlowResponse.data.result.formAfterClick.viewPath === "" ||
-        workFlowDoFlowResponse.data.result.formAfterClick.viewPath === null
-      ) {
-        setIsModalOpen(true);
-      } else {
-        //setWorkFlowField("isPreventingRefetchWorkflow", true);
-        console.log(
-          "workFlowDoFlowResponse.data.result.formAfterClick.viewPath",
-          workFlowDoFlowResponse.data.result.formAfterClick.viewPath
-        );
-        setNewWorkFlowRowSelectResponse((prev) => {
-          return {
-            ...prev,
-            workTableForms: {
-              ...prev.workTableForms,
-              form1ViewPath:
-                workFlowDoFlowResponse.data.result.formAfterClick.viewPath ??
-                "",
-              form2ViewPath: "",
-            },
-          };
-        });
-        setIsFormAfterClickOpen(true);
-      }
+    finally {
+      console.log("finally");
     }
-  }, [
-    workFlowDoFlowResponse.data.result.formAfterClick.viewPath,
-    isDoFlowClicked,
-    isLoadingdoFlow,
-  ]);*/
+  };
 
   return (
     <form className="p-1 gap-1 flex flex-col sm:flex-row bg-gray-200 border border-gray-300 rounded-md w-full">
@@ -193,8 +183,8 @@ const WorkflowRowSelectHeader = ({
           />
         </div>
         <div className="flex gap-1">
-          {flowButtons.length > 0 &&
-            flowButtons.map((fb) => {
+          {flowButtons?.length > 0 &&
+            flowButtons?.map((fb) => {
               return (
                 <div
                   className="flex justify-center p-1 text-sm border border-slate-300 rounded-md cursor-pointer hover:font-bold hover:bg-gray-100"
@@ -219,8 +209,8 @@ const WorkflowRowSelectHeader = ({
       </div>
 
       <div className="px-2 border text-gray-600 border-gray-300 md:h-20 md:overflow-y-auto rounded-md w-full md:w-1/3">
-        {flowDescriptions.length > 0 &&
-          flowDescriptions.map((fd, index) => {
+        {flowDescriptions?.length > 0 &&
+          flowDescriptions?.map((fd, index) => {
             return (
               <p className="text-sm" key={index}>
                 {convertToFarsiDigits(fd.usrName)}:{" "}
@@ -232,8 +222,8 @@ const WorkflowRowSelectHeader = ({
       {
         //!isLoadingdoFlow &&
         <ModalMessage
-          isOpen={isDoFlowClicked} //just for DoFlow form
-          onClose={() => setIsDoFlowClicked(false)}
+          isOpen={showPathMessage} //just for DoFlow form showPathMessage
+          onClose={() => setShowPathMessage(false)}
           backgroundColor={
             workFlowDoFlowResponse?.meta.errorCode <= 0
               ? "bg-green-200"
@@ -253,9 +243,7 @@ const WorkflowRowSelectHeader = ({
         //just for opening FormAfterClick
         <ModalForm
           isOpen={isFormAfterClickOpen}
-          onClose={() => {
-            setIsFormAfterClickOpen(false);
-          }}
+          onClose={() => setIsFormAfterClickOpen(false)}
           children={
             <WorkflowComponent
               doFlow={doFlow}
@@ -267,7 +255,7 @@ const WorkflowRowSelectHeader = ({
               //refetchWorkTableRowSelect={refetchWorkTableRowSelect}
               dsc={dsc}
               flowMapId={flowMapId}
-              setIsModalOpen={setIsFormAfterClickOpen}
+              setIsModalOpen={setShowPathMessage}
               definitionInvironment={definitionInvironment}
               definitionDateTime={definitionDateTime}
               isLoadingBanks={isLoadingBanks}

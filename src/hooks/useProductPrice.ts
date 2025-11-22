@@ -10,7 +10,6 @@ import {
   import {
     ProductPriceDoFirstFlowRequest,
     ProductPriceDtlHistoryResponse,
-    ProductPriceRequest,
     ProductPriceSaveRequest,
     ProductPriceResponse,
   } from "../types/productPrice";
@@ -23,6 +22,8 @@ import { ShowProductListRequest } from "../types/productOperation";
       id,
       yearId,
       systemId,
+      systemIdDtl,
+      yearIdDtl,
       state,
       regFDate,
       regTDate,
@@ -170,8 +171,8 @@ import { ShowProductListRequest } from "../types/productOperation";
       queryKey: [
         "productPriceDtl",  
         id,
-        yearId,
-        systemId,
+        yearIdDtl,
+        systemIdDtl,
         state,
         regFDate,
         regTDate,
@@ -194,10 +195,10 @@ import { ShowProductListRequest } from "../types/productOperation";
         sortStep,
       ],
       queryFn: async () => {
-        const params: ProductPriceRequest = {   
+        const params = {   
           id,
-          yearId,
-          systemId,
+          yearIdDtl,
+          systemIdDtl,
           state,
           regFDate,
           regTDate,
@@ -220,8 +221,8 @@ import { ShowProductListRequest } from "../types/productOperation";
           sortStep,
         };
         const url = `/api/ProductPrice?Id=${params.id}&Acc_Year=${
-          params.yearId
-        }&Acc_System=${params.systemId}&State=${
+          params.yearIdDtl
+        }&Acc_System=${params.systemIdDtl}&State=${
           params.state
         }&RegFDate=${encodeURIComponent(
           params.regFDate ?? ""
@@ -258,7 +259,7 @@ import { ShowProductListRequest } from "../types/productOperation";
         const response = await api.get(url);
         return response.data;
       },
-      enabled: systemId!==-1 && yearId!== -1,
+      enabled: systemIdDtl!==-1 && yearIdDtl!== -1,
       refetchOnWindowFocus: false, // Refetch data when the window is focused
       refetchOnReconnect: false, // Refetch data when the network reconnects
       onSuccess: (data: any) => {

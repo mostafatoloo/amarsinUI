@@ -16,7 +16,7 @@ import { SearchItem } from "../../types/general";
 type Props = {
   isLoading: boolean;
   selectedId: number;
-  setSelectedId: React.Dispatch<React.SetStateAction<number>>;
+  //setSelectedId: React.Dispatch<React.SetStateAction<number>>;
   workFlowResponse: WorkflowResponse;
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   isLoadingRowSelect: boolean;
@@ -38,7 +38,7 @@ type Props = {
 export const WorkflowChild = ({
   isLoading,
   selectedId,
-  setSelectedId,
+  //setSelectedId,
   workFlowResponse,
   workFlowRowSelectResponse,
   isLoadingRowSelect,
@@ -131,8 +131,8 @@ export const WorkflowChild = ({
           error={errorRowSelect}
           //refetchWorkTable={refetchWorkTable}
           //refetchWorkTableRowSelect={refetchWorkTableRowSelect}
-          selectedId={selectedId}
-          setSelectedId={setSelectedId}
+          //selectedId={selectedId}
+          //setSelectedId={setSelectedId}
           definitionInvironment={definitionInvironment}
           definitionDateTime ={definitionDateTime}         
           isLoadingBanks={isLoadingBanks}

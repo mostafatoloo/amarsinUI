@@ -7,8 +7,11 @@ import {
   WorkflowResponse,
   WorkflowRowSelectResponse,
 } from "../../types/workflow";
-import {  UseMutateAsyncFunction } from "@tanstack/react-query";
-import { DefinitionDateTime, DefinitionInvironment } from "../../types/definitionInvironment";
+import { UseMutateAsyncFunction } from "@tanstack/react-query";
+import {
+  DefinitionDateTime,
+  DefinitionInvironment,
+} from "../../types/definitionInvironment";
 import { useBanks } from "../../hooks/useBanks";
 import { useCheques } from "../../hooks/useCheques";
 
@@ -23,13 +26,13 @@ type Props = {
   workFlowDoFlowResponse: WorkFlowDoFlowResponse;
   isLoadingdoFlow: boolean;
   //refetchWorkTable: (options?: RefetchOptions) => Promise<QueryObserverResult<WorkflowResponse, Error>>
-  //refetchWorkTableRowSelect: ()=>void
+  //refetchWorkTableRowSelect: () => void;
   isRefetchingWorkTable: boolean;
   isRefetchingWorkTableRowSelect: boolean;
   refetchSwitch: boolean;
-  setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>
-  definitionInvironment:DefinitionInvironment;
-  definitionDateTime: DefinitionDateTime ;
+  setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
+  definitionInvironment: DefinitionInvironment;
+  definitionDateTime: DefinitionDateTime;
 };
 
 const WorkflowForm = ({
@@ -49,11 +52,11 @@ const WorkflowForm = ({
   refetchSwitch,
   setRefetchSwitch,
   definitionInvironment,
-  definitionDateTime
+  definitionDateTime,
 }: Props) => {
   const [selectedId, setSelectedId] = useState<number>(-1);
   const { banks, isLoading: isLoadingBanks } = useBanks();
-  const {cashPosSystemSearch}=useCheques();
+  const { cashPosSystemSearch } = useCheques();
   const handleSelectedIdChange = (id: number) => {
     console.log(id, "id in WorkflowForm");
     setSelectedId(id);
@@ -72,7 +75,7 @@ const WorkflowForm = ({
       />
       <WorkflowChild
         selectedId={selectedId} //{selectedIdRef.current}
-        setSelectedId={setSelectedId}
+        //setSelectedId={setSelectedId}
         workFlowResponse={workFlowResponse}
         workFlowRowSelectResponse={workFlowRowSelectResponse}
         isLoading={isLoading} // for parent table loading
@@ -86,7 +89,7 @@ const WorkflowForm = ({
         refetchSwitch={refetchSwitch}
         setRefetchSwitch={setRefetchSwitch}
         definitionInvironment={definitionInvironment}
-        definitionDateTime ={definitionDateTime}
+        definitionDateTime={definitionDateTime}
         isLoadingBanks={isLoadingBanks}
         banks={banks}
         cashPosSystemSearch={cashPosSystemSearch}

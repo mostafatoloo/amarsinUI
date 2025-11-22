@@ -36,6 +36,7 @@ const DocumentChangeDate = ({
   dsc,
   setIsModalOpen,
 }: Props) => {
+  const { setField:setWorkFlowField } = useWorkflowStore();
   const { chartId, systemId, yearId } = useGeneralContext();
   const [isModalOpenMessage, setIsModalOpenMessage] = useState(false);
   const [date, setDate] = useState<Date | null>(new Date());
@@ -71,6 +72,7 @@ const DocumentChangeDate = ({
   ) => {
     e.preventDefault();
     //setIsModalOpen(false);
+    setIsModalOpen(true);
     const request: WorkFlowDoFlowRequest = {
       chartId,
       systemId,
@@ -100,6 +102,8 @@ const DocumentChangeDate = ({
     try {
       const response = await doFlow(request);
       setIsModalOpenMessage(true);// to show message
+      setWorkFlowField("workTableIdTrigger", Date.now());
+      //refetchWorkTableRowSelect();
       console.log(response, "response");
     } catch (error) {
     } finally {

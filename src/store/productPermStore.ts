@@ -13,6 +13,8 @@ export const useProductPermStore = create<ProductPermState>()((set) => ({
   id: 0,
   yearId: -1,
   systemId: -1,
+  systemIdDtl: -1,
+  yearIdDtl: -1,
   state: 0,
   regFDate: "",
   regTDate: "",

@@ -17,6 +17,8 @@ export const useProductPriceStore = create<ProductPriceState>()((set) => ({
   id: 0,
   yearId: -1,
   systemId: -1,
+  systemIdDtl: -1,
+  yearIdDtl: -1,
   state: -1,
   regFDate: "",
   regTDate: "",

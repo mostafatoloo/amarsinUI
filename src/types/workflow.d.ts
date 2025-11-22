@@ -1,4 +1,4 @@
-import { Data, Meta } from "./general";
+import {  Meta } from "./general";
 import { WorkTable } from "./workflow.d";
 export type FlowMapTitle = {
   id: number;
@@ -117,6 +117,7 @@ export interface WorkflowRowSelectResponse {
 export interface WorkFlowRowSelectRequest {
   chartId: number;
   workTableId: number;
+  workTableIdTrigger: number;
 }
 
 //http://apitest.dotis.ir/api/WFMS/doFlow
@@ -140,7 +141,20 @@ export interface WorkFlowDoFlowRequest {
 
 interface WorkFlowDoFlowResponse {
   meta: Meta;
-  data: Data;
+  data: DataWorkFlowDoFlow;
+}
+
+interface DataWorkFlowDoFlow {
+  result: ResultWorkFlowDoFlow;
+}
+
+interface ResultWorkFlowDoFlow {
+  id: number;
+  err: number;
+  msg: string;
+  formAfterClick: FormAfterClick;
+  workTable: WorkTable;
+  workTableRowSelect: WorkTableRowSelect;
 }
 
 ///api/WFMS/flows?WorkTableId=994047&FormId=0&FlowNo=0&page=1
@@ -249,6 +263,10 @@ export interface WorkFlowState
   setWorkFlowFlowMapsResponse: (
     workFlowFlowMapsResponse: WorkFlowFlowMapsResponse
   ) => void; //api/WFMS/flowMaps?FlowNoId=4030207&SystemId=4
+  updatedWorkFlowRowSelectResponse: WorkflowRowSelectResponse | null;
+  setUpdatedWorkFlowRowSelectResponse: (
+    updatedWorkFlowRowSelectResponse: WorkflowRowSelectResponse | null
+  ) => void;
 }
 
 export interface WorkFlowRowSelectState extends WorkFlowRowSelectRequest {

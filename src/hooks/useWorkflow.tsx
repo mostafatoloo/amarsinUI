@@ -54,6 +54,7 @@ export function useWorkflow() {
     flowNoIdFlowMaps,
     systemIdFlowMaps,
     setWorkFlowFlowMapsResponse,
+    workTableIdTrigger, // for doFlow to call queryRowSelect
   } = useWorkflowStore();
 
   //const queryClient = new QueryClient();
@@ -117,7 +118,7 @@ export function useWorkflow() {
     refetchIntervalInBackground: true, // Continue refetching even when tab is not active*/
     onSuccess: (data: any) => {
       setWorkFlowResponse(data);
-      queryClient.invalidateQueries({ queryKey: ["workflowRowSelect"] });
+      //queryClient.invalidateQueries({ queryKey: ["workflowRowSelect"] });
     },
   } as UseQueryOptions<WorkflowResponse, Error, WorkflowResponse, unknown[]>);
 
@@ -127,11 +128,12 @@ export function useWorkflow() {
     WorkflowRowSelectResponse,
     unknown[]
   >({
-    queryKey: ["workflowRowSelect", chartId, workTableId],
+    queryKey: ["workflowRowSelect", chartId, workTableId, workTableIdTrigger],
     queryFn: async () => {
       const params: WorkFlowRowSelectRequest = {
         chartId,
         workTableId,
+        workTableIdTrigger,
       };
 
       const url: string = `api/WFMS/WorkTableRowSelect?WorkTableId=${params.workTableId}&chartId=${params.chartId}`;
@@ -145,6 +147,7 @@ export function useWorkflow() {
     enabled: workTableId !== -1 && chartId !== -1,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    staleTime: 0, // Data is immediately considered stale, forcing refetch
     onSuccess: (data: any) => {
       console.log(data, "data in useWorkflow queryRowSelect");
       setWorkFlowRowSelectResponse(data);
@@ -255,10 +258,12 @@ export function useWorkflow() {
       const response = await api.post(url, request);
       return response.data;
     },
-    onSuccess: (data: any) => {
+    onSuccess: async (data: any) => {
       // Refetch only the current query with exact parameters, not all workflow queries
       if (data.meta.errorCode <= 0) {
-        queryClient.refetchQueries({
+        // Refetch "workflow" query - this will trigger automatic refetch of "workflowRowSelect"
+        // when workTableId changes in WorkflowChild useEffect
+        await queryClient.refetchQueries({
           queryKey: [
             "workflow",
             chartId,
@@ -274,9 +279,8 @@ export function useWorkflow() {
             dsc,
           ],
         });
-        //queryClient.refetchQueries({
-          //queryKey: ["workflowRowSelect", chartId, workTableId],
-        //});
+        // workflowRowSelect will automatically refetch when workTableId changes
+        // (workTableId is part of its queryKey: ["workflowRowSelect", chartId, workTableId])
       }
       setWorkFlowDoFlowResponse(data);
     },

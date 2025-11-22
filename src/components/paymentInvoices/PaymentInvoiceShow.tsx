@@ -34,10 +34,17 @@ const PaymentInvoiceShow = ({
     settlementAveragesResponse,
   } = usePaymentInvoices();
   const { isLoadingUpdateFields, updateFields } = useCheques();
-  const { updateFieldsResponse,setField: setPaymentField } = useChequeStore();
+  const { updateFieldsResponse, setField: setPaymentField } = useChequeStore();
   const { systemId, yearId } = useGeneralContext();
   const { setField, paymentId } = usePaymentInvoiceStore();
   const { authApiResponse } = useAuthStore();
+  // Subscribe to updatedWorkFlowRowSelectResponse from store using selector
+  /*const updatedWorkFlowRowSelectResponse = useWorkflowStore(
+    (state) => state.updatedWorkFlowRowSelectResponse
+  );
+  const setUpdatedWorkFlowRowSelectResponse = useWorkflowStore(
+    (state) => state.setUpdatedWorkFlowRowSelectResponse
+  );*/
   const canEditForm = workFlowRowSelectResponse.workTableForms.canEditForm1;
   const usrId = authApiResponse?.data?.result?.login?.usrId ?? 0;
 
@@ -49,18 +56,40 @@ const PaymentInvoiceShow = ({
       setRefetchSwitch(false);
     }
   }, [refetchSwitch]);
-  ////////////////////////////////////////////////////////////////////////////
+
+  // Set initial payment fields
   if (paymentId !== workFlowRowSelectResponse.workTableRow.formId) {
     setField("paymentId", workFlowRowSelectResponse.workTableRow.formId);
     setField("systemId", systemId);
     setField("yearId", yearId);
     //form cheque image attachment
-    setPaymentField("loadPaymentFormId", workFlowRowSelectResponse.workTableRow.formId);
+    setPaymentField(
+      "loadPaymentFormId",
+      workFlowRowSelectResponse.workTableRow.formId
+    );
     setPaymentField("sayadiPaymentId", -1);
-    setPaymentField("paymentAttachmentFormId",workFlowRowSelectResponse.workTableRow.formId ?? -1);
-    setPaymentField("payKind",-1);
+    setPaymentField(
+      "paymentAttachmentFormId",
+      workFlowRowSelectResponse.workTableRow.formId ?? -1
+    );
+    setPaymentField("payKind", -1);
   }
 
+  //after doFlow set paymentId to updatedWorkFlowRowSelectResponse.workTableRow.formId
+  /*useEffect(() => {
+    console.log(
+      updatedWorkFlowRowSelectResponse,
+      "updatedWorkFlowRowSelectResponse in PaymentInvoiceShow"
+    );
+    if (updatedWorkFlowRowSelectResponse !== null) {
+      setField(
+        "paymentId",
+        updatedWorkFlowRowSelectResponse.workTableRow.formId
+      );
+      setUpdatedWorkFlowRowSelectResponse(null);
+    }
+  }, [updatedWorkFlowRowSelectResponse, setField, setUpdatedWorkFlowRowSelectResponse]);*/
+  ////////////////////////////////////////////////////////////////
   return (
     <form className="mt-2 p-1 gap-1 bg-gray-200 border border-gray-300 rounded-md w-full text-gray-600 text-sm ">
       <div className="flex flex-col sm:flex-row w-full">

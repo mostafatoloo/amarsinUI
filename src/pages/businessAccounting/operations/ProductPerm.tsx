@@ -147,6 +147,8 @@ const ProductPerm = ({ definitionDateTime, definitionInvironment }: Props) => {
   useEffect(() => {
     setField("yearId", yearId);
     setField("systemId", systemId);
+    setField("yearIdDtl", yearId);
+    setField("systemIdDtl", systemId);
     setField("state", state);
 
     setField(
