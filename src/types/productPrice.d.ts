@@ -63,13 +63,26 @@ interface ProductPriceResponse {
 
 type ProductPriceListResponse = {
   meta: Meta;
-  data: DataProductPriceList;   
+  data: DataProductOldPriceList;   
 };
 
-type DataProductPriceList = {
-  result: ProductPriceListItem[];
+type DataProductOldPriceListItem = {
+  result: ProductOldPriceListItem[];
 };
 
+type DataProductOldPriceList = {
+  result: ProductOldPriceListItem[];
+};
+
+interface ProductOldPriceListItem extends ProductItem {
+  lastBuyPrice: number;
+  tax: number;
+  p1O: number;
+  p2O: number;
+  p3O: number;
+  p4O: number;
+  p5O: number;
+}
 interface ProductPriceListItem extends ProductItem {
   lastBuyPrice: number;
   tax: number;

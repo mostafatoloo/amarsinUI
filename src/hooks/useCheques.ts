@@ -62,7 +62,11 @@ export function useCheques() {
       return response.data;
     },
     onSuccess: (data: any, request: UpdateFieldsRequest) => {
-      queryClient.invalidateQueries({ queryKey: ["workflow"] });
+      if (data.meta.errorCode <= 0) {
+        queryClient.refetchQueries({
+          queryKey: ["workflow"],
+        });
+      }
       setUpdateFieldsResponse(data);
       const fieldName =
         request.fieldName.charAt(0).toLowerCase() + request.fieldName.slice(1);
@@ -101,7 +105,13 @@ export function useCheques() {
 
   //for Payment/attachment
   const paymentAttachment = useQuery({
-    queryKey: ["paymentAttachment", actCode, curId, includeBase64, paymentAttachmentFormId],
+    queryKey: [
+      "paymentAttachment",
+      actCode,
+      curId,
+      includeBase64,
+      paymentAttachmentFormId,
+    ],
     queryFn: async () => {
       //console.log(formId, "formId in paymentAttachment");
       const url: string = `/api/Payment/attachment?id=${paymentAttachmentFormId}&actCode=${encodeURIComponent(
@@ -153,7 +163,11 @@ export function useCheques() {
     SayadChequeInquiryByPaymentIdResponse,
     unknown[]
   >({
-    queryKey: ["sayadChequeInquiryByPaymentId", sayadiPaymentId, paymentIdTrigger],
+    queryKey: [
+      "sayadChequeInquiryByPaymentId",
+      sayadiPaymentId,
+      paymentIdTrigger,
+    ],
     queryFn: async () => {
       const url: string = `/api/Payment/sayadChequeInquiryByPaymentId?PaymentId=${sayadiPaymentId}`;
       console.log(url, "url");
@@ -225,15 +239,19 @@ export function useCheques() {
           sayadiStatus: 0,
           sayadiMessage: "",
           eCheck: false,
-          delayAdvanceDays:0,
+          delayAdvanceDays: 0,
         },
       },
     },
     //for Payment/sayadChequeInquiryByPaymentId
-    getSayadChequeInquiryByPaymentId: () => sayadChequeInquiryByPaymentIdQuery.refetch(),
-    isLoadingSayadChequeInquiryByPaymentId: sayadChequeInquiryByPaymentIdQuery.isLoading,
-    errorSayadChequeInquiryByPaymentId: sayadChequeInquiryByPaymentIdQuery.error,
-    sayadChequeInquiryByPaymentIdResponse: sayadChequeInquiryByPaymentIdQuery.data ?? {
+    getSayadChequeInquiryByPaymentId: () =>
+      sayadChequeInquiryByPaymentIdQuery.refetch(),
+    isLoadingSayadChequeInquiryByPaymentId:
+      sayadChequeInquiryByPaymentIdQuery.isLoading,
+    errorSayadChequeInquiryByPaymentId:
+      sayadChequeInquiryByPaymentIdQuery.error,
+    sayadChequeInquiryByPaymentIdResponse:
+      sayadChequeInquiryByPaymentIdQuery.data ?? {
         meta: { errorCode: 0, message: "", type: "" },
         data: {
           result: {

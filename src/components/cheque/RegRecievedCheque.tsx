@@ -12,24 +12,28 @@ import PayRequestAttachment from "../payRequest/PayRequestAttachment";
 import { v4 as uuidv4 } from "uuid";
 
 type Props = {
+  canEditForm: boolean;
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   refetchSwitch: boolean;
   setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
   definitionInvironment: DefinitionInvironment;
   banks: SearchItem[];
   isLoadingBanks: boolean;
+  cashPosSystemSearch: SearchItem[];
 };
 
 const RegRecievedCheque = ({
+  canEditForm,
   workFlowRowSelectResponse,
   refetchSwitch,
   setRefetchSwitch,
   definitionInvironment,
   banks,
   isLoadingBanks,
+  cashPosSystemSearch,
 }: Props) => {
   const { setField, loadPaymentFormId } = useChequeStore();
-  const canEditForm = workFlowRowSelectResponse.workTableForms.canEditForm1;
+  //const canEditForm = workFlowRowSelectResponse.workTableForms.canEditForm1;
   const [showAttachment, setShowAttachment] = useState(false);
   //for PayRequestAttachment.tsx
   const [guid, setGuid] = useState<string>("");
@@ -55,7 +59,7 @@ const RegRecievedCheque = ({
     isLoading: isLoadingLoadPayment,
     updateFields,
     isLoadingUpdateFields,
-    cashPosSystemSearch,
+    //cashPosSystemSearch,
     paymentAttachmentResponse,
     isLoadingPaymentAttachment,
     getPaymentAttachment,

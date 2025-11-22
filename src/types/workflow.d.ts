@@ -38,6 +38,17 @@ export type WorkTable = {
   printForm1: boolean;
   printForm2: boolean;
 };
+// is used in doFlow request (coming from Workflow filter params)
+export type WorkflowFilterParams = {
+  dateTime: string;
+  title: string;
+  code: string;
+  cost: string;
+  flowMapId: string;
+  name: string;
+  dsc: string;
+  pageNumber: number;
+};
 
 export type WorkflowResponse = {
   err: number;
@@ -64,8 +75,12 @@ export interface WorkFlowRequest {
 export interface FlowButton {
   id: number;
   name: string;
-  webAPIUrl: string;
   imageIndex: number;
+  formAfterClick: {
+    id: number;
+    title: string;
+    viewPath: string;
+  } | null;
 }
 
 export interface WorkTableForms {
@@ -89,6 +104,7 @@ export interface FlowDescription {
   dsc: string;
 }
 
+//api/WFMS/WorkTableRowSelect?WorkTableId=994000&ChartId=7
 export interface WorkflowRowSelectResponse {
   err: number;
   msg: string;
@@ -116,6 +132,9 @@ export interface WorkFlowDoFlowRequest {
   dsc: string;
   date: string;
   params: string;
+  workQueueResult: boolean;
+  idempotencyKey: string;
+  workTableParam: WorkTableParam;
   idempotencyKey: string;
 }
 
@@ -203,7 +222,10 @@ interface FlowMapResult {
 
 export interface WorkFlowState
   extends WorkFlowRequest,
-    WorkFlowRowSelectRequest, WorkFlowFlowsRequest , WorkFlowFlowNosSearchRequest, WorkFlowFlowMapsRequest {
+    WorkFlowRowSelectRequest,
+    WorkFlowFlowsRequest,
+    WorkFlowFlowNosSearchRequest,
+    WorkFlowFlowMapsRequest {
   workFlowResponse: WorkflowResponse;
   setField: (field: string | number | symbol, value: any) => void;
   setWorkFlowResponse: (workFlowResponse: WorkflowResponse) => void;
@@ -229,9 +251,7 @@ export interface WorkFlowState
   ) => void; //api/WFMS/flowMaps?FlowNoId=4030207&SystemId=4
 }
 
-export interface WorkFlowRowSelectState
-  extends WorkFlowRowSelectRequest
-    {
+export interface WorkFlowRowSelectState extends WorkFlowRowSelectRequest {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   workFlowDoFlowResponse: WorkFlowDoFlowResponse; // for doFlow
   setField: (field: string | number | symbol, value: any) => void;

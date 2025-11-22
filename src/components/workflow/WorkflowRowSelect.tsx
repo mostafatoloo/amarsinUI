@@ -16,14 +16,16 @@ type Props = {
   isLoadingdoFlow:boolean;
   isLoading: boolean;
   error: Error | null;
-  refetchWorkTable: () => void;
-  refetchWorkTableRowSelect:() => void;
+  //refetchWorkTable: () => void;
+  //refetchWorkTableRowSelect:() => void;
   selectedId: number;
   setSelectedId: React.Dispatch<React.SetStateAction<number>>
   definitionInvironment:DefinitionInvironment;
   definitionDateTime: DefinitionDateTime ;
   isLoadingBanks:boolean;
   banks: SearchItem[]
+  cashPosSystemSearch: SearchItem[];
+  
 };
 
 const WorkflowRowSelect = ({
@@ -33,14 +35,15 @@ const WorkflowRowSelect = ({
   isLoadingdoFlow,
   isLoading,
   error,
-  refetchWorkTable,
-  refetchWorkTableRowSelect,
+  //refetchWorkTable,
+  //refetchWorkTableRowSelect,
   selectedId,
   setSelectedId,
   definitionInvironment,
   definitionDateTime,
   isLoadingBanks,
-  banks
+  banks,
+  cashPosSystemSearch
 }: Props) => {
   if (error) return <div>Error: {error.message} </div>;
   return (
@@ -58,14 +61,15 @@ const WorkflowRowSelect = ({
             workFlowDoFlowResponse={workFlowDoFlowResponse}
             doFlow={doFlow}
             isLoadingdoFlow={isLoadingdoFlow}
-            refetchWorkTable={refetchWorkTable}
-            refetchWorkTableRowSelect={refetchWorkTableRowSelect}
+            //refetchWorkTable={refetchWorkTable}
+            //refetchWorkTableRowSelect={refetchWorkTableRowSelect}
             selectedId={selectedId}
             setSelectedId={setSelectedId}
             definitionInvironment={definitionInvironment}
             definitionDateTime={definitionDateTime}
             isLoadingBanks={isLoadingBanks}
             banks={banks}
+            cashPosSystemSearch={cashPosSystemSearch}
           />
         </div>
       )}

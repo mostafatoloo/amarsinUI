@@ -8,7 +8,6 @@ import { red } from "@mui/material/colors";
 import ModalMessage from "../layout/ModalMessage";
 import {
   ProductPriceDtlHistory,
-  ProductPriceListItem,
   ProductPriceListItemTable,
   ProductPriceListItemTable2,
   ProductPriceListResponse,
@@ -233,7 +232,7 @@ const ProductPriceFormList = ({
       brands: [],
     };
     const response = await handleSubmit(undefined, request);
-    let productPriceProducts: ProductPriceListItem[] | undefined =
+    let productPriceProducts: any[] | undefined =
       response?.data.result;
     setOriginalData((old) =>
       old.map((row, index) => {
@@ -245,11 +244,11 @@ const ProductPriceFormList = ({
             product: productPriceProducts[0].product,
             pId: productPriceProducts[0].pId,
             lastDate: productPriceProducts[0].lastDate,
-            p1: productPriceProducts[0].p1,
-            p2: productPriceProducts[0].p2,
-            p3: productPriceProducts[0].p3,
-            p4: productPriceProducts[0].p4,
-            p5: productPriceProducts[0].p5,
+            p1O: productPriceProducts[0].p1O,
+            p2O: productPriceProducts[0].p2O,
+            p3O: productPriceProducts[0].p3O,
+            p4O: productPriceProducts[0].p4O,
+            p5O: productPriceProducts[0].p5O,
             dtlDsc: productPriceProducts[0].dtlDsc,
             isDeleted: false,
           };

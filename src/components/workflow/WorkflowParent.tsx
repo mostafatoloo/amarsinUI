@@ -24,7 +24,6 @@ type Props = {
   isLoading: boolean;
   isRefetchingWorkTable: boolean;
   isRefetchingWorkTableRowSelect: boolean;
-  isLoadingdoFlow: boolean;
 };
 
 export default function WorkflowParent({
@@ -35,7 +34,6 @@ export default function WorkflowParent({
   isLoading,
   isRefetchingWorkTable,
   //isRefetchingWorkTableRowSelect,
-  isLoadingdoFlow,
 }: Props) {
   const { flowMapId: flowMapIdStore, setField } = useWorkflowStore();
   const { systemId, chartId, defaultRowsPerPage } = useGeneralContext();
@@ -345,7 +343,7 @@ export default function WorkflowParent({
             style={{ width: "20%" }}
           />
         </div>
-        {isLoading || isLoadingdoFlow || isRefetchingWorkTable /*|| isRefetchingWorkTableRowSelect*/ ? (
+        {isLoading || isRefetchingWorkTable /*|| isRefetchingWorkTableRowSelect*/ ? (
           <div className="w-full text-center">{<Skeleton />}</div>
         ) : workFlowResponse.err !== 0 ? (
           <p className="p-6 text-red-400 text-sm md:text-base font-bold">

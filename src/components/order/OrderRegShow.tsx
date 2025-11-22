@@ -73,7 +73,7 @@ const OrderRegShow = ({
     refetchOrderRegShow,
   } = useOrders();
 
-  const { setField: setOrderCupListField ,orderId} = useOrderStore();
+  const { setField: setOrderCupListField, orderId } = useOrderStore();
   const [warehouse, setWarehouse] = useState<DefaultOptionType | null>(null);
   const { authApiResponse } = useAuthStore();
   const usrId = authApiResponse?.data?.result?.login?.usrId ?? 0;
@@ -82,6 +82,8 @@ const OrderRegShow = ({
   const [editClicked1, setEditClicked1] = useState(false);
   const [editClicked2, setEditClicked2] = useState(false);
   const [otId, setOtId] = useState<number>(0);
+  //show message modal if orderRegShowResponse.meta.errorCode > 0
+  const [showMessageModal, setShowMessageModal] = useState(false);
   const [checkSum, setCheckSum] = useState<number>(0);
   //for showing  سوابق آفر
   const [showHistory, setShowHistory] = useState(false);
@@ -168,6 +170,7 @@ const OrderRegShow = ({
                   className="cursor-pointer"
                   alt="HistoryIcon"
                 />
+                {row.original.tax > 0 ? <img src={TaxIcon} alt="tax" /> : null}
               </div>
             );
           },
@@ -279,7 +282,8 @@ const OrderRegShow = ({
     }
   }, [refetchSwitch]);
   ////////////////////////////////////////////////////////////////////////
-  if (orderId!==workFlowRowSelectResponse?.workTableRow.formId){
+  //for api/Order/orderRegShow?orderId=22052
+  if (orderId !== workFlowRowSelectResponse?.workTableRow.formId) {
     setOrderField("orderId", workFlowRowSelectResponse?.workTableRow.formId);
   }
   /*useEffect(() => {
@@ -308,6 +312,20 @@ const OrderRegShow = ({
     };
   }, [isModalOpen]);
   //////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    if (showMessageModal) {
+      timeoutId = setTimeout(() => {
+        setShowMessageModal(false);
+      }, 3000);
+    }
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [showMessageModal]);
+  /////////////////////////////////////////////////////////////////
   useEffect(() => {
     setSalesPrice({
       id: orderRegShowResponse.data.result.defaultPriceId,
@@ -351,75 +369,87 @@ const OrderRegShow = ({
   //////////////////////////////////////////////////////////////////
   useEffect(() => {
     //console.log(salesPrice, "salesPrice in order reg show table useEffect");
+    if (orderRegShowResponse.data.result.orderDtls.length === 0) {
+      setShowMessageModal(true);
+      return;
+    }
     const tempData = orderRegShowResponse.data.result.orderDtls.map(
-      (item, index) => ({
-        index: convertToFarsiDigits(index + 1),
-        pId: item.pId,
-        pName: convertToFarsiDigits(item.pName),
-        cost: convertToFarsiDigits(formatNumberWithCommas(item.cost)),
-        dcrmnt: convertToFarsiDigits(item.dcrmnt),
-        cnt: convertToFarsiDigits(item.cnt),
-        oCnt: convertToFarsiDigits(item.oCnt),
-        editIcon1: item.rEdt ? (
-          <img
-            src={EditIcon}
-            onClick={() => handleEditClick1(item)}
-            className="cursor-pointer"
-            alt="edit1"
-          />
-        ) : null,
-        needPerm: item.needPerm ? <FaCheck className="text-green-500" /> : null,
-        offerNo: convertToFarsiDigits(item.offerNo),
-        stock: convertToFarsiDigits(item.stock),
-        historyIcon: (
-          <div className="flex justify-center items-center cursor-pointer">
-            <img src={HistoryIcon} alt="history" />
-            {item.tax > 0 ? <img src={TaxIcon} alt="tax" /> : null}
-          </div>
-        ),
-        cupId: item.cups
-          .map((cup) => {
-            return convertToFarsiDigits(cup.id);
-          })
-          .join("\n"),
-        cupCode: item.cups
-          .map((cup) => {
-            return convertToFarsiDigits(cup.code);
-          })
-          .join("\n"),
-        cupEDate: item.cups
-          .map((cup) => {
-            return convertToFarsiDigits(cup.eDate);
-          })
-          .join("\n"),
-        cupCnt: item.cups
-          .map((cup) => {
-            return convertToFarsiDigits(cup.cnt);
-          })
-          .join("\n"),
-        cupOCnt: item.cups
-          .map((cup) => {
-            return convertToFarsiDigits(cup.oCnt);
-          })
-          .join("\n"),
-        editIcon2: item.rEdt ? (
-          <img
-            src={EditIcon}
-            onClick={() => handleEditClick2(item)}
-            alt="edit2"
-          />
-        ) : null,
-        rCnt: convertToFarsiDigits(item.rCnt),
-        roCnt: convertToFarsiDigits(item.roCnt),
-        salePrice: convertToFarsiDigits(formatNumberWithCommas(item.salePrice)),
-        historyIcon2: (
-          <img src={HistoryIcon} className="cursor-pointer" alt="report" />
-        ),
-        otId: item.otId,
-      })
+      (item, index) => {
+        return {
+          index: convertToFarsiDigits(index + 1),
+          pId: item.pId,
+          pName: convertToFarsiDigits(item.pName),
+          cost: convertToFarsiDigits(formatNumberWithCommas(item.cost)),
+          dcrmnt: convertToFarsiDigits(item.dcrmnt),
+          cnt: convertToFarsiDigits(item.cnt),
+          oCnt: convertToFarsiDigits(item.oCnt),
+          editIcon1: item.rEdt ? (
+            <img
+              src={EditIcon}
+              onClick={() => handleEditClick1(item)}
+              className="cursor-pointer"
+              alt="edit1"
+            />
+          ) : null,
+          needPerm: item.needPerm ? (
+            <FaCheck className="text-green-500" />
+          ) : null,
+          offerNo: convertToFarsiDigits(item.offerNo),
+          stock: convertToFarsiDigits(Math.floor(item.stock)),
+          tax: item.tax,
+          historyIcon: (
+            <div className="flex justify-center items-center cursor-pointer">
+              <img src={HistoryIcon} alt="history" />
+              {item.tax > 0 ? <img src={TaxIcon} alt="tax" /> : null}
+            </div>
+          ),
+          cupId: item.cups
+            .map((cup) => {
+              return convertToFarsiDigits(cup.id);
+            })
+            .join("\n"),
+          cupCode: item.cups
+            .map((cup) => {
+              return convertToFarsiDigits(cup.code);
+            })
+            .join("\n"),
+          cupEDate: item.cups
+            .map((cup) => {
+              return convertToFarsiDigits(cup.eDate);
+            })
+            .join("\n"),
+          cupCnt: item.cups
+            .map((cup) => {
+              return convertToFarsiDigits(cup.cnt);
+            })
+            .join("\n"),
+          cupOCnt: item.cups
+            .map((cup) => {
+              return convertToFarsiDigits(cup.oCnt);
+            })
+            .join("\n"),
+          editIcon2: item.rEdt ? (
+            <img
+              src={EditIcon}
+              onClick={() => handleEditClick2(item)}
+              alt="edit2"
+            />
+          ) : null,
+          rCnt: convertToFarsiDigits(item.rCnt),
+          roCnt: convertToFarsiDigits(item.roCnt),
+          salePrice: convertToFarsiDigits(
+            formatNumberWithCommas(item.salePrice)
+          ),
+          historyIcon2: (
+            <img src={HistoryIcon} className="cursor-pointer" alt="report" />
+          ),
+          otId: item.otId,
+        };
+      }
     );
     setBaseData(tempData);
   }, [orderRegShowResponse]);
+  //////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     if (isLoadingOrderSalesPrices) {
       return;
@@ -453,27 +483,30 @@ const OrderRegShow = ({
     let dtls: DtlsItem[] = [];
     let inOuts: InOutsItem[] = [];
 
+    console.log(processedData, "processedData in order reg show table");
     processedData.map((item) => {
       dtls.push({
         id: item.otId,
-        cnt: Number(convertToLatinDigits(item.cnt)),
-        oCnt: Number(convertToLatinDigits(item.oCnt)),
-        cost: convertToLatinDigits(item.cost),
+        cnt: Number(convertToLatinDigits(item.rCnt)),
+        oCnt: Number(convertToLatinDigits(item.roCnt)),
+        cost: convertToLatinDigits(item.salePrice),
       });
       //console.log(item);
       const cupCnt = parsePersianNumerals(item.cupCnt);
       const cupOCnt = parsePersianNumerals(item.cupOCnt);
       const cupIds = parsePersianNumerals(item.cupId);
-      for (let i = 0; i < cupCnt.length; i++) {
-        if (cupCnt[i] > 0) {
-          inOuts.push({
-            id: cupIds[i],
-            otId: item.otId,
-            cnt: cupCnt[i],
-            oCnt: cupOCnt[i],
-          });
-        }
-      }
+      const sumCupCnt = cupCnt.reduce((acc, curr) => {
+        return acc + curr;
+      }, 0);
+      const sumCupOCnt = cupOCnt.reduce((acc, curr) => {
+        return acc + curr;
+      }, 0);
+      inOuts.push({
+        id: cupIds[0],
+        otId: item.otId,
+        cnt: sumCupCnt,
+        oCnt: sumCupOCnt,
+      });
     });
 
     request = {
@@ -508,7 +541,7 @@ const OrderRegShow = ({
   const { warehouseSearchResponse } = useWarehouse();
   // for /api/Product/salesPricesSearch?
   useEffect(() => {
-    console.log(convertToLatinDigits(salesPriceSearch),"salesPriceSearch");
+    console.log(convertToLatinDigits(salesPriceSearch), "salesPriceSearch");
     setSalesPriceField("salesPricesSearch", salesPriceSearch);
     setSalesPriceField("salesPricesSearchPage", 1);
     setSalesPriceField("lastId", 0);
@@ -516,7 +549,7 @@ const OrderRegShow = ({
 
   // for api/Warehouse/Search?search=%D8%A7&page=1&pageSize=30&lastId=0&CustomerTypeId=-1
   useEffect(() => {
-    console.log(convertToLatinDigits(warehouseSearch),"warehouseSearch");
+    console.log(convertToLatinDigits(warehouseSearch), "warehouseSearch");
     setWarehouseField(
       "search",
       convertToLatinDigits(warehouseSearch) ? null : "ا"
@@ -603,7 +636,7 @@ const OrderRegShow = ({
       <ModalMessage
         isOpen={isModalOpen}
         backgroundColor={
-          orderRegResponse?.meta?.errorCode === -1
+          orderRegResponse?.meta?.errorCode <=0
             ? "bg-green-200"
             : "bg-red-200"
         }
@@ -672,6 +705,19 @@ const OrderRegShow = ({
         setShowHistory={setShowHistory}
         isDtlHistoryLoading={isLoadingProductOfferDtlHistory}
         productOfferDtlHistory={productOfferDtlHistory || []}
+      />
+      {/* show message modal if orderRegShowResponse.meta.errorCode > 0 */}
+      <ModalMessage
+        isOpen={showMessageModal}
+        backgroundColor={
+          orderRegShowResponse?.meta?.errorCode <=0
+            ? "bg-green-200"
+            : "bg-red-200"
+        }
+        color="text-white"
+        onClose={() => setShowMessageModal(false)}
+        message={orderRegShowResponse?.meta?.message || ""}
+        visibleButton={false}
       />
     </div>
   );

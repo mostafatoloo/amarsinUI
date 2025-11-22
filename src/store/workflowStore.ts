@@ -27,6 +27,7 @@ export const useWorkflowStore = create<WorkFlowState>()((set) => ({
     flowMapTitles: [],
     workTables: [],
   },
+  //api/WFMS/WorkTableRowSelect?WorkTableId=994000&ChartId=7
   workTableId: -1,
   workFlowRowSelectResponse: {
     err: 0,

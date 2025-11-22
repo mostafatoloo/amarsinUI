@@ -39,9 +39,9 @@ type Props = {
     unknown
   >;
   isLoadingUpdateFields: boolean;
-  cashPosSystemSearch: any;
+  cashPosSystemSearch: SearchItem[];
   sayadChequeInquiryByPaymentIdResponse: SayadChequeInquiryByPaymentIdResponse;
-  definitionInvironment:DefinitionInvironment;
+  definitionInvironment: DefinitionInvironment;
   banks: SearchItem[];
   isLoadingBanks: boolean;
 };
@@ -93,8 +93,12 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
   const hasInitializedPayKind = useRef(false);
 
   useEffect(() => {
-    setPayKind(loadPaymentResponse.data.result?.payKind ?? -1);
-  }, [loadPaymentResponse.data.result?.payKind]);
+    const payKindTemp = loadPaymentResponse.data.result?.payKind ?? -1;
+    console.log(payKindTemp, "payKindTemp");
+    if (payKindTemp !== undefined) {
+      setPayKind(payKindTemp);
+    }
+  }, [loadPaymentResponse.data.result?.payKind, canEditForm]);
 
   const [cheque, setCheque] = useState({
     sayadiMessage: "",
@@ -179,15 +183,20 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
     setChequeField("search", cashPosSystemSerch);
     setChequeField("page", 1);
     setChequeField("lastId", 0);
-  }, [cashPosSystemSerch]);
+  }, [cashPosSystemSerch, initData?.systemId]);
 
-  // Initialize systemId and payKind only once per record
+  // Initialize systemId and payKind only once per record for /api/cheque/cashPosSystemSearch
   useEffect(() => {
     const newSystemId = initData?.systemId ?? -1;
     const newPayKind = payKind;
 
     // Only set if payKind is valid and we haven't initialized yet for this record
-    if (newPayKind !== -1 && !hasInitializedPayKind.current && canEditForm) {
+    if (
+      newPayKind !== -1 &&
+      newPayKind !== 2 &&
+      !hasInitializedPayKind.current &&
+      canEditForm
+    ) {
       setChequeField("systemId", newSystemId);
       setChequeField("payKind", newPayKind);
       hasInitializedPayKind.current = true;
@@ -219,7 +228,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
       cash_PosSystem: {},
       sanadNum: {},
       sanadDate: {},
-      delayAdvanceDays:{}
+      delayAdvanceDays: {},
     });
     setUpdateFieldsResponse({
       meta: { errorCode: 0, message: "", type: "" },
@@ -303,12 +312,14 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
       ),
       sayadiStatus: loadPaymentResponse.data.result?.sayadiStatus ?? 0,
       eCheck: loadPaymentResponse.data.result?.eCheck ?? false,
-      delayAdvanceDays: convertToFarsiDigits(loadPaymentResponse.data.result?.delayAdvanceDays ?? 0),
+      delayAdvanceDays: convertToFarsiDigits(
+        loadPaymentResponse.data.result?.delayAdvanceDays ?? 0
+      ),
     });
   }, [loadPaymentResponse]);
   ///////////////////////////////////////////////////////////////////
   useEffect(() => {
-    console.log(loadPaymentResponse.data.result?.sayadiStatus)
+    console.log(loadPaymentResponse.data.result?.sayadiStatus);
     switch (
       loadPaymentResponse.data.result &&
       loadPaymentResponse.data.result?.sayadiStatus
@@ -504,7 +515,10 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
 
   const handleSayadiClick = () => {
     setIsSayadiClick(true);
-    setChequeField("sayadiPaymentId", loadPaymentResponse.data.result?.id ?? -1);
+    setChequeField(
+      "sayadiPaymentId",
+      loadPaymentResponse.data.result?.id ?? -1
+    );
     // Increment trigger to force refetch even with same values
     setChequeField("paymentIdTrigger", Date.now());
   };
@@ -537,7 +551,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
             صیادی:
           </label>
           <div>
-            <FaCircle style={{color:sayadiTextColor}} size={10} />
+            <FaCircle style={{ color: sayadiTextColor }} size={10} />
           </div>
           <input
             name="sayadiMessage"
@@ -547,7 +561,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
                 : cheque.sayadiMessage
             }
             className={`border-2 border-gray-300 rounded-md p-1 w-full`}
-            style={{color:sayadiTextColor}}
+            style={{ color: sayadiTextColor }}
             disabled
           />
         </div>
@@ -559,7 +573,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
           </label>
           <div className="flex w-full justify-center items-center gap-2">
             <AutoComplete
-              disabled={payKind === 1 || !canEditForm}
+              disabled={!canEditForm}
               required={true}
               showClearIcon={false}
               textColor={colors.gray_600}
@@ -572,7 +586,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
               showLabel={false}
               inputPadding="0 !important"
               backgroundColor={
-                payKind === 1 || !canEditForm
+                !canEditForm
                   ? "inherit"
                   : updateStatus.systemId.validationError
                   ? "#fef2f2"
@@ -592,7 +606,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
           </label>
           <div className="flex w-full justify-center items-center gap-2">
             <AutoComplete
-              disabled={payKind === 1 || !canEditForm}
+              disabled={!canEditForm}
               required={true}
               showClearIcon={false}
               textColor={colors.gray_600}
@@ -608,7 +622,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
               showLabel={false}
               inputPadding="0 !important"
               backgroundColor={
-                payKind === 1 || !canEditForm
+                !canEditForm
                   ? "inherit"
                   : updateStatus.yearId.validationError
                   ? "#fef2f2"
@@ -666,7 +680,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
             {showValidationError("sayadi")}
           </div>
         )}
-        {payKind === 1 && (
+        {/*payKind === 1 && (
           <div className="flex w-full justify-center items-center gap-2">
             <Input
               disabled={payKind === 1 || !canEditForm}
@@ -679,11 +693,11 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
               variant="outlined"
             />
           </div>
-        )}
-        {(payKind === 0 || payKind === 9) && (
+        )*/}
+        {(payKind === 0 || payKind === 9 || payKind === 1) && (
           <div className="flex w-full justify-center items-center gap-2">
             <label className="w-24 text-left">
-              {payKind === 0 ? "صندوق:" : "بانک:"}
+              {payKind === 0 ? "صندوق:" : payKind === 9 ? "بانک:" : "پایانه:"}
             </label>
             <div className="flex w-full justify-center items-center gap-2">
               <AutoComplete
@@ -863,7 +877,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
           <div className="flex w-full-minus-24 justify-center items-center gap-2">
             <div className="flex w-full justify-center items-center gap-2">
               <Input
-                disabled={payKind === 1 || !canEditForm}
+                disabled={!canEditForm}
                 name="no"
                 value={cheque.no}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -882,7 +896,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
             {payKind === 2 && (
               <div className="flex w-full justify-center items-center gap-2">
                 <Input
-                  disabled={!canEditForm} //payKind === 1 ||
+                  disabled={!canEditForm}
                   name="fixSerial"
                   value={cheque.fixSerial}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -902,7 +916,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
         </div>
         <div className="flex w-1/2 justify-center items-center gap-2">
           <Input
-            disabled={payKind === 1 || !canEditForm}
+            disabled={!canEditForm}
             name="amountT"
             label="مبلغ:"
             value={cheque.amountT}
@@ -923,7 +937,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
       <div className="flex justify-center items-center gap-2">
         <div className="flex justify-between items-center w-full">
           <Input
-            disabled={payKind === 1 || !canEditForm}
+            disabled={!canEditForm}
             name="dsc"
             label="شرح:"
             value={cheque.dsc}
@@ -947,7 +961,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
               name="eCheck"
               checked={cheque.eCheck}
               disabled={!canEditForm}
-              onChange={(e)=>console.log(e.target.checked)}
+              onChange={(e) => console.log(e.target.checked)}
               /*onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setChequeFields("eCheck", e.target.checked)
           }
@@ -962,7 +976,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
       </div>
       <div className="flex justify-between items-center w-full">
         <Input
-          disabled={payKind === 1 || !canEditForm}
+          disabled={!canEditForm}
           name="delayAdvanceDays"
           label="مدت تاخیر/تعجیل:"
           value={cheque.delayAdvanceDays}
@@ -994,17 +1008,17 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
         <ModalMessage
           isOpen={isModalOpen}
           backgroundColor={
-            updateFieldsResponse.meta.errorCode <=0
+            updateFieldsResponse.meta.errorCode <= 0
               ? "bg-green-200"
               : "bg-red-200"
           }
           bgColorButton={
-            updateFieldsResponse.meta.errorCode <=0
+            updateFieldsResponse.meta.errorCode <= 0
               ? "bg-green-500"
               : "bg-red-500"
           }
           bgColorButtonHover={
-            updateFieldsResponse.meta.errorCode <=0
+            updateFieldsResponse.meta.errorCode <= 0
               ? "bg-green-600"
               : "bg-red-600"
           }

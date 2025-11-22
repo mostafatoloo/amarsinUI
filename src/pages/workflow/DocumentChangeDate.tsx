@@ -11,6 +11,7 @@ import { UseMutateAsyncFunction } from "@tanstack/react-query";
 import { v4 as uuidv4 } from "uuid";
 import { useGeneralContext } from "../../context/GeneralContext";
 import ModalMessage from "../../components/layout/ModalMessage";
+import { useWorkflowStore } from "../../store/workflowStore";
 
 type Props = {
   doFlow: UseMutateAsyncFunction<any, Error, WorkFlowDoFlowRequest, unknown>;
@@ -18,10 +19,10 @@ type Props = {
   flowMapId: number;
   isLoadingdoFlow: boolean;
   workFlowDoFlowResponse: WorkFlowDoFlowResponse;
-  refetchWorkTable: () => void;
-  refetchWorkTableRowSelect: () => void;
+  //refetchWorkTable: () => void;
+  //refetchWorkTableRowSelect: () => void;
   dsc: string;
-  setIsDocumentChangeDateOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const DocumentChangeDate = ({
@@ -30,24 +31,31 @@ const DocumentChangeDate = ({
   flowMapId,
   isLoadingdoFlow,
   workFlowDoFlowResponse,
-  refetchWorkTable,
-  refetchWorkTableRowSelect,
+  //refetchWorkTable,
+  //refetchWorkTableRowSelect,
   dsc,
-  setIsDocumentChangeDateOpen,
+  setIsModalOpen,
 }: Props) => {
   const { chartId, systemId, yearId } = useGeneralContext();
   const [isModalOpenMessage, setIsModalOpenMessage] = useState(false);
   const [date, setDate] = useState<Date | null>(new Date());
+  const {
+    page : pageNumber,
+    dateTime,
+    code,
+    cost,
+    name,
+    flowMapId : flowMapIdStore,
+    dsc : dscStore,
+    title,
+  } = useWorkflowStore();
   /////////////////////////////////////////////////////////////////
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
     if (isModalOpenMessage) {
       timeoutId = setTimeout(() => {
-        setIsModalOpenMessage(false);
-        if (workFlowDoFlowResponse.meta.errorCode <= 0) {
-          refetchWorkTableRowSelect();
-          refetchWorkTable();
-        }
+        setIsModalOpenMessage(false); //close ModalMessage
+        setIsModalOpen(false); // close DocumentChangeDate form
       }, 3000);
     }
     return () => {
@@ -62,7 +70,7 @@ const DocumentChangeDate = ({
     date: string
   ) => {
     e.preventDefault();
-    setIsDocumentChangeDateOpen(false);
+    //setIsModalOpen(false);
     const request: WorkFlowDoFlowRequest = {
       chartId,
       systemId,
@@ -75,16 +83,28 @@ const DocumentChangeDate = ({
       dsc,
       date,
       params: `{\"Date\":\"${date}\"}`,
+      workQueueResult: false,
       idempotencyKey: uuidv4(),
+      workTableParam: {
+        flowMapId: flowMapIdStore ?? -1,
+        title: title ?? "",
+        dateTime: dateTime ?? "",
+        code: code ?? "",
+        cost: cost ?? "",
+        name: name ?? "",
+        dsc: dscStore ?? "",
+        page: pageNumber ?? 1,
+      },
     };
     console.log(request, "request");
     try {
       const response = await doFlow(request);
+      setIsModalOpenMessage(true);// to show message
       console.log(response, "response");
     } catch (error) {
     } finally {
       console.log("succeed");
-      setIsModalOpenMessage(true);
+      //setWorkFlowField("isPreventingRefetchWorkflow", false);
     }
   };
   return (
@@ -106,8 +126,8 @@ const DocumentChangeDate = ({
           }
           variant="shadow-lg w-48"
         />
-        {isModalOpenMessage && <p>dhsjdhj</p>}
       </div>
+        {/*{isModalOpenMessage && <p>dhsjdhj</p>}*/}
       {!isLoadingdoFlow && (
         <ModalMessage
           isOpen={isModalOpenMessage}

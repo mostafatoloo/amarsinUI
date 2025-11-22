@@ -7,9 +7,10 @@ import {
   WorkflowResponse,
   WorkflowRowSelectResponse,
 } from "../../types/workflow";
-import { QueryObserverResult, RefetchOptions, UseMutateAsyncFunction } from "@tanstack/react-query";
+import {  UseMutateAsyncFunction } from "@tanstack/react-query";
 import { DefinitionDateTime, DefinitionInvironment } from "../../types/definitionInvironment";
 import { useBanks } from "../../hooks/useBanks";
+import { useCheques } from "../../hooks/useCheques";
 
 type Props = {
   workFlowResponse: WorkflowResponse;
@@ -21,8 +22,8 @@ type Props = {
   doFlow: UseMutateAsyncFunction<any, Error, WorkFlowDoFlowRequest, unknown>;
   workFlowDoFlowResponse: WorkFlowDoFlowResponse;
   isLoadingdoFlow: boolean;
-  refetchWorkTable: (options?: RefetchOptions) => Promise<QueryObserverResult<WorkflowResponse, Error>>
-  refetchWorkTableRowSelect: ()=>void
+  //refetchWorkTable: (options?: RefetchOptions) => Promise<QueryObserverResult<WorkflowResponse, Error>>
+  //refetchWorkTableRowSelect: ()=>void
   isRefetchingWorkTable: boolean;
   isRefetchingWorkTableRowSelect: boolean;
   refetchSwitch: boolean;
@@ -41,8 +42,8 @@ const WorkflowForm = ({
   doFlow,
   workFlowDoFlowResponse,
   isLoadingdoFlow,
-  refetchWorkTable,
-  refetchWorkTableRowSelect,
+  //refetchWorkTable,
+  //refetchWorkTableRowSelect,
   isRefetchingWorkTable,
   isRefetchingWorkTableRowSelect,
   refetchSwitch,
@@ -52,6 +53,7 @@ const WorkflowForm = ({
 }: Props) => {
   const [selectedId, setSelectedId] = useState<number>(-1);
   const { banks, isLoading: isLoadingBanks } = useBanks();
+  const {cashPosSystemSearch}=useCheques();
   const handleSelectedIdChange = (id: number) => {
     console.log(id, "id in WorkflowForm");
     setSelectedId(id);
@@ -65,7 +67,6 @@ const WorkflowForm = ({
         workFlowResponse={workFlowResponse}
         error={error}
         isLoading={isLoading}
-        isLoadingdoFlow={isLoadingdoFlow}
         isRefetchingWorkTable={isRefetchingWorkTable}
         isRefetchingWorkTableRowSelect={isRefetchingWorkTableRowSelect}
       />
@@ -80,14 +81,15 @@ const WorkflowForm = ({
         doFlow={doFlow}
         workFlowDoFlowResponse={workFlowDoFlowResponse}
         isLoadingdoFlow={isLoadingdoFlow}
-        refetchWorkTable={refetchWorkTable}
-        refetchWorkTableRowSelect={refetchWorkTableRowSelect}
+        //refetchWorkTable={refetchWorkTable}
+        //refetchWorkTableRowSelect={refetchWorkTableRowSelect}
         refetchSwitch={refetchSwitch}
         setRefetchSwitch={setRefetchSwitch}
         definitionInvironment={definitionInvironment}
         definitionDateTime ={definitionDateTime}
         isLoadingBanks={isLoadingBanks}
         banks={banks}
+        cashPosSystemSearch={cashPosSystemSearch}
       />
     </div>
   );

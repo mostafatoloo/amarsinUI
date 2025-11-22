@@ -445,14 +445,25 @@ export default function TTable<T extends object>({
                         ? "none"
                         : "1px solid #e0e0e0",
                       width: cell.column.totalWidth || cell.column.width,
-                      backgroundColor:
-                        i === selectedRowIndex && changeRowSelectColor //rowSelect && changeRowSelectColor
-                          ? colors.blue50
-                          : CellColorChange &&
-                            (!cell.column.backgroundColor ||
-                              cell.column.except === true)
-                          ? CellColorChange(row, cell.column.id)
-                          : cell.column.backgroundColor || "white",
+                      backgroundColor: (() => {
+                        // Priority 1: CellColorChange (if it returns a non-null value)
+                        if (
+                          CellColorChange &&
+                          (!cell.column.backgroundColor ||
+                            cell.column.except === true)
+                        ) {
+                          const cellColor = CellColorChange(row, cell.column.id);
+                          if (cellColor !== null && cellColor !== undefined) {
+                            return cellColor;
+                          }
+                        }
+                        // Priority 2: Selected row color
+                        if (i === selectedRowIndex && changeRowSelectColor) {
+                          return colors.blue50;
+                        }
+                        // Priority 3: Column background color or default
+                        return cell.column.backgroundColor || "white";
+                      })(),
                       whiteSpace: "pre-wrap",
                       textWrap: !wordWrap && width > 768 ? "nowrap" : "wrap",
                       overflow: !wordWrap && width > 768 ? "hidden" : "visible",

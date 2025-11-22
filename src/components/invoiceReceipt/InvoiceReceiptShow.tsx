@@ -72,19 +72,19 @@ Props) => {
   //for excel head cells
   const excelHeadCells: TableColumns = [
     {
-      Header: "شماره",
+      Header: "ردیف",
       accessor: "index",
     },
     {
-      Header: "نام برند",
+      Header: "برند",
       accessor: "bName",
     },
     {
-      Header: "کد محصول",
+      Header: "کد کالا",
       accessor: "productCode",
     },
     {
-      Header: "نام محصول",
+      Header: "نام کالا",
       accessor: "product",
     },
     {
@@ -96,7 +96,7 @@ Props) => {
       accessor: "offer",
     },
     {
-      Header: "قیمت",
+      Header: "مبلغ",
       accessor: "cost",
     },
     {
@@ -108,11 +108,11 @@ Props) => {
       accessor: "taxValue",
     },
     {
-      Header: "جمع کل",
+      Header: "جمع",
       accessor: "total",
     },
     {
-      Header: "توضیحات",
+      Header: "شرح",
       accessor: "dtlDsc",
     },
   ];

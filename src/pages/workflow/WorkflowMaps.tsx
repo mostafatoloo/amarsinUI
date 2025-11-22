@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import WorkflowMapHeader from "../../components/workflow/workflowMap/WorkflowMapHeader";
 import { useGeneralContext } from "../../context/GeneralContext";
 import { DefinitionInvironment } from "../../types/definitionInvironment";
@@ -7,7 +7,7 @@ import { useWorkflow } from "../../hooks/useWorkflow";
 import AutoComplet from "../../components/controls/AutoComplet";
 import { DefaultOptionType } from "../../types/general";
 import WorkFlowMap from "../../components/workflow/workflowMap/WorkFlowMap";
-import { convertToFarsiDigits } from "../../utilities/general";
+import { debounce } from "lodash";
 
 type Props = {
   definitionInvironment: DefinitionInvironment;
@@ -34,8 +34,26 @@ const WorkflowMaps = ({ definitionInvironment }: Props) => {
     setField("systemIdFlowNosSearch", systemId);
     setField("pageFlowNosSearch", 1);
     setField("lastIdFlowNosSearch", 0);
-    setField("searchFlowNosSearch", convertToFarsiDigits(search));
+    handleDebounceFilterChange("searchFlowNosSearch", search);
   }, [systemId, search]);
+
+  ///////////////////////////////////////////////////////
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const handleDebounceFilterChange = useCallback(
+    debounce((field: string, value: string | number) => {
+      // Cancel any existing request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      // Create a new AbortController for this request
+      abortControllerRef.current = new AbortController();
+
+      setField(field, value);
+    }, 500),
+    [setField]
+  );
+  ////////////////////////////////////////////////////////
+
   const handleDelete = () => {
     setIsDelete(true);
     console.log(isDelete);

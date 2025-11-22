@@ -2,6 +2,7 @@ import { UseMutateAsyncFunction } from "@tanstack/react-query";
 import OkForm from "../../assets/images/GrayThem/img24_3.png";
 import CancelForm from "../../assets/images/GrayThem/img24_4.png";
 import {
+  FlowButton,
   WorkFlowDoFlowRequest,
   WorkFlowDoFlowResponse,
   WorkflowRowSelectResponse,
@@ -13,22 +14,27 @@ import { v4 as uuidv4 } from "uuid";
 import ModalMessage from "../layout/ModalMessage";
 import ModalForm from "../layout/ModalForm";
 import WorkflowComponent from "./WorkflowComponent";
-import { DefinitionDateTime, DefinitionInvironment } from "../../types/definitionInvironment";
+import {
+  DefinitionDateTime,
+  DefinitionInvironment,
+} from "../../types/definitionInvironment";
 import { SearchItem } from "../../types/general";
+import { useWorkflowStore } from "../../store/workflowStore";
 
 type Props = {
   workFlowRowSelectResponse: WorkflowRowSelectResponse;
   doFlow: UseMutateAsyncFunction<any, Error, WorkFlowDoFlowRequest, unknown>;
   workFlowDoFlowResponse: WorkFlowDoFlowResponse;
   isLoadingdoFlow: boolean;
-  refetchWorkTable: () => void;
-  refetchWorkTableRowSelect: () => void;
+  //refetchWorkTable: () => void;
+  //refetchWorkTableRowSelect: () => void;
   selectedId: number;
   setSelectedId: React.Dispatch<React.SetStateAction<number>>;
-  definitionInvironment:DefinitionInvironment;
-  definitionDateTime:DefinitionDateTime;
-  isLoadingBanks:boolean;
-  banks: SearchItem[]
+  definitionInvironment: DefinitionInvironment;
+  definitionDateTime: DefinitionDateTime;
+  isLoadingBanks: boolean;
+  banks: SearchItem[];
+  cashPosSystemSearch: SearchItem[];
 };
 
 const WorkflowRowSelectHeader = ({
@@ -36,41 +42,47 @@ const WorkflowRowSelectHeader = ({
   doFlow,
   workFlowDoFlowResponse,
   isLoadingdoFlow,
-  refetchWorkTable,
-  refetchWorkTableRowSelect,
+  //refetchWorkTable,
+  //refetchWorkTableRowSelect,
   selectedId,
   setSelectedId,
   definitionInvironment,
   definitionDateTime,
   isLoadingBanks,
-  banks
+  banks,
+  cashPosSystemSearch,
 }: Props) => {
+  const {
+    title,
+    page : pageNumber,
+    dateTime,
+    code,
+    cost,
+    flowMapId : flowMapIdStore,
+    name,
+    dsc : dscStore,
+  } = useWorkflowStore();
   const flowButtons = workFlowRowSelectResponse.flowButtons;
   const flowDescriptions = workFlowRowSelectResponse.flowDescriptions;
   const { chartId, systemId, yearId } = useGeneralContext();
   const [dsc, setDsc] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
   //for open/close DocumentChangeDate form
   const [isDoFlowClicked, setIsDoFlowClicked] = useState(false);
-  const [isDocumentChangeDateOpen, setIsDocumentChangeDateOpen] =
-    useState(false);
+  const [isFormAfterClickOpen, setIsFormAfterClickOpen] = useState(false);
   //for DocumentChangeDate param
   const [flowMapId, setFlowMapId] = useState(-1); // for DocumentChangeDate param
   const [newWorkFlowRowSelectResponse, setNewWorkFlowRowSelectResponse] =
     useState(workFlowRowSelectResponse);
 
   useEffect(() => {
+    console.log(selectedId, setSelectedId);
+  }, []);
+
+  useEffect(() => {
     let timeoutId: NodeJS.Timeout;
-    if (isModalOpen) {
+    if (isDoFlowClicked) {
       timeoutId = setTimeout(() => {
-        setIsModalOpen(false);
-        //setSelectedId(selectedId);
-        if (workFlowDoFlowResponse.meta.errorCode <= 0) {
-          let tempId = selectedId;
-          refetchWorkTable();
-          //refetchWorkTableRowSelect();
-          setSelectedId(tempId);
-        }
+        setIsDoFlowClicked(false);
       }, 3000);
     }
     return () => {
@@ -78,29 +90,56 @@ const WorkflowRowSelectHeader = ({
         clearTimeout(timeoutId);
       }
     };
-  }, [isModalOpen]);
+  }, [isDoFlowClicked]);
 
   const handleDoFlow = async (
     e: React.MouseEvent<HTMLButtonElement>,
-    flowMapId: number
+    flowButton: FlowButton
   ) => {
     e.preventDefault();
-    console.log("handleDoFlow", flowMapId);
+    setFlowMapId(flowButton.id);
+
+    if (flowButton.formAfterClick !== null) {
+      setIsFormAfterClickOpen(true);
+      setNewWorkFlowRowSelectResponse((prev) => {
+        return {
+          ...prev,
+          workTableForms: {
+            ...prev.workTableForms,
+            form1Title: flowButton.formAfterClick?.title ?? "",
+            form1ViewPath: flowButton.formAfterClick?.viewPath ?? "",
+            form2ViewPath: "",
+          },
+        };
+      });
+      return;
+    }
+    //if not formAfterClick, do flow
     setIsDoFlowClicked(true);
-    setFlowMapId(flowMapId);
     const request: WorkFlowDoFlowRequest = {
       chartId,
       systemId,
       yearId,
       workTableId: workFlowRowSelectResponse.workTableRow.id,
-      flowMapId: flowMapId,
+      flowMapId: flowButton.id,
       formId: workFlowRowSelectResponse.workTableRow.formId,
       flowNo: 0,
       flowId: workFlowRowSelectResponse.workTableRow.wfmS_FlowId,
       dsc,
       date: "",
       params: "",
+      workQueueResult: true,
       idempotencyKey: uuidv4(),
+      workTableParam: {
+        flowMapId: flowMapIdStore ?? -1,
+        title: title ?? "",
+        dateTime: dateTime ?? "",
+        code: code ?? "",
+        cost: cost ?? "",
+        name: name ?? "",
+        dsc: dscStore ?? "",
+        page: pageNumber ?? 1,
+      },
     };
     console.log(request, "request");
     try {
@@ -108,14 +147,19 @@ const WorkflowRowSelectHeader = ({
     } catch (error) {}
   };
 
-  useEffect(() => {
-    if (isDoFlowClicked) {
+  /*useEffect(() => {
+    if (isDoFlowClicked && !isLoadingdoFlow) {
       if (
         workFlowDoFlowResponse.data.result.formAfterClick.viewPath === "" ||
         workFlowDoFlowResponse.data.result.formAfterClick.viewPath === null
       ) {
         setIsModalOpen(true);
       } else {
+        //setWorkFlowField("isPreventingRefetchWorkflow", true);
+        console.log(
+          "workFlowDoFlowResponse.data.result.formAfterClick.viewPath",
+          workFlowDoFlowResponse.data.result.formAfterClick.viewPath
+        );
         setNewWorkFlowRowSelectResponse((prev) => {
           return {
             ...prev,
@@ -128,10 +172,14 @@ const WorkflowRowSelectHeader = ({
             },
           };
         });
-        setIsDocumentChangeDateOpen(true);
+        setIsFormAfterClickOpen(true);
       }
     }
-  }, [workFlowDoFlowResponse]);
+  }, [
+    workFlowDoFlowResponse.data.result.formAfterClick.viewPath,
+    isDoFlowClicked,
+    isLoadingdoFlow,
+  ]);*/
 
   return (
     <form className="p-1 gap-1 flex flex-col sm:flex-row bg-gray-200 border border-gray-300 rounded-md w-full">
@@ -155,7 +203,7 @@ const WorkflowRowSelectHeader = ({
                   <button
                     className="flex justify-center items-center gap-1"
                     title={String(fb.id)}
-                    onClick={(e) => handleDoFlow(e, fb.id)}
+                    onClick={(e) => handleDoFlow(e, fb)}
                   >
                     {fb.imageIndex === 3 ? (
                       <img src={OkForm} alt="ok" />
@@ -181,10 +229,11 @@ const WorkflowRowSelectHeader = ({
             );
           })}
       </div>
-      {!isLoadingdoFlow && (
+      {
+        //!isLoadingdoFlow &&
         <ModalMessage
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          isOpen={isDoFlowClicked} //just for DoFlow form
+          onClose={() => setIsDoFlowClicked(false)}
           backgroundColor={
             workFlowDoFlowResponse?.meta.errorCode <= 0
               ? "bg-green-200"
@@ -199,41 +248,38 @@ const WorkflowRowSelectHeader = ({
           message={workFlowDoFlowResponse?.meta.message || ""}
           visibleButton={false}
         />
-      )}
-      {!isLoadingdoFlow &&
-        isDocumentChangeDateOpen && //just for DocumentChangeDate form
-        !(
-          workFlowDoFlowResponse.data.result.formAfterClick.viewPath === "" ||
-          workFlowDoFlowResponse.data.result.formAfterClick.viewPath === null
-        ) && (
-          <ModalForm
-            isOpen={isDocumentChangeDateOpen}
-            onClose={() => {
-              setIsDocumentChangeDateOpen(false);
-            }}
-            children={
-              <WorkflowComponent
-                doFlow={doFlow}
-                workFlowRowSelectResponse={newWorkFlowRowSelectResponse}
-                refetchSwitch={false}
-                setRefetchSwitch={() => {}}
-                isLoadingdoFlow={isLoadingdoFlow}
-                refetchWorkTable={refetchWorkTable}
-                refetchWorkTableRowSelect={refetchWorkTableRowSelect}
-                dsc={dsc}
-                flowMapId={flowMapId}
-                setIsDocumentChangeDateOpen={setIsDocumentChangeDateOpen}
-                definitionInvironment={definitionInvironment}
-                definitionDateTime={definitionDateTime}
-                isLoadingBanks={isLoadingBanks}
-                banks={banks}
-              />
-            }
-            title="تاریخ سند"
-            width="1/3"
-            height="1/2"
-          />
-        )}
+      }
+      {
+        //just for opening FormAfterClick
+        <ModalForm
+          isOpen={isFormAfterClickOpen}
+          onClose={() => {
+            setIsFormAfterClickOpen(false);
+          }}
+          children={
+            <WorkflowComponent
+              doFlow={doFlow}
+              workFlowRowSelectResponse={newWorkFlowRowSelectResponse}
+              refetchSwitch={false}
+              setRefetchSwitch={() => {}}
+              isLoadingdoFlow={isLoadingdoFlow}
+              //refetchWorkTable={refetchWorkTable}
+              //refetchWorkTableRowSelect={refetchWorkTableRowSelect}
+              dsc={dsc}
+              flowMapId={flowMapId}
+              setIsModalOpen={setIsFormAfterClickOpen}
+              definitionInvironment={definitionInvironment}
+              definitionDateTime={definitionDateTime}
+              isLoadingBanks={isLoadingBanks}
+              banks={banks}
+              cashPosSystemSearch={cashPosSystemSearch}
+            />
+          }
+          title={newWorkFlowRowSelectResponse.workTableForms.form1Title}
+          width="1/3"
+          height="1/2"
+        />
+      }
     </form>
   );
 };

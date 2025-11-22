@@ -33,15 +33,16 @@ type Props = {
   setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
   doFlow: UseMutateAsyncFunction<any, Error, WorkFlowDoFlowRequest, unknown>;
   isLoadingdoFlow: boolean;
-  refetchWorkTable: () => void;
-  refetchWorkTableRowSelect: () => void;
+  //refetchWorkTable: () => void;
+  //refetchWorkTableRowSelect: () => void;
   dsc?: string; // for  هامش
   flowMapId?: number;
-  setIsDocumentChangeDateOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsModalOpen?: React.Dispatch<React.SetStateAction<boolean>>;
   definitionInvironment:DefinitionInvironment;
   definitionDateTime:DefinitionDateTime
   isLoadingBanks:boolean;
   banks: SearchItem[]
+  cashPosSystemSearch: SearchItem[];
 };
 
 export default function WorkflowComponent({
@@ -50,15 +51,16 @@ export default function WorkflowComponent({
   setRefetchSwitch,
   doFlow,
   isLoadingdoFlow,
-  refetchWorkTable,
-  refetchWorkTableRowSelect,
+  //refetchWorkTable,
+  //refetchWorkTableRowSelect,
   dsc,
   flowMapId,
-  setIsDocumentChangeDateOpen,
+  setIsModalOpen,
   definitionInvironment,
   definitionDateTime,
   isLoadingBanks,
-  banks
+  banks,
+  cashPosSystemSearch
 }: Props) {
   let componentToRender1: React.ReactNode | null = null;
   let componentToRender2: React.ReactNode | null = null;
@@ -111,12 +113,14 @@ export default function WorkflowComponent({
     case "Payment/_Cheque": //کمک حسابداری-> ثبت اولیه چک -دریافتی
       componentToRender1 = (
         <RegRecievedCheque
+          canEditForm={workFlowRowSelectResponse.workTableForms.canEditForm1}
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           refetchSwitch={refetchSwitch}
           setRefetchSwitch={setRefetchSwitch}
           definitionInvironment={definitionInvironment}
           banks={banks}
           isLoadingBanks={isLoadingBanks}
+          cashPosSystemSearch={cashPosSystemSearch}
         />
       );
       break;
@@ -276,12 +280,10 @@ export default function WorkflowComponent({
           isLoadingdoFlow={isLoadingdoFlow}
           doFlow={doFlow}
           workFlowDoFlowResponse={workFlowDoFlowResponse}
-          refetchWorkTable={refetchWorkTable}
-          refetchWorkTableRowSelect={refetchWorkTableRowSelect}
+          //refetchWorkTable={refetchWorkTable}
+          //refetchWorkTableRowSelect={refetchWorkTableRowSelect}
           dsc={dsc ?? ""} // for  هامش
-          setIsDocumentChangeDateOpen={
-            setIsDocumentChangeDateOpen ?? (() => {})
-          }
+          setIsModalOpen={setIsModalOpen ?? (() => {})}
         />
       );
       break;
@@ -348,12 +350,14 @@ export default function WorkflowComponent({
     case "Payment/_Cheque": //کمک حسابداری***************
       componentToRender2 = (
         <RegRecievedCheque
+          canEditForm={workFlowRowSelectResponse.workTableForms.canEditForm2}
           workFlowRowSelectResponse={workFlowRowSelectResponse}
           refetchSwitch={refetchSwitch}
           setRefetchSwitch={setRefetchSwitch}
           definitionInvironment={definitionInvironment}
           banks={banks}
           isLoadingBanks={isLoadingBanks}          
+          cashPosSystemSearch={cashPosSystemSearch}
         />
       );
       break;
@@ -512,12 +516,10 @@ export default function WorkflowComponent({
           isLoadingdoFlow={isLoadingdoFlow}
           doFlow={doFlow}
           workFlowDoFlowResponse={workFlowDoFlowResponse}
-          refetchWorkTable={refetchWorkTable}
-          refetchWorkTableRowSelect={refetchWorkTableRowSelect}
+          //refetchWorkTable={refetchWorkTable}
+          //refetchWorkTableRowSelect={refetchWorkTableRowSelect}
           dsc={dsc ?? ""} // for  هامش
-          setIsDocumentChangeDateOpen={
-            setIsDocumentChangeDateOpen ?? (() => {})
-          }
+          setIsModalOpen={setIsModalOpen ?? (() => {})}
         />
       );
       break;

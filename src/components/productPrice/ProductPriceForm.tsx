@@ -32,7 +32,6 @@ import {
   ProductPrice,
   ProductPriceDtl,
   ProductPriceDtlHistory,
-  ProductPriceListItem,
   ProductPriceListItemTable,
   ProductPriceListItemTable2,
   ProductPriceListResponse,
@@ -230,7 +229,7 @@ const ProductPriceForm = ({
   setSelectedRowIndex,
   definitionDateTime,
 }: Props) => {
-  const [addList, setAddList] = useState<ProductPriceListItemTable[]>([]);
+  const [addList, setAddList] = useState<any[]>([]);
   const [search, setSearch] = useState<string>("");
   const [showDeleted, setShowDeleted] = useState(true);
   const [brand, setBrand] = useState<DefaultOptionTypeStringId[] | null>([]);
@@ -466,7 +465,7 @@ const ProductPriceForm = ({
     console.log(res?.data.result, "res");
     if (res && res.data.result) {
       // Map through the new products
-      res.data.result.forEach((product: ProductPriceListItem) => {
+      res.data.result.forEach((product) => {
         setAddList((prev) => {
           // Filter out newRow entries (empty rows) before adding new records
           // Check by properties since items might be clones of newRow
@@ -484,18 +483,13 @@ const ProductPriceForm = ({
               lastDate: product.lastDate,
               lastBuyPrice: product.lastBuyPrice,
               tax: product.tax,
-              p1O: 0,
-              p2O: 0,
-              p3O: 0,
-              p4O: 0,
-              p5O: 0,
-              p1: product.p1 > 0 ? product.p1 : 0,
-              p2: product.p2 > 0 ? product.p2 : 0,
-              p3: product.p3 > 0 ? product.p3 : 0,
-              p4: product.p4 > 0 ? product.p4 : 0,
-              p5: product.p5 > 0 ? product.p5 : 0,
+              p1O: product.p1O>0 ? product.p1O : 0,
+              p2O: product.p2O>0 ? product.p2O : 0,
+              p3O: product.p3O>0 ? product.p3O : 0,
+              p4O: product.p4O>0 ? product.p4O : 0,
+              p5O: product.p5O>0 ? product.p5O : 0,
               dtlDsc: product.dtlDsc,
-              deleted: product.deleted,
+              deleted: product.deleted,   
               isDeleted: false,
             },
           ];
@@ -516,7 +510,6 @@ const ProductPriceForm = ({
     index: number,
     setData: Dispatch<SetStateAction<ProductPriceListItemTable2[]>>
   ) => {
-    console.log("hdjshdjhsjdhsjdhj");
     setData((prev: ProductPriceListItemTable2[]) => [
       ...prev,
       { ...newRow, index: index },
@@ -546,11 +539,11 @@ const ProductPriceForm = ({
           deleted: item.isDeleted,
         };
         if (
-          item.p1 !== 0 ||
-          item.p2 !== 0 ||
-          item.p3 !== 0 ||
-          item.p4 !== 0 ||
-          item.p5 !== 0
+          Number(convertToLatinDigits(item.p1?.toString())) !== 0 ||
+          Number(convertToLatinDigits(item.p2?.toString())) !== 0 ||
+          Number(convertToLatinDigits(item.p3?.toString())) !== 0 ||
+          Number(convertToLatinDigits(item.p4?.toString())) !== 0 ||
+          Number(convertToLatinDigits(item.p5?.toString())) !== 0
         ) {
           return dtl;
         } else {
@@ -582,6 +575,11 @@ const ProductPriceForm = ({
       const response = await productPriceSave(request);
       setIsModalRegOpen(true);
       if (setSelectedRowIndex && isNew) setSelectedRowIndex(0);
+      if (response?.meta.message === "") {
+        setIsNew(false);
+        setIsEdit(false);
+        setIsModalRegOpen(false)
+      } 
       return response;
     } catch (error) {
       console.error("Error ثبت :", error);

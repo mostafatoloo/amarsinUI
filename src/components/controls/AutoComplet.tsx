@@ -146,6 +146,7 @@ const AutoComplet = forwardRef(
       if (onInputChange) {
         onInputChange(e, newValue);
       } else if (setSearch) {
+        console.log(newValue, "newValue in handleInputChange");
         setSearch(newValue);
       }
 
@@ -169,6 +170,7 @@ const AutoComplet = forwardRef(
         if (onInputChange) {
           onInputChange(null, "");
         } else if (setSearch) {
+          console.log("setSearch in handleOptionSelect");
           setSearch("");
         } else {
           setInternalInputValue("");
@@ -183,6 +185,7 @@ const AutoComplet = forwardRef(
       if (onInputChange) {
         onInputChange(null, "");
       } else if (setSearch) {
+        console.log("setSearch in handleClear");
         setSearch("");
       } else {
         setInternalInputValue("");
@@ -242,9 +245,10 @@ const AutoComplet = forwardRef(
         // Also notify parent if callbacks are provided
         if (onInputChange) {
           onInputChange(null, selectedTitle);
-        } else if (setSearch) {
-          setSearch(selectedTitle);
-        }
+        } //else if (setSearch) {
+          //console.log(selectedTitle, "selectedTitle in handleFocus");
+          //setSearch(selectedTitle);
+        //}
       }
     };
 

@@ -24,14 +24,15 @@ type Props = {
   doFlow: UseMutateAsyncFunction<any, Error, WorkFlowDoFlowRequest, unknown>;
   workFlowDoFlowResponse: WorkFlowDoFlowResponse;
   isLoadingdoFlow: boolean;
-  refetchWorkTable: () => void;
-  refetchWorkTableRowSelect: () => void;
+  //refetchWorkTable: () => void;
+  //refetchWorkTableRowSelect: () => void;
   refetchSwitch: boolean;
   setRefetchSwitch: React.Dispatch<React.SetStateAction<boolean>>;
   definitionInvironment:DefinitionInvironment;
   definitionDateTime: DefinitionDateTime ;
   isLoadingBanks:boolean;
   banks: SearchItem[]
+  cashPosSystemSearch: SearchItem[];
 };
 
 export const WorkflowChild = ({
@@ -45,14 +46,15 @@ export const WorkflowChild = ({
   doFlow,
   workFlowDoFlowResponse,
   isLoadingdoFlow,
-  refetchWorkTable,
-  refetchWorkTableRowSelect,
+  //refetchWorkTable,
+  //refetchWorkTableRowSelect,
   refetchSwitch,
   setRefetchSwitch,
   definitionInvironment,
   definitionDateTime,
   isLoadingBanks,
-  banks
+  banks,
+  cashPosSystemSearch
 }: Props) => {
   //const [currentSelectedId, setCurrentSelectedId] = useState(selectedId);
   const { chartId, systemId } = useGeneralContext();
@@ -127,14 +129,15 @@ export const WorkflowChild = ({
           isLoadingdoFlow={isLoadingdoFlow}
           isLoading={isLoadingRowSelect}
           error={errorRowSelect}
-          refetchWorkTable={refetchWorkTable}
-          refetchWorkTableRowSelect={refetchWorkTableRowSelect}
+          //refetchWorkTable={refetchWorkTable}
+          //refetchWorkTableRowSelect={refetchWorkTableRowSelect}
           selectedId={selectedId}
           setSelectedId={setSelectedId}
           definitionInvironment={definitionInvironment}
           definitionDateTime ={definitionDateTime}         
           isLoadingBanks={isLoadingBanks}
           banks={banks}
+          cashPosSystemSearch={cashPosSystemSearch}
         />
       )}
       <WorkflowComponent
@@ -143,12 +146,13 @@ export const WorkflowChild = ({
         workFlowRowSelectResponse={workFlowRowSelectResponse}
         refetchSwitch={refetchSwitch}
         setRefetchSwitch={setRefetchSwitch}
-        refetchWorkTable={refetchWorkTable}
-        refetchWorkTableRowSelect={refetchWorkTableRowSelect}
+        //refetchWorkTable={refetchWorkTable}
+        //refetchWorkTableRowSelect={refetchWorkTableRowSelect}
         definitionInvironment={definitionInvironment}
         definitionDateTime ={definitionDateTime}
         isLoadingBanks={isLoadingBanks}
         banks={banks}
+        cashPosSystemSearch={cashPosSystemSearch}
       />
     </>
   );

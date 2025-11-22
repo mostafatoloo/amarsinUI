@@ -108,7 +108,7 @@ export function useWorkflow() {
       const response = await api.get(url, { signal });
       return response.data;
     },
-    enabled: systemId !== -1,
+    enabled: systemId !== -1 && chartId !== -1,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     /*staleTime: 30000, // Consider data fresh for 30 seconds
@@ -234,11 +234,7 @@ export function useWorkflow() {
     WorkFlowFlowMapsResponse,
     unknown[]
   >({
-    queryKey: [
-      "workFlowFlowMaps",
-      systemIdFlowMaps,
-      flowNoIdFlowMaps,
-    ],
+    queryKey: ["workFlowFlowMaps", systemIdFlowMaps, flowNoIdFlowMaps],
     queryFn: async () => {
       const url: string = `api/WFMS/flowMaps?FlowNoId=${flowNoIdFlowMaps}&SystemId=${systemIdFlowMaps}`;
       console.log(url, "url");
@@ -260,10 +256,29 @@ export function useWorkflow() {
       return response.data;
     },
     onSuccess: (data: any) => {
-      //queryClient.refetchQueries({ queryKey: ["workflow"] });
-      //queryClient.refetchQueries({ queryKey: ["workflowRowSelect"] });
+      // Refetch only the current query with exact parameters, not all workflow queries
+      if (data.meta.errorCode <= 0) {
+        queryClient.refetchQueries({
+          queryKey: [
+            "workflow",
+            chartId,
+            systemId,
+            page,
+            pageSize,
+            flowMapId,
+            title,
+            dateTime,
+            code,
+            cost,
+            name,
+            dsc,
+          ],
+        });
+        //queryClient.refetchQueries({
+          //queryKey: ["workflowRowSelect", chartId, workTableId],
+        //});
+      }
       setWorkFlowDoFlowResponse(data);
-      console.log("Data refetched and response set:", data);
     },
   });
 
@@ -373,7 +388,7 @@ export function useWorkflow() {
     errorWorkFlowFlowMaps: workFlowFlowMapsQuery.error,
     workFlowFlowMapsResponse: workFlowFlowMapsQuery.data ?? {
       meta: { errorCode: 0, message: "", type: "" },
-      data: { result: []},
+      data: { result: [] },
     },
   };
 }

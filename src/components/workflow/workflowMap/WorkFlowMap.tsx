@@ -99,6 +99,8 @@ const WorkFlowMap = ({ workFlowMapResponse, isLoading, processTitle }: Props) =>
     if (processTitle) {
       setField("flowNoIdFlowMaps", processTitle?.id);
       setField("systemIdFlowMaps", systemId);
+      //to not allow calling workFlowFlowNosSearch when workFlowFlowMaps is called
+      //setField("systemIdFlowNosSearch", -1);
     }
   }, [processTitle, systemId]);
   return (

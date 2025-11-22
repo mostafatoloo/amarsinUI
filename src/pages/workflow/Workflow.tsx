@@ -105,8 +105,8 @@ export default function Workflow({
           errorRowSelect={errorRowSelect}
           doFlow={doFlow}
           isLoadingdoFlow={isLoadingdoFlow}
-          refetchWorkTable={refetchWorkTable}
-          refetchWorkTableRowSelect={refetchWorkTableRowSelect}
+          //refetchWorkTable={refetchWorkTable}
+          //refetchWorkTableRowSelect={refetchWorkTableRowSelect}
           isRefetchingWorkTable={isRefetchingWorkTable}
           isRefetchingWorkTableRowSelect={isRefetchingWorkTableRowSelect}
           refetchSwitch={refetchSwitch}

@@ -268,7 +268,6 @@ const ProductOfferForm = ({
   const [tim, setTim] = useState<string>("");
   const [dsc, setDsc] = useState<string>("");
   const [isModalRegOpen, setIsModalRegOpen] = useState(false);
-
   const columns: TableColumns = useMemo(() => {
     return headCells.map((item) => {
       return {

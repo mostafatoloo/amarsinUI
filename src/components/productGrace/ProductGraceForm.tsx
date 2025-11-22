@@ -498,10 +498,10 @@ const ProductGraceForm = ({
           deleted: item.isDeleted,
         };
         if (
-          dtl.gd !== Number(convertToLatinDigits(item.gdo.toString())) ||
-          dtl.sc !== Number(convertToLatinDigits(item.sco.toString())) ||
-          dtl.cc !== Number(convertToLatinDigits(item.cco.toString())) ||
-          dtl.ec !== Number(convertToLatinDigits(item.eco.toString()))
+          Number(convertToLatinDigits(item.gdo.toString())) !== 0 ||
+          Number(convertToLatinDigits(item.sco.toString())) !== 0 ||
+          Number(convertToLatinDigits(item.cco.toString())) !== 0 ||
+          Number(convertToLatinDigits(item.eco.toString())) !== 0
         ) {
           return dtl;
         } else {

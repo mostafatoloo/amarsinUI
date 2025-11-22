@@ -44,7 +44,7 @@ function ShowMessages({ dtlErrMsgs, color, heightWindow, children }: Props) {
   }));
   return (
     <div
-      className="mt-2"
+      className="mt-2 overflow-y-auto"
       style={width > 640 ? { height: heightWindow ?? height } : {}}
     >
       <TTable
