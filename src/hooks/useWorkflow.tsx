@@ -262,8 +262,6 @@ export function useWorkflow() {
     onSuccess: async (data: any) => {
       // Refetch only the current query with exact parameters, not all workflow queries
       if (data.meta.errorCode <= 0) {
-        // Refetch "workflow" query - this will trigger automatic refetch of "workflowRowSelect"
-        // when workTableId changes in WorkflowChild useEffect
         await queryClient.refetchQueries({
           queryKey: [
             "workflow",
@@ -280,8 +278,7 @@ export function useWorkflow() {
             dsc,
           ],
         });
-        // workflowRowSelect will automatically refetch when workTableId changes
-        // (workTableId is part of its queryKey: ["workflowRowSelect", chartId, workTableId])
+
       }
       setWorkFlowDoFlowResponse(data);
     },

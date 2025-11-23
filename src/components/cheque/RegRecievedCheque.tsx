@@ -20,6 +20,8 @@ type Props = {
   banks: SearchItem[];
   isLoadingBanks: boolean;
   cashPosSystemSearch: SearchItem[];
+  data: any[]; // data for WorkflowParent
+  setData: (value: any[]) => void; // setData for WorkflowParent
 };
 
 const RegRecievedCheque = ({
@@ -31,6 +33,8 @@ const RegRecievedCheque = ({
   banks,
   isLoadingBanks,
   cashPosSystemSearch,
+  data,
+  setData,
 }: Props) => {
   const { setField, loadPaymentFormId } = useChequeStore();
   //const canEditForm = workFlowRowSelectResponse.workTableForms.canEditForm1;
@@ -115,6 +119,8 @@ const RegRecievedCheque = ({
         definitionInvironment={definitionInvironment}
         banks={banks}
         isLoadingBanks={isLoadingBanks}
+        data={data} // data for WorkflowParent
+        setData={setData} // setData for WorkflowParent
       />
       <RegRecievedChequeImg
         paymentAttachmentResponse={paymentAttachmentResponse}

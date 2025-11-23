@@ -1,7 +1,6 @@
 import {
   useMutation,
   useQuery,
-  useQueryClient,
   UseQueryOptions,
 } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -38,7 +37,21 @@ export function useCheques() {
     paymentIdTrigger, //for Payment/sayadChequeInquiryByPaymentId
   } = useChequeStore();
 
-  const queryClient = useQueryClient();
+  /*const {
+    chartId,
+    systemId: systemIdWorkFlow,
+    page: pageWorkFlow,
+    pageSize,
+    flowMapId,
+    title,
+    dateTime,
+    code,
+    cost,
+    name,
+    dsc,
+  } = useWorkflowStore();*/
+
+  //const queryClient = useQueryClient();
   //for Payment/updateFields
   const updateFields = useMutation({
     mutationFn: async (request: UpdateFieldsRequest) => {
@@ -62,11 +75,24 @@ export function useCheques() {
       return response.data;
     },
     onSuccess: (data: any, request: UpdateFieldsRequest) => {
-      if (data.meta.errorCode <= 0) {
+      /*if (data.meta.errorCode <= 0) {
         queryClient.refetchQueries({
-          queryKey: ["workflowRowSelect"],
+          queryKey: [
+            "workflow",
+            chartId,
+            systemIdWorkFlow,
+            pageWorkFlow,
+            pageSize,
+            flowMapId,
+            title,
+            dateTime,
+            code,
+            cost,
+            name,
+            dsc,
+          ],
         });
-      }
+      }*/
       setUpdateFieldsResponse(data);
       const fieldName =
         request.fieldName.charAt(0).toLowerCase() + request.fieldName.slice(1);

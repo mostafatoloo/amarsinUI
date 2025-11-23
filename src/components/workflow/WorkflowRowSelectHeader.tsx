@@ -262,6 +262,8 @@ const WorkflowRowSelectHeader = ({
               isLoadingBanks={isLoadingBanks}
               banks={banks}
               cashPosSystemSearch={cashPosSystemSearch}
+              data={[]} // data for WorkflowParent
+              setData={() => {}} // setData for WorkflowParent
             />
           }
           title={newWorkFlowRowSelectResponse.workTableForms.form1Title}

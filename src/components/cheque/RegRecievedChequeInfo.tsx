@@ -44,6 +44,8 @@ type Props = {
   definitionInvironment: DefinitionInvironment;
   banks: SearchItem[];
   isLoadingBanks: boolean;
+  data: any[]; // data for WorkflowParent
+  setData: (value: any[]) => void; // setData for WorkflowParent
 };
 
 const RegRecievedChequeInfo: React.FC<Props> = ({
@@ -58,6 +60,8 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
   definitionInvironment,
   banks,
   isLoadingBanks,
+  data,
+  setData,
 }: Props) => {
   const [bankSearch, setBankSearch] = useState("");
   //const { banks, isLoading: isLoadingBanks } = useBanks();
@@ -505,7 +509,22 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
         }
         setIsModalOpen(true);
       }
-
+      // for updating parent table row in changing dsc , prsn , amountT
+      const workTableRow = data.find(
+        (item: any) =>
+          Number(convertToLatinDigits(item.id)) ===
+          workFlowRowSelectResponse.workTableRow.id
+      );
+      if (
+        workTableRow &&
+        (fieldName === "amountT" || fieldName === "dsc" || fieldName === "prsn")
+      ) {
+        workTableRow.dsc = `${convertToFarsiDigits(cheque.prsn)} : ${convertToFarsiDigits(cheque.dsc)}`;
+        workTableRow.formCost = convertToFarsiDigits(
+          formatNumberWithCommas(Number(convertToLatinDigits(cheque.amountT)))
+        );
+        setData(data);
+      }
       if (
         fieldName !== "bank" &&
         fieldName !== "year" &&

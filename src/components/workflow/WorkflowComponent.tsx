@@ -43,6 +43,8 @@ type Props = {
   isLoadingBanks:boolean;
   banks: SearchItem[]
   cashPosSystemSearch: SearchItem[];
+  data: any[]; // data for WorkflowParent
+  setData: (value: any[]) => void; // setData for WorkflowParent
 };
 
 export default function WorkflowComponent({
@@ -61,6 +63,8 @@ export default function WorkflowComponent({
   isLoadingBanks,
   banks,
   cashPosSystemSearch,
+  data,
+  setData,
 }: Props) {
   let componentToRender1: React.ReactNode | null = null;
   let componentToRender2: React.ReactNode | null = null;
@@ -121,6 +125,8 @@ export default function WorkflowComponent({
           banks={banks}
           isLoadingBanks={isLoadingBanks}
           cashPosSystemSearch={cashPosSystemSearch}
+          data={data}
+          setData={setData}
         />
       );
       break;
@@ -358,6 +364,8 @@ export default function WorkflowComponent({
           banks={banks}
           isLoadingBanks={isLoadingBanks}          
           cashPosSystemSearch={cashPosSystemSearch}
+          data={data}
+          setData={setData}
         />
       );
       break;

@@ -23,6 +23,8 @@ type Props = {
   errorRowSelect: Error | null;
   doFlow: UseMutateAsyncFunction<any, Error, WorkFlowDoFlowRequest, unknown>;
   workFlowDoFlowResponse: WorkFlowDoFlowResponse;
+  data: any[]; // data for WorkflowParent
+  setData: (value: any[]) => void; // setData for WorkflowParent
   isLoadingdoFlow: boolean;
   //refetchWorkTable: () => void;
   //refetchWorkTableRowSelect: () => void;
@@ -41,6 +43,8 @@ export const WorkflowChild = ({
   //setSelectedId,
   workFlowResponse,
   workFlowRowSelectResponse,
+  data,
+  setData,
   isLoadingRowSelect,
   errorRowSelect,
   doFlow,
@@ -141,6 +145,8 @@ export const WorkflowChild = ({
         />
       )}
       <WorkflowComponent
+        data={data} // data for WorkflowParent
+        setData={setData} // setData for WorkflowParent
         doFlow={doFlow}
         isLoadingdoFlow={isLoadingdoFlow}
         workFlowRowSelectResponse={workFlowRowSelectResponse}
