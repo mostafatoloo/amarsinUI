@@ -64,7 +64,7 @@ export function useCheques() {
     onSuccess: (data: any, request: UpdateFieldsRequest) => {
       if (data.meta.errorCode <= 0) {
         queryClient.refetchQueries({
-          queryKey: ["workflow"],
+          queryKey: ["workflowRowSelect"],
         });
       }
       setUpdateFieldsResponse(data);
