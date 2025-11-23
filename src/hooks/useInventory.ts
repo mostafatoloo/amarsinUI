@@ -30,6 +30,7 @@ export function useInventory() {
         brandId,
       };
       const url: string = `/api/ProviderInventory/list?accSystem=${params.accSystem}&accYear=${params.accYear}&brandId=${params.brandId}`;
+      console.log(url, "url");
       const response = await api.get(url);
       return response.data;
     },

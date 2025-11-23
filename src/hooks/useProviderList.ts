@@ -49,7 +49,7 @@ export function useProviderList() {
       }&fDate=${encodeURIComponent(params.fDate)}&tDate=${encodeURIComponent(
         params.tDate
       )}`;
-
+      console.log(url, "url");
       const response = await api.get(url);
       return response.data;
     },

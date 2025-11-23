@@ -36,18 +36,18 @@ const DocumentChangeDate = ({
   dsc,
   setIsModalOpen,
 }: Props) => {
-  const { setField:setWorkFlowField } = useWorkflowStore();
+  const { setField: setWorkFlowField, workTableId } = useWorkflowStore();
   const { chartId, systemId, yearId } = useGeneralContext();
   const [isModalOpenMessage, setIsModalOpenMessage] = useState(false);
   const [date, setDate] = useState<Date | null>(new Date());
   const {
-    page : pageNumber,
+    page: pageNumber,
     dateTime,
     code,
     cost,
     name,
-    flowMapId : flowMapIdStore,
-    dsc : dscStore,
+    flowMapId: flowMapIdStore,
+    dsc: dscStore,
     title,
   } = useWorkflowStore();
   /////////////////////////////////////////////////////////////////
@@ -85,7 +85,7 @@ const DocumentChangeDate = ({
       dsc,
       date,
       params: `{\"Date\":\"${date}\"}`,
-      workQueueResult: false,
+      workQueueResult: true,
       idempotencyKey: uuidv4(),
       workTableParam: {
         flowMapId: flowMapIdStore ?? -1,
@@ -101,8 +101,15 @@ const DocumentChangeDate = ({
     console.log(request, "request");
     try {
       const response = await doFlow(request);
-      setIsModalOpenMessage(true);// to show message
-      setWorkFlowField("workTableIdTrigger", Date.now());
+      setIsModalOpenMessage(true); // to show message
+      if (
+        workFlowDoFlowResponse?.data?.result?.workTableRowSelect?.workTableRow
+          ?.id === workTableId
+      ) {
+        console.log("force to fetch the same workTableId", workTableId);
+        setWorkFlowField("workTableIdTrigger", Date.now());
+        //setWorkFlowField("workTableId", workFlowDoFlowResponse.data.result.workTable.id);
+      }
       //refetchWorkTableRowSelect();
       console.log(response, "response");
     } catch (error) {
@@ -131,7 +138,7 @@ const DocumentChangeDate = ({
           variant="shadow-lg w-48"
         />
       </div>
-        {/*{isModalOpenMessage && <p>dhsjdhj</p>}*/}
+      {/*{isModalOpenMessage && <p>dhsjdhj</p>}*/}
       {!isLoadingdoFlow && (
         <ModalMessage
           isOpen={isModalOpenMessage}

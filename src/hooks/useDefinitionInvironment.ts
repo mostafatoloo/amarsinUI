@@ -10,14 +10,14 @@ import {
 export function useDefinitionInvironment() {
   const { setDefinitionInvironment, setDefinitionDateTime } =
     useDefinitionInvironmentStore();
-  
+
   const location = useLocation();
-  
+
   // Check if user is authenticated by checking token in localStorage
-  const isAuthenticated = !!localStorage.getItem('token');
-  
+  const isAuthenticated = !!localStorage.getItem("token");
+
   // Check if we're on the login page to prevent any API calls
-  const isLoginPage = location.pathname === '/login';
+  const isLoginPage = location.pathname === "/login";
 
   const query = useQuery<
     DefinitionInvironment,
@@ -27,7 +27,13 @@ export function useDefinitionInvironment() {
   >({
     queryKey: ["definitionInvironment"],
     queryFn: async () => {
-      const response = await api.get(`/api/Definition/Environment`);
+      const url = `/api/Definition/Environment`;
+      const response = await api.get(url);
+      console.log(
+        url,
+        response.data,
+        "url,response.data in definitionEnvironment"
+      );
       return response.data;
     },
     enabled: isAuthenticated && !isLoginPage, // Only run query if authenticated AND not on login page
@@ -47,7 +53,13 @@ export function useDefinitionInvironment() {
   >({
     queryKey: ["definitionDateTime"],
     queryFn: async () => {
-      const response = await api.get(`/api/Definition/DateTime`);
+      const url = `/api/Definition/DateTime`;
+      const response = await api.get(url);
+      console.log(
+        url,
+        response.data,
+        "url,response.data in definitionDateTime"
+      );
       return response.data;
     },
     enabled: isAuthenticated && !isLoginPage, // Only run query if authenticated AND not on login page

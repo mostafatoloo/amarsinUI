@@ -360,6 +360,79 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
   }, [sayadChequeInquiryByPaymentIdResponse.data.result?.sayadiStatus]);
   ///////////////////////////////////////////////////////////////////
   // Enhanced setChequeFields with validation
+  const setChequeFields1 = (
+    fieldName: string,
+    value: string | number | DefaultOptionType | boolean
+  ) => {
+    setCheque({
+      ...cheque,
+      [fieldName]:
+        typeof value === "string" || typeof value === "number"
+          ? fieldName === "amountT"
+            ? convertToFarsiDigits(formatNumberWithCommas(value as number))
+            : convertToFarsiDigits(value.toString())
+          : value,
+    });
+
+    // Clear validation error when user selects a value
+    if (typeof value === "object") {
+      setUpdateStatus({
+        ...updateStatus,
+        [`${fieldName === "cash_PosSystem" ? "cash_PosSystem" : fieldName}Id`]:
+          {
+            ...updateStatus[
+              `${
+                fieldName === "cash_PosSystem" ? "cash_PosSystem" : fieldName
+              }Id`
+            ],
+            validationError:
+              value === null || value === undefined ? true : false,
+          },
+      });
+    }
+    if (
+      fieldName === "system" ||
+      fieldName === "year" ||
+      fieldName === "bank" ||
+      fieldName === "cash_PosSystem"
+    ) {
+      if (notValidateRequiredFields(fieldName)) {
+        focusFirstInvalidField();
+        return;
+      }
+    }
+    if (typeof value === "string" || typeof value === "number") {
+      if (fieldName === "amountT") {
+        update(fieldName, convertToLatinDigits(value.toString()));
+      } else {
+        update(fieldName, convertToLatinDigits(value.toString()));
+      }
+    } else {
+      if (fieldName === "system") {
+        update("SystemId", (value as DefaultOptionType)?.id.toString());
+      } else if (fieldName === "year") {
+        update("YearId", (value as DefaultOptionType)?.id.toString());
+      } else if (fieldName === "bank") {
+        update("BankId", (value as DefaultOptionType)?.id.toString());
+      } else if (fieldName === "cash_PosSystem") {
+        update(
+          "cash_PosSystem",
+          (value as DefaultOptionType)?.id?.toString() ?? ""
+        );
+      }
+      setIsModalOpen(true);
+    }
+
+    if (
+      fieldName !== "bank" &&
+      fieldName !== "year" &&
+      fieldName !== "system" &&
+      fieldName !== "cash_PosSystem"
+    ) {
+      setIsModalOpen(true);
+    }
+    setIsFieldChanged(false);
+  };
   const setChequeFields = (
     fieldName: string,
     value: string | number | DefaultOptionType | boolean
@@ -434,7 +507,6 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
       }
 
       if (
-        isFieldChanged &&
         fieldName !== "bank" &&
         fieldName !== "year" &&
         fieldName !== "system" &&
@@ -580,7 +652,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
               options={definitionInvironment?.systems ?? []}
               value={cheque.system}
               handleChange={(_event, newValue) => {
-                setChequeFields("system", newValue as DefaultOptionType);
+                setChequeFields1("system", newValue as DefaultOptionType);
               }}
               setSearch={setSystemSearch}
               showLabel={false}
@@ -593,9 +665,9 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
                   : "white"
               }
               ref={systemRef}
-              handleBlur={() => {
+              /*handleBlur={() => {
                 updateCheque("system", cheque.system);
-              }}
+              }}*/
             />
             {showValidationError("systemId")}
           </div>
@@ -616,7 +688,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
               }))}
               value={cheque.year}
               handleChange={(_event, newValue) => {
-                setChequeFields("year", newValue as DefaultOptionType);
+                setChequeFields1("year", newValue as DefaultOptionType);
               }}
               setSearch={setYearSearch}
               showLabel={false}
@@ -629,9 +701,9 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
                   : "white"
               }
               ref={yearRef}
-              handleBlur={() => {
+              /*handleBlur={() => {
                 updateCheque("year", cheque.year as DefaultOptionType);
-              }}
+              }}*/
             />
             {showValidationError("yearId")}
           </div>
@@ -711,7 +783,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
                 }))}
                 value={cheque.cash_PosSystem}
                 handleChange={(_event, newValue) => {
-                  setChequeFields(
+                  setChequeFields1(
                     "cash_PosSystem",
                     newValue as DefaultOptionType
                   );
@@ -725,9 +797,9 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
                     : "white"
                 }
                 ref={systemRef}
-                handleBlur={() => {
+                /*handleBlur={() => {
                   updateCheque("cash_PosSystem", cheque.cash_PosSystem);
-                }}
+                }}*/
               />
               {showValidationError("cash_PosSystem")}
             </div>
@@ -788,7 +860,7 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
                 }))}
                 value={cheque.bank}
                 handleChange={(_event, newValue) => {
-                  setChequeFields("bank", newValue as DefaultOptionType);
+                  setChequeFields1("bank", newValue as DefaultOptionType);
                 }}
                 setSearch={setBankSearch}
                 showLabel={false}
@@ -801,9 +873,9 @@ const RegRecievedChequeInfo: React.FC<Props> = ({
                     : "white"
                 }
                 ref={bankRef}
-                handleBlur={() => {
+                /*handleBlur={() => {
                   updateCheque("bank", cheque.bank as DefaultOptionType);
-                }}
+                }}*/
               />
               {showValidationError("bankId")}
             </div>

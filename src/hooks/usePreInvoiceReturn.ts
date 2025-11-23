@@ -33,6 +33,7 @@ export function usePreInvoiceReturn() {
         temporaryReceiptShowId,
       };
       const url = `/api/PreInvoiceReturn/warehouseTemporaryReceiptShow?Id=${params.temporaryReceiptShowId}`;
+      console.log(url, "url");
       const response = await api.get(url);
       return response.data;
     },
@@ -63,6 +64,7 @@ export function usePreInvoiceReturn() {
         search: searchPreInvoiceDtlSearch,
       };
       const url = `/api/WarehouseTemporaryReceipt/preInvoiceDtSearch?PreInvoiceDtlId=${params.preInvoiceDtlId}&page=${params.page}&Search=${params.search}`;
+      console.log(url, "url");
       const response = await api.get(url);
       return response.data;
     },
@@ -100,6 +102,7 @@ export function usePreInvoiceReturn() {
         preInvoiceReturnShowId,
       };
       const url = `/api/PreInvoiceReturn/show?Id=${params.preInvoiceReturnShowId}`;
+      console.log(url, "url");
       const response = await api.get(url);
       return response.data;
     },

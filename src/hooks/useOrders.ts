@@ -30,18 +30,15 @@ export function useOrders() {
   >({
     queryKey: ["orderCupList", OrderDtlId, WarehauseId],
     queryFn: async () => {
-      console.log(
-        `/api/Order/orderCupList?OrderDtlId=${OrderDtlId}&WarehauseId=${WarehauseId}`
-      );
-      const response = await api.get(
-        `/api/Order/orderCupList?OrderDtlId=${OrderDtlId}&WarehauseId=${WarehauseId}`
-      );
+      const url = `/api/Order/orderCupList?OrderDtlId=${OrderDtlId}&WarehauseId=${WarehauseId}`;
+      console.log(url, "url");
+      const response = await api.get(url);
       return response.data;
     },
     onSuccess: (data: any) => {
       setOrderCupListResponse(data);
     },
-    enabled: OrderDtlId!==-1 && WarehauseId!==-1, // Only fetch if param is available
+    enabled: OrderDtlId !== -1 && WarehauseId !== -1, // Only fetch if param is available
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
   } as UseQueryOptions<OrderCupListResponse, Error, OrderCupListResponse, unknown[]>);
@@ -54,14 +51,12 @@ export function useOrders() {
   >({
     queryKey: ["orderSalesPrices", orderIdForSalesPrice, salesPriceId],
     queryFn: async () => {
-      console.log(
-        `/api/Order/orderSalesPrices?OrderId=${orderIdForSalesPrice}&SalesPriceId=${salesPriceId}`
-      );
-      const url: string = `api/Order/orderSalesPrices?OrderId=${orderIdForSalesPrice}&SalesPriceId=${salesPriceId}`;
+      const url = `/api/Order/orderSalesPrices?OrderId=${orderIdForSalesPrice}&SalesPriceId=${salesPriceId}`;
+      console.log(url, "url");
       const response = await api.get(url);
       return response.data;
     },
-    enabled: orderIdForSalesPrice!==-1 && salesPriceId!==-1,
+    enabled: orderIdForSalesPrice !== -1 && salesPriceId !== -1,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     onSuccess: (data: any) => {
@@ -89,13 +84,12 @@ export function useOrders() {
   >({
     queryKey: ["orders", orderId],
     queryFn: async () => {
-      console.log(`/api/Order/orderRegShow?OrderId=${orderId}`);
-      const response = await api.get(
-        `/api/Order/orderRegShow?OrderId=${orderId}`
-      );
+      const url = `/api/Order/orderRegShow?OrderId=${orderId}`;
+      console.log(url, "url");
+      const response = await api.get(url);
       return response.data;
     },
-    enabled: orderId!==0,
+    enabled: orderId !== 0,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     onSuccess: (data: any) => {

@@ -43,7 +43,7 @@ const PayRequestAttachment = ({
     saveAttachment,
     //attachmentSaveResponse : attachmentSaveResponseHook,
   } = useAttachments();
-  const { setField, attachmentSaveResponse, deleteRestoreResponse } =
+  const { setField, attachmentSaveResponse, deleteRestoreResponse, formId: formIdStore } =
     useAttachmentStore();
   const [data, setData] = useState<AttachmentResult[]>([]);
   const { authApiResponse } = useAuthStore();
@@ -101,13 +101,16 @@ const PayRequestAttachment = ({
     setSelectedRowIndex(attachments.data.result.length-1);
   }, [attachments.data.result.length]);
   /////////////////////////////////////////////////////////////////
+  //for setting the params for api/Attachment/list in useAttachmentStore
   useEffect(() => {
     setField("systemId", systemId);
     setField("yearId", yearId);
-    setField("formId", formId);
+    if (formId !== formIdStore) {
+      setField("formId", formId);
+    }
     setField("prefix", prefix);
     setField("GUID", guid);
-  }, [formId,systemId,yearId,guid]);
+  }, [formId,systemId,yearId,guid,prefix]);
 
   useEffect(() => {
     let tempData: AttachmentResult[] = [];

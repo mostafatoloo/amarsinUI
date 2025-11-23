@@ -19,15 +19,16 @@ export function useBanks() {
         page,
         search,
       };
-      const response = await api.get(
-        `/api/Payment/bankSearch?page=${params.page}&lastId=${
-          params.lastId
-        }&search=${encodeURIComponent(search ?? "")}`
-      );
+      const url = `/api/Payment/bankSearch?page=${params.page}&lastId=${
+        params.lastId
+      }&search=${encodeURIComponent(search ?? "")}`;
+      console.log(url, "url");
+      const response = await api.get(url);
+      console.log(url, response.data, "url,response.data in bankSearch");
 
       return response.data;
     },
-    enabled:page!==-1,
+    enabled: page !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {

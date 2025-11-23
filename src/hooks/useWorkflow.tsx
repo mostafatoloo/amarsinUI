@@ -147,7 +147,7 @@ export function useWorkflow() {
     enabled: workTableId !== -1 && chartId !== -1,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    staleTime: 0, // Data is immediately considered stale, forcing refetch
+    //staleTime: 0, // Data is immediately considered stale, forcing refetch
     onSuccess: (data: any) => {
       console.log(data, "data in useWorkflow queryRowSelect");
       setWorkFlowRowSelectResponse(data);
@@ -183,6 +183,7 @@ export function useWorkflow() {
       }&search=${encodeURIComponent(params.searchFlows)}&page=${
         params.pageFlows
       }`;
+      console.log(url, "url");
       const response = await api.get(url);
       return response.data;
     },

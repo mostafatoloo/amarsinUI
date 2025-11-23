@@ -98,16 +98,11 @@ export function usePayRequest() {
       tDateRpCustomerBills,
     ],
     queryFn: async () => {
-      console.log(
-        `/api/SaleReport/RpCustomerBills?SystemId=${systemIdRpCustomerBills}&YearId=${yearIdRpCustomerBills}&CustomerId=${customerIdRpCustomerBills}&FDate=${encodeURIComponent(
-          fDateRpCustomerBills
-        )}&TDate=${encodeURIComponent(tDateRpCustomerBills)}`
-      );
-      const response = await api.get(
-        `/api/SaleReport/RpCustomerBills?SystemId=${systemIdRpCustomerBills}&YearId=${yearIdRpCustomerBills}&CustomerId=${customerIdRpCustomerBills}&FDate=${encodeURIComponent(
-          fDateRpCustomerBills
-        )}&TDate=${encodeURIComponent(tDateRpCustomerBills)}`
-      );
+      const url = `/api/SaleReport/RpCustomerBills?SystemId=${systemIdRpCustomerBills}&YearId=${yearIdRpCustomerBills}&CustomerId=${customerIdRpCustomerBills}&FDate=${encodeURIComponent(
+        fDateRpCustomerBills
+      )}&TDate=${encodeURIComponent(tDateRpCustomerBills)}`;
+      console.log(url, "url");
+      const response = await api.get(url);
       return response.data;
     },
     onSuccess: (data: any) => {
@@ -366,9 +361,9 @@ export function usePayRequest() {
       customerId,
     ],
     queryFn: async () => {
-      const response = await api.get(
-        `/api/PayRequest/Invoices?PayRequestId=${payRequestId}&SystemId=${systemIdPayRequestInvoice}&YearId=${yearIdPayRequestInvoice}&CustomerId=${customerId}`
-      );
+      const url = `/api/PayRequest/Invoices?PayRequestId=${payRequestId}&SystemId=${systemIdPayRequestInvoice}&YearId=${yearIdPayRequestInvoice}&CustomerId=${customerId}`;
+      console.log(url, "url");
+      const response = await api.get(url);
       return response.data;
     },
     onSuccess: (data: any) => {

@@ -27,8 +27,9 @@ const AttachmentImageLoader: React.FC<AttachmentImageLoaderProps> = ({
   const [error, setError] = useState<Error | null>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const blobUrlRef = useRef<string | null>(null);
+  const previousImageUrlRef = useRef<string | null>(null);
 
-  // Memoize options to prevent infinite re-renders
+  // Memoize options to prevent infinite re-renders (for rendering only, not for fetching)
   const memoizedOptions = useMemo(() => options, [
     options.className,
     options.alt,
@@ -106,9 +107,25 @@ const AttachmentImageLoader: React.FC<AttachmentImageLoaderProps> = ({
   };
 
   useEffect(() => {
-    // Reset the image source when dependencies change
+    // Don't fetch if imageUrl is empty or invalid
+    if (!imageUrl || !authToken) {
+      setImgSrc(null);
+      previousImageUrlRef.current = null;
+      return;
+    }
+
+    // Only fetch if imageUrl has actually changed
+    if (previousImageUrlRef.current === imageUrl) {
+      // Image URL hasn't changed, don't refetch
+      return;
+    }
+
+    // Update the previous imageUrl reference
+    previousImageUrlRef.current = imageUrl;
+
+    // Reset the image source when imageUrl changes
     setImgSrc(null);
-    // Clean up previous blob URL
+    // Clean up previous blob URL (only if it's different from current)
     if (blobUrlRef.current) {
       URL.revokeObjectURL(blobUrlRef.current);
       blobUrlRef.current = null;
@@ -140,6 +157,12 @@ const AttachmentImageLoader: React.FC<AttachmentImageLoaderProps> = ({
           throw new Error("Invalid or empty image data received");
         }
 
+        // Double-check that imageUrl hasn't changed during the fetch
+        if (previousImageUrlRef.current !== imageUrl) {
+          // Image URL changed during fetch, don't set the result
+          return;
+        }
+
         const objectUrl = URL.createObjectURL(blob);
         // Store the blob URL reference for cleanup
         blobUrlRef.current = objectUrl;
@@ -157,14 +180,21 @@ const AttachmentImageLoader: React.FC<AttachmentImageLoaderProps> = ({
 
     loadImage();
 
-    // Cleanup function
+    // Cleanup function - only runs when imageUrl or authToken changes
+    return () => {
+      // Cleanup will be handled by the next effect run or unmount effect below
+    };
+  }, [authToken, imageUrl]); // Removed memoizedOptions - only refetch when imageUrl or authToken changes
+
+  // Cleanup on unmount
+  useEffect(() => {
     return () => {
       if (blobUrlRef.current) {
         URL.revokeObjectURL(blobUrlRef.current);
         blobUrlRef.current = null;
       }
     };
-  }, [authToken, imageUrl, memoizedOptions]);
+  }, []);
 
   if (error) {
     return (

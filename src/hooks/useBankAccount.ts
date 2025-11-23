@@ -37,9 +37,10 @@ export function useBankAccount() {
         page,
         search,
       };
-      const response = await api.get(
-        `/api/Payment/bankAccountSearch?SystemId=${params.systemId}&LastId=${params.lastId}&Page=${params.page}&Search=${params.search}`
-      );
+      const url = `/api/Payment/bankAccountSearch?SystemId=${params.systemId}&LastId=${params.lastId}&Page=${params.page}&Search=${params.search}`;
+      console.log(url, "url");
+      const response = await api.get(url);
+      console.log(url, response.data, "url,response.data in bankAccountSearch");
       return response.data;
     },
     enabled: systemId !== -1,

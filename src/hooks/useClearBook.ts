@@ -1,8 +1,4 @@
-import {
-  useMutation,
-  useQuery,
-  UseQueryOptions,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, UseQueryOptions } from "@tanstack/react-query";
 
 import api from "../api/axios";
 import { useClearBookStore } from "../store/clearBookStore";
@@ -34,12 +30,16 @@ export function useClearBook() {
         yearId,
         brandId,
       };
-      const response = await api.get(
-        `/api/ClearBook/clearBooksProducts?SystemId=${params.systemId}&YearId=${params.yearId}&BrandId=${params.brandId}`
+      const url = `/api/ClearBook/clearBooksProducts?SystemId=${params.systemId}&YearId=${params.yearId}&BrandId=${params.brandId}`;
+      const response = await api.get(url);
+      console.log(
+        url,
+        response.data,
+        "url,response.data in clearBooksProducts"
       );
       return response.data;
     },
-    enabled:yearId!==-1 && systemId!==-1,
+    enabled: yearId !== -1 && systemId !== -1,
     refetchOnWindowFocus: false, // Refetch data when the window is focused
     refetchOnReconnect: false, // Refetch data when the network reconnects
     onSuccess: (data: any) => {

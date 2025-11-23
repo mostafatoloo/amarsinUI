@@ -206,6 +206,7 @@ export function useCupboardReport() {
           }
         });
         const url = `/api/CupboardsReport/downloadExcel?${queryString.toString()}`;
+        console.log(url, "url");
         const response = await api.get(url, {
           responseType: "blob",
         });
